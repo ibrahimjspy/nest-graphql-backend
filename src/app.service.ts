@@ -3,7 +3,7 @@ import { request } from 'graphql-request';
 import { rickQuery } from './queries';
 // import { getHeapStatistics } from 'v8';
 const testFunction = () => {
-  return 'Im random testify';
+  return 'Im random test functions';
 };
 @Injectable()
 export class AppService {
