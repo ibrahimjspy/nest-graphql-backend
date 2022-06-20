@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { request } from 'graphql-request';
-import { rickQuery } from './queries';
+import { fetchMock } from './handlers/test';
 // import { getHeapStatistics } from 'v8';
 const testFunction = () => {
   return 'Im random test functions';
@@ -8,11 +7,7 @@ const testFunction = () => {
 @Injectable()
 export class AppService {
   async getHello(): Promise<object> {
-    let Data = {};
-    await request('https://rickandmortyapi.com/graphql', rickQuery(3)).then(
-      (data) => (Data = data),
-    );
-    return { Data };
+    return await fetchMock();
   }
   getHi(): string {
     return testFunction();
