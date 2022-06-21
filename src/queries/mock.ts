@@ -1,22 +1,38 @@
 import { gql } from 'graphql-request';
 
-export const rickQuery = (page: number) => {
+export const aniQuery = () => {
   return gql`
-      query Query {
-        characters(page: ${page}, filter: { name: "Morty" }) {
-          info {
-            count
+    query Query {
+      Page {
+        media {
+          siteUrl
+          title {
+            english
+            native
           }
-          results {
-            name
-          }
-        }
-        location(id: 1) {
-          id
-        }
-        episodesByIds(ids: [1, 2]) {
-          id
+          description
         }
       }
-    `;
+    }
+  `;
+};
+export const paramQuery = (id: number) => {
+  return gql`
+    query Query {
+      characters(page: ${id}, filter: { name: "Morty" }) {
+        info {
+          count
+        }
+        results {
+          name
+        }
+      }
+      location(id: 1) {
+        id
+      }
+      episodesByIds(ids: [1, 2]) {
+        id
+      }
+    }
+  `;
 };

@@ -1,5 +1,6 @@
-import { Controller, Get, Param, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { AppService } from './app.service';
+import { fetchParamMock } from './handlers/test';
 class PostDTO {
   title: string;
   description: string;
@@ -7,11 +8,9 @@ class PostDTO {
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
-
   @Get()
   getHello(): Promise<object> {
     return this.appService.getHello();
-    // return ;
   }
   @Get('/random')
   getRandom(): string {
@@ -23,16 +22,11 @@ export class AppController {
     console.log(body);
     return `Created a new post with values of ${JSON.stringify(body)} 🚀`;
   }
-  @Get('/:id')
-  getid(@Param() params): string {
-    // console.log(params.id);
-    return this.appService.getId(params.id);
-  }
 }
-@Controller('cats')
+@Controller('shows')
 export class CatsController {
-  @Get('/data')
-  findAll(): string {
-    return 'This action returns all cats';
+  @Get('/rick/:id')
+  findAll(@Param() params): Promise<object> {
+    return fetchParamMock(parseInt(params.id));
   }
 }
