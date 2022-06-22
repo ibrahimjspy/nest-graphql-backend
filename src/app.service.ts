@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { fetchMock } from '../handlers/test';
+import { fetchMock } from './handlers/test';
 // import { getHeapStatistics } from 'v8';
 const testFunction = () => {
   return 'Im random test functions';
