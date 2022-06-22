@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param } from '@nestjs/common';
-import { AppService } from './app.service';
-import { fetchParamMock } from './handlers/test';
+import { AppService } from '../services/app.service';
+import { fetchParamMock } from '../handlers/test';
 class PostDTO {
   title: string;
   description: string;
