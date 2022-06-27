@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { productCardHandler } from 'src/handlers/productCardHandler';
+import { productCardHandler } from '../handlers/productCardHandler';
 
 @Injectable()
 export class ProductCardService {
