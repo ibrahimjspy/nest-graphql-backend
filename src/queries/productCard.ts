@@ -1,6 +1,7 @@
 import { gql } from 'graphql-request';
 
 export const productCardQuery = () => {
+  // Query imported from Sailer implementation
   return gql`
     fragment ProductCardFragment on Product {
       id

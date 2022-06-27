@@ -1,6 +1,7 @@
 import { request } from 'graphql-request';
 import { aniQuery, paramQuery } from 'src/queries/mock';
 
+// Mock graphQl request functions
 export const fetchMock = async () => {
   let Data = {};
   await request('https://graphql.anilist.co', aniQuery()).then(

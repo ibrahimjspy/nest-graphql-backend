@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ProductCardController } from './productCard.controller';
 import { ProductCardService } from './productCard.service';
 
+//  Product card unit tests using Jest
+
 describe('CardController', () => {
   let appController: ProductCardController;
 
@@ -13,6 +15,8 @@ describe('CardController', () => {
 
     appController = app.get<ProductCardController>(ProductCardController);
   });
+
+  // checking for values that are falsy and undefined --->>
 
   describe('root', () => {
     it('should return "JSON', () => {
