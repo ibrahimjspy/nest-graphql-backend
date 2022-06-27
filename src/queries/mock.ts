@@ -6,16 +6,18 @@ import { gql } from 'graphql-request';
 
 export const mockProductCard = () => {
   return gql`
-    query ProductCard {
-      color_variant
-      description
-      sku
-      product_cost
-      id
-      image
-      slug
-      resale_price
-      title
+    query {
+      products {
+        image
+        title
+        description
+        id
+        slug
+        color_variant
+        sku
+        resale_price
+        product_cost
+      }
     }
   `;
 };
