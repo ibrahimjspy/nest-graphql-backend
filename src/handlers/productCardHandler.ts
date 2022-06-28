@@ -6,8 +6,10 @@ import { mockProductCard } from '../queries/mock';
 
 export const productCardHandler = async () => {
   let productCardsData = {};
-  await request('http://localhost:4000/', mockProductCard()).then((data) => {
-    productCardsData = data;
-  });
+  await request(process.env.MOCK_GRAPHQL_ENDPOINT, mockProductCard()).then(
+    (data) => {
+      productCardsData = data;
+    },
+  );
   return productCardsData;
 };
