@@ -1,11 +1,18 @@
-import { Module } from '@nestjs/common';
+import { CacheModule, Module, CacheInterceptor } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ProductCardModule } from './productCard/productCard.module';
 
 @Module({
-  imports: [ProductCardModule],
+  imports: [ProductCardModule, CacheModule.register()],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
+    },
+  ],
 })
 export class AppModule {}
