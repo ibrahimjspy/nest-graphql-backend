@@ -5,11 +5,10 @@ import { mockProductCard } from '../queries/mock';
 // Product card GraphQL handlers
 
 export const productCardHandler = async () => {
+  const GRAPHQL_ENDPOINT: string = process.env.MOCK_GRAPHQL_ENDPOINT;
   let productCardsData = {};
-  await request(process.env.MOCK_GRAPHQL_ENDPOINT, mockProductCard()).then(
-    (data) => {
-      productCardsData = data;
-    },
-  );
+  await request(GRAPHQL_ENDPOINT, mockProductCard()).then((data) => {
+    productCardsData = data;
+  });
   return productCardsData;
 };

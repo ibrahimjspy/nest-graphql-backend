@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigModule } from '@nestjs/config';
 import { ProductCardController } from './productCard.controller';
 import { ProductCardService } from './productCard.service';
 
@@ -9,6 +10,7 @@ describe('CardController', () => {
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
+      imports: [ConfigModule],
       controllers: [ProductCardController],
       providers: [ProductCardService],
     }).compile();
@@ -24,6 +26,11 @@ describe('CardController', () => {
     });
     it('should not be falsy', () => {
       expect(appController.findAll()).toBeTruthy();
+    });
+    it('the data is an object returned from graphQL', async () => {
+      const expected = { foo: 'bar' };
+      const data = await appController.findAll();
+      expect(data).toEqual(expect.not.objectContaining(expected));
     });
   });
 });
