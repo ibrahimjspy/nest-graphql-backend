@@ -4,6 +4,7 @@ import { ProductCardController } from './productCard.controller';
 import { ProductCardService } from './productCard.service';
 
 //  Product card unit tests using Jest
+//  WARN!! Replace env configs with test links before running command npm run test
 
 describe('CardController', () => {
   let appController: ProductCardController;

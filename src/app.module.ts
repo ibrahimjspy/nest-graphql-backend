@@ -4,9 +4,15 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ProductCardModule } from './productCard/productCard.module';
+import { MenuCategoriesModule } from './menuCategories/menuCategories.module';
 
 @Module({
-  imports: [ProductCardModule, CacheModule.register(), ConfigModule.forRoot()],
+  imports: [
+    ProductCardModule,
+    CacheModule.register(),
+    ConfigModule.forRoot(),
+    MenuCategoriesModule,
+  ],
   controllers: [AppController],
   providers: [
     AppService,

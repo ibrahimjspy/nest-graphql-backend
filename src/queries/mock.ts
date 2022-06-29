@@ -21,7 +21,32 @@ export const mockProductCard = () => {
     }
   `;
 };
-
+// Menu Categories query <Mock>
+export const mockMenuCategories = () => {
+  return gql`
+    query {
+      main_categories {
+        name
+        id
+        slug
+        images {
+          url
+          label
+        }
+        sub_categories {
+          id
+          name
+          slug
+          sub_sub_categories {
+            id
+            name
+            slug
+          }
+        }
+      }
+    }
+  `;
+};
 export const aniQuery = () => {
   return gql`
     query Query {
