@@ -10,8 +10,8 @@ import { MenuCategoriesModule } from './menuCategories/menuCategories.module';
   // Importing service modules and integrating with app module
   imports: [
     ProductCardModule, //ProductCard
-    CacheModule.register(),
-    ConfigModule.forRoot(),
+    CacheModule.register(), //Caching support
+    ConfigModule.forRoot(), //env config support
     MenuCategoriesModule, //menuCategories
   ],
   controllers: [AppController],
@@ -19,7 +19,7 @@ import { MenuCategoriesModule } from './menuCategories/menuCategories.module';
     AppService,
     {
       provide: APP_INTERCEPTOR,
-      useClass: CacheInterceptor,
+      useClass: CacheInterceptor, // cache intercepting class <graphQl>
     },
   ],
 })
