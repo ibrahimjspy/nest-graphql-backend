@@ -7,11 +7,12 @@ import { ProductCardModule } from './productCard/productCard.module';
 import { MenuCategoriesModule } from './menuCategories/menuCategories.module';
 
 @Module({
+  // Importing service modules and integrating with app module
   imports: [
-    ProductCardModule,
+    ProductCardModule, //ProductCard
     CacheModule.register(),
     ConfigModule.forRoot(),
-    MenuCategoriesModule,
+    MenuCategoriesModule, //menuCategories
   ],
   controllers: [AppController],
   providers: [
