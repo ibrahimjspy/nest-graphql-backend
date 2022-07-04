@@ -12,8 +12,4 @@ export class ProductCardController {
   findString(): string {
     return 'This action returns products relating to collection id  with param id ';
   }
-  @Get('/collections')
-  findCollections(): Promise<object> {
-    return this.appService.getCollections();
-  }
 }

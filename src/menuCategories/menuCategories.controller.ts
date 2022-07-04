@@ -8,4 +8,8 @@ export class MenuCategoriesController {
   findAll(): Promise<object> {
     return this.appService.getCategories();
   }
+  @Get('/productCollections')
+  findCollections(): Promise<object> {
+    return this.appService.getCollections();
+  }
 }
