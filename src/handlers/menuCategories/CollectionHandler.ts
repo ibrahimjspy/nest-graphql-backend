@@ -6,9 +6,9 @@ import { CardCollection } from '../../queries/mock';
 
 export const productCardCollectionHandler = async () => {
   const GRAPHQL_ENDPOINT: string = process.env.MOCK_GRAPHQL_ENDPOINT;
-  let productCardsData = {};
+  let CollectionsData = {};
   await request(GRAPHQL_ENDPOINT, CardCollection()).then((data) => {
-    productCardsData = data;
+    CollectionsData = data;
   });
-  return productCardsData;
+  return CollectionsData;
 };

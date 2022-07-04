@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { ProductCardService } from './productCard.service';
 
 @Controller('productCard')
@@ -9,7 +9,7 @@ export class ProductCardController {
     return this.appService.getProducts();
   }
   @Get('/byCollectionId/:id')
-  findString(): string {
-    return 'This action returns products relating to collection id  with param id ';
+  findString(@Param() params): string {
+    return `This action returns products relating to collection ${params.id}  with param id `;
   }
 }

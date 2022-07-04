@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { MenuCategoriesHandler } from 'src/handlers/menuCategoriesHandler';
-import { productCardCollectionHandler } from 'src/handlers/productCard/CollectionHandler';
+import { MenuCategoriesHandler } from 'src/handlers/menuCategories/menuCategoriesHandler';
+import { productCardCollectionHandler } from 'src/handlers/menuCategories/CollectionHandler';
 
 @Injectable()
 export class MenuCategoriesService {
