@@ -47,6 +47,18 @@ export const mockMenuCategories = () => {
     }
   `;
 };
+// Product Collections mock query
+export const CardCollection = () => {
+  return gql`
+    query {
+      products_collection {
+        id
+        name
+      }
+    }
+  `;
+};
+
 export const aniQuery = () => {
   return gql`
     query Query {

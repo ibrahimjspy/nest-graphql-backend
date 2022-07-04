@@ -1,5 +1,5 @@
 import { request } from 'graphql-request';
-import { mockProductCard } from '../queries/mock';
+import { mockProductCard } from '../../queries/mock';
 // import { productCardQuery } from '../queries/productCard';
 
 // Product card GraphQL handlers
