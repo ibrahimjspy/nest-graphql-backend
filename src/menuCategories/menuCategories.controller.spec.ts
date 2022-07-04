@@ -3,8 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { MenuCategoriesController } from './menuCategories.controller';
 import { MenuCategoriesService } from './menuCategories.service';
 
-//  Product card unit tests using Jest
-//  WARN!! Replace env configs with test links before running command npm run test
+//  Menu Categories unit tests using Jest
+//  WARN!! Replace env configs with test links before running command {npm run test}
 
 describe('Categories controller', () => {
   let appController: MenuCategoriesController;
@@ -28,6 +28,7 @@ describe('Categories controller', () => {
     it('should not be falsy', () => {
       expect(appController.findAll()).toBeTruthy();
     });
+    // async test for JSON data
     it('the data is an object returned from graphQL', async () => {
       const expected = { foo: 'bar' };
       const data = await appController.findAll();

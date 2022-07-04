@@ -7,6 +7,6 @@ export class MenuCategoriesService {
     // Pre graphQl call actions and validations -->
     // << -- >>
     // menuCategories is graphQl promise handler --->
-    return MenuCategoriesHandler(); //graphql function
+    return MenuCategoriesHandler();
   }
 }

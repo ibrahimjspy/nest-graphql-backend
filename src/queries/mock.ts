@@ -2,7 +2,7 @@ import { gql } from 'graphql-request';
 
 // Mock Queries for testing use cases
 // -------->>
-// Product Card query for an api hosted at graphqleditor.com
+// Product Card query <MOCK><Apollo Server>
 
 export const mockProductCard = () => {
   return gql`
