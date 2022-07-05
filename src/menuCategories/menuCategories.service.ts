@@ -11,9 +11,9 @@ export class MenuCategoriesService {
     return MenuCategoriesHandler();
   }
   public getCollections(): Promise<object> {
-    // Pre graphQl call actions and validations -->
+    // Pre graphQl call actions and validations to get product collection categories  -->
     // << -- >>
-    // productCardHandler is graphQl promise handler --->
+    // productCardCollectionHandler is graphQl promise handler --->
     return productCardCollectionHandler();
   }
 }
