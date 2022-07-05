@@ -3,23 +3,18 @@ import { productCardHandler } from '../handlers/productCard/Handler';
 
 @Injectable()
 export class ProductCardService {
+  // default product cards service
   public getProducts(): Promise<object> {
-    // Pre graphQl call actions and validations -->
-    // << -- >>
-    // productCardHandler is graphQl promise handler --->
-    return productCardHandler();
+    return productCardHandler(); //graphQl promise handler
   }
+  //Product cards by collection <id>
   public getProductsByCollections(id: string): Promise<object> {
-    // Pre graphQl call actions and validations -->
     console.log(id);
-    // productCardHandler is graphQl promise handler --->
-    return productCardHandler();
+    return productCardHandler(); //graphQl promise handler
   }
-  // Single product by id
+  // Single product by <slug>
   public getProductById(id: string): Promise<object> {
-    // Pre graphQl call actions and validations -->
     console.log(id);
-    // productCardHandler is graphQl promise handler --->
-    return productCardHandler();
+    return productCardHandler(); //graphQl promise handler
   }
 }
