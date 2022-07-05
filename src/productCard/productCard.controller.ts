@@ -11,12 +11,12 @@ export class ProductCardController {
   }
   // Returns multiple cards relating to category <id>
   @Get('/byCollectionId/:id')
-  findString(@Param() params): string {
-    return `This action returns products relating to collection ${params.id}  with param id `;
+  findProductsByCollectionId(@Param() params): Promise<object> {
+    return this.appService.getProductsByCollections(params.id);
   }
   // Returns single card data by <slug>
   @Get('/:slug')
-  findProduct(@Param() params): string {
-    return `This action returns product data relating to ${params.slug} with param slug `;
+  findProductBySlug(@Param() params): Promise<object> {
+    return this.appService.getProductById(params.slug);
   }
 }

@@ -9,4 +9,17 @@ export class ProductCardService {
     // productCardHandler is graphQl promise handler --->
     return productCardHandler();
   }
+  public getProductsByCollections(id: string): Promise<object> {
+    // Pre graphQl call actions and validations -->
+    console.log(id);
+    // productCardHandler is graphQl promise handler --->
+    return productCardHandler();
+  }
+  // Single product by id
+  public getProductById(id: string): Promise<object> {
+    // Pre graphQl call actions and validations -->
+    console.log(id);
+    // productCardHandler is graphQl promise handler --->
+    return productCardHandler();
+  }
 }
