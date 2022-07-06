@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { singleProductHandler } from 'src/handlers/productCard/SIngleProduct';
 import { productCardHandler } from '../handlers/productCard/Handler';
 
 @Injectable()
@@ -12,9 +13,9 @@ export class ProductCardService {
     console.log(id);
     return productCardHandler(); //graphQl promise handler
   }
-  // Single product by <slug>
-  public getProductById(id: string): Promise<object> {
-    console.log(id);
-    return productCardHandler(); //graphQl promise handler
+  // Single product by <slug> {Quick View}
+  public getProductById(slug: string): Promise<object> {
+    console.log(slug);
+    return singleProductHandler(); //graphQl promise handler
   }
 }
