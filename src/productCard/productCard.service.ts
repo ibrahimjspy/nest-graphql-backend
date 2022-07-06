@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { singleProductHandler } from 'src/handlers/productCard/SIngleProduct';
+import { singleProductHandler } from 'src/handlers/productCard/SingleProduct';
 import { productCardHandler } from '../handlers/productCard/Handler';
 
 @Injectable()
