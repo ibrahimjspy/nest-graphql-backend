@@ -28,6 +28,7 @@ describe('CardController', () => {
     it('should not be falsy', () => {
       expect(appController.findAll()).toBeTruthy();
     });
+    // async test checking response JSON from graphql call
     it('the data is an object returned from graphQL', async () => {
       const expected = { foo: 'bar' };
       const data = await appController.findAll();

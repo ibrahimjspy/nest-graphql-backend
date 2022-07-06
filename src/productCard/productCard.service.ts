@@ -1,12 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { productCardHandler } from '../handlers/productCardHandler';
+import { singleProductHandler } from 'src/handlers/productCard/SIngleProduct';
+import { productCardHandler } from '../handlers/productCard/Handler';
 
 @Injectable()
 export class ProductCardService {
+  // default product cards service
   public getProducts(): Promise<object> {
-    // Pre graphQl call actions and validations -->
-    // << -- >>
-    // productCardHandler is graphQl promise handler --->
-    return productCardHandler();
+    return productCardHandler(); //graphQl promise handler
+  }
+  //Product cards by collection <id>
+  public getProductsByCollections(id: string): Promise<object> {
+    console.log(id);
+    return productCardHandler(); //graphQl promise handler
+  }
+  // Single product by <slug> {Quick View}
+  public getProductById(slug: string): Promise<object> {
+    console.log(slug);
+    return singleProductHandler(); //graphQl promise handler
   }
 }

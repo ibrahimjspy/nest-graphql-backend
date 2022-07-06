@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request';
-
+//WARN currently no use of this query in any ql resolvers !!
 export const productCardQuery = () => {
   // Query imported from Sailer implementation
   return gql`

@@ -2,7 +2,7 @@ import { gql } from 'graphql-request';
 
 // Mock Queries for testing use cases
 // -------->>
-// Product Card query for an api hosted at graphqleditor.com
+// Product Card query <MOCK><Apollo Server>
 
 export const mockProductCard = () => {
   return gql`
@@ -42,6 +42,64 @@ export const mockMenuCategories = () => {
             name
             slug
           }
+        }
+      }
+    }
+  `;
+};
+// Product Collections mock query
+export const MockCardCollection = () => {
+  return gql`
+    query {
+      products_collection {
+        id
+        name
+      }
+    }
+  `;
+};
+// Single product mock query for quick view and product description
+export const MockSingleProduct = () => {
+  return gql`
+    query {
+      productBySlug {
+        main_image
+        images
+        description
+        product_name
+        id
+        slug
+        style_no
+        vendor_info {
+          name
+          id
+          ships_from
+          min_order
+          products
+        }
+        available_sizes {
+          name
+          symbol
+          id
+          unit_price
+        }
+        resale_price
+        product_cost
+        commission
+        selling_price
+        is_added_to_store
+        is_favorite
+        is_favorite
+        is_cart
+        shipping_policy {
+          min_days
+          max_days
+          flat_rate
+          threshold
+        }
+        color_variant
+        return_policy {
+          returning_days
         }
       }
     }
