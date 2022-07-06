@@ -54,6 +54,10 @@ export const MockCardCollection = () => {
       products_collection {
         id
         name
+        sub_categories {
+          id
+          name
+        }
       }
     }
   `;
