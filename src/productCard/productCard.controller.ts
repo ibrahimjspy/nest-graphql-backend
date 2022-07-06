@@ -14,7 +14,7 @@ export class ProductCardController {
   findProductsByCollectionId(@Param() params): Promise<object> {
     return this.appService.getProductsByCollections(params.id);
   }
-  // Returns single card data by <slug>
+  // Returns single product details by <slug>
   @Get('details/:slug')
   findProductBySlug(@Param() params): Promise<object> {
     return this.appService.getProductById(params.slug);

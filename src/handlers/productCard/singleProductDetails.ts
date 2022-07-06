@@ -1,6 +1,7 @@
 import { request } from 'graphql-request';
 import { MockSingleProduct } from 'src/queries/mock';
 
+//Single product card details page ^^ QuickView graphql handler
 export const singleProductHandler = async () => {
   const GRAPHQL_ENDPOINT: string = process.env.MOCK_GRAPHQL_ENDPOINT;
   let singleProductData = {};

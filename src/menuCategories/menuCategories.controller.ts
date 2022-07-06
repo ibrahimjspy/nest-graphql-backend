@@ -9,7 +9,7 @@ export class MenuCategoriesController {
   findAll(): Promise<object> {
     return this.appService.getCategories();
   }
-  // Returns product card collection categories
+  // Returns product card collections and relating categories
   @Get('/productCollections')
   findCollections(): Promise<object> {
     return this.appService.getCollections();
