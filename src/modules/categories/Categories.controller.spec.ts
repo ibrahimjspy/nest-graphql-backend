@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
-import { MenuCategoriesController } from './menuCategories.controller';
-import { MenuCategoriesService } from './menuCategories.service';
+import { MenuCategoriesController } from './Categories.controller';
+import { CategoriesService } from './Categories.service';
 
 //  Menu Categories unit tests using Jest
 //  WARN!! Replace env configs with test links before running command {npm run test}
@@ -13,7 +13,7 @@ describe('Categories controller', () => {
     const app: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
       controllers: [MenuCategoriesController],
-      providers: [MenuCategoriesService],
+      providers: [CategoriesService],
     }).compile();
 
     appController = app.get<MenuCategoriesController>(MenuCategoriesController);

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { singleProductHandler } from '../handlers/productCard/singleProductDetails';
-import { productCardHandler } from '../handlers/productCard/defaultProductCard';
+import { singleProductHandler } from '../../graphql/handlers/productCard/singleProductDetails';
+import { productCardHandler } from '../../graphql/handlers/productCard/defaultProductCard';
 
 @Injectable()
 export class ProductCardService {
