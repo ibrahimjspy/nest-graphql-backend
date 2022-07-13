@@ -110,6 +110,7 @@ export const MockSingleProduct = () => {
     }
   `;
 };
+// <------>
 export const aniQuery = () => {
   return gql`
     query Query {

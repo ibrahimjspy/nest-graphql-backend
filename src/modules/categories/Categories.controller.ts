@@ -1,15 +1,15 @@
 import { Controller, Get } from '@nestjs/common';
-import { MenuCategoriesService } from './menuCategories.service';
+import { CategoriesService } from './Categories.service';
 
-@Controller('menuCategories')
+@Controller('categories')
 export class MenuCategoriesController {
-  constructor(private readonly appService: MenuCategoriesService) {}
+  constructor(private readonly appService: CategoriesService) {}
   // Returns top menu categories
-  @Get()
+  @Get('/menu')
   findAll(): Promise<object> {
     return this.appService.getCategories();
   }
-  // Returns product card collection categories
+  // Returns product card collections and relating categories
   @Get('/productCollections')
   findCollections(): Promise<object> {
     return this.appService.getCollections();

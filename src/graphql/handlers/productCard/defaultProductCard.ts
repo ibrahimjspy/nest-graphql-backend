@@ -1,11 +1,9 @@
 import { request } from 'graphql-request';
 import { mockProductCard } from '../../queries/mock';
-// import { productCardQuery } from '../queries/productCard';
 
 // Product card GraphQL handlers
-
 export const productCardHandler = async () => {
-  const GRAPHQL_ENDPOINT: string = process.env.MOCK_GRAPHQL_ENDPOINT;
+  const GRAPHQL_ENDPOINT: string = process.env.MOCK_GRAPHQL_ENDPOINT || TEST;
   let productCardsData = {};
   await request(GRAPHQL_ENDPOINT, mockProductCard()).then((data) => {
     shuffleArray(data.products);
@@ -21,3 +19,5 @@ function shuffleArray(array) {
   }
   return array;
 }
+// for unit testing locally <JEST|ARTILLERY>
+const TEST = 'http://localhost:4000/';

@@ -1,5 +1,5 @@
 import { request } from 'graphql-request';
-import { aniQuery, paramQuery } from 'src/queries/mock';
+import { aniQuery, paramQuery } from 'src/graphql/queries/mock';
 
 // Mock graphQl request functions
 export const fetchMock = async () => {
