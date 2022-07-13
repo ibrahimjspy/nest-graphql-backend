@@ -4,12 +4,12 @@ import { ProductCardService } from './productCard.service';
 @Controller('productCard')
 export class ProductCardController {
   constructor(private readonly appService: ProductCardService) {}
-  // Returns default cards  <All>
+  // Returns default cards data  <All>
   @Get()
   findAll(): Promise<object> {
     return this.appService.getProducts();
   }
-  // Returns multiple cards relating to category <id>
+  // Returns cards data relating to category <id>
   @Get('/byCollectionId/:id')
   findProductsByCollectionId(@Param() params): Promise<object> {
     return this.appService.getProductsByCollections(params.id);

@@ -10,9 +10,9 @@ import { MenuCategoriesModule } from './modules/categories/Categories.module';
   // Importing service modules and integrating with app module
   imports: [
     ProductCardModule, //ProductCard
+    MenuCategoriesModule, //menuCategories
     CacheModule.register(), //Caching support
     ConfigModule.forRoot(), //env config support
-    MenuCategoriesModule, //menuCategories
   ],
   controllers: [AppController],
   providers: [
