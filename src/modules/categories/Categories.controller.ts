@@ -1,11 +1,11 @@
 import { Controller, Get } from '@nestjs/common';
 import { CategoriesService } from './Categories.service';
 
-@Controller('menuCategories')
+@Controller('categories')
 export class MenuCategoriesController {
   constructor(private readonly appService: CategoriesService) {}
   // Returns top menu categories
-  @Get()
+  @Get('/menu')
   findAll(): Promise<object> {
     return this.appService.getCategories();
   }
