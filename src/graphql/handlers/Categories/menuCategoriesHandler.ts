@@ -1,11 +1,14 @@
 import { request } from 'graphql-request';
-import { mockMenuCategories } from 'src/queries/mock';
+import { mockMenuCategories } from '../../queries/mock';
+
 // Menu categories graphql handlers <>
 export const MenuCategoriesHandler = async () => {
-  const GRAPHQL_ENDPOINT: string = process.env.MOCK_GRAPHQL_ENDPOINT;
+  const GRAPHQL_ENDPOINT: string = process.env.MOCK_GRAPHQL_ENDPOINT || TEST;
   let menuCategoriesData = {};
   await request(GRAPHQL_ENDPOINT, mockMenuCategories()).then((data) => {
     menuCategoriesData = data;
   });
   return menuCategoriesData;
 };
+// for unit testing locally <JEST|ARTILLERY>
+const TEST = 'http://localhost:4000/';
