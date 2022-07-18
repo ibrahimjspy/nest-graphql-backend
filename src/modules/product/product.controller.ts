@@ -1,16 +1,16 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { ProductCardService } from './product.service';
 
-@Controller('productCard')
+@Controller('product')
 export class ProductCardController {
   constructor(private readonly appService: ProductCardService) {}
   // Returns default cards data  <All>
-  @Get()
+  @Get('/cards')
   findAll(): Promise<object> {
     return this.appService.getProducts();
   }
   // Returns cards data relating to category <id>
-  @Get('/byCollectionId/:id')
+  @Get('/cardsByCollectionId/:id')
   findProductsByCollectionId(@Param() params): Promise<object> {
     return this.appService.getProductsByCollections(params.id);
   }
