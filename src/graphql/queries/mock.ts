@@ -78,9 +78,20 @@ export const MockSingleProduct = () => {
         vendor_info {
           name
           id
-          ships_from
+          shipping_city
+          shipping_state
           min_order
-          products
+          vendor_products {
+            image
+            title
+            description
+            id
+            slug
+            color_variant
+            sku
+            resale_price
+            product_cost
+          }
         }
         available_sizes {
           name
