@@ -1,5 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { ProductCardService } from './productCard.service';
+import { ProductCardService } from './product.service';
 
 @Controller('productCard')
 export class ProductCardController {

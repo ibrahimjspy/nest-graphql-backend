@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { ProductCardModule } from './modules/productCard/productCard.module';
+import { ProductCardModule } from './modules/product/product.module';
 import { MenuCategoriesModule } from './modules/categories/Categories.module';
 
 @Module({

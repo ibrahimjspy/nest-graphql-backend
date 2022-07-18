@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
-import { ProductCardController } from './productCard.controller';
-import { ProductCardService } from './productCard.service';
+import { ProductCardController } from './product.controller';
+import { ProductCardService } from './product.service';
 
 //  Product card unit tests using Jest
 //  WARN!! Replace env configs with test links before running command npm run test
