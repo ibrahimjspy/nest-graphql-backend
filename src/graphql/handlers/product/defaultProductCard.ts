@@ -11,6 +11,7 @@ export const productCardHandler = async () => {
   });
   return productCardsData;
 };
+// right now we are using shuffle to mimic mock data according to collection id
 /* Randomize array in-place using Durstenfeld shuffle algorithm */
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
