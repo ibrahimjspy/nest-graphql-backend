@@ -7,6 +7,7 @@ import { ProductService } from './Product.service';
 //  WARN!! Replace env configs with test links before running command npm run test
 
 describe('ProductController', () => {
+  // appController mimics a test module application
   let appController: ProductController;
   const expected = { foo: 'bar' };
   beforeEach(async () => {

@@ -5,8 +5,8 @@ import { CategoriesService } from './Categories.service';
 
 // Categories unit tests using Jest
 
-describe('Categories controller', () => {
-  // app con
+describe('Categories controller unit tests', () => {
+  // appController mimics a test module application
   let appController: CategoriesController;
   const expected = { foo: 'collection not found' };
   beforeEach(async () => {
@@ -19,7 +19,7 @@ describe('Categories controller', () => {
     appController = app.get<CategoriesController>(CategoriesController);
   });
 
-  // npm checking for values that are falsy and undefined --->>
+  // checking for values that are falsy and undefined --->>
 
   describe('root', () => {
     // Basic validation tests for categories controller
