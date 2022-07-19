@@ -2,7 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { CategoriesService } from './Categories.service';
 
 @Controller('categories')
-export class MenuCategoriesController {
+export class CategoriesController {
   constructor(private readonly appService: CategoriesService) {}
   // Returns top menu categories
   @Get('/menu')

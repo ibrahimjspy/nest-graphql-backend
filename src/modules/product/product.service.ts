@@ -3,7 +3,7 @@ import { singleProductDetailsHandler } from '../../graphql/handlers/product/sing
 import { productCardHandler } from '../../graphql/handlers/product/defaultProductCard';
 
 @Injectable()
-export class ProductCardService {
+export class ProductService {
   // default product cards service
   public getProducts(): Promise<object> {
     return productCardHandler(); //graphQl promise handler
