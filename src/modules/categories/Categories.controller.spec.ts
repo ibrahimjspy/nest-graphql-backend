@@ -24,23 +24,23 @@ describe('Categories controller unit tests', () => {
   describe('root', () => {
     // Basic validation tests for categories controller
     it('should return "JSON', () => {
-      expect(appController.findAll()).toBeDefined();
+      expect(appController.findMenuCategories()).toBeDefined();
     });
     it('should return "JSON collections ', () => {
-      expect(appController.findCollections()).toBeDefined();
+      expect(appController.findProductCollections()).toBeDefined();
     });
     it('should not be falsy', () => {
-      expect(appController.findAll()).toBeTruthy();
+      expect(appController.findMenuCategories()).toBeTruthy();
     });
     // async tests for JSON data from either Mock service or backend services
     // async tests for menu categories
     it('the data is an object of menu categories returned from graphQL', async () => {
-      const data = await appController.findAll();
+      const data = await appController.findMenuCategories();
       expect(data).toEqual(expect.not.objectContaining(expected));
     });
     // async tests for product collections and categories
     it('the data is an object of product collections returned from graphQL', async () => {
-      const data = await appController.findCollections();
+      const data = await appController.findProductCollections();
       expect(data).not.toEqual(expect.objectContaining(expected));
     });
   });
