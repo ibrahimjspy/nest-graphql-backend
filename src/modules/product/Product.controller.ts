@@ -9,7 +9,7 @@ export class ProductController {
   findDefaultCards(): Promise<object> {
     return this.appService.getProducts();
   }
-  // Returns cards data relating to category <id>
+  // Returns cards data relating to category and collection by <id>
   @Get('/cardsByCollectionId/:id')
   findProductCardsByCollectionId(@Param() params): Promise<object> {
     return this.appService.getProductsByCollections(params.id);
