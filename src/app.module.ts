@@ -3,14 +3,14 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { ProductCardModule } from './modules/productCard/productCard.module';
-import { MenuCategoriesModule } from './modules/categories/Categories.module';
+import { ProductCardModule } from './modules/product/Product.module';
+import { CategoriesModule } from './modules/categories/Categories.module';
 
 @Module({
   // Importing service modules and integrating with app module
   imports: [
     ProductCardModule, //ProductCard
-    MenuCategoriesModule, //menuCategories
+    CategoriesModule, //menuCategories
     CacheModule.register(), //Caching support
     ConfigModule.forRoot(), //env config support
   ],
