@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { MenuCategoriesHandler } from '../../graphql/handlers/categories/menuCategories';
-import { productCardCollectionHandler } from '../../graphql/handlers/categories/productCollections';
+import { MenuCategoriesHandler } from '../../graphql/handlers/categorieshandlers/menuCategories';
+import { productCardCollectionHandler } from '../../graphql/handlers/categorieshandlers/productCollections';
 
 @Injectable()
 export class CategoriesService {
