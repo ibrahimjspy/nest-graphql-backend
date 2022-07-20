@@ -3,11 +3,10 @@ import { ConfigModule } from '@nestjs/config';
 import { ProductController } from './Product.controller';
 import { ProductService } from './Product.service';
 
-//  Product card unit tests using Jest
-//  WARN!! Replace env configs with test links before running command npm run test
+//  Product controller unit tests using Jest
 
 describe('ProductController', () => {
-  // appController mimics a test module application
+  // app mimics a test module application
   let appController: ProductController;
   const expected = { foo: 'bar' };
   beforeEach(async () => {

@@ -13,12 +13,12 @@ export const productCardHandler = async () => {
 };
 // right now we are using shuffle to mimic mock data according to collection id
 /* Randomize array in-place using shuffle algorithm */
-function shuffleArray(array) {
+const shuffleArray = (array) => {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
   }
   return array;
-}
-// for unit testing locally <JEST|ARTILLERY>
+};
+// Endpoint for unit testing locally <JEST|ARTILLERY>
 const TEST = 'http://localhost:4000/';

@@ -13,8 +13,8 @@ export class ProductService {
     console.log(id ? id : 'not found');
     return productCardHandler(); //graphQl promise handler
   }
-  // Single product by <slug> {Quick View , SingleProductDetailsPage}
-  public getProductById(slug: string): Promise<object> {
+  // Single product details by <slug> {Quick View , SingleProductDetailsPage}
+  public getProductDetailsBySlug(slug: string): Promise<object> {
     console.log(slug ? slug : 'not found');
     return singleProductDetailsHandler(); //graphQl promise handler
   }

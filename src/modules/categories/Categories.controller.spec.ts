@@ -6,7 +6,7 @@ import { CategoriesService } from './Categories.service';
 // Categories unit tests using Jest
 
 describe('Categories controller unit tests', () => {
-  // appController mimics a test module application
+  // app mimics a test module application
   let appController: CategoriesController;
   const expected = { foo: 'collection not found' };
   beforeEach(async () => {

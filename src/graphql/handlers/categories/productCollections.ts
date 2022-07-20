@@ -12,5 +12,5 @@ export const productCardCollectionHandler = async () => {
   });
   return CollectionsData;
 };
-// for unit testing locally <JEST|ARTILLERY>
+// Endpoint for unit testing locally <JEST|ARTILLERY>
 const TEST = 'http://localhost:4000/';

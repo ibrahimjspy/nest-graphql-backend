@@ -10,5 +10,5 @@ export const singleProductDetailsHandler = async () => {
   });
   return singleProductData;
 };
-// for unit testing locally <JEST|ARTILLERY>
+// Endpoint for unit testing locally <JEST|ARTILLERY>
 const TEST = 'http://localhost:4000/';

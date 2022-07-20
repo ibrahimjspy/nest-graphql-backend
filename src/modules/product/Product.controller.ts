@@ -17,6 +17,6 @@ export class ProductController {
   // Returns single product details by <slug>
   @Get('details/:slug')
   findProductDetailsBySlug(@Param() params): Promise<object> {
-    return this.appService.getProductById(params.slug);
+    return this.appService.getProductDetailsBySlug(params.slug);
   }
 }
