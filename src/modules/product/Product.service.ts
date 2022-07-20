@@ -18,9 +18,9 @@ export class ProductService {
     console.log(slug ? slug : 'not found');
     return singleProductDetailsHandler(); //graphQl promise handler
   }
-  // Product list page data relating to category <id>
-  public getProductListPageById(id: string): Promise<object> {
-    console.log(id ? id : 'not found');
+  // Product list page data relating to category <slug>
+  public getProductListPageBySlug(slug: string): Promise<object> {
+    console.log(slug ? slug : 'not found');
     return singleProductDetailsHandler(); //graphQl promise handler
   }
 }
