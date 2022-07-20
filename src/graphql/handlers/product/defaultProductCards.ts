@@ -2,13 +2,16 @@ import { request } from 'graphql-request';
 import { mockProductCard } from '../../queries/mock';
 
 // Product card GraphQL handlers
+
 export const productCardHandler = async () => {
   const GRAPHQL_ENDPOINT: string = process.env.MOCK_GRAPHQL_ENDPOINT || TEST;
   let productCardsData = {};
-  await request(GRAPHQL_ENDPOINT, mockProductCard()).then((data) => {
-    shuffleArray(data.products);
-    productCardsData = data;
-  });
+  await request(GRAPHQL_ENDPOINT, mockProductCard())
+    .then((data) => {
+      shuffleArray(data.products);
+      productCardsData = data;
+    })
+    .catch(() => console.log('graphql error'));
   return productCardsData;
 };
 // right now we are using shuffle to mimic mock data according to collection id

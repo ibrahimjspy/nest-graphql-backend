@@ -7,9 +7,11 @@ import { MockCardCollection } from '../../queries/mock';
 export const productCardCollectionHandler = async () => {
   const GRAPHQL_ENDPOINT: string = process.env.MOCK_GRAPHQL_ENDPOINT || TEST;
   let CollectionsData = {};
-  await request(GRAPHQL_ENDPOINT, MockCardCollection()).then((data) => {
-    CollectionsData = data;
-  });
+  await request(GRAPHQL_ENDPOINT, MockCardCollection())
+    .then((data) => {
+      CollectionsData = data;
+    })
+    .catch(() => console.log('graphql error'));
   return CollectionsData;
 };
 // Endpoint for unit testing locally <JEST|ARTILLERY>
