@@ -3,18 +3,24 @@ import { gql } from 'graphql-request';
 export const menuCategories = () => {
   return gql`
     query {
-      categories(first: 10) {
+      categories(first: 2) {
         edges {
           node {
             name
-            children(first: 10) {
+            id
+            slug
+            children(first: 2) {
               edges {
                 node {
                   name
-                  children(first: 10) {
+                  id
+                  slug
+                  children(first: 2) {
                     edges {
                       node {
                         name
+                        id
+                        slug
                       }
                     }
                   }
