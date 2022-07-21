@@ -5,12 +5,16 @@ import { AppService } from './app.service';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ProductModule } from './modules/product/Product.module';
 import { CategoriesModule } from './modules/categories/Categories.module';
+import { OrdersModule } from './modules/orders/Orders.module';
+import { ShopModule } from './modules/shop/Shop.module';
 
 @Module({
   // Importing service modules and integrating with app module
   imports: [
     ProductModule, //Products
     CategoriesModule, //Categories
+    OrdersModule, //Orders
+    ShopModule, //Shops
     CacheModule.register(), //Caching support
     ConfigModule.forRoot(), //env config support
   ],
