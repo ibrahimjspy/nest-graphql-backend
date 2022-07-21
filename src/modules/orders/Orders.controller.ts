@@ -6,7 +6,7 @@ export class OrdersController {
   constructor(private readonly appService: OrdersService) {}
   // Returns orders dashboard data for landing page
   @Get('/dashboardById/:id')
-  findDashboard(): string {
+  findDashboard(): Promise<object> {
     return this.appService.getDashboardData();
   }
 }

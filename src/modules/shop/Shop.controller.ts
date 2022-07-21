@@ -5,8 +5,8 @@ import { ShopService } from './Shop.service';
 export class ShopController {
   constructor(private readonly appService: ShopService) {}
   // Returns landing page banner data
-  @Get('/banner')
-  findBanner(): string {
-    return this.appService.getBannerData();
+  @Get('/carousel')
+  findBanner(): Promise<object> {
+    return this.appService.getCarouselData();
   }
 }
