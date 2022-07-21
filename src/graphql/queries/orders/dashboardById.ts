@@ -39,24 +39,12 @@ export const dashboardQuery = () => {
     // query linking with mock server
     return gql`
       query {
-        main_categories {
-          name
-          id
-          slug
-          images {
-            url
-            label
-          }
-          sub_categories {
-            id
-            name
-            slug
-            sub_sub_categories {
-              id
-              name
-              slug
-            }
-          }
+        user_dashboard {
+          unpaid_orders
+          orders_cancelled
+          orders_processing
+          orders_shipped
+          request_returns
         }
       }
     `;
