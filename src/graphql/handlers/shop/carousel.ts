@@ -1,17 +1,17 @@
 import { request } from 'graphql-request';
-import { mockMenuCategories } from '../../queries/mock';
+import { carouselQuery } from '../../queries/shop/carousel';
 
-// Menu categories graphql handlers <>
+// carousel graph ql handler
 
-export const MenuCategoriesHandler = async () => {
+export const carouselHandler = async () => {
   const GRAPHQL_ENDPOINT: string = process.env.MOCK_GRAPHQL_ENDPOINT || TEST;
-  let menuCategoriesData = {};
-  await request(GRAPHQL_ENDPOINT, mockMenuCategories())
+  let carouselData = {};
+  await request(GRAPHQL_ENDPOINT, carouselQuery())
     .then((data) => {
-      menuCategoriesData = data;
+      carouselData = data;
     })
     .catch(() => console.log('graphql error'));
-  return menuCategoriesData;
+  return carouselData;
 };
 // Endpoint for unit testing locally <JEST|ARTILLERY>
 const TEST = 'http://localhost:4000/';

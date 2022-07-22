@@ -3,45 +3,53 @@ import { gql } from 'graphql-request';
 export const productDetailsQuery = () => {
   return gql`
     query {
-      marketplaceShops {
-        edges {
-          node {
-            id
-            name
-            isActive
-            products {
-              id
-              slug
-              variants {
-                sku
+      product(slug: "apple-juice", channel: "default-channel") {
+        name
+        id
+        slug
+        media {
+          url
+        }
+        description
+        variants {
+          id
+          pricing {
+            price {
+              gross {
+                currency
+                amount
               }
-              thumbnail {
-                url
-              }
-              attributes {
-                attribute {
-                  name
-                }
-                values {
-                  name
-                }
-              }
+            }
+          }
+          attributes {
+            attribute {
               name
-              description
-              pricing {
-                priceRange {
-                  start {
-                    currency
-                    gross {
-                      amount
-                    }
-                  }
-                  stop {
-                    gross {
-                      amount
-                    }
-                  }
-                }
+            }
+            values {
+              name
+            }
+          }
+        }
+        attributes {
+          attribute {
+            name
+          }
+          values {
+            name
+          }
+        }
+        pricing {
+          priceRange {
+            start {
+              gross {
+                currency
+                amount
+              }
+            }
+            stop {
+              gross {
+                currency
+                amount
               }
             }
           }

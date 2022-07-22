@@ -1,17 +1,17 @@
 import { request } from 'graphql-request';
 import { MockSingleProduct } from '../../queries/mock';
 
-// Single product card details page ^^ QuickView graphql handler
+// Product list page handler
 
-export const singleProductDetailsHandler = async () => {
+export const productListPageHandler = async () => {
   const GRAPHQL_ENDPOINT: string = process.env.MOCK_GRAPHQL_ENDPOINT || TEST;
-  let singleProductData = {};
+  let productListPageData = {};
   await request(GRAPHQL_ENDPOINT, MockSingleProduct())
     .then((data) => {
-      singleProductData = data;
+      productListPageData = data;
     })
     .catch(() => console.log('graphql error'));
-  return singleProductData;
+  return productListPageData;
 };
 // Endpoint for unit testing locally <JEST|ARTILLERY>
 const TEST = 'http://localhost:4000/';

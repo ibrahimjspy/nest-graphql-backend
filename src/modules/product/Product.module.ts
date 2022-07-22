@@ -7,4 +7,4 @@ import { ProductService } from './Product.service';
   providers: [ProductService],
   exports: [ProductService],
 })
-export class ProductCardModule {}
+export class ProductModule {}
