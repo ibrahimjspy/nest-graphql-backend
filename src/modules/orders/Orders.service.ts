@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { dashboardByIdHandler } from '../../graphql/handlers/orders/dashboardByID';
+import { dashboardByIdHandler } from '../../graphql/handlers/orders/dashboardById';
 
 @Injectable()
 export class OrdersService {
