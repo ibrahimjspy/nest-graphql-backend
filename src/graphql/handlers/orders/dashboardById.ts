@@ -1,10 +1,10 @@
 import { request } from 'graphql-request';
+import { graphqlEndpoint } from '../../../public/graphqlEndpoint';
 import { dashboardQuery } from '../../queries/orders/dashboardById';
 
 export const dashboardByIdHandler = async () => {
-  const GRAPHQL_ENDPOINT: string = process.env.MOCK_GRAPHQL_ENDPOINT || TEST;
   let dashboardData = {};
-  await request(GRAPHQL_ENDPOINT, dashboardQuery())
+  await request(graphqlEndpoint(), dashboardQuery(3, 'false'))
     .then((data) => {
       dashboardData = data;
     })
@@ -12,4 +12,3 @@ export const dashboardByIdHandler = async () => {
   return dashboardData;
 };
 // Endpoint for unit testing locally <JEST|ARTILLERY>
-const TEST = 'http://localhost:4000/';
