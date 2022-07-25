@@ -1,5 +1,5 @@
 import { request } from 'graphql-request';
-import { graphqlEndpoint } from 'src/public/graphqlEndpointToggle';
+import { graphqlEndpoint } from '../../../public/graphqlEndpointToggle';
 import { MockCardCollection } from '../../queries/mock';
 
 export const productCardCollectionHandler = async () => {

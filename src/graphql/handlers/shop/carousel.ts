@@ -1,5 +1,5 @@
 import { request } from 'graphql-request';
-import { carouselQuery } from 'src/graphql/queries/shop/carousel';
+import { carouselQuery } from '../../queries/shop/carousel';
 import { graphqlEndpoint } from '../../../public/graphqlEndpointToggle';
 
 export const carouselHandler = async () => {

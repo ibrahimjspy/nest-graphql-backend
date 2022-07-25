@@ -1,5 +1,5 @@
 import { request } from 'graphql-request';
-import { productDetailsQuery } from 'src/graphql/queries/product/productDetails';
+import { productDetailsQuery } from '../../queries/product/productDetails';
 import { graphqlEndpoint } from '../../../public/graphqlEndpointToggle';
 
 export const singleProductDetailsHandler = async () => {

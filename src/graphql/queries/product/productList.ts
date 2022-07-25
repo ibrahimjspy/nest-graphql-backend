@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
+import { graphqlQueryCheck } from '../../../public/graphqlQueryToggle';
 
 const federationQuery = () => {
   return gql`
