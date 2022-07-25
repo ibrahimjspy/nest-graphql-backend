@@ -1,10 +1,10 @@
 import { request } from 'graphql-request';
-import { productCardsByCategoryId } from 'src/graphql/queries/product/productCardsByCategoryId';
+import { productCardsDefaultQuery } from 'src/graphql/queries/product/defaultProductCards';
 import { graphqlEndpoint } from 'src/public/graphqlEndpointToggle';
 
 export const productCardHandler = async () => {
   let productCardsData = {};
-  await request(graphqlEndpoint(), productCardsByCategoryId())
+  await request(graphqlEndpoint(), productCardsDefaultQuery())
     .then((data) => {
       process.env.MOCK == 'true' ? shuffleArray(data.products) : '';
       productCardsData = data;

@@ -7,21 +7,21 @@ import { productListPageHandler } from '../../graphql/handlers/product/productLi
 export class ProductService {
   // default product cards service
   public getProducts(): Promise<object> {
-    return productCardHandler(); //graphQl promise handlernpm r
+    return productCardHandler();
   }
   //Product cards by collection ~ category <id>
   public getProductsByCollections(id: string): Promise<object> {
     console.log(id ? id : 'not found');
-    return productCardHandler(); //graphQl promise handler
+    return productCardHandler();
   }
   // Single product details by <slug> {Quick View , SingleProductDetailsPage}
   public getProductDetailsBySlug(slug: string): Promise<object> {
     console.log(slug ? slug : 'not found');
-    return singleProductDetailsHandler(); //graphQl promise handler
+    return singleProductDetailsHandler();
   }
   // Product list page data relating to category <slug>
   public getProductListPageBySlug(slug: string): Promise<object> {
     console.log(slug ? slug : 'not found');
-    return productListPageHandler(); //graphQl promise handler
+    return productListPageHandler();
   }
 }

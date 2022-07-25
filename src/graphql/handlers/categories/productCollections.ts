@@ -1,7 +1,6 @@
 import { request } from 'graphql-request';
 import { graphqlEndpoint } from 'src/public/graphqlEndpointToggle';
 import { MockCardCollection } from '../../queries/mock';
-// import { productCardQuery } from '../queries/productCard';
 
 export const productCardCollectionHandler = async () => {
   let CollectionsData = {};
