@@ -1,5 +1,5 @@
 import { request } from 'graphql-request';
-import { graphqlEndpoint } from 'src/public/graphqlEndpoint';
+import { graphqlEndpoint } from 'src/public/graphqlEndpointToggle';
 import { mockMenuCategories } from '../../queries/mock';
 
 export const MenuCategoriesHandler = async () => {

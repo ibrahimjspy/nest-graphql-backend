@@ -1,5 +1,5 @@
 import { request } from 'graphql-request';
-import { graphqlEndpoint } from 'src/public/graphqlEndpoint';
+import { graphqlEndpoint } from 'src/public/graphqlEndpointToggle';
 import { mockProductCard } from '../../queries/mock';
 
 export const productCardHandler = async () => {
@@ -21,5 +21,3 @@ const shuffleArray = (array) => {
   }
   return array;
 };
-// Endpoint for unit testing locally <JEST|ARTILLERY>
-const TEST = 'http://localhost:4000/';

@@ -1,10 +1,10 @@
 import { request } from 'graphql-request';
-import { graphqlEndpoint } from '../../../public/graphqlEndpoint';
+import { graphqlEndpoint } from '../../../public/graphqlEndpointToggle';
 import { dashboardQuery } from '../../queries/orders/dashboardById';
 
 export const dashboardByIdHandler = async () => {
   let dashboardData = {};
-  await request(graphqlEndpoint(), dashboardQuery(3, 'false'))
+  await request(graphqlEndpoint(), dashboardQuery())
     .then((data) => {
       dashboardData = data;
     })

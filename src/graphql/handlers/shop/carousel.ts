@@ -1,6 +1,6 @@
 import { request } from 'graphql-request';
 import { carouselQuery } from 'src/graphql/queries/shop/carousel';
-import { graphqlEndpoint } from '../../../public/graphqlEndpoint';
+import { graphqlEndpoint } from '../../../public/graphqlEndpointToggle';
 
 export const carouselHandler = async () => {
   let carouselData = {};

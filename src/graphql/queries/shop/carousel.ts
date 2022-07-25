@@ -1,12 +1,11 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/public/graphqlQuery';
+import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 
-const federationQuery = () => {
-  console.log('federation called');
+const federationQuery = (number: number) => {
   // query linking with backend
   return gql`
     query {
-      categories(first: 2) {
+      categories(first: ${number}) {
         edges {
           node {
             name
@@ -38,7 +37,6 @@ const federationQuery = () => {
 };
 
 const mockQuery = () => {
-  console.log('mock called');
   // query linking with mock server
   return gql`
     query {
@@ -56,4 +54,7 @@ const mockQuery = () => {
     }
   `;
 };
-export const carouselQuery = graphqlQueryCheck(federationQuery(), mockQuery());
+// returns carousel query based on federation and mock check
+export const carouselQuery = () => {
+  return graphqlQueryCheck(federationQuery(2), mockQuery());
+};
