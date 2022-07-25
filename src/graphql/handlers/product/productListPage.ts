@@ -1,17 +1,13 @@
 import { request } from 'graphql-request';
+import { graphqlEndpoint } from '../../../public/graphqlEndpoint';
 import { MockSingleProduct } from '../../queries/mock';
 
-// Product list page handler
-
 export const productListPageHandler = async () => {
-  const GRAPHQL_ENDPOINT: string = process.env.MOCK_GRAPHQL_ENDPOINT || TEST;
   let productListPageData = {};
-  await request(GRAPHQL_ENDPOINT, MockSingleProduct())
+  await request(graphqlEndpoint(), MockSingleProduct())
     .then((data) => {
       productListPageData = data;
     })
     .catch(() => console.log('graphql error'));
   return productListPageData;
 };
-// Endpoint for unit testing locally <JEST|ARTILLERY>
-const TEST = 'http://localhost:4000/';

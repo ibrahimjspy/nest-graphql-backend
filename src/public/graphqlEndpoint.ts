@@ -1,5 +1,5 @@
-export const graphqlEndpoint = (specificMock?: string) => {
-  if (process.env.MOCK == 'true' || specificMock == 'true') {
+export const graphqlEndpoint = () => {
+  if (process.env.MOCK == 'true') {
     return process.env.MOCK_GRAPHQL_ENDPOINT || TEST;
   }
   if (process.env.MOCK == 'false') {

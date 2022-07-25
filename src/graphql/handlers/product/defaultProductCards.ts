@@ -1,12 +1,10 @@
 import { request } from 'graphql-request';
+import { graphqlEndpoint } from 'src/public/graphqlEndpoint';
 import { mockProductCard } from '../../queries/mock';
 
-// Product card GraphQL handlers
-
 export const productCardHandler = async () => {
-  const GRAPHQL_ENDPOINT: string = process.env.MOCK_GRAPHQL_ENDPOINT || TEST;
   let productCardsData = {};
-  await request(GRAPHQL_ENDPOINT, mockProductCard())
+  await request(graphqlEndpoint(), mockProductCard())
     .then((data) => {
       shuffleArray(data.products);
       productCardsData = data;

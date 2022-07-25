@@ -1,17 +1,13 @@
 import { request } from 'graphql-request';
-import { carouselQuery } from '../../queries/shop/carousel';
-
-// carousel graph ql handler
+import { carouselQuery } from 'src/graphql/queries/shop/carousel';
+import { graphqlEndpoint } from '../../../public/graphqlEndpoint';
 
 export const carouselHandler = async () => {
-  const GRAPHQL_ENDPOINT: string = process.env.MOCK_GRAPHQL_ENDPOINT || TEST;
   let carouselData = {};
-  await request(GRAPHQL_ENDPOINT, carouselQuery())
+  await request(graphqlEndpoint(), carouselQuery())
     .then((data) => {
       carouselData = data;
     })
     .catch(() => console.log('graphql error'));
   return carouselData;
 };
-// Endpoint for unit testing locally <JEST|ARTILLERY>
-const TEST = 'http://localhost:4000/';

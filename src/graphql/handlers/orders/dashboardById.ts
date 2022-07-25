@@ -11,4 +11,3 @@ export const dashboardByIdHandler = async () => {
     .catch(() => console.log('graphql error'));
   return dashboardData;
 };
-// Endpoint for unit testing locally <JEST|ARTILLERY>

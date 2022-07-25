@@ -7,7 +7,7 @@ import { productListPageHandler } from '../../graphql/handlers/product/productLi
 export class ProductService {
   // default product cards service
   public getProducts(): Promise<object> {
-    return productCardHandler(); //graphQl promise handler
+    return productCardHandler(); //graphQl promise handlernpm r
   }
   //Product cards by collection ~ category <id>
   public getProductsByCollections(id: string): Promise<object> {
