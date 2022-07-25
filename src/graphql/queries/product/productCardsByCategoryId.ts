@@ -1,6 +1,7 @@
 import { gql } from 'graphql-request';
+import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 
-export const productCardByCategoryIdQuery = () => {
+const federationQuery = () => {
   return gql`
     query {
       collection(id: "Q29sbGVjdGlvbjo0", channel: "default-channel") {
@@ -14,4 +15,25 @@ export const productCardByCategoryIdQuery = () => {
       }
     }
   `;
+};
+const mockQuery = () => {
+  return gql`
+    query {
+      products {
+        image
+        title
+        description
+        id
+        slug
+        color_variant
+        sku
+        resale_price
+        product_cost
+      }
+    }
+  `;
+};
+
+export const productCardsByCategoryId = () => {
+  return graphqlQueryCheck(federationQuery(), mockQuery());
 };

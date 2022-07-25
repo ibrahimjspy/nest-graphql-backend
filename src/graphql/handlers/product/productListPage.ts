@@ -1,10 +1,10 @@
 import { request } from 'graphql-request';
-import { graphqlEndpoint } from '../../../public/graphqlEndpointToggle';
-import { MockSingleProduct } from '../../queries/mock';
+import { productListPageQuery } from 'src/graphql/queries/product/productList';
+import { graphqlEndpoint } from 'src/public/graphqlEndpointToggle';
 
 export const productListPageHandler = async () => {
   let productListPageData = {};
-  await request(graphqlEndpoint(), MockSingleProduct())
+  await request(graphqlEndpoint(), productListPageQuery())
     .then((data) => {
       productListPageData = data;
     })

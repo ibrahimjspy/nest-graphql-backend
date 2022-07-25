@@ -1,12 +1,12 @@
 import { request } from 'graphql-request';
+import { productCardsByCategoryId } from 'src/graphql/queries/product/productCardsByCategoryId';
 import { graphqlEndpoint } from 'src/public/graphqlEndpointToggle';
-import { mockProductCard } from '../../queries/mock';
 
 export const productCardHandler = async () => {
   let productCardsData = {};
-  await request(graphqlEndpoint(), mockProductCard())
+  await request(graphqlEndpoint(), productCardsByCategoryId())
     .then((data) => {
-      shuffleArray(data.products);
+      process.env.MOCK == 'true' ? shuffleArray(data.products) : '';
       productCardsData = data;
     })
     .catch(() => console.log('graphql error'));

@@ -1,6 +1,7 @@
 import { gql } from 'graphql-request';
-//WARN currently no use of this query in any ql resolvers !!
-export const productDetailsQuery = () => {
+import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
+
+const federationQuery = () => {
   return gql`
     query {
       product(slug: "apple-juice", channel: "default-channel") {
@@ -57,4 +58,66 @@ export const productDetailsQuery = () => {
       }
     }
   `;
+};
+
+const mockQuery = () => {
+  return gql`
+    query {
+      productBySlug {
+        main_image
+        images
+        description
+        product_name
+        id
+        slug
+        style_no
+        vendor_info {
+          name
+          id
+          shipping_city
+          shipping_state
+          min_order
+          vendor_products {
+            image
+            title
+            description
+            id
+            slug
+            color_variant
+            sku
+            resale_price
+            product_cost
+          }
+        }
+        available_sizes {
+          name
+          symbol
+          id
+          unit_price
+        }
+        resale_price
+        product_cost
+        commission
+        selling_price
+        is_added_to_store
+        is_favorite
+        is_favorite
+        is_cart
+        shipping_policy {
+          min_days
+          max_days
+          flat_rate
+          threshold
+        }
+        color_variant
+        return_policy {
+          returning_days
+        }
+      }
+    }
+  `;
+};
+
+export const productDetailsQuery = () => {
+  return graphqlQueryCheck(federationQuery(), mockQuery());
 };
