@@ -1,7 +1,7 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 
-export const federationQuery = () => {
+export const federationQuery = (): string => {
   return gql`
     query {
       marketplaceShops {

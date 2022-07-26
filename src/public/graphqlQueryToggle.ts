@@ -1,5 +1,5 @@
-export const graphqlQueryCheck = (federation, mock) => {
-  const run_mock_query = process.env.MOCK;
+export const graphqlQueryCheck = (federation, mock): string => {
+  const run_mock_query: string = process.env.MOCK;
   if (run_mock_query == 'false') {
     return federation;
   } else {

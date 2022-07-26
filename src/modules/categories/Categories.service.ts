@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { menuCategoriesHandler } from 'src/graphql/handlers/categories/menuCategories';
+import { menuCategoriesHandler } from 'src/graphql/handlers/categories/menu';
 import { productCardCollectionHandler } from 'src/graphql/handlers/categories/productCollections';
 
 @Injectable()

@@ -1,8 +1,8 @@
 import { request } from 'graphql-request';
-import { productCardsDefaultQuery } from 'src/graphql/queries/product/defaultProductCards';
+import { productCardsDefaultQuery } from 'src/graphql/queries/product/cards';
 import { graphqlEndpoint } from 'src/public/graphqlEndpointToggle';
 
-export const productCardHandler = async () => {
+export const productCardHandler = async (): Promise<object> => {
   let productCardsData = {};
   await request(graphqlEndpoint(), productCardsDefaultQuery())
     .then((data) => {

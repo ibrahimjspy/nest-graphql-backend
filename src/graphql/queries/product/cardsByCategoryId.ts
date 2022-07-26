@@ -1,7 +1,7 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 
-const federationQuery = () => {
+const federationQuery = (): string => {
   return gql`
     query {
       collection(id: "Q29sbGVjdGlvbjo0", channel: "default-channel") {

@@ -1,7 +1,7 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 
-const federationQuery = () => {
+const federationQuery = (): string => {
   return gql`
     query {
       product(slug: "apple-juice", channel: "default-channel") {

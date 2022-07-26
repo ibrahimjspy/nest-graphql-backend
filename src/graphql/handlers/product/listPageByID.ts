@@ -1,8 +1,8 @@
 import { request } from 'graphql-request';
-import { productListPageQuery } from 'src/graphql/queries/product/productList';
+import { productListPageQuery } from 'src/graphql/queries/product/listById';
 import { graphqlEndpoint } from 'src/public/graphqlEndpointToggle';
 
-export const productListPageHandler = async () => {
+export const productListPageHandler = async (): Promise<object> => {
   let productListPageData = {};
   await request(graphqlEndpoint(), productListPageQuery())
     .then((data) => {

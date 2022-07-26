@@ -1,7 +1,7 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 
-const federationQuery = (number: number) => {
+const federationQuery = (number: number): string => {
   // query linking with backend
   return gql`
     query {

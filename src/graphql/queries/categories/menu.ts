@@ -1,7 +1,7 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 
-const federationQuery = () => {
+const federationQuery = (): string => {
   return gql`
     query {
       categories(first: 2) {
@@ -35,7 +35,7 @@ const federationQuery = () => {
   `;
 };
 
-const mockQuery = () => {
+const mockQuery = (): string => {
   return gql`
     query {
       main_categories {
