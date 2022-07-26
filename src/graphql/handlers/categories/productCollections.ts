@@ -1,10 +1,10 @@
 import { request } from 'graphql-request';
+import { menuCategoriesQuery } from 'src/graphql/queries/categories/menu';
 import { graphqlEndpoint } from '../../../public/graphqlEndpointToggle';
-import { MockCardCollection } from '../../queries/mock';
 
 export const productCardCollectionHandler = async () => {
   let CollectionsData = {};
-  await request(graphqlEndpoint(), MockCardCollection())
+  await request(graphqlEndpoint(), menuCategoriesQuery())
     .then((data) => {
       CollectionsData = data;
     })
