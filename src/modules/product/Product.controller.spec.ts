@@ -6,7 +6,7 @@ import { ProductService } from './Product.service';
 //  Product controller unit tests using Jest
 
 describe('ProductController', () => {
-  // app mimics a test module application
+  // Testing configurations
   let appController: ProductController;
   const expected = {};
   beforeEach(async () => {
@@ -15,34 +15,37 @@ describe('ProductController', () => {
       controllers: [ProductController],
       providers: [ProductService],
     }).compile();
-
     appController = app.get<ProductController>(ProductController);
   });
 
-  // checking for values that are falsy and undefined --->>
-
   describe('root', () => {
-    it('should not be falsy default cards', () => {
+    // checking whether calls are valid and don't fail on middleware side--->>
+
+    it('default productCards validation test', () => {
       expect(appController.findDefaultCards()).toBeTruthy();
     });
-    it('should not be falsy single product details by slug ', () => {
+
+    it('productDetails validation test', () => {
       expect(appController.findProductDetailsBySlug('slug')).toBeTruthy();
     });
-    it('should not be falsy product cards by CollectionsId ', () => {
+
+    it('productCards by collections validation test', () => {
       expect(appController.findProductCardsByCollectionId('Id')).toBeTruthy();
     });
+
     // async test checking response JSON from graphql call
-    // default product cards async test
-    it('the data is an object of default productCards returned from graphQL', async () => {
+
+    it('default productCards async test', async () => {
       const data = await appController.findDefaultCards();
       expect(data).not.toEqual(expected);
     });
-    it('the data is an object of productCards by collections returned from graphQL ', async () => {
+
+    it('productCards by collections async test', async () => {
       const data = await appController.findProductCardsByCollectionId('testId');
       expect(data).not.toEqual(expected);
     });
-    // single product details test
-    it('the data is an object of productDetails returned from graphQL', async () => {
+
+    it('product details async test', async () => {
       const data = await appController.findProductDetailsBySlug('test');
       expect(data).not.toEqual(expected);
     });

@@ -6,7 +6,7 @@ import { CategoriesService } from './Categories.service';
 // Categories unit tests using Jest
 
 describe('Categories controller unit tests', () => {
-  // app mimics a test module application
+  // Testing configurations
   let appController: CategoriesController;
   const expected = {};
   beforeEach(async () => {
@@ -19,31 +19,27 @@ describe('Categories controller unit tests', () => {
     appController = app.get<CategoriesController>(CategoriesController);
   });
 
-  // checking for values that are falsy and undefined --->>
-
   describe('root', () => {
-    // Basic validation tests for categories controller
-    it('should return "JSON', () => {
+    // checking whether calls are valid and don't fail on middleware side--->>
+
+    it('menuCategories validation test', () => {
       expect(appController.findMenuCategories()).toBeDefined();
     });
-    it('should return "JSON collections ', () => {
+
+    it('productCollections validation test', () => {
       expect(appController.findProductCollections()).toBeDefined();
     });
-    it('should not be falsy', () => {
-      expect(appController.findMenuCategories()).toBeTruthy();
-    });
+
     // async tests for JSON data from either Mock service or backend services
-    // async tests for menu categories
-    it('the data is an object of menu categories returned from graphQL', async () => {
+
+    it('menuCategories async test', async () => {
       const data = await appController.findMenuCategories();
-      // console.log(data, 'menu categories data');
       expect(data).not.toEqual(expected);
     });
-    // async tests for product collections and categories
-    it('the data is an object of product collections returned from graphQL testttt', async () => {
+
+    it('productCollections async test', async () => {
       const data = await appController.findProductCollections();
       expect(data).not.toEqual(expected);
     });
-    // to be equal test;
   });
 });

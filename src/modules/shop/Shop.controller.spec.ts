@@ -6,7 +6,7 @@ import { ShopService } from './Shop.service';
 // Shop unit tests using Jest
 
 describe('Shop controller unit tests', () => {
-  // app mimics a test module application
+  // Testing configurations
   let appController: ShopController;
   const expected = {};
   beforeEach(async () => {
@@ -19,15 +19,16 @@ describe('Shop controller unit tests', () => {
     appController = app.get<ShopController>(ShopController);
   });
 
-  // checking for values that are falsy and undefined --->>
-
   describe('root', () => {
-    // Basic validation tests for categories controller
-    it('should return "JSON', () => {
+    // checking whether calls are valid and don't fail on middleware side--->>
+
+    it('banner validation test', () => {
       expect(appController.findBanner()).toBeDefined();
     });
+
     // async tests for JSON data from either Mock service or backend services
-    it('the data is an object of banner details returned from graphQL', async () => {
+
+    it('banner async test', async () => {
       const data = await appController.findBanner();
       expect(data).not.toEqual(expected);
     });

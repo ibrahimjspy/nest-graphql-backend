@@ -6,7 +6,7 @@ import { OrdersService } from './Orders.service';
 // Orders unit tests using Jest
 
 describe('Orders controller unit tests', () => {
-  // app mimics a test module application
+  // Testing configurations
   let appController: OrdersController;
   const expected = {};
   beforeEach(async () => {
@@ -23,12 +23,13 @@ describe('Orders controller unit tests', () => {
 
   describe('root', () => {
     // Basic validation tests for categories controller
-    it('should return "JSON', () => {
+    it('orders dashboard validation test', () => {
       expect(appController.findDashboard()).toBeDefined();
     });
+
     // async tests for JSON data from either Mock service or backend services
-    // async test for user dashboard located at landing page
-    it('the data is an object of userDashboard returned from graphQL', async () => {
+
+    it('Orders dashboard async test', async () => {
       const data = await appController.findDashboard();
       expect(data).not.toEqual(expected);
     });
