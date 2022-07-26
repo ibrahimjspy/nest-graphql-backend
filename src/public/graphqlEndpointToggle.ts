@@ -5,7 +5,4 @@ export const graphqlEndpoint = () => {
   if (process.env.MOCK == 'false') {
     return process.env.GRAPHQL_ENDPOINT;
   }
-  return TEST;
 };
-// Endpoint for local unit testing using JEST
-const TEST = 'http://localhost:4000/';

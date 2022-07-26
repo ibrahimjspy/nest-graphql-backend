@@ -36,7 +36,7 @@ describe('Categories controller unit tests', () => {
     // async tests for menu categories
     it('the data is an object of menu categories returned from graphQL', async () => {
       const data = await appController.findMenuCategories();
-      console.log(data, 'menu categories data');
+      // console.log(data, 'menu categories data');
       expect(data).not.toEqual(expected);
     });
     // async tests for product collections and categories
