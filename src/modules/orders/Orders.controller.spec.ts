@@ -8,7 +8,7 @@ import { OrdersService } from './Orders.service';
 describe('Orders controller unit tests', () => {
   // app mimics a test module application
   let appController: OrdersController;
-  const expected = { foo: 'collection not found' };
+  const expected = {};
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
@@ -30,7 +30,7 @@ describe('Orders controller unit tests', () => {
     // async test for user dashboard located at landing page
     it('the data is an object of userDashboard returned from graphQL', async () => {
       const data = await appController.findDashboard();
-      expect(data).toEqual(expect.not.objectContaining(expected));
+      expect(data).not.toEqual(expected);
     });
   });
 });

@@ -8,7 +8,7 @@ import { ProductService } from './Product.service';
 describe('ProductController', () => {
   // app mimics a test module application
   let appController: ProductController;
-  const expected = { foo: 'bar' };
+  const expected = {};
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
@@ -35,16 +35,16 @@ describe('ProductController', () => {
     // default product cards async test
     it('the data is an object of default productCards returned from graphQL', async () => {
       const data = await appController.findDefaultCards();
-      expect(data).toEqual(expect.not.objectContaining(expected));
+      expect(data).not.toEqual(expected);
     });
     it('the data is an object of productCards by collections returned from graphQL ', async () => {
       const data = await appController.findProductCardsByCollectionId('testId');
-      expect(data).toEqual(expect.not.objectContaining(expected));
+      expect(data).not.toEqual(expected);
     });
     // single product details test
     it('the data is an object of productDetails returned from graphQL', async () => {
       const data = await appController.findProductDetailsBySlug('test');
-      expect(data).toEqual(expect.not.objectContaining(expected));
+      expect(data).not.toEqual(expected);
     });
   });
 });

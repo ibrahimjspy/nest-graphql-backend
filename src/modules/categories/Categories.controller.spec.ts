@@ -8,7 +8,7 @@ import { CategoriesService } from './Categories.service';
 describe('Categories controller unit tests', () => {
   // app mimics a test module application
   let appController: CategoriesController;
-  const expected = { foo: 'collection not found' };
+  const expected = {};
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
@@ -36,12 +36,14 @@ describe('Categories controller unit tests', () => {
     // async tests for menu categories
     it('the data is an object of menu categories returned from graphQL', async () => {
       const data = await appController.findMenuCategories();
-      expect(data).toEqual(expect.not.objectContaining(expected));
+      console.log(data, 'menu categories data');
+      expect(data).not.toEqual(expected);
     });
     // async tests for product collections and categories
-    it('the data is an object of product collections returned from graphQL', async () => {
+    it('the data is an object of product collections returned from graphQL testttt', async () => {
       const data = await appController.findProductCollections();
-      expect(data).not.toEqual(expect.objectContaining(expected));
+      expect(data).not.toEqual(expected);
     });
+    // to be equal test;
   });
 });

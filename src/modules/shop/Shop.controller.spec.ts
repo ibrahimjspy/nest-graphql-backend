@@ -8,7 +8,7 @@ import { ShopService } from './Shop.service';
 describe('Shop controller unit tests', () => {
   // app mimics a test module application
   let appController: ShopController;
-  //   const expected = { foo: 'collection not found' };
+  const expected = {};
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
@@ -27,5 +27,9 @@ describe('Shop controller unit tests', () => {
       expect(appController.findBanner()).toBeDefined();
     });
     // async tests for JSON data from either Mock service or backend services
+    it('the data is an object of banner details returned from graphQL', async () => {
+      const data = await appController.findBanner();
+      expect(data).not.toEqual(expected);
+    });
   });
 });
