@@ -1,6 +1,6 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from '../../../public/graphqlQueryToggle';
-//WARN currently no use of this query in any ql resolvers !!
+import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
+
 export const federationQuery = () => {
   return gql`
     query {

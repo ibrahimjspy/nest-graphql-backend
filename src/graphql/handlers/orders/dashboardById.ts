@@ -1,6 +1,6 @@
 import { request } from 'graphql-request';
-import { graphqlEndpoint } from '../../../public/graphqlEndpointToggle';
-import { dashboardQuery } from '../../queries/orders/dashboardById';
+import { dashboardQuery } from 'src/graphql/queries/orders/dashboardById';
+import { graphqlEndpoint } from 'src/public/graphqlEndpointToggle';
 
 export const dashboardByIdHandler = async () => {
   let dashboardData = {};

@@ -1,6 +1,6 @@
 import { request } from 'graphql-request';
-import { productListPageQuery } from '../../queries/product/productList';
-import { graphqlEndpoint } from '../../../public/graphqlEndpointToggle';
+import { productListPageQuery } from 'src/graphql/queries/product/productList';
+import { graphqlEndpoint } from 'src/public/graphqlEndpointToggle';
 
 export const productListPageHandler = async () => {
   let productListPageData = {};

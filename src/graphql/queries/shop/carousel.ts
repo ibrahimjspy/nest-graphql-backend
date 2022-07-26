@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from '../../../public/graphqlQueryToggle';
+import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 
 const federationQuery = (number: number) => {
   // query linking with backend

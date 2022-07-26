@@ -1,6 +1,6 @@
 import { request } from 'graphql-request';
 import { menuCategoriesQuery } from 'src/graphql/queries/categories/menu';
-import { graphqlEndpoint } from '../../../public/graphqlEndpointToggle';
+import { graphqlEndpoint } from 'src/public/graphqlEndpointToggle';
 
 export const productCardCollectionHandler = async () => {
   let CollectionsData = {};

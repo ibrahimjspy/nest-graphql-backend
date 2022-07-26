@@ -1,6 +1,6 @@
 import { request } from 'graphql-request';
-import { productCardsDefaultQuery } from '../../queries/product/defaultProductCards';
-import { graphqlEndpoint } from '../../../public/graphqlEndpointToggle';
+import { productCardsDefaultQuery } from 'src/graphql/queries/product/defaultProductCards';
+import { graphqlEndpoint } from 'src/public/graphqlEndpointToggle';
 
 export const productCardHandler = async () => {
   let productCardsData = {};
