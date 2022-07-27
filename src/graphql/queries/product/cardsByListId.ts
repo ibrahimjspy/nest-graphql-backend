@@ -70,6 +70,6 @@ const mockQuery = () => {
   `;
 };
 
-export const productCardsByCategoryIdQuery = (id) => {
+export const productCardsByListIdQuery = (id) => {
   return graphqlQueryCheck(federationQuery(id), mockQuery());
 };

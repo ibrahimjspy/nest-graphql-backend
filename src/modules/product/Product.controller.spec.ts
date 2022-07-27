@@ -30,7 +30,7 @@ describe('ProductController', () => {
     });
 
     it('productCards by collections validation test', () => {
-      expect(appController.findProductCardsByCollectionId('Id')).toBeTruthy();
+      expect(appController.findProductCardsByListId('Id')).toBeTruthy();
     });
 
     // async test checking response JSON from graphql call
@@ -41,7 +41,8 @@ describe('ProductController', () => {
     });
 
     it('productCards by collections async test', async () => {
-      const data = await appController.findProductCardsByCollectionId('testId');
+      const testId = { id: 'UHJvZHVjdFR5cGU6Mw==' };
+      const data = await appController.findProductCardsByListId(testId);
       expect(data).not.toEqual(expected);
     });
 
