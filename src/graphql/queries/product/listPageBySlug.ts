@@ -8,9 +8,39 @@ const federationQuery = (slug): string => {
         products(first: 20, channel: "default-channel") {
           edges {
             node {
-              name
               id
               slug
+              variants {
+                sku
+              }
+              thumbnail {
+                url
+              }
+              attributes {
+                attribute {
+                  name
+                }
+                values {
+                  name
+                }
+              }
+              name
+              description
+              pricing {
+                priceRange {
+                  start {
+                    currency
+                    gross {
+                      amount
+                    }
+                  }
+                  stop {
+                    gross {
+                      amount
+                    }
+                  }
+                }
+              }
             }
           }
         }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { productCardHandler } from 'src/graphql/handlers/product/cards';
-import { productListPageHandler } from 'src/graphql/handlers/product/listPageByID';
+import { productListPageHandler } from 'src/graphql/handlers/product/listPageBySlug';
 import { singleProductDetailsHandler } from 'src/graphql/handlers/product/detailsBySlug';
 
 @Injectable()
