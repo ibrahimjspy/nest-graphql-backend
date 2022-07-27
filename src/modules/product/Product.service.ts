@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { productCardHandler } from 'src/graphql/handlers/product/cards';
 import { productListPageHandler } from 'src/graphql/handlers/product/listPageBySlug';
 import { singleProductDetailsHandler } from 'src/graphql/handlers/product/detailsBySlug';
+import { productCardsByCategoriesHandler } from 'src/graphql/handlers/product/cardsByCategoryId';
 
 @Injectable()
 export class ProductService {
@@ -12,7 +13,7 @@ export class ProductService {
   //Product cards by collection ~ category <id>
   public getProductsByCollections(id: string): Promise<object> {
     console.log(id ? id : 'not found');
-    return productCardHandler();
+    return productCardsByCategoriesHandler(id);
   }
   // Single product details by <slug> {Quick View , SingleProductDetailsPage}
   public getProductDetailsBySlug(slug: string): Promise<object> {

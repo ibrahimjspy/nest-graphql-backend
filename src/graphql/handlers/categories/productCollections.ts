@@ -4,7 +4,7 @@ import { graphqlEndpoint } from 'src/public/graphqlEndpointToggle';
 
 export const productCardCollectionHandler = async (): Promise<object> => {
   let CollectionsData = {};
-  await request(graphqlEndpoint('true'), productCollectionsQuery())
+  await request(graphqlEndpoint(), productCollectionsQuery())
     .then((data) => {
       CollectionsData = data;
     })
