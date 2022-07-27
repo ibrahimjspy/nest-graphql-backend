@@ -1,4 +1,4 @@
-export const graphqlEndpoint = (partialMock?): string => {
+export const graphqlEndpoint = (partialMock?: string): string => {
   if (process.env.MOCK == 'true' || partialMock == 'true') {
     return process.env.MOCK_GRAPHQL_ENDPOINT;
   }

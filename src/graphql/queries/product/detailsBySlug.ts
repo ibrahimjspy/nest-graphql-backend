@@ -4,7 +4,7 @@ import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 const federationQuery = (): string => {
   return gql`
     query {
-      product(slug: "apple-juice", channel: "default-channel") {
+      product(slug: "distressed-ankle-zip-jeans", channel: "default-channel") {
         name
         id
         slug

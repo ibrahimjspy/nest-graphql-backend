@@ -1,4 +1,5 @@
-export const graphqlQueryCheck = (federation, mock, partialMock?): string => {
+// eslint-disable-next-line prettier/prettier
+export const graphqlQueryCheck = (federation, mock, partialMock?: string): string => {
   if (process.env.MOCK == 'true' || partialMock == 'true') {
     return mock;
   }
