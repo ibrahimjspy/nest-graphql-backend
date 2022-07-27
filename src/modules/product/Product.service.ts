@@ -17,11 +17,11 @@ export class ProductService {
   // Single product details by <slug> {Quick View , SingleProductDetailsPage}
   public getProductDetailsBySlug(slug: string): Promise<object> {
     console.log(slug ? slug : 'not found');
-    return singleProductDetailsHandler();
+    return singleProductDetailsHandler(slug);
   }
   // Product list page data relating to category <slug>
   public getProductListPageBySlug(slug: string): Promise<object> {
     console.log(slug ? slug : 'not found');
-    return productListPageHandler();
+    return productListPageHandler(slug);
   }
 }

@@ -25,13 +25,13 @@ describe('Orders controller unit tests', () => {
     // Basic validation tests for categories controller
 
     it('orders dashboard validation test', () => {
-      expect(appController.findDashboard()).toBeDefined();
+      expect(appController.findDashboard('test')).toBeDefined();
     });
 
     // async tests for JSON data from either Mock service or backend services
 
     it('Orders dashboard async test', async () => {
-      const data = await appController.findDashboard();
+      const data = await appController.findDashboard('test');
       expect(data).not.toEqual(expected);
     });
   });

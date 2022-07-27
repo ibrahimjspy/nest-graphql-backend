@@ -2,9 +2,9 @@ import { request } from 'graphql-request';
 import { productDetailsQuery } from 'src/graphql/queries/product/detailsBySlug';
 import { graphqlEndpoint } from 'src/public/graphqlEndpointToggle';
 
-export const singleProductDetailsHandler = async (): Promise<object> => {
+export const singleProductDetailsHandler = async (slug): Promise<object> => {
   let singleProductData = {};
-  await request(graphqlEndpoint(), productDetailsQuery())
+  await request(graphqlEndpoint(), productDetailsQuery(slug))
     .then((data) => {
       singleProductData = data;
     })

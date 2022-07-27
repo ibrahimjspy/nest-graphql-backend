@@ -1,10 +1,10 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 
-const federationQuery = (): string => {
+const federationQuery = (slug): string => {
   return gql`
     query {
-      product(slug: "distressed-ankle-zip-jeans", channel: "default-channel") {
+      product(slug: "${slug}", channel: "default-channel") {
         name
         id
         slug
@@ -118,6 +118,6 @@ const mockQuery = () => {
   `;
 };
 
-export const productDetailsQuery = () => {
-  return graphqlQueryCheck(federationQuery(), mockQuery());
+export const productDetailsQuery = (slug) => {
+  return graphqlQueryCheck(federationQuery(slug), mockQuery());
 };

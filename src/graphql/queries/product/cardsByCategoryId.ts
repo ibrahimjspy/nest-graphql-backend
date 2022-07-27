@@ -1,10 +1,10 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 
-const federationQuery = (): string => {
+const federationQuery = (id): string => {
   return gql`
     query {
-      collection(id: "Q29sbGVjdGlvbjo0", channel: "default-channel") {
+      collection(id: "${id}", channel: "default-channel") {
         products(first: 100, filter: { categories: ["Q2F0ZWdvcnk6Mzk="] }) {
           edges {
             node {
@@ -34,6 +34,6 @@ const mockQuery = () => {
   `;
 };
 
-export const productCardsByCategoryId = () => {
-  return graphqlQueryCheck(federationQuery(), mockQuery());
+export const productCardsByCategoryId = (id) => {
+  return graphqlQueryCheck(federationQuery(id), mockQuery());
 };

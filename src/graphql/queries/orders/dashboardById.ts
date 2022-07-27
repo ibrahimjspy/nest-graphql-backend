@@ -1,7 +1,7 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 
-const federationQuery = (): string => {
+const federationQuery = (id): string => {
   return gql`
     query {
       categories(first: 2) {
@@ -49,6 +49,6 @@ const mockQuery = () => {
   `;
 };
 // returns order dashboard query based on federation and mock check
-export const dashboardQuery = () => {
-  return graphqlQueryCheck(federationQuery(), mockQuery(), 'true');
+export const dashboardQuery = (id) => {
+  return graphqlQueryCheck(federationQuery(id), mockQuery(), 'true');
 };
