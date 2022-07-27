@@ -23,6 +23,7 @@ describe('Orders controller unit tests', () => {
 
   describe('root', () => {
     // Basic validation tests for categories controller
+
     it('orders dashboard validation test', () => {
       expect(appController.findDashboard()).toBeDefined();
     });
