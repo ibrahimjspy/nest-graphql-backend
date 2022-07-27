@@ -1,10 +1,11 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 
-const federationQuery = (id): string => {
+const federationQuery = (number: number): string => {
+  // query linking with backend
   return gql`
     query {
-      categories(first: ${id}) {
+      categories(first: ${number}) {
         edges {
           node {
             name
@@ -36,19 +37,24 @@ const federationQuery = (id): string => {
 };
 
 const mockQuery = () => {
+  // query linking with mock server
   return gql`
     query {
-      user_dashboard {
-        unpaid_orders
-        orders_cancelled
-        orders_processing
-        orders_shipped
-        request_returns
+      products {
+        image
+        title
+        description
+        id
+        slug
+        color_variant
+        sku
+        resale_price
+        product_cost
       }
     }
   `;
 };
-// returns order dashboard query based on federation and mock check
-export const dashboardQuery = (id) => {
-  return graphqlQueryCheck(federationQuery(id), mockQuery(), 'true');
+// returns carousel query based on federation and mock check
+export const checkoutQuery = () => {
+  return graphqlQueryCheck(federationQuery(2), mockQuery());
 };
