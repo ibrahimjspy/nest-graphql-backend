@@ -1,8 +1,9 @@
-export const graphqlQueryCheck = (federation, mock): string => {
+export const graphqlQueryCheck = (federation, mock, partialMock?): string => {
+  if (process.env.MOCK == 'true' || partialMock == 'true') {
+    return mock;
+  }
   if (process.env.MOCK == 'false') {
     return federation;
   }
-  if (process.env.MOCK == 'true') {
-    return mock;
-  }
 };
+//Todo change order of logic to be consistent with endpoint toggle

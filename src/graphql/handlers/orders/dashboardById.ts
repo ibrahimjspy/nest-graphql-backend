@@ -4,7 +4,7 @@ import { graphqlEndpoint } from 'src/public/graphqlEndpointToggle';
 
 export const dashboardByIdHandler = async (): Promise<object> => {
   let dashboardData = {};
-  await request(graphqlEndpoint(), dashboardQuery())
+  await request(graphqlEndpoint('true'), dashboardQuery())
     .then((data) => {
       dashboardData = data;
     })

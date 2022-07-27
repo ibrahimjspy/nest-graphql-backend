@@ -35,20 +35,22 @@ const federationQuery = (): string => {
   `;
 };
 
-const mockQuery = () => {
+const mockQuery = (): string => {
   return gql`
     query {
-      user_dashboard {
-        unpaid_orders
-        orders_cancelled
-        orders_processing
-        orders_shipped
-        request_returns
+      products_collection {
+        id
+        name
+        related_categories {
+          id
+          name
+          slug
+        }
       }
     }
   `;
 };
-// returns order dashboard query based on federation and mock check
-export const dashboardQuery = () => {
+
+export const productCollectionsQuery = () => {
   return graphqlQueryCheck(federationQuery(), mockQuery(), 'true');
 };

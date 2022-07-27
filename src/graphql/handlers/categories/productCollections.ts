@@ -1,10 +1,10 @@
 import { request } from 'graphql-request';
-import { menuCategoriesQuery } from 'src/graphql/queries/categories/menu';
+import { productCollectionsQuery } from 'src/graphql/queries/categories/productCollections';
 import { graphqlEndpoint } from 'src/public/graphqlEndpointToggle';
 
 export const productCardCollectionHandler = async (): Promise<object> => {
   let CollectionsData = {};
-  await request(graphqlEndpoint(), menuCategoriesQuery())
+  await request(graphqlEndpoint('true'), productCollectionsQuery())
     .then((data) => {
       CollectionsData = data;
     })
