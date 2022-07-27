@@ -9,21 +9,20 @@ import { OrdersModule } from './modules/orders/Orders.module';
 import { ShopModule } from './modules/shop/Shop.module';
 
 @Module({
-  // Importing service modules and integrating with app module
   imports: [
-    ProductModule, //Products
-    CategoriesModule, //Categories
-    OrdersModule, //Orders
-    ShopModule, //Shops
-    CacheModule.register(), //Caching support
-    ConfigModule.forRoot(), //env config support
+    ProductModule,
+    CategoriesModule,
+    OrdersModule,
+    ShopModule,
+    CacheModule.register(),
+    ConfigModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [
     AppService,
     {
       provide: APP_INTERCEPTOR,
-      useClass: CacheInterceptor, // cache intercepting class <graphQl>
+      useClass: CacheInterceptor,
     },
   ],
 })
