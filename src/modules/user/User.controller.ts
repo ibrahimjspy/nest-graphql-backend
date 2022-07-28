@@ -6,7 +6,7 @@ export class UserController {
   constructor(private readonly appService: UserService) {}
   // Returns landing page banner data
   @Get('/addToCart')
-  findBanner(): Promise<object> {
-    return this.appService.getCarouselData();
+  findAddToCart(): Promise<object> {
+    return this.appService.getAddToCartData();
   }
 }

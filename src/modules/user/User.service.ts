@@ -3,7 +3,7 @@ import { carouselHandler } from 'src/graphql/handlers/shop/carousel';
 
 @Injectable()
 export class UserService {
-  public getCarouselData(): Promise<object> {
+  public getAddToCartData(): Promise<object> {
     // Pre graphQl call actions and validations -->
     // << -- >>
     // menuCategories is graphQl promise handler --->
