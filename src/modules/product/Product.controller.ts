@@ -10,7 +10,7 @@ export class ProductController {
     return this.appService.getProducts();
   }
   // Returns cards data relating to category and collection by <id>
-  @Get('/cardsByListId/:id')
+  @Get('/cardsByCategoryId/:id')
   findProductCardsByListId(@Param() params): Promise<object> {
     return this.appService.getProductsByCollections(params.id);
   }
