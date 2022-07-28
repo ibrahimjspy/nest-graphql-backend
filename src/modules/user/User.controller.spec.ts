@@ -23,13 +23,13 @@ describe('Shop controller unit tests', () => {
     // checking whether calls are valid and don't fail on middleware side--->>
 
     it('banner validation test', () => {
-      expect(appController.findBanner()).toBeDefined();
+      expect(appController.findShoppingCartData()).toBeDefined();
     });
 
     // async tests for JSON data from either Mock service or backend services
 
     it('banner async test', async () => {
-      const data = await appController.findBanner();
+      const data = await appController.findShoppingCartData();
       expect(data).not.toEqual(expected);
     });
   });

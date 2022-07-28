@@ -5,8 +5,8 @@ import { UserService } from './User.service';
 export class UserController {
   constructor(private readonly appService: UserService) {}
   // Returns landing page banner data
-  @Get('/addToCart')
-  findAddToCart(): Promise<object> {
-    return this.appService.getAddToCartData();
+  @Get('/shoppingCart')
+  findShoppingCartData(): Promise<object> {
+    return this.appService.getShoppingCartData();
   }
 }
