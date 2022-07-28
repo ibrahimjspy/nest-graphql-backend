@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { carouselHandler } from 'src/graphql/handlers/shop/carousel';
+import { checkoutHandler } from 'src/graphql/handlers/users/checkout';
 
 @Injectable()
 export class UserService {
@@ -7,6 +7,6 @@ export class UserService {
     // Pre graphQl call actions and validations -->
     // << -- >>
     // menuCategories is graphQl promise handler --->
-    return carouselHandler();
+    return checkoutHandler();
   }
 }

@@ -56,5 +56,5 @@ const mockQuery = () => {
 };
 // returns carousel query based on federation and mock check
 export const checkoutQuery = () => {
-  return graphqlQueryCheck(federationQuery(2), mockQuery());
+  return graphqlQueryCheck(federationQuery(2), mockQuery(), 'true');
 };
