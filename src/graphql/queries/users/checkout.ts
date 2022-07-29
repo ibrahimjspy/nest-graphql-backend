@@ -40,16 +40,40 @@ const mockQuery = () => {
   // query linking with mock server
   return gql`
     query {
-      products {
-        image
-        title
-        description
-        id
-        slug
-        color_variant
-        sku
-        resale_price
-        product_cost
+      checkout_information {
+        shipping_methods {
+          address_nickname
+          company_name
+          first_name
+          last_name
+          address_line_1
+          address_line_2
+          country
+          state
+          city
+          zip_code
+          phone_number
+          default_address
+        }
+        vendors_info {
+          vendor_name
+          items_count
+          ships_from
+          shipping_method_list {
+            method_name
+            id
+          }
+          product_list {
+            product_image_url
+            product_name
+            product_color
+            product_price
+            pack_quantity
+          }
+          total_bill
+          discount
+          promotion
+        }
       }
     }
   `;
