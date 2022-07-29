@@ -40,21 +40,36 @@ const mockQuery = () => {
   // query linking with mock server
   return gql`
     query {
-      products {
-        image
-        title
-        description
-        id
-        slug
-        color_variant
-        sku
-        resale_price
-        product_cost
+      order_info {
+        vendor_name
+        vendor_id
+        city
+        state
+        country
+        minimum_order_amount
+        number_of_items
+        products {
+          name
+          id
+          slug
+          style_no
+          selected_color
+          unit_price
+          pack_quantity
+          total_quantity
+          total_bill
+          image_url
+        }
+        promotion_list {
+          discount_percentage
+          minimum_order
+          offer_duration
+        }
       }
     }
   `;
 };
 // returns carousel query based on federation and mock check
-export const shoppingCart = () => {
-  return graphqlQueryCheck(federationQuery(2), mockQuery());
+export const shoppingCartQuery = () => {
+  return graphqlQueryCheck(federationQuery(2), mockQuery(), 'true');
 };

@@ -22,13 +22,22 @@ describe('Shop controller unit tests', () => {
   describe('root', () => {
     // checking whether calls are valid and don't fail on middleware side--->>
 
-    it('banner validation test', () => {
+    it('checkout validation test', () => {
+      expect(appController.findCheckoutData()).toBeDefined();
+    });
+
+    it('shoppingCart validation test', () => {
       expect(appController.findShoppingCartData()).toBeDefined();
     });
 
     // async tests for JSON data from either Mock service or backend services
 
-    it('banner async test', async () => {
+    it('checkout async test', async () => {
+      const data = await appController.findCheckoutData();
+      expect(data).not.toEqual(expected);
+    });
+
+    it('shoppingCart async test', async () => {
       const data = await appController.findShoppingCartData();
       expect(data).not.toEqual(expected);
     });

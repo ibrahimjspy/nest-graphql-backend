@@ -18,4 +18,3 @@ export const graphqlQueryCheck: GraphqlQuery = (federationQuery, mockQuery, part
     return federationQuery;
   }
 };
-//Todo change order of logic to be consistent with endpoint toggle
