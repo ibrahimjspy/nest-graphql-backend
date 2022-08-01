@@ -9,6 +9,7 @@ describe('ProductController', () => {
   // Testing configurations
   let appController: ProductController;
   const expected = {};
+  const testId = { id: 'UHJvZHVjdFR5cGU6Mw==' };
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
@@ -33,6 +34,10 @@ describe('ProductController', () => {
       expect(appController.findProductCardsByListId('Id')).toBeTruthy();
     });
 
+    it('product list page validation test', () => {
+      expect(appController.findProductListBySlug('Id')).toBeTruthy();
+    });
+
     // async test checking response JSON from graphql call
 
     it('default productCards async test', async () => {
@@ -41,13 +46,18 @@ describe('ProductController', () => {
     });
 
     it('productCards by collections async test', async () => {
-      const testId = { id: 'UHJvZHVjdFR5cGU6Mw==' };
       const data = await appController.findProductCardsByListId(testId);
       expect(data).not.toEqual(expected);
     });
 
     it('product details async test', async () => {
       const data = await appController.findProductDetailsBySlug('test');
+      expect(data).not.toEqual(expected);
+    });
+
+    it('product list page async test', async () => {
+      const categoryTestSlug = { slug: 'Q2F0ZWdvcnk6MQ==' };
+      const data = await appController.findProductListBySlug(categoryTestSlug);
       expect(data).not.toEqual(expected);
     });
   });

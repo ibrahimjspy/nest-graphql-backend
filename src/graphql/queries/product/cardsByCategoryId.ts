@@ -15,6 +15,16 @@ const federationQuery = (id): string => {
             slug
             defaultVariant {
               sku
+              pricing {
+                price {
+                  gross {
+                    currency
+                    amount
+                  }
+                }
+              }
+            }
+            variants {
               attributes {
                 attribute {
                   name
@@ -29,22 +39,6 @@ const federationQuery = (id): string => {
             }
             name
             description
-            pricing {
-              priceRange {
-                start {
-                  currency
-                  gross {
-                    amount
-                  }
-                }
-                stop {
-                  currency
-                  gross {
-                    amount
-                  }
-                }
-              }
-            }
           }
         }
       }

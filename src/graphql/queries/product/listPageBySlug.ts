@@ -4,18 +4,17 @@ import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 const federationQuery = (slug): string => {
   return gql`
     query {
-      category(slug: "${slug}") {
-        products(first: 20, channel: "default-channel") {
-          edges {
-            node {
-              id
-              slug
-              variants {
-                sku
-              }
-              thumbnail {
-                url
-              }
+      products(
+        first: 6
+        channel: "default-channel"
+        filter: { categories: ["${slug}"] }
+      ) {
+        edges {
+          node {
+            id
+            slug
+            defaultVariant {
+              sku
               attributes {
                 attribute {
                   name
@@ -24,35 +23,27 @@ const federationQuery = (slug): string => {
                   name
                 }
               }
-              name
-              description
-              pricing {
-                priceRange {
-                  start {
-                    currency
-                    gross {
-                      amount
-                    }
+            }
+            thumbnail {
+              url
+            }
+            name
+            description
+            pricing {
+              priceRange {
+                start {
+                  currency
+                  gross {
+                    amount
                   }
-                  stop {
-                    gross {
-                      amount
-                    }
+                }
+                stop {
+                  currency
+                  gross {
+                    amount
                   }
                 }
               }
-            }
-          }
-        }
-        name
-        id
-        slug
-        children(first: 10) {
-          edges {
-            node {
-              name
-              id
-              slug
             }
           }
         }
