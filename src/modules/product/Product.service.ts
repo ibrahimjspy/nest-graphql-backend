@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { productCardHandler } from 'src/graphql/handlers/product/cards';
-import { productListPageHandler } from 'src/graphql/handlers/product/listPageBySlug';
+import { productListPageHandler } from 'src/graphql/handlers/product/listPageById';
 import { singleProductDetailsHandler } from 'src/graphql/handlers/product/detailsBySlug';
 import { productCardsByCategoriesHandler } from 'src/graphql/handlers/product/cardsByListId';
 
@@ -21,8 +21,7 @@ export class ProductService {
     return singleProductDetailsHandler(slug);
   }
   // Product list page data relating to category <slug>
-  public getProductListPageBySlug(slug: string): Promise<object> {
-    console.log(slug ? slug : 'not found');
-    return productListPageHandler(slug);
+  public getProductListPageById(id: string): Promise<object> {
+    return productListPageHandler(id);
   }
 }

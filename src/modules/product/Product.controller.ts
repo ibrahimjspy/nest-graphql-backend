@@ -20,8 +20,8 @@ export class ProductController {
     return this.appService.getProductDetailsBySlug(params.slug);
   }
   // Returns product list page data relating to category <slug>
-  @Get('list/:slug')
-  findProductListBySlug(@Param() params): Promise<object> {
-    return this.appService.getProductListPageBySlug(params.slug);
+  @Get('list/:id')
+  findProductListById(@Param() params): Promise<object> {
+    return this.appService.getProductListPageById(params.id);
   }
 }

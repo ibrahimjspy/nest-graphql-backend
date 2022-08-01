@@ -35,7 +35,7 @@ describe('ProductController', () => {
     });
 
     it('product list page validation test', () => {
-      expect(appController.findProductListBySlug('Id')).toBeTruthy();
+      expect(appController.findProductListById('Id')).toBeTruthy();
     });
 
     // async test checking response JSON from graphql call
@@ -56,8 +56,8 @@ describe('ProductController', () => {
     });
 
     it('product list page async test', async () => {
-      const categoryTestSlug = { slug: 'Q2F0ZWdvcnk6MQ==' };
-      const data = await appController.findProductListBySlug(categoryTestSlug);
+      const categoryTestId = { id: 'Q2F0ZWdvcnk6MQ==' };
+      const data = await appController.findProductListById(categoryTestId);
       expect(data).not.toEqual(expected);
     });
   });
