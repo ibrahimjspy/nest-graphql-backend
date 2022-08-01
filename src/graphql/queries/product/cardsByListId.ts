@@ -7,27 +7,25 @@ const federationQuery = (id): string => {
       products(
         first: 6
         channel: "default-channel"
-        filter: { productTypes: ["${id}"] }
+        filter: { categories: ["${id}"] }
       ) {
         edges {
           node {
             id
-            name
             slug
-            isAvailable
-            variants {
+            defaultVariant {
               sku
+              attributes {
+                attribute {
+                  name
+                }
+                values {
+                  name
+                }
+              }
             }
             thumbnail {
               url
-            }
-            attributes {
-              attribute {
-                name
-              }
-              values {
-                name
-              }
             }
             name
             description
@@ -40,6 +38,7 @@ const federationQuery = (id): string => {
                   }
                 }
                 stop {
+                  currency
                   gross {
                     amount
                   }

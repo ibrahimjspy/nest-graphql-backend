@@ -9,41 +9,35 @@ export const federationQuery = (): string => {
           node {
             id
             name
-            isActive
             products {
               id
               slug
-              variants {
+              defaultVariant {
                 sku
+                pricing {
+                  price {
+                    gross {
+                      currency
+                      amount
+                    }
+                  }
+                }
+              }
+              variants {
+                attributes {
+                  attribute {
+                    name
+                  }
+                  values {
+                    name
+                  }
+                }
               }
               thumbnail {
                 url
               }
-              attributes {
-                attribute {
-                  name
-                }
-                values {
-                  name
-                }
-              }
               name
               description
-              pricing {
-                priceRange {
-                  start {
-                    currency
-                    gross {
-                      amount
-                    }
-                  }
-                  stop {
-                    gross {
-                      amount
-                    }
-                  }
-                }
-              }
             }
           }
         }
