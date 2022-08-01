@@ -9,6 +9,7 @@ describe('Shop controller unit tests', () => {
   // Testing configurations
   let appController: UserController;
   const expected = {};
+  const testId = { id: 'UHJvZHVjdFR5cGU6Mw==' };
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
@@ -23,22 +24,22 @@ describe('Shop controller unit tests', () => {
     // checking whether calls are valid and don't fail on middleware side--->>
 
     it('checkout validation test', () => {
-      expect(appController.findCheckoutData()).toBeDefined();
+      expect(appController.findCheckoutDataById(testId)).toBeDefined();
     });
 
     it('shoppingCart validation test', () => {
-      expect(appController.findShoppingCartData()).toBeDefined();
+      expect(appController.findShoppingCartDataById(testId)).toBeDefined();
     });
 
     // async tests for JSON data from either Mock service or backend services
 
     it('checkout async test', async () => {
-      const data = await appController.findCheckoutData();
+      const data = await appController.findCheckoutDataById(testId);
       expect(data).not.toEqual(expected);
     });
 
     it('shoppingCart async test', async () => {
-      const data = await appController.findShoppingCartData();
+      const data = await appController.findShoppingCartDataById(testId);
       expect(data).not.toEqual(expected);
     });
   });

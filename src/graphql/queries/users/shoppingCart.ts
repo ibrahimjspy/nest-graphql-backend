@@ -1,7 +1,7 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 
-const federationQuery = (number: number): string => {
+const federationQuery = (number: string): string => {
   // query linking with backend
   return gql`
     query {
@@ -70,6 +70,6 @@ const mockQuery = () => {
   `;
 };
 // returns carousel query based on federation and mock check
-export const shoppingCartQuery = () => {
-  return graphqlQueryCheck(federationQuery(2), mockQuery(), 'true');
+export const shoppingCartQuery = (id: string) => {
+  return graphqlQueryCheck(federationQuery(id), mockQuery(), 'true');
 };

@@ -1,17 +1,17 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { UserService } from './User.service';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly appService: UserService) {}
   // Returns shoppingCart data
-  @Get('/shoppingCart')
-  findCheckoutData(): Promise<object> {
-    return this.appService.getShoppingCartData();
+  @Get('/shoppingCart/:id')
+  findShoppingCartDataById(@Param() params): Promise<object> {
+    return this.appService.getShoppingCartDataById(params.id);
   }
   // Returns checkout data
-  @Get('/checkout')
-  findShoppingCartData(): Promise<object> {
-    return this.appService.getCheckoutData();
+  @Get('/checkout/:id')
+  findCheckoutDataById(@Param() params): Promise<object> {
+    return this.appService.getCheckoutDataById(params.id);
   }
 }

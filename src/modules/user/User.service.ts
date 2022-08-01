@@ -1,19 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { checkoutHandler } from 'src/graphql/handlers/users/checkout';
-import { shoppingCartHandler } from 'src/graphql/handlers/users/shoppingCart';
+import {
+  checkoutHandler,
+  shoppingCartHandler,
+} from 'src/graphql/handlers/user/user';
 
 @Injectable()
 export class UserService {
-  public getCheckoutData(): Promise<object> {
+  public getCheckoutDataById(id: string): Promise<object> {
     // Pre graphQl call actions and validations -->
     // << -- >>
     // checkoutHandler is graphQl promise handler --->
-    return checkoutHandler();
+    return checkoutHandler(id);
   }
-  public getShoppingCartData(): Promise<object> {
+  public getShoppingCartDataById(id: string): Promise<object> {
     // Pre graphQl call actions and validations -->
     // << -- >>
     // checkoutHandler is graphQl promise handler --->
-    return shoppingCartHandler();
+    return shoppingCartHandler(id);
   }
 }
