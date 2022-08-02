@@ -41,7 +41,7 @@ const mockQuery = () => {
   return gql`
     query {
       checkout_information {
-        shipping_methods {
+        shipping_address_list {
           address_nickname
           company_name
           first_name
@@ -84,7 +84,7 @@ const mockQuery = () => {
     }
   `;
 };
-// returns checkout query based on federation and mock check
+
 export const checkoutQuery = (id: string) => {
   return graphqlQueryCheck(federationQuery(id), mockQuery(), 'true');
 };

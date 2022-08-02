@@ -1,5 +1,5 @@
 import { request } from 'graphql-request';
-import { productListPageQuery } from 'src/graphql/queries/product/listPageBySlug';
+import { productListPageQuery } from 'src/graphql/queries/product/listPageById';
 import { graphqlEndpoint } from 'src/public/graphqlEndpointToggle';
 
 export const productListPageHandler = async (id): Promise<object> => {

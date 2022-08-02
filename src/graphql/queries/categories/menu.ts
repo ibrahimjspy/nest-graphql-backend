@@ -4,7 +4,7 @@ import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 const federationQuery = (): string => {
   return gql`
     query {
-      categories(first: 2) {
+      categories(first: 4) {
         edges {
           node {
             name
