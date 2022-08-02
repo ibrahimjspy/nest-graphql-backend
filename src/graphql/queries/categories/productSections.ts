@@ -33,6 +33,6 @@ const mockQuery = (): string => {
   `;
 };
 
-export const productCollectionsQuery = () => {
+export const productSectionsQuery = () => {
   return graphqlQueryCheck(federationQuery(), mockQuery());
 };

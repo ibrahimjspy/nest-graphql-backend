@@ -12,6 +12,6 @@ export class CategoriesController {
   // Returns product card collections and relating categories for landing page
   @Get('/productSections')
   findProductCollections(): Promise<object> {
-    return this.appService.getProductCollections();
+    return this.appService.getProductSections();
   }
 }
