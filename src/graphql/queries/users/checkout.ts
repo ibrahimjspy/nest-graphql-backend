@@ -74,11 +74,17 @@ const mockQuery = () => {
           discount
           promotion
         }
+        reward_points
+      }
+      payment_method {
+        store_credit
+        credit_card
+        paypal
       }
     }
   `;
 };
-// returns carousel query based on federation and mock check
+// returns checkout query based on federation and mock check
 export const checkoutQuery = (id: string) => {
   return graphqlQueryCheck(federationQuery(id), mockQuery(), 'true');
 };

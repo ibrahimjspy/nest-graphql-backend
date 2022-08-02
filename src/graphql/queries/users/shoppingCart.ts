@@ -69,7 +69,7 @@ const mockQuery = () => {
     }
   `;
 };
-// returns carousel query based on federation and mock check
+// returns shoppingCart query based on federation and mock check
 export const shoppingCartQuery = (id: string) => {
   return graphqlQueryCheck(federationQuery(id), mockQuery(), 'true');
 };

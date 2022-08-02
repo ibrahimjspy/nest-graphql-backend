@@ -9,8 +9,11 @@ type GraphqlQuery = (
  * @params mockQuery , linking with mock server .
  * @params partialMock , it is an  optional parameter used to support specific mock calls
  */
-// eslint-disable-next-line prettier/prettier
-export const graphqlQueryCheck: GraphqlQuery = (federationQuery, mockQuery, partialMock?) => {
+export const graphqlQueryCheck: GraphqlQuery = (
+  federationQuery,
+  mockQuery,
+  partialMock?,
+) => {
   if (process.env.MOCK == 'true' || partialMock == 'true') {
     return mockQuery;
   }
