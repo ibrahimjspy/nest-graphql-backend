@@ -12,7 +12,7 @@ const federationQuery = (slug): string => {
           url
         }
         description
-        variants {
+        defaultVariant {
           id
           pricing {
             price {
@@ -22,36 +22,14 @@ const federationQuery = (slug): string => {
               }
             }
           }
+        }
+        variants {
           attributes {
             attribute {
               name
             }
             values {
               name
-            }
-          }
-        }
-        attributes {
-          attribute {
-            name
-          }
-          values {
-            name
-          }
-        }
-        pricing {
-          priceRange {
-            start {
-              gross {
-                currency
-                amount
-              }
-            }
-            stop {
-              gross {
-                currency
-                amount
-              }
             }
           }
         }
