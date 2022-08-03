@@ -8,7 +8,7 @@ import { ShopService } from './Shop.service';
 describe('Shop controller unit tests', () => {
   // Testing configurations
   let appController: ShopController;
-  const expected = {};
+  const expected = { status: 400 };
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],

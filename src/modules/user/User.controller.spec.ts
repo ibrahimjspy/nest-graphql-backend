@@ -8,7 +8,7 @@ import { UserService } from './User.service';
 describe('Shop controller unit tests', () => {
   // Testing configurations
   let appController: UserController;
-  const expected = {};
+  const expected = { status: 400 };
   const testId = { id: 'UHJvZHVjdFR5cGU6Mw==' };
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({

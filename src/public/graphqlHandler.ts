@@ -17,6 +17,11 @@ export const graphqlCall: GraphqlCall = async (Query, Mock?) => {
     .then((data) => {
       Data = data;
     })
-    .catch(() => console.log('graphql error'));
+    .catch((err) => {
+      err.type ? console.log('system error') : '';
+      const error_response = { message: err?.response?.errors[0]?.message };
+      console.log('graphql error', error_response);
+      Data = { status: 400 };
+    });
   return Data;
 };

@@ -8,7 +8,7 @@ import { CategoriesService } from './Categories.service';
 describe('Categories controller unit tests', () => {
   // Testing configurations
   let appController: CategoriesController;
-  const expected = {};
+  const expected = { status: 400 };
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
