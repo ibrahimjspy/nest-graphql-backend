@@ -4,12 +4,18 @@ import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 const federationQuery = (): string => {
   return gql`
     query {
-      categories(first: 5) {
-        edges {
-          node {
-            name
-            id
-            slug
+      sections {
+        name
+        categories {
+          name
+          id
+          slug
+          products(first: 6) {
+            edges {
+              node {
+                name
+              }
+            }
           }
         }
       }
