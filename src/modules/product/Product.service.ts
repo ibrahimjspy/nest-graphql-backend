@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { productCardHandler } from 'src/graphql/handlers/product/cards';
 import { productListPageHandler } from 'src/graphql/handlers/product/listPageById';
 import { singleProductDetailsHandler } from 'src/graphql/handlers/product/detailsBySlug';
-import { productCardsByCategoriesHandler } from 'src/graphql/handlers/product/cardsByListId';
+import { productCardsByCategoriesHandler } from 'src/graphql/handlers/product/cardsByCategoryId';
 
 @Injectable()
 export class ProductService {

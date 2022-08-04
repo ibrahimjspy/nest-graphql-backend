@@ -96,6 +96,6 @@ const mockQuery = () => {
   `;
 };
 
-export const productDetailsQuery = (slug) => {
+export const productDetailsQuery = (slug: string) => {
   return graphqlQueryCheck(federationQuery(slug), mockQuery());
 };

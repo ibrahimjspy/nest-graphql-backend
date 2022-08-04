@@ -10,6 +10,7 @@ describe('Shop controller unit tests', () => {
   let appController: ShopController;
   const queryError = { status: 400 };
   const systemError = { status: 500 };
+  const federationSystemError = { status: 405 };
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
@@ -33,6 +34,7 @@ describe('Shop controller unit tests', () => {
       const data = await appController.findBanner();
       expect(data).not.toEqual(queryError);
       expect(data).not.toEqual(systemError);
+      expect(data).not.toEqual(federationSystemError);
     });
   });
 });

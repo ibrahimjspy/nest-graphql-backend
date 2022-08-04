@@ -45,6 +45,7 @@ const federationQuery = (id): string => {
     }
   `;
 };
+
 const mockQuery = () => {
   return gql`
     query {
@@ -74,6 +75,7 @@ const mockQuery = () => {
     }
   `;
 };
-export const productListPageQuery = (id) => {
+
+export const productListPageQuery = (id: string) => {
   return graphqlQueryCheck(federationQuery(id), mockQuery());
 };

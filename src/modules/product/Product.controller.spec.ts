@@ -10,6 +10,7 @@ describe('ProductController', () => {
   let appController: ProductController;
   const queryError = { status: 400 };
   const systemError = { status: 500 };
+  const federationSystemError = { status: 405 };
   const testId = { id: 'UHJvZHVjdFR5cGU6Mw==' };
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
@@ -45,18 +46,21 @@ describe('ProductController', () => {
       const data = await appController.findDefaultCards();
       expect(data).not.toEqual(queryError);
       expect(data).not.toEqual(systemError);
+      expect(data).not.toEqual(federationSystemError);
     });
 
     it('productCards by collections async test', async () => {
       const data = await appController.findProductCardsByListId(testId);
       expect(data).not.toEqual(queryError);
       expect(data).not.toEqual(systemError);
+      expect(data).not.toEqual(federationSystemError);
     });
 
     it('product details async test', async () => {
       const data = await appController.findProductDetailsBySlug('test');
       expect(data).not.toEqual(queryError);
       expect(data).not.toEqual(systemError);
+      expect(data).not.toEqual(federationSystemError);
     });
 
     it('product list page async test', async () => {
@@ -64,6 +68,7 @@ describe('ProductController', () => {
       const data = await appController.findProductListById(categoryTestId);
       expect(data).not.toEqual(queryError);
       expect(data).not.toEqual(systemError);
+      expect(data).not.toEqual(federationSystemError);
     });
   });
 });
