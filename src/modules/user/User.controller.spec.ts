@@ -8,7 +8,8 @@ import { UserService } from './User.service';
 describe('Shop controller unit tests', () => {
   // Testing configurations
   let appController: UserController;
-  const expected = { status: 400 };
+  const queryError = { status: 400 };
+  const systemError = { status: 500 };
   const testId = { id: 'UHJvZHVjdFR5cGU6Mw==' };
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
@@ -35,12 +36,14 @@ describe('Shop controller unit tests', () => {
 
     it('checkout async test', async () => {
       const data = await appController.findCheckoutDataById(testId);
-      expect(data).not.toEqual(expected);
+      expect(data).not.toEqual(queryError);
+      expect(data).not.toEqual(systemError);
     });
 
     it('shoppingCart async test', async () => {
       const data = await appController.findShoppingCartDataById(testId);
-      expect(data).not.toEqual(expected);
+      expect(data).not.toEqual(queryError);
+      expect(data).not.toEqual(systemError);
     });
   });
 });

@@ -17,11 +17,21 @@ export const graphqlCall: GraphqlCall = async (Query, Mock?) => {
     .then((data) => {
       Data = data;
     })
-    .catch((err) => {
-      err.type ? console.log('system error') : '';
-      const error_response = { message: err?.response?.errors[0]?.message };
-      console.log('graphql error', error_response);
-      Data = { status: 400 };
+    .catch((error) => {
+      Data = graphqlExceptionHandler(error);
     });
   return Data;
+};
+
+const graphqlExceptionHandler = (error): object => {
+  const system_error = 'system error (graphql server not running)';
+  const federation_response = error?.response?.error
+    ? system_error
+    : error?.response?.errors[0]?.message;
+  const error_response = {
+    message: error.type ? system_error : federation_response,
+  };
+  console.log('graphql error', error_response ? error_response : 'server side');
+  const error_code: number = error.type ? 500 : error?.response?.status;
+  return { status: error_code };
 };

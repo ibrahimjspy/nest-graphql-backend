@@ -8,7 +8,8 @@ import { ShopService } from './Shop.service';
 describe('Shop controller unit tests', () => {
   // Testing configurations
   let appController: ShopController;
-  const expected = { status: 400 };
+  const queryError = { status: 400 };
+  const systemError = { status: 500 };
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
@@ -30,7 +31,8 @@ describe('Shop controller unit tests', () => {
 
     it('banner async test', async () => {
       const data = await appController.findBanner();
-      expect(data).not.toEqual(expected);
+      expect(data).not.toEqual(queryError);
+      expect(data).not.toEqual(systemError);
     });
   });
 });

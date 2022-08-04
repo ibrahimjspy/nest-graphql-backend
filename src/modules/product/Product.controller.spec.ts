@@ -8,7 +8,8 @@ import { ProductService } from './Product.service';
 describe('ProductController', () => {
   // Testing configurations
   let appController: ProductController;
-  const expected = {};
+  const queryError = { status: 400 };
+  const systemError = { status: 500 };
   const testId = { id: 'UHJvZHVjdFR5cGU6Mw==' };
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
@@ -42,23 +43,27 @@ describe('ProductController', () => {
 
     it('default productCards async test', async () => {
       const data = await appController.findDefaultCards();
-      expect(data).not.toEqual(expected);
+      expect(data).not.toEqual(queryError);
+      expect(data).not.toEqual(systemError);
     });
 
     it('productCards by collections async test', async () => {
       const data = await appController.findProductCardsByListId(testId);
-      expect(data).not.toEqual(expected);
+      expect(data).not.toEqual(queryError);
+      expect(data).not.toEqual(systemError);
     });
 
     it('product details async test', async () => {
       const data = await appController.findProductDetailsBySlug('test');
-      expect(data).not.toEqual(expected);
+      expect(data).not.toEqual(queryError);
+      expect(data).not.toEqual(systemError);
     });
 
     it('product list page async test', async () => {
       const categoryTestId = { id: 'Q2F0ZWdvcnk6MQ==' };
       const data = await appController.findProductListById(categoryTestId);
-      expect(data).not.toEqual(expected);
+      expect(data).not.toEqual(queryError);
+      expect(data).not.toEqual(systemError);
     });
   });
 });

@@ -8,7 +8,8 @@ import { OrdersService } from './Orders.service';
 describe('Orders controller unit tests', () => {
   // Testing configurations
   let appController: OrdersController;
-  const expected = { status: 400 };
+  const queryError = { status: 400 };
+  const systemError = { status: 500 };
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
@@ -32,7 +33,8 @@ describe('Orders controller unit tests', () => {
 
     it('Orders dashboard async test', async () => {
       const data = await appController.findDashboard('test');
-      expect(data).not.toEqual(expected);
+      expect(data).not.toEqual(queryError);
+      expect(data).not.toEqual(systemError);
     });
   });
 });
