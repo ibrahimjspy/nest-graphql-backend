@@ -10,8 +10,8 @@ export class ProductController {
     return this.appService.getProducts();
   }
   // Returns cards data relating to category and collection by <id>
-  @Get('/cardsByCollectionId/:id')
-  findProductCardsByCollectionId(@Param() params): Promise<object> {
+  @Get('/cardsByCategoryId/:id')
+  findProductCardsByListId(@Param() params): Promise<object> {
     return this.appService.getProductsByCollections(params.id);
   }
   // Returns single product details by <slug>
@@ -20,8 +20,8 @@ export class ProductController {
     return this.appService.getProductDetailsBySlug(params.slug);
   }
   // Returns product list page data relating to category <slug>
-  @Get('list/:slug')
-  findProductListBySlug(@Param() params): Promise<object> {
-    return this.appService.getProductListPageBySlug(params.slug);
+  @Get('list/:id')
+  findProductListById(@Param() params): Promise<object> {
+    return this.appService.getProductListPageById(params.id);
   }
 }

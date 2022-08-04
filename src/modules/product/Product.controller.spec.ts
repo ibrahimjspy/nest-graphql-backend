@@ -6,45 +6,69 @@ import { ProductService } from './Product.service';
 //  Product controller unit tests using Jest
 
 describe('ProductController', () => {
-  // app mimics a test module application
+  // Testing configurations
   let appController: ProductController;
-  const expected = { foo: 'bar' };
+  const queryError = { status: 400 };
+  const systemError = { status: 500 };
+  const federationSystemError = { status: 405 };
+  const testId = { id: 'UHJvZHVjdFR5cGU6Mw==' };
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
       controllers: [ProductController],
       providers: [ProductService],
     }).compile();
-
     appController = app.get<ProductController>(ProductController);
   });
 
-  // checking for values that are falsy and undefined --->>
-
   describe('root', () => {
-    it('should not be falsy default cards', () => {
+    // checking whether calls are valid and don't fail on middleware side--->>
+
+    it('default productCards validation test', () => {
       expect(appController.findDefaultCards()).toBeTruthy();
     });
-    it('should not be falsy single product details by slug ', () => {
+
+    it('productDetails validation test', () => {
       expect(appController.findProductDetailsBySlug('slug')).toBeTruthy();
     });
-    it('should not be falsy product cards by CollectionsId ', () => {
-      expect(appController.findProductCardsByCollectionId('Id')).toBeTruthy();
+
+    it('productCards by collections validation test', () => {
+      expect(appController.findProductCardsByListId('Id')).toBeTruthy();
     });
+
+    it('product list page validation test', () => {
+      expect(appController.findProductListById('Id')).toBeTruthy();
+    });
+
     // async test checking response JSON from graphql call
-    // default product cards async test
-    it('the data is an object of default productCards returned from graphQL', async () => {
+
+    it('default productCards async test', async () => {
       const data = await appController.findDefaultCards();
-      expect(data).toEqual(expect.not.objectContaining(expected));
+      expect(data).not.toEqual(queryError);
+      expect(data).not.toEqual(systemError);
+      expect(data).not.toEqual(federationSystemError);
     });
-    it('the data is an object of productCards by collections returned from graphQL ', async () => {
-      const data = await appController.findProductCardsByCollectionId('testId');
-      expect(data).toEqual(expect.not.objectContaining(expected));
+
+    it('productCards by collections async test', async () => {
+      const data = await appController.findProductCardsByListId(testId);
+      expect(data).not.toEqual(queryError);
+      expect(data).not.toEqual(systemError);
+      expect(data).not.toEqual(federationSystemError);
     });
-    // single product details test
-    it('the data is an object of productDetails returned from graphQL', async () => {
+
+    it('product details async test', async () => {
       const data = await appController.findProductDetailsBySlug('test');
-      expect(data).toEqual(expect.not.objectContaining(expected));
+      expect(data).not.toEqual(queryError);
+      expect(data).not.toEqual(systemError);
+      expect(data).not.toEqual(federationSystemError);
+    });
+
+    it('product list page async test', async () => {
+      const categoryTestId = { id: 'Q2F0ZWdvcnk6MQ==' };
+      const data = await appController.findProductListById(categoryTestId);
+      expect(data).not.toEqual(queryError);
+      expect(data).not.toEqual(systemError);
+      expect(data).not.toEqual(federationSystemError);
     });
   });
 });

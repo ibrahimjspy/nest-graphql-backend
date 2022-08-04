@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { dashboardByIdHandler } from '../../graphql/handlers/orders/dashboardById';
+import { dashboardByIdHandler } from 'src/graphql/handlers/orders/orders';
 
 @Injectable()
 export class OrdersService {
-  public getDashboardData(): Promise<object> {
+  public getDashboardDataById(id): Promise<object> {
     // Pre graphQl call actions and validations -->
     // << -- >>
     // menuCategories is graphQl promise handler --->
-    return dashboardByIdHandler();
+    return dashboardByIdHandler(id);
   }
 }

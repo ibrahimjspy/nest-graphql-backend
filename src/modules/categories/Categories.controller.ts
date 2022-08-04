@@ -9,9 +9,9 @@ export class CategoriesController {
   findMenuCategories(): Promise<object> {
     return this.appService.getMenuCategories();
   }
-  // Returns product card collections and relating categories
-  @Get('/productCollections')
+  // Returns product card collections and relating categories for landing page
+  @Get('/productSections')
   findProductCollections(): Promise<object> {
-    return this.appService.getProductCollections();
+    return this.appService.getProductSections();
   }
 }

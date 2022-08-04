@@ -6,9 +6,11 @@ import { ShopService } from './Shop.service';
 // Shop unit tests using Jest
 
 describe('Shop controller unit tests', () => {
-  // app mimics a test module application
+  // Testing configurations
   let appController: ShopController;
-  //   const expected = { foo: 'collection not found' };
+  const queryError = { status: 400 };
+  const systemError = { status: 500 };
+  const federationSystemError = { status: 405 };
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
@@ -19,13 +21,20 @@ describe('Shop controller unit tests', () => {
     appController = app.get<ShopController>(ShopController);
   });
 
-  // checking for values that are falsy and undefined --->>
-
   describe('root', () => {
-    // Basic validation tests for categories controller
-    it('should return "JSON', () => {
+    // checking whether calls are valid and don't fail on middleware side--->>
+
+    it('banner validation test', () => {
       expect(appController.findBanner()).toBeDefined();
     });
+
     // async tests for JSON data from either Mock service or backend services
+
+    it('banner async test', async () => {
+      const data = await appController.findBanner();
+      expect(data).not.toEqual(queryError);
+      expect(data).not.toEqual(systemError);
+      expect(data).not.toEqual(federationSystemError);
+    });
   });
 });

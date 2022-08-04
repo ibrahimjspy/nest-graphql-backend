@@ -1,9 +1,10 @@
 import { gql } from 'graphql-request';
-//WARN currently no use of this query in any ql resolvers !!
-export const menuCategories = () => {
+import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
+
+const federationQuery = (): string => {
   return gql`
-    query 
-      categories(first: 2) {
+    query {
+      categories(first: 4) {
         edges {
           node {
             name
@@ -32,4 +33,34 @@ export const menuCategories = () => {
       }
     }
   `;
+};
+
+const mockQuery = (): string => {
+  return gql`
+    query {
+      main_categories {
+        name
+        id
+        slug
+        images {
+          url
+          label
+        }
+        sub_categories {
+          id
+          name
+          slug
+          sub_sub_categories {
+            id
+            name
+            slug
+          }
+        }
+      }
+    }
+  `;
+};
+
+export const menuCategoriesQuery = () => {
+  return graphqlQueryCheck(federationQuery(), mockQuery());
 };

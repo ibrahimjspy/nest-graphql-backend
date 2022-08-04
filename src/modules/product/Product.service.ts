@@ -1,27 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { singleProductDetailsHandler } from '../../graphql/handlers/product/singleProductDetails';
-import { productCardHandler } from '../../graphql/handlers/product/defaultProductCards';
-import { productListPageHandler } from '../../graphql/handlers/product/productListPage';
+import { productCardHandler } from 'src/graphql/handlers/product/cards';
+import { productListPageHandler } from 'src/graphql/handlers/product/listPageById';
+import { singleProductDetailsHandler } from 'src/graphql/handlers/product/detailsBySlug';
+import { productCardsByCategoriesHandler } from 'src/graphql/handlers/product/cardsByCategoryId';
 
 @Injectable()
 export class ProductService {
   // default product cards service
   public getProducts(): Promise<object> {
-    return productCardHandler(); //graphQl promise handler
+    return productCardHandler();
   }
   //Product cards by collection ~ category <id>
   public getProductsByCollections(id: string): Promise<object> {
     console.log(id ? id : 'not found');
-    return productCardHandler(); //graphQl promise handler
+    return productCardsByCategoriesHandler(id);
   }
   // Single product details by <slug> {Quick View , SingleProductDetailsPage}
   public getProductDetailsBySlug(slug: string): Promise<object> {
     console.log(slug ? slug : 'not found');
-    return singleProductDetailsHandler(); //graphQl promise handler
+    return singleProductDetailsHandler(slug);
   }
   // Product list page data relating to category <slug>
-  public getProductListPageBySlug(slug: string): Promise<object> {
-    console.log(slug ? slug : 'not found');
-    return productListPageHandler(); //graphQl promise handler
+  public getProductListPageById(id: string): Promise<object> {
+    return productListPageHandler(id);
   }
 }
