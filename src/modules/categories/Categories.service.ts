@@ -1,19 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { MenuCategoriesHandler } from '../../graphql/handlers/Categories/menuCategoriesHandler';
-import { productCardCollectionHandler } from '../../graphql/handlers/Categories/productCollectionHandler';
+import {
+  menuCategoriesHandler,
+  productCardSectionHandler,
+} from 'src/graphql/handlers/categories/categories';
 
 @Injectable()
 export class CategoriesService {
-  public getCategories(): Promise<object> {
+  public getMenuCategories(): Promise<object> {
     // Pre graphQl call actions and validations -->
     // << -- >>
     // menuCategories is graphQl promise handler --->
-    return MenuCategoriesHandler();
+    return menuCategoriesHandler();
   }
-  public getCollections(): Promise<object> {
+  public getProductSections(): Promise<object> {
     // Pre graphQl call actions and validations to get product collection categories  -->
     // << -- >>
     // productCardCollectionHandler is graphQl promise handler --->
-    return productCardCollectionHandler();
+    return productCardSectionHandler();
   }
 }

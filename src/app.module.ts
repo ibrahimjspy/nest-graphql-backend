@@ -3,23 +3,28 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { ProductCardModule } from './modules/productCard/productCard.module';
-import { MenuCategoriesModule } from './modules/categories/Categories.module';
+import { ProductModule } from './modules/product/Product.module';
+import { CategoriesModule } from './modules/categories/Categories.module';
+import { OrdersModule } from './modules/orders/Orders.module';
+import { ShopModule } from './modules/shop/Shop.module';
+import { UserModule } from './modules/user/User.module';
 
 @Module({
-  // Importing service modules and integrating with app module
   imports: [
-    ProductCardModule, //ProductCard
-    MenuCategoriesModule, //menuCategories
-    CacheModule.register(), //Caching support
-    ConfigModule.forRoot(), //env config support
+    ProductModule,
+    CategoriesModule,
+    OrdersModule,
+    ShopModule,
+    UserModule,
+    CacheModule.register(),
+    ConfigModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [
     AppService,
     {
       provide: APP_INTERCEPTOR,
-      useClass: CacheInterceptor, // cache intercepting class <graphQl>
+      useClass: CacheInterceptor,
     },
   ],
 })

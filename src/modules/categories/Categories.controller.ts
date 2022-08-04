@@ -2,16 +2,16 @@ import { Controller, Get } from '@nestjs/common';
 import { CategoriesService } from './Categories.service';
 
 @Controller('categories')
-export class MenuCategoriesController {
+export class CategoriesController {
   constructor(private readonly appService: CategoriesService) {}
   // Returns top menu categories
   @Get('/menu')
-  findAll(): Promise<object> {
-    return this.appService.getCategories();
+  findMenuCategories(): Promise<object> {
+    return this.appService.getMenuCategories();
   }
-  // Returns product card collections and relating categories
-  @Get('/productCollections')
-  findCollections(): Promise<object> {
-    return this.appService.getCollections();
+  // Returns product card collections and relating categories for landing page
+  @Get('/productSections')
+  findProductCollections(): Promise<object> {
+    return this.appService.getProductSections();
   }
 }
