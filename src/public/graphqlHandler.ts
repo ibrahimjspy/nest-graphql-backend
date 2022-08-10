@@ -33,5 +33,5 @@ const graphqlExceptionHandler = (error): object => {
   };
   console.log('graphql error', error_response ? error_response : 'server side');
   const error_code: number = error.type ? 500 : error?.response?.status;
-  return { status: error_code };
+  return { status: error_code == 200 ? 405 : error_code };
 };

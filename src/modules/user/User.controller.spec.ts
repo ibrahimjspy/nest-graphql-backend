@@ -10,7 +10,7 @@ describe('Shop controller unit tests', () => {
   let appController: UserController;
   const queryError = { status: 400 };
   const systemError = { status: 500 };
-  const federationSystemError = { status: 405 };
+  const federationInternalError = { status: 405 };
   const testId = { id: 'UHJvZHVjdFR5cGU6Mw==' };
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
@@ -39,14 +39,14 @@ describe('Shop controller unit tests', () => {
       const data = await appController.findCheckoutDataById(testId);
       expect(data).not.toEqual(queryError);
       expect(data).not.toEqual(systemError);
-      expect(data).not.toEqual(federationSystemError);
+      expect(data).not.toEqual(federationInternalError);
     });
 
     it('shoppingCart async test', async () => {
       const data = await appController.findShoppingCartDataById(testId);
       expect(data).not.toEqual(queryError);
       expect(data).not.toEqual(systemError);
-      expect(data).not.toEqual(federationSystemError);
+      expect(data).not.toEqual(federationInternalError);
     });
   });
 });

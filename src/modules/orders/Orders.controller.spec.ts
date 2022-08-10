@@ -10,7 +10,7 @@ describe('Orders controller unit tests', () => {
   let appController: OrdersController;
   const queryError = { status: 400 };
   const systemError = { status: 500 };
-  const federationSystemError = { status: 405 };
+  const federationInternalError = { status: 405 };
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
@@ -36,7 +36,7 @@ describe('Orders controller unit tests', () => {
       const data = await appController.findDashboard('test');
       expect(data).not.toEqual(queryError);
       expect(data).not.toEqual(systemError);
-      expect(data).not.toEqual(federationSystemError);
+      expect(data).not.toEqual(federationInternalError);
     });
   });
 });
