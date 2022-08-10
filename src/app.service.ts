@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { fetchMock } from './graphql/handlers/test';
+import { fetchMock } from '../test/graphql/test';
 
 @Injectable()
 export class AppService {
