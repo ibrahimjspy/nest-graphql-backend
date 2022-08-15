@@ -22,8 +22,8 @@ export const graphqlCall: GraphqlCall = async (Query, Mock?) => {
     });
   return Data;
 };
-
-const graphqlExceptionHandler = (error): object => {
+// Todo apply custom error handling taking whole catch thing at functional level
+export const graphqlExceptionHandler = (error): object => {
   const system_error = 'system error (graphql server not running)';
   const federation_response = error?.response?.error
     ? system_error
@@ -33,5 +33,5 @@ const graphqlExceptionHandler = (error): object => {
   };
   console.log('graphql error', error_response ? error_response : 'server side');
   const error_code: number = error.type ? 500 : error?.response?.status;
-  return { status: error_code == 200 ? 405 : error_code };
+  return { status: error_code == 200 ? 405 : error_code, hello: 'ibrahim' };
 };

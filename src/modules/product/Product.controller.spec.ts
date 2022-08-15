@@ -44,31 +44,34 @@ describe('ProductController', () => {
 
     it('default productCards async test', async () => {
       const data = await appController.findDefaultCards();
-      expect(data).not.toEqual(queryError);
-      expect(data).not.toEqual(systemError);
-      expect(data).not.toEqual(federationInternalError);
+      expect(data).toEqual(objectContainingCheck(queryError));
+      expect(data).toEqual(objectContainingCheck(systemError));
+      expect(data).toEqual(objectContainingCheck(federationInternalError));
     });
 
     it('productCards by collections async test', async () => {
       const data = await appController.findProductCardsByListId(testId);
-      expect(data).not.toEqual(queryError);
-      expect(data).not.toEqual(systemError);
-      expect(data).not.toEqual(federationInternalError);
+      expect(data).toEqual(objectContainingCheck(queryError));
+      expect(data).toEqual(objectContainingCheck(systemError));
+      expect(data).toEqual(objectContainingCheck(federationInternalError));
     });
 
     it('product details async test', async () => {
       const data = await appController.findProductDetailsBySlug('test');
-      expect(data).not.toEqual(queryError);
-      expect(data).not.toEqual(systemError);
-      expect(data).not.toEqual(federationInternalError);
+      expect(data).toEqual(objectContainingCheck(queryError));
+      expect(data).toEqual(objectContainingCheck(systemError));
+      expect(data).toEqual(objectContainingCheck(federationInternalError));
     });
 
     it('product list page async test', async () => {
       const categoryTestId = { id: 'Q2F0ZWdvcnk6MQ==' };
       const data = await appController.findProductListById(categoryTestId);
-      expect(data).not.toEqual(queryError);
-      expect(data).not.toEqual(systemError);
-      expect(data).not.toEqual(federationInternalError);
+      expect(data).toEqual(objectContainingCheck(queryError));
+      expect(data).toEqual(objectContainingCheck(systemError));
+      expect(data).toEqual(objectContainingCheck(federationInternalError));
     });
   });
 });
+export const objectContainingCheck = (errorCode: object) => {
+  return expect.not.objectContaining(errorCode);
+};
