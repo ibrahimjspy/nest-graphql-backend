@@ -22,7 +22,7 @@ export const graphqlCall: GraphqlCall = async (Query, Mock?) => {
     });
   return Data;
 };
-// Todo apply custom error handling taking whole catch thing at functional level
+// TODO apply custom error handling taking whole catch thing at functional level
 export const graphqlExceptionHandler = (error): object => {
   const system_error = 'system error (graphql server not running)';
   const federation_response = error?.response?.error

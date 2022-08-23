@@ -11,7 +11,7 @@ describe('ProductController', () => {
   const queryError = { status: 400 };
   const systemError = { status: 500 };
   const federationInternalError = { status: 405 };
-  const testId = { id: 'UHJvZHVjdFR5cGU6Mw==' };
+  const testId = { id: 'Q2F0ZWdvcnk6Mg==' };
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
@@ -64,7 +64,7 @@ describe('ProductController', () => {
     });
 
     it('product list page async test', async () => {
-      const categoryTestId = { id: 'Q2F0ZWdvcnk6MQ==' };
+      const categoryTestId = { id: 'Q2F0ZWdvcnk6Mg==' };
       const data = await appController.findProductListById(categoryTestId);
       expect(data).toEqual(objectContainingCheck(queryError));
       expect(data).toEqual(objectContainingCheck(systemError));
