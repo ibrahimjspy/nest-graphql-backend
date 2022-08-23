@@ -31,7 +31,11 @@ export const graphqlExceptionHandler = (error): object => {
   const error_response = {
     message: error.type ? system_error : federation_response,
   };
-  console.log('graphql error', error_response ? error_response : 'server side');
+  const error_message = error_response ? error_response : 'server side';
   const error_code: number = error.type ? 500 : error?.response?.status;
-  return { status: error_code == 200 ? 405 : error_code, hello: 'ibrahim' };
+  console.log('graphql error', error_message);
+  return {
+    status: error_code == 200 ? 405 : error_code,
+    graphql_error: error_message,
+  };
 };

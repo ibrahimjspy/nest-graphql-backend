@@ -36,16 +36,19 @@ describe('Categories controller unit tests', () => {
 
     it('menuCategories async test', async () => {
       const data = await appController.findMenuCategories();
-      expect(data).not.toEqual(queryError);
-      expect(data).not.toEqual(systemError);
-      expect(data).not.toEqual(federationInternalError);
+      expect(data).toEqual(objectContainingCheck(queryError));
+      expect(data).toEqual(objectContainingCheck(systemError));
+      expect(data).toEqual(objectContainingCheck(federationInternalError));
     });
 
     it('productCollections async test', async () => {
       const data = await appController.findProductCollections();
-      expect(data).not.toEqual(queryError);
-      expect(data).not.toEqual(systemError);
-      expect(data).not.toEqual(federationInternalError);
+      expect(data).toEqual(objectContainingCheck(queryError));
+      expect(data).toEqual(objectContainingCheck(systemError));
+      expect(data).toEqual(objectContainingCheck(federationInternalError));
     });
   });
 });
+export const objectContainingCheck = (errorCode: object) => {
+  return expect.not.objectContaining(errorCode);
+};

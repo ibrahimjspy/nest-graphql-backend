@@ -12,18 +12,32 @@ export const productListPageHandler = async (id: string): Promise<object> => {
   }
 };
 
-export const singleProductDetailsHandler = (slug: string): Promise<object> => {
-  return graphqlCall(_.productDetailsQuery(slug));
+export const singleProductDetailsHandler = async (
+  slug: string,
+): Promise<object> => {
+  try {
+    return await graphqlCall(_.productDetailsQuery(slug));
+  } catch (err) {
+    return graphqlExceptionHandler(err);
+  }
 };
 
-export const productCardsByCategoriesHandler = (
+export const productCardsByCategoriesHandler = async (
   id: string,
 ): Promise<object> => {
-  return graphqlCall(_.productCardsByListIdQuery(id));
+  try {
+    return await graphqlCall(_.productCardsByListIdQuery(id));
+  } catch (err) {
+    return graphqlExceptionHandler(err);
+  }
 };
 
-export const productCardHandler = (): Promise<object> => {
-  return graphqlCall(_.productCardsDefaultQuery());
+export const productCardHandler = async (): Promise<object> => {
+  try {
+    return await graphqlCall(_.productCardsDefaultQuery());
+  } catch (err) {
+    return graphqlExceptionHandler(err);
+  }
 };
 
 // export const bundleServiceHandler = () => {
