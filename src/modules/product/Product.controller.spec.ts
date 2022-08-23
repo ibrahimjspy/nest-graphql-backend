@@ -10,8 +10,8 @@ describe('ProductController', () => {
   let appController: ProductController;
   const queryError = { status: 400 };
   const systemError = { status: 500 };
-  const federationSystemError = { status: 405 };
-  const testId = { id: 'UHJvZHVjdFR5cGU6Mw==' };
+  const federationInternalError = { status: 405 };
+  const testId = { id: 'Q2F0ZWdvcnk6Mg==' };
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
@@ -44,31 +44,34 @@ describe('ProductController', () => {
 
     it('default productCards async test', async () => {
       const data = await appController.findDefaultCards();
-      expect(data).not.toEqual(queryError);
-      expect(data).not.toEqual(systemError);
-      expect(data).not.toEqual(federationSystemError);
+      expect(data).toEqual(objectContainingCheck(queryError));
+      expect(data).toEqual(objectContainingCheck(systemError));
+      expect(data).toEqual(objectContainingCheck(federationInternalError));
     });
 
     it('productCards by collections async test', async () => {
       const data = await appController.findProductCardsByListId(testId);
-      expect(data).not.toEqual(queryError);
-      expect(data).not.toEqual(systemError);
-      expect(data).not.toEqual(federationSystemError);
+      expect(data).toEqual(objectContainingCheck(queryError));
+      expect(data).toEqual(objectContainingCheck(systemError));
+      expect(data).toEqual(objectContainingCheck(federationInternalError));
     });
 
     it('product details async test', async () => {
       const data = await appController.findProductDetailsBySlug('test');
-      expect(data).not.toEqual(queryError);
-      expect(data).not.toEqual(systemError);
-      expect(data).not.toEqual(federationSystemError);
+      expect(data).toEqual(objectContainingCheck(queryError));
+      expect(data).toEqual(objectContainingCheck(systemError));
+      expect(data).toEqual(objectContainingCheck(federationInternalError));
     });
 
     it('product list page async test', async () => {
-      const categoryTestId = { id: 'Q2F0ZWdvcnk6MQ==' };
+      const categoryTestId = { id: 'Q2F0ZWdvcnk6Mg==' };
       const data = await appController.findProductListById(categoryTestId);
-      expect(data).not.toEqual(queryError);
-      expect(data).not.toEqual(systemError);
-      expect(data).not.toEqual(federationSystemError);
+      expect(data).toEqual(objectContainingCheck(queryError));
+      expect(data).toEqual(objectContainingCheck(systemError));
+      expect(data).toEqual(objectContainingCheck(federationInternalError));
     });
   });
 });
+export const objectContainingCheck = (errorCode: object) => {
+  return expect.not.objectContaining(errorCode);
+};

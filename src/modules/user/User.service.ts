@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   checkoutHandler,
   shoppingCartHandler,
-} from 'src/graphql/handlers/user/user';
+} from 'src/graphql/handlers/user';
 
 @Injectable()
 export class UserService {

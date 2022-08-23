@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { carouselHandler } from 'src/graphql/handlers/shop/shop';
+import { carouselHandler } from 'src/graphql/handlers/shop';
 
 @Injectable()
 export class ShopService {
