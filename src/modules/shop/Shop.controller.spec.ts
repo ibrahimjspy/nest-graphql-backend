@@ -35,6 +35,7 @@ describe('Shop controller unit tests', () => {
       expect(data).toEqual(objectContainingCheck(queryError));
       expect(data).toEqual(objectContainingCheck(systemError));
       expect(data).toEqual(objectContainingCheck(federationInternalError));
+      expect(data).not.toHaveProperty('graphql_error');
     });
   });
 });

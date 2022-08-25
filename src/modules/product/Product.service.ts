@@ -13,8 +13,8 @@ export class ProductService {
     return productCardHandler();
   }
   //Product cards by collection ~ category <id>
-  public getProductsByCollections(id: string): Promise<object> {
-    console.log(id ? id : 'not found');
+  public getProductsByCategory(id: string): Promise<object> {
+    console.log(id ? id : 'not found', ' category id ');
     return productCardsByCategoriesHandler(id);
   }
   // Single product details by <slug> {Quick View , SingleProductDetailsPage}
