@@ -33,7 +33,7 @@ describe('ProductController', () => {
     });
 
     it('productCards by collections validation test', () => {
-      expect(appController.findProductCardsByListId('Id')).toBeTruthy();
+      expect(appController.findProductCardsByCategoryId(testId)).toBeTruthy();
     });
 
     it('product list page validation test', () => {
@@ -47,13 +47,15 @@ describe('ProductController', () => {
       expect(data).toEqual(objectContainingCheck(queryError));
       expect(data).toEqual(objectContainingCheck(systemError));
       expect(data).toEqual(objectContainingCheck(federationInternalError));
+      expect(data).not.toHaveProperty('graphql_error');
     });
 
     it('productCards by collections async test', async () => {
-      const data = await appController.findProductCardsByListId(testId);
+      const data = await appController.findProductCardsByCategoryId(testId);
       expect(data).toEqual(objectContainingCheck(queryError));
       expect(data).toEqual(objectContainingCheck(systemError));
-      expect(data).toEqual(objectContainingCheck(federationInternalError));
+      expect(data).toEqual(objectContainingCheck({ status: 405 }));
+      expect(data).not.toHaveProperty('graphql_error');
     });
 
     it('product details async test', async () => {
@@ -61,6 +63,7 @@ describe('ProductController', () => {
       expect(data).toEqual(objectContainingCheck(queryError));
       expect(data).toEqual(objectContainingCheck(systemError));
       expect(data).toEqual(objectContainingCheck(federationInternalError));
+      expect(data).not.toHaveProperty('graphql_error');
     });
 
     it('product list page async test', async () => {
@@ -69,6 +72,7 @@ describe('ProductController', () => {
       expect(data).toEqual(objectContainingCheck(queryError));
       expect(data).toEqual(objectContainingCheck(systemError));
       expect(data).toEqual(objectContainingCheck(federationInternalError));
+      expect(data).not.toHaveProperty('graphql_error');
     });
   });
 });
