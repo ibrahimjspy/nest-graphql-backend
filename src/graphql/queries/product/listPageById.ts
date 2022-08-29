@@ -5,7 +5,7 @@ const federationQuery = (id): string => {
   return gql`
     query {
       products(
-        first: 6
+        first: 100
         channel: "default-channel"
         filter: { categories: ["${id}"] }
       ) {
