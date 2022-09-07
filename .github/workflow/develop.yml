@@ -37,23 +37,14 @@ jobs:
         run: rm -rf .env
 ​
       # Create and Update .env file values
-      - name: Create .env file with Mock Graphql Endpoint
-        run: (echo "MOCK_GRAPHQL_ENDPOINT=${{ secrets.MOCK_GRAPHQL_ENDPOINT }}") >> .env
-​
-      - name: Update .env file with graphql endpoint
-        run: (echo "GRAPHQL_ENDPOINT=${{ secrets.GRAPHQL_ENDPOINT }}") >> .env
-​
-      - name: Update .env file with DOCKER
-        run: (echo "DOCKER=${{ secrets.DOCKER }}") >> .env
-​
-      - name: Update .env file with port
-        run: (echo "PORT=${{ secrets.PORT }}") >> .env
-​
-      - name: Update .env file with cors origins
-        run: (echo "CORS_ORIGINS=${{ secrets.CORS_ORIGINS }}") >> .env
-​
-      - name: Update .env file with mock
-        run: (echo "MOCK=${{ secrets.MOCK }}") >> .env
+      - name: Create .env file
+        run: | 
+          (echo "MOCK_GRAPHQL_ENDPOINT=${{ secrets.MOCK_GRAPHQL_ENDPOINT }}") >> .env
+          (echo "GRAPHQL_ENDPOINT=${{ secrets.GRAPHQL_ENDPOINT }}") >> .env
+          (echo "DOCKER=${{ secrets.DOCKER }}") >> .env
+          (echo "PORT=${{ secrets.PORT }}") >> .env
+          (echo "CORS_ORIGINS=${{ secrets.CORS_ORIGINS }}") >> .env
+          (echo "MOCK=${{ secrets.MOCK }}") >> .env
 ​
         # Docker login
       - name: Login to DockerHub
