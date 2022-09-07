@@ -28,6 +28,21 @@ const federationQuery = (variantIds: Array<string>) => {
                   name
                 }
               }
+              pricing {
+                price {
+                  net {
+                    amount
+                    currency
+                  }
+                }
+                onSale
+                discount{
+                  gross{
+                    amount
+                    currency
+                  }
+                }
+              }
             }
           }
         }
