@@ -24,6 +24,7 @@ const federationQuery = (slug): string => {
           }
         }
         variants {
+          id
           attributes {
             attribute {
               name
