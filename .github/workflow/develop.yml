@@ -1,16 +1,16 @@
 # This is a basic workflow to help you get started with Actions
-​
+
 name: Middleware CI/CD
-​
+
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "develop" branch
   push:
     branches: ['develop']
-​
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-​
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains multiple jobs
@@ -20,22 +20,22 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
-​
+
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout Repository
         uses: actions/checkout@v3
-​
+
       - name: setup node
         uses: actions/setup-node@master
         with:
           node-version: ${{ matrix.node-version }}
-​
+
       # Delete old .env file
       - name: delete old .env
         run: rm -rf .env
-​
+
       # Create and Update .env file values
       - name: Create .env file
         run: | 
@@ -45,7 +45,7 @@ jobs:
           (echo "PORT=${{ secrets.PORT }}") >> .env
           (echo "CORS_ORIGINS=${{ secrets.CORS_ORIGINS }}") >> .env
           (echo "MOCK=${{ secrets.MOCK }}") >> .env
-​
+
         # Docker login
       - name: Login to DockerHub
         env:
@@ -53,17 +53,17 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
           docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-​
+
       # Docker build
       - name: Build and push
         run: |
           docker build . -t ${{secrets.DOCKER_USER}}/middleware
           docker push ${{secrets.DOCKER_USER}}/middleware
-​
+
   Deploy:
     needs: build
     runs-on: ubuntu-latest
-​
+
     steps:
       - uses: actions/checkout@v2
       - name: Deploy in EC2
@@ -71,7 +71,7 @@ jobs:
           PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY  }}
           HOSTNAME: ${{ secrets.HOSTNAME  }}
           USER_NAME: ${{ secrets.USER_NAME  }}
-​
+
         run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
