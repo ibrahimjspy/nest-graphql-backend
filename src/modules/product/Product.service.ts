@@ -4,6 +4,7 @@ import {
   productCardsByCategoriesHandler,
   productListPageHandler,
   singleProductDetailsHandler,
+  bundleServiceHandler,
 } from 'src/graphql/handlers/product';
 
 @Injectable()
@@ -25,5 +26,9 @@ export class ProductService {
   // Product list page data relating to category <slug>
   public getProductListPageById(id: string): Promise<object> {
     return productListPageHandler(id);
+  }
+  // Bundles list relating to variant ids
+  public getBundlesByVariantIds(variantIds: Array<string>): Promise<object> {
+    return bundleServiceHandler(variantIds);
   }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body } from '@nestjs/common';
 import { ProductService } from './Product.service';
 
 @Controller('product')
@@ -23,5 +23,10 @@ export class ProductController {
   @Get('list/:id')
   findProductListById(@Param() params): Promise<object> {
     return this.appService.getProductListPageById(params.id);
+  }
+  // Returns bundles list w.r.t provided <variantIDs>
+  @Post('bundles')
+  findBundlesByVariantIds(@Body() body): Promise<object> {
+    return this.appService.getBundlesByVariantIds(body?.variantIds);
   }
 }
