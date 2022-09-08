@@ -1,38 +1,28 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 
-const federationQuery = (number: string): string => {
+const federationQuery = (userId: string): string => {
   // query linking with backend
   return gql`
-    query {
-      categories(first: ${number}) {
-        edges {
-          node {
-            name
+  query {
+    getCheckout(
+      Input: {
+        userId: "${userId}"
+      }
+    ) {
+      bundles {
+        bundle {
+          id
+          shop {
             id
-            slug
-            children(first: 2) {
-              edges {
-                node {
-                  name
-                  id
-                  slug
-                  children(first: 2) {
-                    edges {
-                      node {
-                        name
-                        id
-                        slug
-                      }
-                    }
-                  }
-                }
-              }
-            }
           }
         }
+        isSelected
       }
+      checkoutId
+      userId
     }
+  }
   `;
 };
 

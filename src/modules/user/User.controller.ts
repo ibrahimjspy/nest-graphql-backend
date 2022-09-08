@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Post, Param } from '@nestjs/common';
 import { UserService } from './User.service';
 
 @Controller('user')
@@ -13,5 +13,10 @@ export class UserController {
   @Get('/checkout/:id')
   findCheckoutDataById(@Param() params): Promise<object> {
     return this.appService.getCheckoutDataById(params.id);
+  }
+  // Add to cart
+  @Post('addToCart')
+  addBundlesToCart(@Body() body): Promise<object> {
+    return this.appService.addToCart(body?.userId, body?.bundles);
   }
 }
