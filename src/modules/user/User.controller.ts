@@ -19,4 +19,12 @@ export class UserController {
   addBundlesToCart(@Body() body): Promise<object> {
     return this.appService.addToCart(body?.userId, body?.bundles);
   }
+  // Delete bundle
+  @Post('deleteBundleFromCart')
+  deleteCartBundle(@Body() body): Promise<object> {
+    return this.appService.deleteBundleFromCart(
+      body?.userId,
+      body?.checkoutBundleIds,
+    );
+  }
 }
