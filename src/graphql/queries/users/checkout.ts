@@ -20,8 +20,36 @@ const federationQuery = (userId: string): string => {
               name
               description
               slug
+              variants {
+                quantity
+                variant {
+                  id
+                  name
+                  sku
+                  images {
+                    url
+                  }
+                  pricing {
+                    price {
+                      net {
+                        amount
+                        currency
+                      }
+                    }
+                    onSale
+                    discount{
+                      gross{
+                        amount
+                        currency
+                      }
+                    }
+                  }
+                }
+              }
               shop {
                   id
+                  name
+                  madeIn
               }
           }
       }

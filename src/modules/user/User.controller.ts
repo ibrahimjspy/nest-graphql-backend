@@ -5,9 +5,9 @@ import { UserService } from './User.service';
 export class UserController {
   constructor(private readonly appService: UserService) {}
   // Returns shoppingCart data
-  @Get('/shoppingCart/:id')
-  findShoppingCartDataById(@Param() params): Promise<object> {
-    return this.appService.getShoppingCartDataById(params.id);
+  @Post('/shoppingCart')
+  findShoppingCartDataById(@Body() body): Promise<object> {
+    return this.appService.getShoppingCartDataById(body.userId);
   }
   // Returns checkout data
   @Get('/checkout/:id')
