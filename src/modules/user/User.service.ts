@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   getCheckoutHandler,
   addToCartHandler,
+  deleteBundleFromCartHandler,
 } from 'src/graphql/handlers/user';
 
 interface BundleTypes {
@@ -21,5 +22,11 @@ export class UserService {
     bundles: Array<BundleTypes>,
   ): Promise<object> {
     return addToCartHandler(userId, bundles);
+  }
+  public deleteBundleFromCart(
+    userId: string,
+    checkoutBundleIds: Array<string>,
+  ): Promise<object> {
+    return deleteBundleFromCartHandler(userId, checkoutBundleIds);
   }
 }

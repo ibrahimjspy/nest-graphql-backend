@@ -2,13 +2,15 @@ import {
   graphqlCall,
   graphqlExceptionHandler,
 } from 'src/public/graphqlHandler';
-import { getCheckoutQuery } from 'src/graphql/queries/users/checkout';
+import { getCheckoutQuery } from 'src/graphql/queries/users/getCheckout';
 import { shoppingCartQuery } from 'src/graphql/queries/users/shoppingCart';
 import { bundlesQuery } from 'src/graphql/queries/users/bundlesByBundleIds';
 import { createCheckoutQuery } from 'src/graphql/queries/users/createCheckout';
 import { addCheckoutBundlesQuery } from 'src/graphql/queries/users/addCheckoutBundles';
 import { checkoutLinesAddQuery } from 'src/graphql/queries/users/checkoutLinesAdd';
-
+import { deleteCheckoutBundlesQuery } from 'src/graphql/queries/users/deleteCheckoutBundle';
+import { checkoutQuery } from 'src/graphql/queries/users/checkout';
+import { checkoutLinesDeleteQuery } from 'src/graphql/queries/users/checkoutLinesDelete';
 interface BundleTypes {
   bundleId: string;
   quantity: number;
@@ -48,11 +50,12 @@ export const addToCartHandler = async (
       );
     });
 
-    if (bundlesList.length) {
+    if ((bundlesList?.bundles || []).length) {
       const checkout: any = await getCheckoutHandler(userId);
       const checkoutId = checkout?.getCheckout?.checkoutId;
       if (checkoutId) {
-        return await checkoutLinesAddHandler(checkoutId, lines);
+        await checkoutLinesAddHandler(checkoutId, lines);
+        return await addCheckoutBundlesHandler(checkoutId, userId, bundles);
       } else {
         const newCheckout: any = await createCheckoutHandler(lines);
 
@@ -122,6 +125,70 @@ export const checkoutLinesAddHandler = async (
 ): Promise<object> => {
   try {
     return await graphqlCall(checkoutLinesAddQuery(checkoutId, bundles));
+  } catch (err) {
+    return graphqlExceptionHandler(err);
+  }
+};
+
+export const deleteBundleFromCartHandler = async (
+  userId: string,
+  checkoutBundleIds: Array<string>,
+): Promise<object> => {
+  try {
+    const checkoutData: any = await getCheckoutHandler(userId);
+    const checkoutId = checkoutData?.getCheckout?.checkoutId;
+    const bundles = checkoutData?.getCheckout?.bundles;
+    const targetBundle = (bundles || []).filter((b) =>
+      checkoutBundleIds.includes(b?.checkoutBundleId),
+    );
+    if (targetBundle?.length) {
+      const variantIds = [];
+      targetBundle.forEach((v) => {
+        v?.bundle?.variants.forEach((b) => variantIds.push(b?.variant?.id));
+      });
+      const saleorCheckout: any = await checkoutHandler(checkoutId);
+      const linesIds = saleorCheckout?.checkout?.lines;
+      const targetLineIds = (linesIds || []).filter((l) =>
+        variantIds.includes(l?.variant?.id),
+      );
+      await checkoutLinesDeleteHandler(targetLineIds);
+      return await deleteCheckoutBundlesHandler(checkoutBundleIds, checkoutId);
+    } else {
+      return { message: 'This bundle does not exist in the cart' };
+    }
+  } catch (err) {
+    return graphqlExceptionHandler(err);
+  }
+};
+
+export const checkoutHandler = async (checkoutId: string): Promise<object> => {
+  try {
+    return await graphqlCall(checkoutQuery(checkoutId));
+  } catch (err) {
+    return graphqlExceptionHandler(err);
+  }
+};
+
+export const checkoutLinesDeleteHandler = async (
+  linedIds: Array<string>,
+): Promise<object> => {
+  try {
+    return await graphqlCall(
+      checkoutLinesDeleteQuery((linedIds || []).map((l: any) => l?.id)),
+    );
+  } catch (err) {
+    return graphqlExceptionHandler(err);
+  }
+};
+
+export const deleteCheckoutBundlesHandler = async (
+  checkoutBundleIds: Array<string>,
+  checkoutId: string,
+): Promise<object> => {
+  try {
+    return await graphqlCall(
+      deleteCheckoutBundlesQuery(checkoutBundleIds, checkoutId),
+    );
   } catch (err) {
     return graphqlExceptionHandler(err);
   }
