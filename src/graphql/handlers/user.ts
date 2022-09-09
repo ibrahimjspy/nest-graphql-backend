@@ -39,7 +39,7 @@ export const addToCartHandler = async (
     });
 
     if (bundlesList) {
-      const checkout: any = await checkoutHandler(userId);
+      const checkout: any = await getCheckoutHandler(userId);
       const checkoutId = checkout?.getCheckout?.checkoutId;
       if (checkoutId) {
         return await checkoutLinesAddHandler(checkoutId, lines);
@@ -72,7 +72,7 @@ export const bundlesListHandler = async (
   }
 };
 
-export const checkoutHandler = async (id: string): Promise<object> => {
+export const getCheckoutHandler = async (id: string): Promise<object> => {
   try {
     return await graphqlCall(getCheckoutQuery(id));
   } catch (err) {
