@@ -76,5 +76,5 @@ const federationQuery = (userId: string): string => {
 };
 
 export const getCheckoutQuery = (id: string) => {
-  return graphqlQueryCheck(federationQuery(id), mockQuery());
+  return graphqlQueryCheck(federationQuery(id), federationQuery(id));
 };
