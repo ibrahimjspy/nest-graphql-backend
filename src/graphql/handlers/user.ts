@@ -28,17 +28,27 @@ export const addToCartHandler = async (
 ): Promise<object> => {
   try {
     const bundleIds = (bundles || []).map((b) => b?.bundleId);
+
+    //Fetching bundles list with all variants
     const bundlesList: any = await bundlesListHandler(bundleIds);
 
     const lines = [];
 
+    // Creating lines (items) for sending in checkout api
     bundlesList?.bundles.forEach((b) => {
+      const targetBundle = (bundles || []).find((a) => a?.bundleId === b?.id);
+
+      // Bundle quantity is multiplied with variant quantity for getting actual quantity ordered by user
+      const bundleQty = targetBundle?.quantity;
       b?.variants?.forEach((v) =>
-        lines.push({ quantity: v?.quantity, variantId: v?.variant?.id }),
+        lines.push({
+          quantity: bundleQty * v?.quantity,
+          variantId: v?.variant?.id,
+        }),
       );
     });
 
-    if (bundlesList) {
+    if (bundlesList.length) {
       const checkout: any = await getCheckoutHandler(userId);
       const checkoutId = checkout?.getCheckout?.checkoutId;
       if (checkoutId) {
@@ -56,6 +66,8 @@ export const addToCartHandler = async (
           );
         }
       }
+    } else {
+      return { message: 'No bundles found' };
     }
   } catch (err) {
     return graphqlExceptionHandler(err);
