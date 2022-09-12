@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Post, Param } from '@nestjs/common';
 import { UserService } from './User.service';
 
 @Controller('user')
@@ -20,7 +20,7 @@ export class UserController {
     return this.appService.addToCart(body?.userId, body?.bundles);
   }
   // Delete bundle
-  @Delete('deleteBundleFromCart')
+  @Post('deleteBundleFromCart')
   deleteCartBundle(@Body() body): Promise<object> {
     return this.appService.deleteBundleFromCart(
       body?.userId,
