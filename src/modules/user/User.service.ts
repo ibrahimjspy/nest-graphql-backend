@@ -3,6 +3,7 @@ import {
   getCheckoutHandler,
   addToCartHandler,
   deleteBundleFromCartHandler,
+  updateBundleFromCartHandler,
 } from 'src/graphql/handlers/user';
 
 interface BundleTypes {
@@ -28,5 +29,11 @@ export class UserService {
     checkoutBundleIds: Array<string>,
   ): Promise<object> {
     return deleteBundleFromCartHandler(userId, checkoutBundleIds);
+  }
+  public updateBundleFromCart(
+    userId: string,
+    bundles: Array<{ bundleId: string; quantity: number }>,
+  ): Promise<object> {
+    return updateBundleFromCartHandler(userId, bundles);
   }
 }
