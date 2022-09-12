@@ -51,16 +51,22 @@ export const addToCartHandler = async (
     });
 
     if ((bundlesList?.bundles || []).length) {
+      // Checkout call
       const checkout: any = await getCheckoutHandler(userId);
-      const checkoutId = checkout?.getCheckout?.checkoutId;
+      const checkoutId = checkout?.marketplaceCheckout?.checkoutId;
+
       if (checkoutId) {
         await checkoutLinesAddHandler(checkoutId, lines);
+
+        // add checkout to shop service
         return await addCheckoutBundlesHandler(checkoutId, userId, bundles);
       } else {
+        // create new checkout
         const newCheckout: any = await createCheckoutHandler(lines);
 
         const newCheckoutId = newCheckout?.checkoutCreate?.checkout?.id;
 
+        // add checkout to shop service
         if (newCheckoutId) {
           return await addCheckoutBundlesHandler(
             newCheckoutId,
@@ -136,8 +142,8 @@ export const deleteBundleFromCartHandler = async (
 ): Promise<object> => {
   try {
     const checkoutData: any = await getCheckoutHandler(userId);
-    const checkoutId = checkoutData?.getCheckout?.checkoutId;
-    const bundles = checkoutData?.getCheckout?.bundles;
+    const checkoutId = checkoutData?.marketplaceCheckout?.checkoutId;
+    const bundles = checkoutData?.marketplaceCheckout?.bundles;
     const targetBundle = (bundles || []).filter((b) =>
       checkoutBundleIds.includes(b?.checkoutBundleId),
     );

@@ -4,7 +4,7 @@ import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 const federationQuery = (userId: string): string => {
   return gql`
   query {
-    getCheckout(
+    marketplaceCheckout(
       Input: {
         userId: "${userId}VXNlcjoyMDU5ODA1MTg0"
       }
