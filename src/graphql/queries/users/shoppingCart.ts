@@ -5,7 +5,7 @@ const federationQuery = (userId: string): string => {
   // query linking with backend
   return gql`
   query {
-    getCheckout(
+    marketplaceCheckout(
       Input: {
         userId: "${userId}"
       }
