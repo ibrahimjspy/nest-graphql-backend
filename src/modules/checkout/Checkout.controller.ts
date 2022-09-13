@@ -1,18 +1,13 @@
 import { Body, Controller, Get, Post, Param } from '@nestjs/common';
-import { UserService } from './User.service';
+import { CheckoutService } from './Checkout.service';
 
-@Controller('user')
-export class UserController {
-  constructor(private readonly appService: UserService) {}
+@Controller('checkout')
+export class CheckoutController {
+  constructor(private readonly appService: CheckoutService) {}
   // Returns shoppingCart data
-  @Post('/shoppingCart')
+  @Post('shoppingCart')
   findShoppingCartDataById(@Body() body): Promise<object> {
-    return this.appService.getShoppingCartDataById(body.userId);
-  }
-  // Returns checkout data
-  @Get('/checkout/:id')
-  findCheckoutDataById(@Param() params): Promise<object> {
-    return this.appService.getCheckoutDataById(params.id);
+    return this.appService.getShoppingCartData(body.userId);
   }
   // Add to cart
   @Post('addToCart')

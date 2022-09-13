@@ -4,23 +4,16 @@ import {
   addToCartHandler,
   deleteBundleFromCartHandler,
   updateBundleFromCartHandler,
-} from 'src/graphql/handlers/user';
+} from 'src/graphql/handlers/checkout';
 
-interface BundleTypes {
-  bundleId: string;
-  quantity: number;
-}
 @Injectable()
-export class UserService {
-  public getCheckoutDataById(id: string): Promise<object> {
-    return getCheckoutHandler(id);
-  }
-  public getShoppingCartDataById(id: string): Promise<object> {
+export class CheckoutService {
+  public getShoppingCartData(id: string): Promise<object> {
     return getCheckoutHandler(id);
   }
   public addToCart(
     userId: string,
-    bundles: Array<BundleTypes>,
+    bundles: Array<{ bundleId: string; quantity: number }>,
   ): Promise<object> {
     return addToCartHandler(userId, bundles);
   }

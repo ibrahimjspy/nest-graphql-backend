@@ -69,9 +69,16 @@ const federationQuery = (
               }
             }
             shop {
-                id
-                name
-                madeIn
+              id
+              name
+              email
+              url
+              madeIn
+              minOrder
+              description
+              about
+              returnPolicy
+              storePolicy
             }
         }
     }
