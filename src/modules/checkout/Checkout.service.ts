@@ -4,6 +4,7 @@ import {
   addToCartHandler,
   deleteBundleFromCartHandler,
   updateBundleFromCartHandler,
+  bundleSelectionHandler,
 } from 'src/graphql/handlers/checkout';
 
 @Injectable()
@@ -28,5 +29,17 @@ export class CheckoutService {
     bundles: Array<{ bundleId: string; quantity: number }>,
   ): Promise<object> {
     return updateBundleFromCartHandler(userId, bundles);
+  }
+  public setBundleAsSelected(
+    userId: string,
+    bundleId: string,
+  ): Promise<object> {
+    return bundleSelectionHandler(userId, bundleId, true);
+  }
+  public setBundleAsUnselected(
+    userId: string,
+    bundleId: string,
+  ): Promise<object> {
+    return bundleSelectionHandler(userId, bundleId, false);
   }
 }

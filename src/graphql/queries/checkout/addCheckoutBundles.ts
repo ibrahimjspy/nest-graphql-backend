@@ -15,6 +15,7 @@ const federationQuery = (
         userId: "${userId}",
         bundles: ${JSON.stringify(bundles)
           .replace(/"bundleId"/g, 'bundleId')
+          .replace(/"isSelected"/g, 'isSelected')
           .replace(/"quantity"/g, 'quantity')}
       }
     ) {

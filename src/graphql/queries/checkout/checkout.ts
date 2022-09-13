@@ -11,6 +11,7 @@ const federationQuery = (checkoutId: string) => {
       id
       lines {
         id
+        quantity
         variant {
           id
         }
