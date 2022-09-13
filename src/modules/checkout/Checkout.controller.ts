@@ -5,7 +5,7 @@ import { CheckoutService } from './Checkout.service';
 export class CheckoutController {
   constructor(private readonly appService: CheckoutService) {}
   // Returns shoppingCart data
-  @Get('shoppingCart')
+  @Post('shoppingCart')
   findShoppingCartDataById(@Body() body): Promise<object> {
     return this.appService.getShoppingCartData(body.userId);
   }
