@@ -28,10 +28,10 @@ export class CheckoutController {
   }
   @Put('selectBundle')
   selectThisShop(@Body() body): Promise<object> {
-    return this.appService.setBundleAsSelected(body?.userId, body?.bundleId);
+    return this.appService.setBundleAsSelected(body?.userId, body?.bundleIds);
   }
   @Put('unselectBundle')
   unSelectThisShop(@Body() body): Promise<object> {
-    return this.appService.setBundleAsUnselected(body?.userId, body?.bundleId);
+    return this.appService.setBundleAsUnselected(body?.userId, body?.bundleIds);
   }
 }
