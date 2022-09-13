@@ -32,14 +32,14 @@ export class CheckoutService {
   }
   public setBundleAsSelected(
     userId: string,
-    bundleId: string,
+    bundleIds: Array<string>,
   ): Promise<object> {
-    return bundleSelectionHandler(userId, bundleId, true);
+    return bundleSelectionHandler(userId, bundleIds, true);
   }
   public setBundleAsUnselected(
     userId: string,
-    bundleId: string,
+    bundleIds: Array<string>,
   ): Promise<object> {
-    return bundleSelectionHandler(userId, bundleId, false);
+    return bundleSelectionHandler(userId, bundleIds, false);
   }
 }

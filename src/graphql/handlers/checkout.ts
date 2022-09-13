@@ -85,14 +85,14 @@ export const addToCartHandler = async (
 
 export const bundleSelectionHandler = async (
   userId: string,
-  bundleId: string,
+  bundleIds: Array<string>,
   isSelected: boolean,
 ): Promise<object> => {
   try {
     const checkoutData: any = await getCheckoutHandler(userId);
     const checkoutId = checkoutData?.marketplaceCheckout?.checkoutId;
     const bundles = checkoutData?.marketplaceCheckout?.bundles;
-    const targetBundle = getTargetBundleByBundleId(bundles, bundleId);
+    const targetBundle = getTargetBundleByBundleId(bundles, bundleIds);
     if (targetBundle?.length) {
       const variantIds = getVariantIds(targetBundle);
       const saleorCheckout: any = await checkoutHandler(checkoutId);
