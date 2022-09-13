@@ -6,7 +6,7 @@ const federationQuery = (userId: string): string => {
   query {
     marketplaceCheckout(
       Input: {
-        userId: "${userId}VXNlcjoyMDU5ODA1MTg0"
+        userId: "${userId}"
       }
     ) {
       bundles {

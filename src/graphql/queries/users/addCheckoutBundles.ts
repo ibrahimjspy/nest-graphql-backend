@@ -30,8 +30,48 @@ const federationQuery = (
             name
             description
             slug
+            variants {
+              quantity
+              variant {
+                id
+                name
+                sku
+                attributes {
+                    attribute {
+                        name
+                    }
+                    values {
+                        name
+                    }
+                }
+                product {
+                    name
+                    id
+                    thumbnail {
+                      url
+                    }
+                }
+                pricing {
+                  price {
+                    net {
+                      amount
+                      currency
+                    }
+                  }
+                  onSale
+                  discount{
+                    gross{
+                      amount
+                      currency
+                    }
+                  }
+                }
+              }
+            }
             shop {
                 id
+                name
+                madeIn
             }
         }
     }
