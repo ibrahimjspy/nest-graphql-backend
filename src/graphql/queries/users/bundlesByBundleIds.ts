@@ -15,6 +15,18 @@ const federationQuery = (bundleIds: Array<string>) => {
           name
           description
           slug
+          shop {
+            id
+            name
+            email
+            url
+            madeIn
+            minOrder
+            description
+            about
+            returnPolicy
+            storePolicy
+          }
           variants {
             quantity
             variant {

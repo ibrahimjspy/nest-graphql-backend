@@ -7,7 +7,7 @@ import { ProductModule } from './modules/product/Product.module';
 import { CategoriesModule } from './modules/categories/Categories.module';
 import { OrdersModule } from './modules/orders/Orders.module';
 import { ShopModule } from './modules/shop/Shop.module';
-import { UserModule } from './modules/user/User.module';
+import { CheckoutModule } from './modules/checkout/Checkout.module';
 
 @Module({
   imports: [
@@ -15,7 +15,7 @@ import { UserModule } from './modules/user/User.module';
     CategoriesModule,
     OrdersModule,
     ShopModule,
-    UserModule,
+    CheckoutModule,
     CacheModule.register(),
     ConfigModule.forRoot(),
   ],
