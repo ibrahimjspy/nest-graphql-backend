@@ -9,4 +9,9 @@ export class OrdersController {
   findDashboard(@Param() params): Promise<object> {
     return this.appService.getDashboardDataById(params.id);
   }
+  // Returns shop orders for orders page
+  @Get('/shopOrdersById/:id')
+  findShopOrders(@Param() params): Promise<object> {
+    return this.appService.getShopOrdersDataById(params.id);
+  }
 }
