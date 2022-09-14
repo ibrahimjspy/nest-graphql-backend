@@ -7,6 +7,7 @@ import {
   bundleSelectionHandler,
   shippingAddressHandler,
   billingAddressHandler,
+  shippingBillingAddress,
 } from 'src/graphql/handlers/checkout';
 
 @Injectable()
@@ -49,5 +50,8 @@ export class CheckoutService {
   }
   public addBillingAddress(checkoutId, addressDetails): Promise<object> {
     return billingAddressHandler(checkoutId, addressDetails);
+  }
+  public getShippingBillingAddress(checkoutId: string): Promise<object> {
+    return shippingBillingAddress(checkoutId);
   }
 }
