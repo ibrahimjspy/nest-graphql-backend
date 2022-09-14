@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Get, Put } from '@nestjs/common';
+import { Body, Controller, Post, Get, Put, Param } from '@nestjs/common';
 import { CheckoutService } from './Checkout.service';
 
 @Controller('checkout')
@@ -47,5 +47,9 @@ export class CheckoutController {
       body?.checkoutId,
       body?.addressDetails,
     );
+  }
+  @Get('shippingBillingAddress/:checkoutId')
+  shippingBillingAddress(@Param() params): Promise<object> {
+    return this.appService.getShippingBillingAddress(params?.checkoutId);
   }
 }
