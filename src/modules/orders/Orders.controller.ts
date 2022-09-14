@@ -14,4 +14,9 @@ export class OrdersController {
   findShopOrders(@Param() params): Promise<object> {
     return this.appService.getShopOrdersDataById(params.id);
   }
+  // Returns shop order fulfillments for order page
+  @Get('/shopOrderFulfillmentsById/:id')
+  findShopOrderFulfillments(@Param() params): Promise<object> {
+    return this.appService.getShopOrderFulfillmentsDataById(params.id);
+  }
 }

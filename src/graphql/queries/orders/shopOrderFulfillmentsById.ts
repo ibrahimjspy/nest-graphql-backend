@@ -4,17 +4,19 @@ import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 const federationQuery = (id: string): string => {
   return gql`
   query{
-    marketplaceShop(
+    marketplaceOrder(
       filter: {
         id: "${id}"
       }
-    ){
-      name
-      orders{
+    )
+    {
+      id
+      orderId
+      fulfillments{
         id
-        orderId
-        orderBundlesWithQuantities{
-          orderBundle{
+        fulfillmentId
+        fulfillmentBundlesWithQuantities{
+          fulfillmentBundle{
             bundle{
               id
               variants{
@@ -55,6 +57,6 @@ const mockQuery = () => {
   `;
 };
 // returns shop orders query based on federation and mock check
-export const shopOrdersQuery = (id: string) => {
+export const shopOrderFulfillmentsQuery = (id: string) => {
   return graphqlQueryCheck(federationQuery(id), mockQuery());
 };
