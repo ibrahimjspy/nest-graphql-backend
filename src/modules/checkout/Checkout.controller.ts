@@ -34,4 +34,18 @@ export class CheckoutController {
   unSelectThisShop(@Body() body): Promise<object> {
     return this.appService.setBundleAsUnselected(body?.userId, body?.bundleIds);
   }
+  @Post('shippingAddress')
+  shippingAddress(@Body() body): Promise<object> {
+    return this.appService.addShippingAddress(
+      body?.checkoutId,
+      body?.addressDetails,
+    );
+  }
+  @Post('billingAddress')
+  billingAddress(@Body() body): Promise<object> {
+    return this.appService.addShippingAddress(
+      body?.checkoutId,
+      body?.addressDetails,
+    );
+  }
 }

@@ -12,6 +12,8 @@ import { deleteCheckoutBundlesQuery } from 'src/graphql/queries/checkout/deleteC
 import { checkoutQuery } from 'src/graphql/queries/checkout/checkout';
 import { checkoutLinesDeleteQuery } from 'src/graphql/queries/checkout/checkoutLinesDelete';
 import { checkoutLinesUpdateQuery } from 'src/graphql/queries/checkout/checkoutLinesUpdate';
+import { shippingAddressQuery } from 'src/graphql/queries/checkout/shippingAddress';
+import { billingAddressQuery } from 'src/graphql/queries/checkout/billingAddress';
 
 import {
   getLineItems,
@@ -274,6 +276,28 @@ export const checkoutLinesUpdateHandler = async (
 ): Promise<object> => {
   try {
     return await graphqlCall(checkoutLinesUpdateQuery(checkoutId, lines));
+  } catch (err) {
+    return graphqlExceptionHandler(err);
+  }
+};
+
+export const shippingAddressHandler = async (
+  checkoutId,
+  addressDetails,
+): Promise<object> => {
+  try {
+    return await graphqlCall(shippingAddressQuery(checkoutId, addressDetails));
+  } catch (err) {
+    return graphqlExceptionHandler(err);
+  }
+};
+
+export const billingAddressHandler = async (
+  checkoutId,
+  addressDetails,
+): Promise<object> => {
+  try {
+    return await graphqlCall(billingAddressQuery(checkoutId, addressDetails));
   } catch (err) {
     return graphqlExceptionHandler(err);
   }
