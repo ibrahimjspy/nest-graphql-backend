@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { dashboardByIdHandler } from 'src/graphql/handlers/orders';
 import { shopOrdersByIdHandler } from 'src/graphql/handlers/orders';
+import { shopOrderFulfillmentsByIdHandler } from 'src/graphql/handlers/orders';
 
 @Injectable()
 export class OrdersService {
@@ -13,7 +14,13 @@ export class OrdersService {
   public getShopOrdersDataById(id): Promise<object> {
     // Pre graphQl call actions and validations -->
     // << -- >>
-    // orchestrate multiple GraphQL call responses to get Shop Orders --->
+    // shopOrders is graphQl promise handler --->
     return shopOrdersByIdHandler(id);
+  }
+  public getShopOrderFulfillmentsDataById(id): Promise<object> {
+    // Pre graphQl call actions and validations -->
+    // << -- >>
+    // shopOrderFulfillments is graphQl promise handler --->
+    return shopOrderFulfillmentsByIdHandler(id);
   }
 }
