@@ -20,6 +20,7 @@ import { addCheckoutShippingMethodsQuery } from 'src/graphql/queries/checkout/ad
 import { checkoutDeliveryMethodUpdateQuery } from 'src/graphql/queries/checkout/checkoutDeliveryMethodUpdate';
 import { checkoutPaymentCreateQuery } from 'src/graphql/queries/checkout/checkoutPaymentCreate';
 import { availablePaymentGatewaysQuery } from 'src/graphql/queries/checkout/availablePaymentGateways';
+import { checkoutCompleteQuery } from 'src/graphql/queries/checkout/checkoutComplete';
 import { userQuery } from 'src/graphql/queries/user/getUser';
 import { checkoutEmailUpdateQuery } from 'src/graphql/queries/user/checkoutEmailUpdate';
 
@@ -434,9 +435,11 @@ export const checkoutEmailUpdateHandler = async (
   }
 };
 
-export const checkoutCompleteHandler = async (checkoutId: string) => {
+export const checkoutCompleteHandler = async (userId: string) => {
   try {
-    return await graphqlCall(availablePaymentGatewaysQuery(checkoutId));
+    const checkoutData: any = await getCheckoutHandler(userId);
+    const checkoutId = checkoutData?.marketplaceCheckout?.checkoutId;
+    return await graphqlCall(checkoutCompleteQuery(checkoutId));
   } catch (err) {
     return graphqlExceptionHandler(err);
   }
