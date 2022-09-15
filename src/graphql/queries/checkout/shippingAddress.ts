@@ -42,6 +42,10 @@ const federationQuery = (checkoutId, addressDetails) => {
           companyName
           city
           postalCode
+          country {
+						country
+						code
+					}
         }
       }
       errors {

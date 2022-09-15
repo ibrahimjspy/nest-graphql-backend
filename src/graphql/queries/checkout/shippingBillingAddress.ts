@@ -17,6 +17,10 @@ const federationQuery = (checkoutId: string) => {
         companyName
         city
         postalCode
+        country {
+          country
+          code
+        }
       }
       billingAddress {
         firstName
@@ -27,6 +31,10 @@ const federationQuery = (checkoutId: string) => {
         companyName
         city
         postalCode
+        country {
+          country
+          code
+        }
       }
     }
   }
