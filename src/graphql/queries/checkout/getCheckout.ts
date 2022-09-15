@@ -59,12 +59,26 @@ const federationQuery = (userId: string): string => {
               }
             }
             shop {
+              id
+              name
+              madeIn
+              shippingMethods {
                 id
-                name
-                madeIn
+                shippingMethodId
+              }
             }
         }
     }
+        selectedMethods {
+          method {
+            id
+            shippingMethodId
+          },
+          shop {
+            id
+            name
+          }
+        }
       }
       ... on ResultError {
           message

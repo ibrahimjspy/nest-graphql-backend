@@ -74,3 +74,47 @@ export const updateBundlesQuantity = (allCheckoutBundles, bundles) => {
     return { ...bundle, quantity: bundle?.quantity + targetBundle?.quantity };
   });
 };
+
+export const getShippingMethods = (bundles = []) => {
+  let shippingMethods = [];
+  bundles.forEach((bundle) => {
+    shippingMethods = [
+      ...shippingMethods,
+      ...bundle?.bundle?.shop?.shippingMethods,
+    ];
+  });
+  return shippingMethods;
+};
+
+export const getShippingMethodsWithUUID = (
+  methods,
+  shippingMethodsFromShopService,
+  selectedMethods,
+) => {
+  const selectedMethodsId = selectedMethods.map(
+    (shippingMethod) => shippingMethod?.method?.shippingMethodId,
+  );
+  const getUUID = (id) => {
+    const sameMethod = (shippingMethodsFromShopService || []).find(
+      (method) => method?.shippingMethodId === id,
+    );
+    return sameMethod?.id;
+  };
+
+  return (methods || []).map((method) => {
+    const shippingMethodId = getUUID(method?.id);
+    if (selectedMethodsId.includes(method?.id)) {
+      return {
+        ...method,
+        shippingMethodId,
+        isSelected: true,
+      };
+    } else {
+      return {
+        ...method,
+        shippingMethodId,
+        isSelected: false,
+      };
+    }
+  });
+};

@@ -52,4 +52,15 @@ export class CheckoutController {
   shippingBillingAddress(@Param() params): Promise<object> {
     return this.appService.getShippingBillingAddress(params?.checkoutId);
   }
+  @Get('getShippingMethods/:userId')
+  getShippingMethod(@Param() params): Promise<object> {
+    return this.appService.getShippingMethod(params?.userId);
+  }
+  @Put('selectShippingMethods')
+  selectShippingMethods(@Body() body): Promise<object> {
+    return this.appService.selectShippingMethods(
+      body?.userId,
+      body?.shippingIds,
+    );
+  }
 }
