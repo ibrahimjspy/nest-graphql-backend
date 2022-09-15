@@ -63,4 +63,12 @@ export class CheckoutController {
       body?.shippingIds,
     );
   }
+  @Post('createPayment')
+  createPayment(@Body() body): Promise<object> {
+    return this.appService.createPayment(body?.userId);
+  }
+  @Post('checkoutComplete')
+  checkoutComplete(@Body() body): Promise<object> {
+    return this.appService.checkoutComplete(body?.userId);
+  }
 }

@@ -40,11 +40,10 @@ const mockQuery = () => {
   return gql`
     query {
       shop_orders {
-        orders
-        {
+        orders {
           id
           orderId
-          orderBundle{
+          orderBundle {
             bundleId
             orderlineIds
           }

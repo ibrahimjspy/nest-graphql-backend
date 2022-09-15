@@ -20,7 +20,9 @@ export const shopOrdersByIdHandler = async (id: string): Promise<object> => {
     return graphqlExceptionHandler(err);
   }
 };
-export const shopOrderFulfillmentsByIdHandler = async (id: string): Promise<object> => {
+export const shopOrderFulfillmentsByIdHandler = async (
+  id: string,
+): Promise<object> => {
   try {
     return await graphqlCall(shopOrderFulfillmentsQuery(id));
   } catch (err) {

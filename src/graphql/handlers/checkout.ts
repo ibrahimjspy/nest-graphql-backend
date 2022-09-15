@@ -2,6 +2,7 @@ import {
   graphqlCall,
   graphqlExceptionHandler,
 } from 'src/public/graphqlHandler';
+import { v4 as uuidv4 } from 'uuid';
 import { getCheckoutQuery } from 'src/graphql/queries/checkout/getCheckout';
 import { shoppingCartQuery } from 'src/graphql/queries/checkout/shoppingCart';
 import { bundlesQuery } from 'src/graphql/queries/checkout/bundlesByBundleIds';
@@ -17,6 +18,10 @@ import { billingAddressQuery } from 'src/graphql/queries/checkout/billingAddress
 import { shippingBillingAddressQuery } from 'src/graphql/queries/checkout/shippingBillingAddress';
 import { addCheckoutShippingMethodsQuery } from 'src/graphql/queries/checkout/addCheckoutShippingMethods';
 import { checkoutDeliveryMethodUpdateQuery } from 'src/graphql/queries/checkout/checkoutDeliveryMethodUpdate';
+import { checkoutPaymentCreateQuery } from 'src/graphql/queries/checkout/checkoutPaymentCreate';
+import { availablePaymentGatewaysQuery } from 'src/graphql/queries/checkout/availablePaymentGateways';
+import { userQuery } from 'src/graphql/queries/user/getUser';
+import { checkoutEmailUpdateQuery } from 'src/graphql/queries/user/checkoutEmailUpdate';
 
 import {
   getLineItems,
@@ -376,6 +381,62 @@ export const checkoutDeliveryMethodUpdateHandler = async (
     return await graphqlCall(
       checkoutDeliveryMethodUpdateQuery(checkoutId, deliveryMethodId),
     );
+  } catch (err) {
+    return graphqlExceptionHandler(err);
+  }
+};
+
+export const createPaymentHandler = async (userId: string) => {
+  try {
+    const checkoutData: any = await getCheckoutHandler(userId);
+    const checkoutId = checkoutData?.marketplaceCheckout?.checkoutId;
+    const paymentGateways: any = await availablePaymentGatewaysHandler(
+      checkoutId,
+    );
+    const dummyGateway = (
+      paymentGateways?.checkout?.availablePaymentGateways || []
+    ).find((gateway) => gateway?.name === 'Dummy');
+    const userResponse: any = await getUserHandler(userId);
+    const token = uuidv4();
+    await checkoutEmailUpdateHandler(checkoutId, userResponse?.user?.email);
+    return await graphqlCall(
+      checkoutPaymentCreateQuery(checkoutId, dummyGateway?.id, token),
+    );
+  } catch (err) {
+    return graphqlExceptionHandler(err);
+  }
+};
+
+export const availablePaymentGatewaysHandler = async (checkoutId: string) => {
+  try {
+    return await graphqlCall(availablePaymentGatewaysQuery(checkoutId));
+  } catch (err) {
+    return graphqlExceptionHandler(err);
+  }
+};
+
+export const getUserHandler = async (userId: string) => {
+  try {
+    return await graphqlCall(userQuery(userId));
+  } catch (err) {
+    return graphqlExceptionHandler(err);
+  }
+};
+
+export const checkoutEmailUpdateHandler = async (
+  checkoutId: string,
+  email: string,
+) => {
+  try {
+    return await graphqlCall(checkoutEmailUpdateQuery(checkoutId, email));
+  } catch (err) {
+    return graphqlExceptionHandler(err);
+  }
+};
+
+export const checkoutCompleteHandler = async (checkoutId: string) => {
+  try {
+    return await graphqlCall(availablePaymentGatewaysQuery(checkoutId));
   } catch (err) {
     return graphqlExceptionHandler(err);
   }
