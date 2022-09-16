@@ -9,10 +9,10 @@ const federationQuery = (
   return gql`
   mutation {
     deleteCheckoutBundles(
-          Input: {
-            checkoutBundleIds: ${JSON.stringify(checkoutBundleIds)},
-            checkoutId: "${checkoutId}"
-          }
+      Input: {
+        checkoutBundleIds: ${JSON.stringify(checkoutBundleIds)},
+        checkoutId: "${checkoutId}"
+      }
     ) {
       __typename
       ... on ResultData {

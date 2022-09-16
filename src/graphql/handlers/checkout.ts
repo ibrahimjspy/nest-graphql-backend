@@ -4,7 +4,6 @@ import {
 } from 'src/public/graphqlHandler';
 import { v4 as uuidv4 } from 'uuid';
 import { getCheckoutQuery } from 'src/graphql/queries/checkout/getCheckout';
-import { shoppingCartQuery } from 'src/graphql/queries/checkout/shoppingCart';
 import { bundlesQuery } from 'src/graphql/queries/checkout/bundlesByBundleIds';
 import { createCheckoutQuery } from 'src/graphql/queries/checkout/createCheckout';
 import { addCheckoutBundlesQuery } from 'src/graphql/queries/checkout/addCheckoutBundles';
@@ -35,14 +34,6 @@ import {
   getShippingMethodsWithUUID,
   getUpdatedLinesWithQuantity,
 } from 'src/public/checkoutHelperFunctions';
-
-export const shoppingCartHandler = async (id: string): Promise<object> => {
-  try {
-    return await graphqlCall(shoppingCartQuery(id), 'true');
-  } catch (err) {
-    return graphqlExceptionHandler(err);
-  }
-};
 
 export const addToCartHandler = async (
   userId: string,
@@ -438,8 +429,16 @@ export const checkoutEmailUpdateHandler = async (
 export const checkoutCompleteHandler = async (userId: string) => {
   try {
     const checkoutData: any = await getCheckoutHandler(userId);
-    const checkoutId = checkoutData?.marketplaceCheckout?.checkoutId;
-    return await graphqlCall(checkoutCompleteQuery(checkoutId));
+    const { checkoutId, bundles } = checkoutData?.marketplaceCheckout;
+    const selectedBundles = bundles.filter((bundle) => bundle?.isSelected);
+    const checkoutBundleIds = selectedBundles.map(
+      (bundle) => bundle?.checkoutBundleId,
+    );
+    const checkoutCompleteResponse = await graphqlCall(
+      checkoutCompleteQuery(checkoutId),
+    );
+    await deleteCheckoutBundlesHandler(checkoutBundleIds, checkoutId);
+    return checkoutCompleteResponse;
   } catch (err) {
     return graphqlExceptionHandler(err);
   }
