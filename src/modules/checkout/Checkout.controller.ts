@@ -43,7 +43,7 @@ export class CheckoutController {
   }
   @Post('billingAddress')
   billingAddress(@Body() body): Promise<object> {
-    return this.appService.addShippingAddress(
+    return this.appService.addBillingAddress(
       body?.checkoutId,
       body?.addressDetails,
     );
