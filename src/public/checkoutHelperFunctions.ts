@@ -1,3 +1,7 @@
+export const getBundleIds = (bundles) => {
+  return (bundles || []).map((bundle) => bundle?.bundleId);
+};
+
 export const getLineItems = (allBundles, targetBundles) => {
   const lines = [];
   allBundles.forEach((bundle) => {
@@ -17,9 +21,22 @@ export const getLineItems = (allBundles, targetBundles) => {
   return lines;
 };
 
-export const getUpdatedLinesWithQuantity = (lineItems, quantity) => {
-  return lineItems.map((line) => ({
-    variantId: line?.variant?.id,
+export const getUpdatedLinesWithQuantity = (
+  saleorCheckout,
+  checkoutBundles,
+  bundlesFromCart,
+) => {
+  const quantity = bundlesFromCart[0]?.quantity;
+  const checkoutBundleIds = bundlesFromCart.map((bundle) => bundle?.bundleId);
+
+  const targetLineItems = getTargetLineIds(
+    saleorCheckout,
+    checkoutBundles,
+    checkoutBundleIds,
+  );
+
+  return (targetLineItems || []).map((line) => ({
+    variantId: line?.variantId,
     quantity: line?.quantity * quantity,
   }));
 };
@@ -56,7 +73,10 @@ export const getVariantIds = (targetBundle) => {
   return variantIds;
 };
 
-export const getTargetLineIds = (saleorCheckout, variantIds) => {
+export const getSelectedLineItems = (saleorCheckout, bundles, bundleIds) => {
+  const targetBundle = getTargetBundleByBundleId(bundles, bundleIds);
+  const variantIds = getVariantIds(targetBundle);
+
   const lineItems = saleorCheckout?.checkout?.lines;
   return (lineItems || [])
     .filter((line) => variantIds.includes(line?.variant?.id))
@@ -64,6 +84,32 @@ export const getTargetLineIds = (saleorCheckout, variantIds) => {
       variantId: line?.variant?.id,
       quantity: line?.quantity,
     }));
+};
+
+export const getTargetLineIds = (saleorCheckout, bundles, bundleIds) => {
+  const targetBundle = getTargetBundleByBundleId(bundles, bundleIds);
+  const variantIds = getVariantIds(targetBundle);
+
+  const lineItems = saleorCheckout?.checkout?.lines;
+  return (lineItems || [])
+    .filter((line) => variantIds.includes(line?.variant?.id))
+    .map((line) => ({
+      variantId: line?.variant?.id,
+      quantity: line?.quantity,
+    }));
+};
+
+export const getUpdatedBundleForSelection = (
+  bundles,
+  bundleIds,
+  isSelected,
+) => {
+  const targetBundle = getTargetBundleByBundleId(bundles, bundleIds);
+  return (targetBundle || []).map((bundle) => ({
+    bundleId: bundle?.bundle?.id,
+    quantity: bundle?.quantity,
+    isSelected,
+  }));
 };
 
 export const updateBundlesQuantity = (allCheckoutBundles, bundles) => {
@@ -117,4 +163,18 @@ export const getShippingMethodsWithUUID = (
       };
     }
   });
+};
+
+export const getSelectedBundles = (bundles) => {
+  return bundles.filter((bundle) => bundle?.isSelected);
+};
+
+export const getCheckoutBundleIds = (bundles) => {
+  return bundles.map((bundle) => bundle?.checkoutBundleId);
+};
+
+export const getDummyGateway = (paymentGateways) => {
+  const options = paymentGateways?.checkout?.availablePaymentGateways || [];
+  const dummyGateway = options.find((gateway) => gateway?.name === 'Dummy');
+  return dummyGateway?.id;
 };
