@@ -1,32 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import {
-  createCheckoutHandler,
-  checkoutHandler,
-  getCheckoutHandler,
-  checkoutLinesUpdateHandler,
-  shippingAddressHandler,
-  billingAddressHandler,
-  shippingBillingAddress,
-  getShippingMethodHandler,
-  createPaymentHandler,
-  checkoutCompleteHandler,
-  deleteCheckoutBundlesHandler,
-  getPaymentGatewaysHandler,
-  addCheckoutBundlesHandler,
-  getUserHandler,
-  addForCartHandler,
-  bundlesListHandler,
-  checkoutEmailUpdateHandler,
-  addCheckoutShippingMethodHandler,
-  checkoutDeliveryMethodUpdateHandler,
-  checkoutLinesAddHandler,
-  checkoutLinesDeleteHandler,
-} from 'src/graphql/handlers/checkout';
+import * as CheckoutHandlers from 'src/graphql/handlers/checkout';
 
 import {
   getSelectedBundles,
   getCheckoutBundleIds,
-  getTargetLineIds,
   updateBundlesQuantity,
   getUpdatedBundleForSelection,
   getUpdatedLinesWithQuantity,
@@ -34,19 +11,25 @@ import {
 @Injectable()
 export class CheckoutService {
   public getShoppingCartData(id: string): Promise<object> {
-    return getCheckoutHandler(id);
+    return CheckoutHandlers.getCheckoutHandler(id);
   }
 
   public async addToCart(
     userId: string,
     bundlesForCart: Array<{ bundleId: string; quantity: number }>,
   ): Promise<object> {
-    const bundlesList: any = await bundlesListHandler(bundlesForCart);
-    const checkoutData: any = await getCheckoutHandler(userId);
+    const bundlesList: any = await CheckoutHandlers.bundlesListHandler(
+      bundlesForCart,
+    );
+    const checkoutData: any = await CheckoutHandlers.getCheckoutHandler(userId);
     const { checkoutId, bundles } = checkoutData?.marketplaceCheckout || {};
 
     if (checkoutId) {
-      await addForCartHandler(checkoutId, bundlesList?.bundles, bundlesForCart);
+      await CheckoutHandlers.addForCartHandler(
+        checkoutId,
+        bundlesList?.bundles,
+        bundlesForCart,
+      );
       // add checkout to shop service
 
       const bundlesWithUpdatedQuantity = updateBundlesQuantity(
@@ -54,21 +37,21 @@ export class CheckoutService {
         bundlesForCart,
       );
       // update quantity here
-      return await addCheckoutBundlesHandler(
+      return await CheckoutHandlers.addCheckoutBundlesHandler(
         checkoutId,
         userId,
         bundlesWithUpdatedQuantity,
       );
     } else {
       // create new checkout
-      const newCheckout: any = await createCheckoutHandler(
+      const newCheckout: any = await CheckoutHandlers.createCheckoutHandler(
         bundlesList?.bundles,
         bundlesForCart,
       );
       const newCheckoutId = newCheckout?.checkoutCreate?.checkout?.id;
       // add checkout to shop service
       if (newCheckoutId) {
-        return await addCheckoutBundlesHandler(
+        return await CheckoutHandlers.addCheckoutBundlesHandler(
           newCheckoutId,
           userId,
           bundlesForCart,
@@ -81,43 +64,58 @@ export class CheckoutService {
     userId: string,
     checkoutBundleIds: Array<string>,
   ): Promise<object> {
-    const checkoutData: any = await getCheckoutHandler(userId);
+    const checkoutData: any = await CheckoutHandlers.getCheckoutHandler(userId);
     const { checkoutId, bundles } = checkoutData?.marketplaceCheckout;
-    const saleorCheckout: any = await checkoutHandler(checkoutId);
-    const targetLineIds = getTargetLineIds(
+    const saleorCheckout: any = await CheckoutHandlers.checkoutHandler(
+      checkoutId,
+    );
+    await CheckoutHandlers.checkoutLinesDeleteHandler(
       saleorCheckout,
       bundles,
       checkoutBundleIds,
     );
-    await checkoutLinesDeleteHandler(targetLineIds);
-    return await deleteCheckoutBundlesHandler(checkoutBundleIds, checkoutId);
+    return await CheckoutHandlers.deleteCheckoutBundlesHandler(
+      checkoutBundleIds,
+      checkoutId,
+    );
   }
 
   public async updateBundleFromCart(
     userId: string,
     bundlesFromCart: Array<{ bundleId: string; quantity: number }>,
   ): Promise<object> {
-    const checkoutData: any = await getCheckoutHandler(userId);
+    const checkoutData: any = await CheckoutHandlers.getCheckoutHandler(userId);
     const { checkoutId, bundles } = checkoutData?.marketplaceCheckout;
-    const saleorCheckout: any = await checkoutHandler(checkoutId);
+    const saleorCheckout: any = await CheckoutHandlers.checkoutHandler(
+      checkoutId,
+    );
 
     const updatedLinesWithQuantity = getUpdatedLinesWithQuantity(
       saleorCheckout,
       bundles,
       bundlesFromCart,
     );
-    await checkoutLinesUpdateHandler(checkoutId, updatedLinesWithQuantity);
-    return addCheckoutBundlesHandler(checkoutId, userId, bundlesFromCart);
+    await CheckoutHandlers.checkoutLinesUpdateHandler(
+      checkoutId,
+      updatedLinesWithQuantity,
+    );
+    return CheckoutHandlers.addCheckoutBundlesHandler(
+      checkoutId,
+      userId,
+      bundlesFromCart,
+    );
   }
 
   public async setBundleAsSelected(
     userId: string,
     bundleIds: Array<string>,
   ): Promise<object> {
-    const checkoutData: any = await getCheckoutHandler(userId);
+    const checkoutData: any = await CheckoutHandlers.getCheckoutHandler(userId);
     const { checkoutId, bundles } = checkoutData?.marketplaceCheckout || {};
-    const saleorCheckout: any = await checkoutHandler(checkoutId);
-    await checkoutLinesAddHandler(
+    const saleorCheckout: any = await CheckoutHandlers.checkoutHandler(
+      checkoutId,
+    );
+    await CheckoutHandlers.checkoutLinesAddHandler(
       checkoutId,
       saleorCheckout,
       bundles,
@@ -128,69 +126,86 @@ export class CheckoutService {
       bundleIds,
       true,
     );
-    return addCheckoutBundlesHandler(checkoutId, userId, updatedBundle);
+    return CheckoutHandlers.addCheckoutBundlesHandler(
+      checkoutId,
+      userId,
+      updatedBundle,
+    );
   }
 
   public async setBundleAsUnselected(
     userId: string,
     bundleIds: Array<string>,
   ): Promise<object> {
-    const checkoutData: any = await getCheckoutHandler(userId);
+    const checkoutData: any = await CheckoutHandlers.getCheckoutHandler(userId);
     const { checkoutId, bundles } = checkoutData?.marketplaceCheckout || {};
-    const saleorCheckout: any = await checkoutHandler(checkoutId);
-    const lineIds = getTargetLineIds(saleorCheckout, bundles, bundleIds);
-    await checkoutLinesDeleteHandler(lineIds);
+    const saleorCheckout: any = await CheckoutHandlers.checkoutHandler(
+      checkoutId,
+    );
+    await CheckoutHandlers.checkoutLinesDeleteHandler(
+      saleorCheckout,
+      bundles,
+      bundleIds,
+    );
     const updatedBundle = getUpdatedBundleForSelection(
       bundles,
       bundleIds,
       false,
     );
-    return addCheckoutBundlesHandler(checkoutId, userId, updatedBundle);
+    return CheckoutHandlers.addCheckoutBundlesHandler(
+      checkoutId,
+      userId,
+      updatedBundle,
+    );
   }
 
   public addShippingAddress(checkoutId, addressDetails): Promise<object> {
-    return shippingAddressHandler(checkoutId, addressDetails);
+    return CheckoutHandlers.shippingAddressHandler(checkoutId, addressDetails);
   }
 
   public addBillingAddress(checkoutId, addressDetails): Promise<object> {
-    return billingAddressHandler(checkoutId, addressDetails);
+    return CheckoutHandlers.billingAddressHandler(checkoutId, addressDetails);
   }
 
   public getShippingBillingAddress(checkoutId: string): Promise<object> {
-    return shippingBillingAddress(checkoutId);
+    return CheckoutHandlers.shippingBillingAddress(checkoutId);
   }
 
   public async getShippingMethod(userId: string): Promise<object> {
-    return getShippingMethodHandler(userId);
+    return CheckoutHandlers.getShippingMethodHandler(userId);
   }
 
   public async selectShippingMethods(
     userId: string,
     shippingIds: Array<string>,
   ): Promise<object> {
-    const checkoutData: any = await getCheckoutHandler(userId);
-    const { checkoutId, selectedMethods } = checkoutData?.marketplaceCheckout;
-    const deliveryMethodId = selectedMethods[0]?.method?.shippingMethodId;
-    await addCheckoutShippingMethodHandler(checkoutId, shippingIds);
-    await checkoutDeliveryMethodUpdateHandler(checkoutId, deliveryMethodId);
-    return getShippingMethodHandler(userId);
+    const checkoutData: any = await CheckoutHandlers.getCheckoutHandler(userId);
+    await CheckoutHandlers.addCheckoutShippingMethodHandler(
+      checkoutData,
+      shippingIds,
+    );
+    await CheckoutHandlers.checkoutDeliveryMethodUpdateHandler(checkoutData);
+    return CheckoutHandlers.getShippingMethodHandler(userId);
   }
 
   public async createPayment(userId: string): Promise<object> {
-    const checkoutData: any = await getCheckoutHandler(userId);
-    const { checkoutId } = checkoutData?.marketplaceCheckout;
-    const paymentGateways: any = await getPaymentGatewaysHandler(checkoutId);
-    const userData: any = await getUserHandler(userId);
-    await checkoutEmailUpdateHandler(checkoutId, userData?.user?.email);
-    return createPaymentHandler(paymentGateways, checkoutId);
+    const checkoutData: any = await CheckoutHandlers.getCheckoutHandler(userId);
+    const userData: any = await CheckoutHandlers.getUserHandler(userId);
+    const paymentGateways: any =
+      await CheckoutHandlers.getPaymentGatewaysHandler(checkoutData);
+    await CheckoutHandlers.checkoutEmailUpdateHandler(checkoutData, userData);
+    return CheckoutHandlers.createPaymentHandler(checkoutData, paymentGateways);
   }
 
   public async checkoutComplete(userId: string): Promise<object> {
-    const checkoutData: any = await getCheckoutHandler(userId);
+    const checkoutData: any = await CheckoutHandlers.getCheckoutHandler(userId);
     const { checkoutId, bundles } = checkoutData?.marketplaceCheckout;
     const selectedBundles = getSelectedBundles(bundles);
     const checkoutBundleIds = getCheckoutBundleIds(selectedBundles);
-    await deleteCheckoutBundlesHandler(checkoutBundleIds, checkoutId);
-    return checkoutCompleteHandler(checkoutId);
+    await CheckoutHandlers.deleteCheckoutBundlesHandler(
+      checkoutBundleIds,
+      checkoutId,
+    );
+    return CheckoutHandlers.checkoutCompleteHandler(checkoutId);
   }
 }
