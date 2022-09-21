@@ -13,17 +13,13 @@ type GraphqlCall = (Query: string, Mock?: string) => Promise<object>;
  */
 export const graphqlCall: GraphqlCall = async (Query, Mock?) => {
   let Data = {};
-  await request(graphqlEndpoint(Mock ? Mock : ''), Query)
-    .then((data) => {
-      Data = data;
-    })
-    .catch((error) => {
-      Data = graphqlExceptionHandler(error);
-    });
+  await request(graphqlEndpoint(Mock ? Mock : ''), Query).then((data) => {
+    Data = data;
+  });
   return Data;
 };
 // TODO apply custom error handling taking whole catch thing at functional level
-export const graphqlExceptionHandler = (error): object => {
+export const graphqlExceptionHandler = (error): object | any => {
   const system_error = 'system error (graphql server not running)';
   const federation_response = error?.response?.error
     ? system_error
