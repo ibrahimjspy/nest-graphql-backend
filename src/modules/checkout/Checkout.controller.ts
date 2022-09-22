@@ -6,7 +6,7 @@ export class CheckoutController {
   constructor(private readonly appService: CheckoutService) {}
   // Returns shoppingCart data
   @Post('shoppingCart')
-  findShoppingCartDataById(@Body() body): Promise<object> {
+  getShoppingCartData(@Body() body): Promise<object> {
     return this.appService.getShoppingCartData(body.userId);
   }
   // Add to cart
@@ -35,21 +35,21 @@ export class CheckoutController {
     return this.appService.setBundleAsUnselected(body?.userId, body?.bundleIds);
   }
   @Post('shippingAddress')
-  shippingAddress(@Body() body): Promise<object> {
+  addShippingAddress(@Body() body): Promise<object> {
     return this.appService.addShippingAddress(
       body?.checkoutId,
       body?.addressDetails,
     );
   }
   @Post('billingAddress')
-  billingAddress(@Body() body): Promise<object> {
+  addBillingAddress(@Body() body): Promise<object> {
     return this.appService.addBillingAddress(
       body?.checkoutId,
       body?.addressDetails,
     );
   }
   @Get('shippingBillingAddress/:checkoutId')
-  shippingBillingAddress(@Param() params): Promise<object> {
+  getShippingBillingAddress(@Param() params): Promise<object> {
     return this.appService.getShippingBillingAddress(params?.checkoutId);
   }
   @Get('getShippingMethods/:userId')
