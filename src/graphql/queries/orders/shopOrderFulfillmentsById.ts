@@ -12,24 +12,14 @@ const federationQuery = (id: string): string => {
     {
       id
       orderId
+      orderBundles{
+        orderlineIds
+        quantity
+      }
       fulfillments{
-        id
         fulfillmentId
-        fulfillmentBundlesWithQuantities{
-          fulfillmentBundle{
-            bundle{
-              id
-              variants{
-                variant{
-                  id
-                  product{
-                    name
-                  }
-                }
-                quantity
-              }
-            }
-          }
+        fulfillmentBundles{
+          fulfillmentlineIds
           quantity
         }
       }
