@@ -35,7 +35,7 @@ export class CheckoutService {
     bundlesList,
     bundlesForCart,
   ) {
-    const { checkoutId, bundles } = checkoutData?.marketplaceCheckout || {};
+    const { checkoutId, bundles } = checkoutData;
     await CheckoutHandlers.addForCartHandler(
       checkoutId,
       bundlesList,

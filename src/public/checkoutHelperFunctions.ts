@@ -128,12 +128,14 @@ export const getUpdatedBundleForSelection = (
  * @params allCheckoutBundles: all the bundles array from the checkout data
  * @params bundlesFromCart: bundles from cart which are again added to cart
  */
-export const updateBundlesQuantity = (allCheckoutBundles, bundles) => {
-  return bundles.map((bundle) => {
+export const updateBundlesQuantity = (allCheckoutBundles, bundlesFromCart) => {
+  return bundlesFromCart.map((bundle) => {
     const targetBundle = allCheckoutBundles.find(
       (checkoutBundle) => checkoutBundle?.id === bundle?.id,
     );
-    return { ...bundle, quantity: bundle?.quantity + targetBundle?.quantity };
+    const oldQuantity = bundle?.quantity ? bundle.quantity : 0;
+    const newQuantity = targetBundle?.quantity ? targetBundle.quantity : 0;
+    return { ...bundle, quantity: oldQuantity + newQuantity };
   });
 };
 
