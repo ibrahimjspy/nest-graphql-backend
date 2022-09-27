@@ -15,11 +15,11 @@ import { makeResponse } from '../../utils/response';
 export class CheckoutController {
   constructor(private readonly appService: CheckoutService) {}
 
-  @Get('shoppingCart')
-  async getShoppingCartData(@Res() res, @Query() query): Promise<object> {
+  @Get('shoppingCart/:userId')
+  async getShoppingCartData(@Res() res, @Param() params): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getShoppingCartData(query?.userId),
+      await this.appService.getShoppingCartData(params?.userId),
     );
   }
 

@@ -59,6 +59,7 @@ export class CheckoutService {
   ) {
     const userData: any = await CheckoutHandlers.getUserHandler(userId);
     const newCheckout: any = await CheckoutHandlers.createCheckoutHandler(
+      userData?.email,
       bundlesList,
       bundlesForCart,
     );

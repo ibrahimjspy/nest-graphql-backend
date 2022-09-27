@@ -44,12 +44,13 @@ export const getMarketplaceCheckoutHandler = async (
 };
 
 export const createCheckoutHandler = async (
+  email: string,
   bundlesList,
   bundlesForCart: Array<{ quantity: number; bundleId: string }>,
 ): Promise<object> => {
   const lines = getLineItems(bundlesList, bundlesForCart);
   const response = await graphqlCall(
-    CheckoutQueries.createCheckoutQuery(lines),
+    CheckoutQueries.createCheckoutQuery(email, lines),
   );
   return response['checkoutCreate'];
 };

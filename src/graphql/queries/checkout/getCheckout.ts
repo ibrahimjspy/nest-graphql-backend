@@ -2,7 +2,6 @@ import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 
 const federationQuery = (userId: string): string => {
-  // query linking with backend
   return gql`
     query {
       marketplaceCheckout(
