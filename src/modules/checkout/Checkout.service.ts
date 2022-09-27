@@ -53,21 +53,20 @@ export class CheckoutService {
   }
 
   private async addToCartWhenCheckoutNotExists(
-    userId,
+    userData,
     bundlesList,
     bundlesForCart,
   ) {
-    const userData: any = await CheckoutHandlers.getUserHandler(userId);
     const newCheckout: any = await CheckoutHandlers.createCheckoutHandler(
       userData?.email,
       bundlesList,
       bundlesForCart,
     );
 
-    const newCheckoutId = newCheckout?.checkoutCreate?.checkout?.id;
+    const newCheckoutId = newCheckout?.checkout?.id;
     return await CheckoutHandlers.addCheckoutBundlesHandler(
       newCheckoutId,
-      userId,
+      userData?.id,
       bundlesForCart,
     );
   }
@@ -77,30 +76,27 @@ export class CheckoutService {
     bundlesForCart: Array<{ bundleId: string; quantity: number }>,
   ): Promise<object> {
     try {
-      const bundlesList: any = await CheckoutHandlers.bundlesListHandler(
-        bundlesForCart,
-      );
-      const checkoutData: any =
-        await CheckoutHandlers.getMarketplaceCheckoutHandler(userId);
+      const [userData, bundlesList, checkoutData] = await Promise.all([
+        CheckoutHandlers.getUserHandler(userId),
+        CheckoutHandlers.bundlesListHandler(bundlesForCart),
+        CheckoutHandlers.getMarketplaceCheckoutHandler(userId),
+      ]);
 
-      const { checkoutId } = checkoutData || {};
       let response = {};
-
-      if (checkoutId) {
+      if (checkoutData['checkoutId']) {
         response = await this.addToCartWhenCheckoutExists(
           userId,
-          checkoutData,
-          bundlesList?.bundles,
+          checkoutData['checkoutId'],
+          bundlesList['bundles'],
           bundlesForCart,
         );
       } else {
         response = await this.addToCartWhenCheckoutNotExists(
-          userId,
-          bundlesList?.bundles,
+          userData,
+          bundlesList['bundles'],
           bundlesForCart,
         );
       }
-
       return prepareSuccessResponse(response);
     } catch (err) {
       if (err instanceof RecordNotFound) {

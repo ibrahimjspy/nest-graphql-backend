@@ -60,9 +60,12 @@ export const addCheckoutBundlesHandler = async (
   userId: string,
   bundles: Array<{ bundleId: string; quantity: number }>,
 ): Promise<object> => {
-  return await graphqlCall(
-    CheckoutQueries.addCheckoutBundlesQuery(checkoutId, userId, bundles),
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutQueries.addCheckoutBundlesQuery(checkoutId, userId, bundles),
+    ),
   );
+  return response['addCheckoutBundles'];
 };
 
 export const addForCartHandler = async (
