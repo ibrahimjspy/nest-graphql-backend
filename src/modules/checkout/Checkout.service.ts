@@ -86,7 +86,7 @@ export class CheckoutService {
       if (checkoutData['checkoutId']) {
         response = await this.addToCartWhenCheckoutExists(
           userId,
-          checkoutData['checkoutId'],
+          checkoutData,
           bundlesList['bundles'],
           bundlesForCart,
         );

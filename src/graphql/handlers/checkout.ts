@@ -74,9 +74,10 @@ export const addForCartHandler = async (
   bundlesForCart: Array<{ quantity: number; bundleId: string }>,
 ): Promise<object> => {
   const lines = getLineItems(bundlesList, bundlesForCart);
-  return await graphqlCall(
-    CheckoutQueries.checkoutLinesAddQuery(checkoutId, lines),
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(CheckoutQueries.checkoutLinesAddQuery(checkoutId, lines)),
   );
+  return response['checkoutLinesAdd'];
 };
 
 export const checkoutLinesAddHandler = async (

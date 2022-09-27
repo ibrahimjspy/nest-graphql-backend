@@ -22,6 +22,14 @@ export const graphqlCall = async (
   return await request(graphqlEndpoint(Mock ? Mock : ''), Query);
 };
 
+/**
+ * It takes a GraphQL response object, checks if it contains an expected error, 
+ * and if it does, it throws a ResultError exception.
+ * @param {object} response - object - the response object from the GraphQL query.
+ * @param {boolean} [throwException=true] - boolean = true
+ * @param {string} [message] - string = ''
+ * @returns the response object.
+ */
 export const graphqlResultErrorHandler = async (
   response: object,
   throwException: boolean = true,
@@ -30,7 +38,14 @@ export const graphqlResultErrorHandler = async (
   const error: ResultErrorType = response[Object.keys(response)[0]];
 
   if (error.__typename === 'ResultError' && throwException) {
+    // to handle sharove-services errors.
     throw new ResultError(message ? message : error.message, error.errors);
+  } else if (error.errors?.length > 0) {
+    // to handle saleor-services errors.
+    throw new ResultError(
+      message ? message : error.errors[0]['message'],
+      error.errors,
+    );
   }
 
   return response;
