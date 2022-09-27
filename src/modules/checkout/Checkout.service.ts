@@ -35,25 +35,21 @@ export class CheckoutService {
     bundlesList,
     bundlesForCart,
   ) {
-    try {
-      const { checkoutId, bundles } = checkoutData?.marketplaceCheckout || {};
-      await CheckoutHandlers.addForCartHandler(
-        checkoutId,
-        bundlesList,
-        bundlesForCart,
-      );
-      const bundlesWithUpdatedQuantity = updateBundlesQuantity(
-        bundles,
-        bundlesForCart,
-      );
-      return await CheckoutHandlers.addCheckoutBundlesHandler(
-        checkoutId,
-        userId,
-        bundlesWithUpdatedQuantity,
-      );
-    } catch (err) {
-      return graphqlExceptionHandler(err);
-    }
+    const { checkoutId, bundles } = checkoutData?.marketplaceCheckout || {};
+    await CheckoutHandlers.addForCartHandler(
+      checkoutId,
+      bundlesList,
+      bundlesForCart,
+    );
+    const bundlesWithUpdatedQuantity = updateBundlesQuantity(
+      bundles,
+      bundlesForCart,
+    );
+    return await CheckoutHandlers.addCheckoutBundlesHandler(
+      checkoutId,
+      userId,
+      bundlesWithUpdatedQuantity,
+    );
   }
 
   private async addToCartWhenCheckoutNotExists(
@@ -61,20 +57,18 @@ export class CheckoutService {
     bundlesList,
     bundlesForCart,
   ) {
-    try {
-      const newCheckout: any = await CheckoutHandlers.createCheckoutHandler(
-        bundlesList,
-        bundlesForCart,
-      );
-      const newCheckoutId = newCheckout?.checkoutCreate?.checkout?.id;
-      return await CheckoutHandlers.addCheckoutBundlesHandler(
-        newCheckoutId,
-        userId,
-        bundlesForCart,
-      );
-    } catch (err) {
-      return graphqlExceptionHandler(err);
-    }
+    const userData: any = await CheckoutHandlers.getUserHandler(userId);
+    const newCheckout: any = await CheckoutHandlers.createCheckoutHandler(
+      bundlesList,
+      bundlesForCart,
+    );
+
+    const newCheckoutId = newCheckout?.checkoutCreate?.checkout?.id;
+    return await CheckoutHandlers.addCheckoutBundlesHandler(
+      newCheckoutId,
+      userId,
+      bundlesForCart,
+    );
   }
 
   public async addToCart(
@@ -319,10 +313,8 @@ export class CheckoutService {
     try {
       const checkoutData: any =
         await CheckoutHandlers.getMarketplaceCheckoutHandler(userId);
-      const userData: any = await CheckoutHandlers.getUserHandler(userId);
       const paymentGateways: any =
         await CheckoutHandlers.getPaymentGatewaysHandler(checkoutData);
-      await CheckoutHandlers.checkoutEmailUpdateHandler(checkoutData, userData);
       return CheckoutHandlers.createPaymentHandler(
         checkoutData,
         paymentGateways,

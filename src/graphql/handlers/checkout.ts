@@ -48,7 +48,10 @@ export const createCheckoutHandler = async (
   bundlesForCart: Array<{ quantity: number; bundleId: string }>,
 ): Promise<object> => {
   const lines = getLineItems(bundlesList, bundlesForCart);
-  return await graphqlCall(CheckoutQueries.createCheckoutQuery(lines));
+  const response = await graphqlCall(
+    CheckoutQueries.createCheckoutQuery(lines),
+  );
+  return response['checkoutCreate'];
 };
 
 export const addCheckoutBundlesHandler = async (
@@ -191,7 +194,8 @@ export const getPaymentGatewaysHandler = async (checkoutData) => {
 };
 
 export const getUserHandler = async (userId: string) => {
-  return await graphqlCall(UserQueries.userQuery(userId));
+  const response = await graphqlCall(UserQueries.userQuery(userId));
+  return response['user'];
 };
 
 export const checkoutEmailUpdateHandler = async (checkoutData, userData) => {

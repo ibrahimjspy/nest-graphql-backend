@@ -1,4 +1,5 @@
 import { gql } from 'graphql-request';
+import { DEFAULT_CHANNEL } from 'src/constants';
 import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 
 const federationQuery = (id): string => {
@@ -6,7 +7,7 @@ const federationQuery = (id): string => {
     query {
       products(
         first: 6
-        channel: "default-channel"
+        channel: "${DEFAULT_CHANNEL}"
         filter: { categories: ["${id}"] }
       ) {
         edges {

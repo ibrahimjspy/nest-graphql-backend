@@ -1,10 +1,11 @@
 import { gql } from 'graphql-request';
+import { DEFAULT_CHANNEL } from 'src/constants';
 import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 
 const federationQuery = (slug): string => {
   return gql`
     query {
-      product(slug: "${slug}", channel: "default-channel") {
+      product(slug: "${slug}", channel: "${DEFAULT_CHANNEL}") {
         name
         id
         slug
