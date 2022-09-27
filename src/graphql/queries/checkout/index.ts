@@ -1,4 +1,4 @@
-import { getCheckoutQuery } from './getCheckout';
+import { getMarketplaceCheckoutQuery } from './getCheckout';
 import { bundlesQuery } from './bundlesByBundleIds';
 import { createCheckoutQuery } from './createCheckout';
 import { addCheckoutBundlesQuery } from './addCheckoutBundles';
@@ -16,7 +16,7 @@ import { checkoutPaymentCreateQuery } from './checkoutPaymentCreate';
 import { availablePaymentGatewaysQuery } from './availablePaymentGateways';
 import { checkoutCompleteQuery } from './checkoutComplete';
 export {
-  getCheckoutQuery,
+  getMarketplaceCheckoutQuery,
   bundlesQuery,
   createCheckoutQuery,
   addCheckoutBundlesQuery,

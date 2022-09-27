@@ -1,6 +1,10 @@
 import { request } from 'graphql-request';
 import { graphqlEndpoint } from './graphqlEndpointToggle';
-type GraphqlCall = (Query: string, Mock?: string) => Promise<object>;
+import { ResultErrorType } from '../types/graphql/exceptions/resultError';
+import { HttpStatus } from '@nestjs/common';
+import ResultError from '../graphql/exceptions/resultError';
+import { prepareFailedResponse } from 'src/utils/response';
+
 /**
  * This is top level function which handles graphql requests , exceptions and logic
  * @params Query ,  It must be in string format and no query based
@@ -11,27 +15,47 @@ type GraphqlCall = (Query: string, Mock?: string) => Promise<object>;
  * is based on env files content .
  * @returns an object with data or graphql error
  */
-export const graphqlCall: GraphqlCall = async (Query, Mock?) => {
-  let Data = {};
-  await request(graphqlEndpoint(Mock ? Mock : ''), Query).then((data) => {
-    Data = data;
-  });
-  return Data;
+export const graphqlCall = async (
+  Query: string,
+  Mock?: string,
+): Promise<object> => {
+  return await request(graphqlEndpoint(Mock ? Mock : ''), Query);
 };
-// TODO apply custom error handling taking whole catch thing at functional level
-export const graphqlExceptionHandler = (error): object | any => {
-  const system_error = 'system error (graphql server not running)';
+
+export const graphqlResultErrorHandler = async (
+  response: object,
+  throwException: boolean = true,
+  message: string = '',
+): Promise<object> => {
+  const error: ResultErrorType = response[Object.keys(response)[0]];
+
+  if (error.__typename === 'ResultError' && throwException) {
+    throw new ResultError(message ? message : error.message, error.errors);
+  }
+
+  return response;
+};
+
+export const graphqlExceptionHandler = (
+  error: Error | ResultError | any,
+  status?: HttpStatus,
+): object | any => {
+  if (error instanceof ResultError) {
+    return prepareFailedResponse(error.message, status, error.errors);
+  }
+
+  const message = 'Something went wrong.';
   const federation_response = error?.response?.error
-    ? system_error
+    ? message
     : error?.response?.errors[0]?.message;
   const error_response = {
-    message: error.type ? system_error : federation_response,
+    message: error.type ? message : federation_response,
   };
   const error_message = error_response ? error_response : 'server side';
   const error_code: number = error.type ? 500 : error?.response?.status;
   console.log('graphql error', error_message);
   return {
     status: error_code == 200 ? 405 : error_code,
-    graphql_error: error_message,
+    message: error_message,
   };
 };

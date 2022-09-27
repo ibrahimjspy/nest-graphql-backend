@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import RecordNotFound from 'src/exceptions/recordNotFound';
 import * as CheckoutHandlers from 'src/graphql/handlers/checkout';
 
 import {
@@ -10,13 +11,19 @@ import {
   getUpdatedBundleForSelection,
   getUpdatedLinesWithQuantity,
 } from 'src/public/checkoutHelperFunctions';
-
 import { graphqlExceptionHandler } from 'src/public/graphqlHandler';
+import {
+  prepareFailedResponse,
+  prepareSuccessResponse,
+} from 'src/utils/response';
+
 @Injectable()
 export class CheckoutService {
-  public getShoppingCartData(id: string): Promise<object> {
+  public async getShoppingCartData(id: string): Promise<object> {
     try {
-      return CheckoutHandlers.getCheckoutHandler(id);
+      return prepareSuccessResponse(
+        await CheckoutHandlers.getMarketplaceCheckoutHandler(id, true),
+      );
     } catch (err) {
       return graphqlExceptionHandler(err);
     }
@@ -78,25 +85,32 @@ export class CheckoutService {
       const bundlesList: any = await CheckoutHandlers.bundlesListHandler(
         bundlesForCart,
       );
-      const checkoutData: any = await CheckoutHandlers.getCheckoutHandler(
-        userId,
-      );
-      const { checkoutId } = checkoutData?.marketplaceCheckout || {};
+      const checkoutData: any =
+        await CheckoutHandlers.getMarketplaceCheckoutHandler(userId);
+
+      const { checkoutId } = checkoutData || {};
+      let response = {};
+
       if (checkoutId) {
-        return await this.addToCartWhenCheckoutExists(
+        response = await this.addToCartWhenCheckoutExists(
           userId,
           checkoutData,
           bundlesList?.bundles,
           bundlesForCart,
         );
       } else {
-        return await this.addToCartWhenCheckoutNotExists(
+        response = await this.addToCartWhenCheckoutNotExists(
           userId,
           bundlesList?.bundles,
           bundlesForCart,
         );
       }
+
+      return prepareSuccessResponse(response);
     } catch (err) {
+      if (err instanceof RecordNotFound) {
+        return prepareFailedResponse(err.message);
+      }
       return graphqlExceptionHandler(err);
     }
   }
@@ -106,9 +120,8 @@ export class CheckoutService {
     checkoutBundleIds: Array<string>,
   ): Promise<object> {
     try {
-      const checkoutData: any = await CheckoutHandlers.getCheckoutHandler(
-        userId,
-      );
+      const checkoutData: any =
+        await CheckoutHandlers.getMarketplaceCheckoutHandler(userId);
       const { checkoutId, bundles } = checkoutData?.marketplaceCheckout;
       const saleorCheckout: any = await CheckoutHandlers.checkoutHandler(
         checkoutId,
@@ -132,9 +145,8 @@ export class CheckoutService {
     bundlesFromCart: Array<{ bundleId: string; quantity: number }>,
   ): Promise<object> {
     try {
-      const checkoutData: any = await CheckoutHandlers.getCheckoutHandler(
-        userId,
-      );
+      const checkoutData: any =
+        await CheckoutHandlers.getMarketplaceCheckoutHandler(userId);
       const { checkoutId, bundles } = checkoutData?.marketplaceCheckout;
       const saleorCheckout: any = await CheckoutHandlers.checkoutHandler(
         checkoutId,
@@ -164,9 +176,8 @@ export class CheckoutService {
     bundleIds: Array<string>,
   ): Promise<object> {
     try {
-      const checkoutData: any = await CheckoutHandlers.getCheckoutHandler(
-        userId,
-      );
+      const checkoutData: any =
+        await CheckoutHandlers.getMarketplaceCheckoutHandler(userId);
       const { checkoutId, bundles } = checkoutData?.marketplaceCheckout || {};
       const saleorCheckout: any = await CheckoutHandlers.checkoutHandler(
         checkoutId,
@@ -197,9 +208,8 @@ export class CheckoutService {
     bundleIds: Array<string>,
   ): Promise<object> {
     try {
-      const checkoutData: any = await CheckoutHandlers.getCheckoutHandler(
-        userId,
-      );
+      const checkoutData: any =
+        await CheckoutHandlers.getMarketplaceCheckoutHandler(userId);
       const { checkoutId, bundles } = checkoutData?.marketplaceCheckout || {};
       const saleorCheckout: any = await CheckoutHandlers.checkoutHandler(
         checkoutId,
@@ -257,22 +267,30 @@ export class CheckoutService {
     }
   }
 
-  public async getShippingMethod(userId: string): Promise<object> {
+  public async getShippingMethods(userId: string): Promise<object> {
     try {
-      const checkoutData: any = await CheckoutHandlers.getCheckoutHandler(
-        userId,
-      );
+      const checkoutData: any =
+        await CheckoutHandlers.getMarketplaceCheckoutHandler(userId, false);
       const { checkoutId, selectedMethods, bundles } =
         checkoutData?.marketplaceCheckout;
       const saleorCheckout: any = await CheckoutHandlers.checkoutHandler(
         checkoutId,
       );
+
+      // console.log({ checkout: saleorCheckout });
+
       const methodsListFromShopService = getShippingMethods(bundles);
+
+      // console.log({ methodsListFromShopService });
+
       const methodsListFromSaleor = getShippingMethodsWithUUID(
         saleorCheckout?.checkout?.shippingMethods,
         methodsListFromShopService,
         selectedMethods,
       );
+
+      // console.log({ methodsListFromSaleor });
+
       return methodsListFromSaleor;
     } catch (err) {
       return graphqlExceptionHandler(err);
@@ -284,15 +302,14 @@ export class CheckoutService {
     shippingIds: Array<string>,
   ): Promise<object> {
     try {
-      const checkoutData: any = await CheckoutHandlers.getCheckoutHandler(
-        userId,
-      );
+      const checkoutData: any =
+        await CheckoutHandlers.getMarketplaceCheckoutHandler(userId);
       await CheckoutHandlers.addCheckoutShippingMethodHandler(
         checkoutData,
         shippingIds,
       );
       await CheckoutHandlers.checkoutDeliveryMethodUpdateHandler(checkoutData);
-      return this.getShippingMethod(userId);
+      return this.getShippingMethods(userId);
     } catch (err) {
       return graphqlExceptionHandler(err);
     }
@@ -300,9 +317,8 @@ export class CheckoutService {
 
   public async createPayment(userId: string): Promise<object> {
     try {
-      const checkoutData: any = await CheckoutHandlers.getCheckoutHandler(
-        userId,
-      );
+      const checkoutData: any =
+        await CheckoutHandlers.getMarketplaceCheckoutHandler(userId);
       const userData: any = await CheckoutHandlers.getUserHandler(userId);
       const paymentGateways: any =
         await CheckoutHandlers.getPaymentGatewaysHandler(checkoutData);
@@ -318,9 +334,8 @@ export class CheckoutService {
 
   public async checkoutComplete(userId: string): Promise<object> {
     try {
-      const checkoutData: any = await CheckoutHandlers.getCheckoutHandler(
-        userId,
-      );
+      const checkoutData: any =
+        await CheckoutHandlers.getMarketplaceCheckoutHandler(userId);
       const { checkoutId, bundles } = checkoutData?.marketplaceCheckout;
       const selectedBundles = getSelectedBundles(bundles);
       const checkoutBundleIds = getCheckoutBundleIds(selectedBundles);

@@ -1,16 +1,15 @@
+import { v4 as uuidv4 } from 'uuid';
 import {
   graphqlCall,
-  graphqlExceptionHandler,
+  graphqlResultErrorHandler,
 } from 'src/public/graphqlHandler';
-import { v4 as uuidv4 } from 'uuid';
 import * as CheckoutQueries from 'src/graphql/queries/checkout';
 import * as UserQueries from 'src/graphql/queries/user';
+import RecordNotFound from 'src/exceptions/recordNotFound';
 
 import {
   getLineItems,
   getBundleIds,
-  getShippingMethods,
-  getShippingMethodsWithUUID,
   getDummyGateway,
   getTargetLineItems,
 } from 'src/public/checkoutHelperFunctions';
@@ -22,11 +21,26 @@ export const bundlesListHandler = async (
   }>,
 ): Promise<object> => {
   const bundleIds = getBundleIds(bundles);
-  return await graphqlCall(CheckoutQueries.bundlesQuery(bundleIds));
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(CheckoutQueries.bundlesQuery(bundleIds)),
+  );
+
+  if (!response['bundles']['length']) {
+    throw new RecordNotFound('Bundles');
+  }
+
+  return response;
 };
 
-export const getCheckoutHandler = async (id: string): Promise<object> => {
-  return await graphqlCall(CheckoutQueries.getCheckoutQuery(id));
+export const getMarketplaceCheckoutHandler = async (
+  id: string,
+  throwException: boolean = false,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(CheckoutQueries.getMarketplaceCheckoutQuery(id)),
+    throwException,
+  );
+  return response['marketplaceCheckout'];
 };
 
 export const createCheckoutHandler = async (
