@@ -267,20 +267,12 @@ export class CheckoutService {
       const saleorCheckout: any = await CheckoutHandlers.checkoutHandler(
         checkoutId,
       );
-
-      // console.log({ checkout: saleorCheckout });
-
       const methodsListFromShopService = getShippingMethods(bundles);
-
-      // console.log({ methodsListFromShopService });
-
       const methodsListFromSaleor = getShippingMethodsWithUUID(
         saleorCheckout?.checkout?.shippingMethods,
         methodsListFromShopService,
         selectedMethods,
       );
-
-      // console.log({ methodsListFromSaleor });
 
       return methodsListFromSaleor;
     } catch (err) {
