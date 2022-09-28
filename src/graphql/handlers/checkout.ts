@@ -97,7 +97,13 @@ export const checkoutLinesAddHandler = async (
 };
 
 export const checkoutHandler = async (checkoutId: string): Promise<object> => {
-  return await graphqlCall(CheckoutQueries.checkoutQuery(checkoutId));
+  const response = await graphqlCall(CheckoutQueries.checkoutQuery(checkoutId));
+
+  if (!response['checkout']) {
+    throw new RecordNotFound('Checkout');
+  }
+
+  return response['checkout'];
 };
 
 export const checkoutLinesDeleteHandler = async (

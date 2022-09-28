@@ -35,7 +35,7 @@ export class CheckoutController {
   async deleteCartBundle(@Res() res, @Body() body): Promise<object> {
     return makeResponse(
       res,
-      this.appService.deleteBundleFromCart(
+      await this.appService.deleteBundleFromCart(
         body?.userId,
         body?.checkoutBundleIds,
       ),
@@ -46,7 +46,7 @@ export class CheckoutController {
   async updateCartBundle(@Res() res, @Body() body): Promise<object> {
     return makeResponse(
       res,
-      this.appService.updateBundleFromCart(body?.userId, body?.bundles),
+      await this.appService.updateBundleFromCart(body?.userId, body?.bundles),
     );
   }
 
@@ -54,7 +54,7 @@ export class CheckoutController {
   async selectThisShop(@Res() res, @Body() body): Promise<object> {
     return makeResponse(
       res,
-      this.appService.setBundleAsSelected(body?.userId, body?.bundleIds),
+      await this.appService.setBundleAsSelected(body?.userId, body?.bundleIds),
     );
   }
 
@@ -62,7 +62,10 @@ export class CheckoutController {
   async unSelectThisShop(@Res() res, @Body() body): Promise<object> {
     return makeResponse(
       res,
-      this.appService.setBundleAsUnselected(body?.userId, body?.bundleIds),
+      await this.appService.setBundleAsUnselected(
+        body?.userId,
+        body?.bundleIds,
+      ),
     );
   }
 
@@ -70,7 +73,7 @@ export class CheckoutController {
   async addShippingAddress(@Res() res, @Body() body): Promise<object> {
     return makeResponse(
       res,
-      this.appService.addShippingAddress(
+      await this.appService.addShippingAddress(
         body?.checkoutId,
         body?.addressDetails,
       ),
@@ -81,7 +84,10 @@ export class CheckoutController {
   async addBillingAddress(@Res() res, @Body() body): Promise<object> {
     return makeResponse(
       res,
-      this.appService.addBillingAddress(body?.checkoutId, body?.addressDetails),
+      await this.appService.addBillingAddress(
+        body?.checkoutId,
+        body?.addressDetails,
+      ),
     );
   }
 
@@ -92,7 +98,7 @@ export class CheckoutController {
   ): Promise<object> {
     return makeResponse(
       res,
-      this.appService.getShippingBillingAddress(params?.checkoutId),
+      await this.appService.getShippingBillingAddress(params?.checkoutId),
     );
   }
 
@@ -100,7 +106,7 @@ export class CheckoutController {
   async getShippingMethods(@Res() res, @Param() params): Promise<object> {
     return makeResponse(
       res,
-      this.appService.getShippingMethods(params?.userId),
+      await this.appService.getShippingMethods(params?.userId),
     );
   }
 
@@ -108,17 +114,23 @@ export class CheckoutController {
   async selectShippingMethods(@Res() res, @Body() body): Promise<object> {
     return makeResponse(
       res,
-      this.appService.selectShippingMethods(body?.userId, body?.shippingIds),
+      await this.appService.selectShippingMethods(
+        body?.userId,
+        body?.shippingIds,
+      ),
     );
   }
 
   @Post('createPayment')
   async createPayment(@Res() res, @Body() body): Promise<object> {
-    return makeResponse(res, this.appService.createPayment(body?.userId));
+    return makeResponse(res, await this.appService.createPayment(body?.userId));
   }
 
   @Post('checkoutComplete')
   async checkoutComplete(@Res() res, @Body() body): Promise<object> {
-    return makeResponse(res, this.appService.checkoutComplete(body?.userId));
+    return makeResponse(
+      res,
+      await this.appService.checkoutComplete(body?.userId),
+    );
   }
 }

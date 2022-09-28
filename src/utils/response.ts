@@ -29,11 +29,10 @@ export const prepareSuccessResponse = async (
 ) => {
   return {
     status: status ? status : HttpStatus.OK,
-    message,
+    message: message ? message : 'Success.',
     data,
   };
 };
-
 
 /**
  * It returns a failed response object
@@ -49,7 +48,7 @@ export const prepareFailedResponse = async (
 ) => {
   return {
     status: status ? status : HttpStatus.BAD_REQUEST,
-    message,
+    message: message ? message : 'Failed.',
     errors,
   };
 };

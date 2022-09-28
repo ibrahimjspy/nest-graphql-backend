@@ -23,7 +23,7 @@ export const graphqlCall = async (
 };
 
 /**
- * It takes a GraphQL response object, checks if it contains an expected error, 
+ * It takes a GraphQL response object, checks if it contains an expected error,
  * and if it does, it throws a ResultError exception.
  * @param {object} response - object - the response object from the GraphQL query.
  * @param {boolean} [throwException=true] - boolean = true

@@ -116,8 +116,9 @@ export class CheckoutService {
   ): Promise<object> {
     try {
       const checkoutData: any =
-        await CheckoutHandlers.getMarketplaceCheckoutHandler(userId);
-      const { checkoutId, bundles } = checkoutData?.marketplaceCheckout;
+        await CheckoutHandlers.getMarketplaceCheckoutHandler(userId, true);
+
+      const { checkoutId, bundles } = checkoutData;
       const saleorCheckout: any = await CheckoutHandlers.checkoutHandler(
         checkoutId,
       );
