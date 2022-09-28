@@ -1,11 +1,13 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 
-const federationQuery = (linedIds: Array<string>) => {
-  // query linking with backend
+const federationQuery = (checkoutId: string, linedIds: Array<string>) => {
   return gql`
   mutation {
-    checkoutLinesDelete (linesIds: ${JSON.stringify(linedIds)}) {
+    checkoutLinesDelete (
+      id: "${checkoutId}",
+      linesIds: ${JSON.stringify(linedIds)}
+    ) {
       checkout {
         id
       }
@@ -18,9 +20,12 @@ const federationQuery = (linedIds: Array<string>) => {
   `;
 };
 
-export const checkoutLinesDeleteQuery = (linedIds: Array<string>) => {
+export const checkoutLinesDeleteQuery = (
+  checkoutId: string,
+  linedIds: Array<string>,
+) => {
   return graphqlQueryCheck(
-    federationQuery(linedIds),
-    federationQuery(linedIds),
+    federationQuery(checkoutId, linedIds),
+    federationQuery(checkoutId, linedIds),
   );
 };

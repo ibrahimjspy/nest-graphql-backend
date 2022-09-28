@@ -1,4 +1,8 @@
 import { HttpStatus } from '@nestjs/common';
+import {
+  SuccessResponseType,
+  FailedResponseType,
+} from '../types/utils/response';
 
 /**
  * It returns a response object with a status code and a JSON object
@@ -7,7 +11,12 @@ import { HttpStatus } from '@nestjs/common';
  * @returns A function that takes in a response and data and returns a response with the data and status code.
  */
 export const makeResponse = async (res: any, data: any) => {
+  // assign the data status to response object.
   const res_status = data?.status ? data.status : HttpStatus.OK;
+  // remove status and graphql typename from the data object.
+  delete data?.status;
+  delete data?.__typename;
+  // assign response status to response object.
   return res.status(res_status).json(data);
 };
 
@@ -24,14 +33,17 @@ export const makeResponse = async (res: any, data: any) => {
  * */
 export const prepareSuccessResponse = async (
   data: any,
-  message: string = 'Success.',
+  message: string = '',
   status: HttpStatus = HttpStatus.OK,
-) => {
-  return {
+): Promise<SuccessResponseType> => {
+  let response: SuccessResponseType = {
     status: status ? status : HttpStatus.OK,
-    message: message ? message : 'Success.',
     data,
   };
+  if (message) {
+    response['message'] = message;
+  }
+  return response;
 };
 
 /**
@@ -42,13 +54,16 @@ export const prepareSuccessResponse = async (
  * @returns An object with a status, message, and errors.
  */
 export const prepareFailedResponse = async (
-  message: string = 'Failed.',
+  message: string = '',
   status: HttpStatus = HttpStatus.BAD_REQUEST,
   errors: Array<any> = [],
-) => {
-  return {
+): Promise<FailedResponseType> => {
+  let response: FailedResponseType = {
     status: status ? status : HttpStatus.BAD_REQUEST,
     message: message ? message : 'Failed.',
-    errors,
   };
+  if (errors.length > 0) {
+    response['errors'] = errors;
+  }
+  return response;
 };

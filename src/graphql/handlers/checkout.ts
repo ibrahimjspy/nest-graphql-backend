@@ -111,18 +111,28 @@ export const checkoutLinesDeleteHandler = async (
   bundles,
   bundleIds,
 ): Promise<object> => {
-  const lines = getTargetLineItems(saleorCheckout, bundles, bundleIds);
+  const lines = getTargetLineItems(saleorCheckout?.lines, bundles, bundleIds);
   const lineIds = (lines || []).map((l: any) => l?.id);
-  return await graphqlCall(CheckoutQueries.checkoutLinesDeleteQuery(lineIds));
+
+  return await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutQueries.checkoutLinesDeleteQuery(saleorCheckout?.id, lineIds),
+    ),
+  );
 };
 
 export const deleteCheckoutBundlesHandler = async (
   checkoutBundleIds: Array<string>,
   checkoutId: string,
 ): Promise<object> => {
-  return await graphqlCall(
-    CheckoutQueries.deleteCheckoutBundlesQuery(checkoutBundleIds, checkoutId),
+  console.log(checkoutId);
+
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutQueries.deleteCheckoutBundlesQuery(checkoutBundleIds, checkoutId),
+    ),
   );
+  return response['deleteCheckoutBundles'];
 };
 
 export const checkoutLinesUpdateHandler = async (

@@ -87,16 +87,15 @@ export const getVariantIds = (targetBundles) => {
 
 /**
  * returns line items array for saleor api
- * @params saleorCheckout: complete checkout object from saleor checkout
+ * @params lines: checkout lines from saleor checkout
  * @params bundles: all the bundles array from the checkout data
  * @params bundleIds: array of bundle ids
  */
-export const getTargetLineItems = (saleorCheckout, bundles, bundleIds) => {
+export const getTargetLineItems = (lines, bundles, bundleIds) => {
   const targetBundle = getTargetBundleByBundleId(bundles, bundleIds);
   const variantIds = getVariantIds(targetBundle);
 
-  const lineItems = saleorCheckout?.checkout?.lines;
-  return (lineItems || [])
+  return (lines || [])
     .filter((line) => variantIds.includes(line?.variant?.id))
     .map((line) => ({
       variantId: line?.variant?.id,

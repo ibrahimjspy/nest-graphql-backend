@@ -101,7 +101,7 @@ export class CheckoutService {
           bundlesForCart,
         );
       }
-      return prepareSuccessResponse(response);
+      return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       if (err instanceof RecordNotFound) {
         return prepareFailedResponse(err.message);
@@ -120,8 +120,7 @@ export class CheckoutService {
 
       const { checkoutId, bundles } = checkoutData;
       const saleorCheckout: any = await CheckoutHandlers.checkoutHandler(
-        'undefined',
-        // checkoutId,
+        checkoutId,
       );
 
       // FIXME: need to use promise all here,

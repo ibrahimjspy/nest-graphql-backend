@@ -39,10 +39,10 @@ export const graphqlResultErrorHandler = async (
   const error: ResultErrorType = response[Object.keys(response)[0]];
 
   if (error.__typename === 'ResultError' && throwException) {
-    // to handle sharove-services errors.
+    // to handle sharove-services expected errors.
     throw new ResultError(message ? message : error.message, error.errors);
   } else if (error.errors?.length > 0) {
-    // to handle saleor-services errors.
+    // to handle saleor-services expected errors.
     throw new ResultError(
       message ? message : error.errors[0]['message'],
       error.errors,
@@ -64,10 +64,13 @@ export const graphqlExceptionHandler = (
   error: Error | ResultError | any,
   status?: HttpStatus,
 ): any => {
+  // Used to handle all the expected errors.
   if (error instanceof ResultError) {
+    console.error(`[GraphQL Error][${status}]`, error.message);
     return prepareFailedResponse(error.message, status, error.errors);
   }
 
+  // Used to handle all the unexpected errors.
   const response = error?.response;
   const errors = response?.errors || [];
   const message = response?.errors[0].message
