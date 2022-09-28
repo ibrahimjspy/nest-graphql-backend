@@ -36,13 +36,17 @@ export class CheckoutService {
     bundlesForCart,
   ) {
     const { checkoutId, bundles } = checkoutData;
+    const bundlesWithUpdatedQuantity = updateBundlesQuantity(
+      bundles,
+      bundlesForCart,
+    );
+
+    // FIXME: need to use promise all here,
+    // but for that we need to think about exception handling
+    // against each handler.
     await CheckoutHandlers.addForCartHandler(
       checkoutId,
       bundlesList,
-      bundlesForCart,
-    );
-    const bundlesWithUpdatedQuantity = updateBundlesQuantity(
-      bundles,
       bundlesForCart,
     );
     return await CheckoutHandlers.addCheckoutBundlesHandler(
