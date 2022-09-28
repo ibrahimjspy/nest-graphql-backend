@@ -32,12 +32,12 @@ export const getLineItems = (bundles, targetBundles) => {
 
 /**
  * returns line items with updated quantity
- * @params saleorCheckout: complete checkout object from saleor checkout
+ * @params lines: checkout lines from saleor checkout
  * @params checkoutBundles: all the bundles array from the checkout data
  * @params bundlesFromCart: bundles from cart for which update (i.e quantity or color) is required
  */
 export const getUpdatedLinesWithQuantity = (
-  saleorCheckout,
+  lines,
   checkoutBundles,
   bundlesFromCart,
 ) => {
@@ -45,7 +45,7 @@ export const getUpdatedLinesWithQuantity = (
   const checkoutBundleIds = bundlesFromCart.map((bundle) => bundle?.bundleId);
 
   const targetLineItems = getTargetLineItems(
-    saleorCheckout,
+    lines,
     checkoutBundles,
     checkoutBundleIds,
   );

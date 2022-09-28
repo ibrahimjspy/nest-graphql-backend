@@ -5,23 +5,23 @@ const federationQuery = (
   checkoutId: string,
   lines: Array<{ variantId: string; quantity: number }>,
 ) => {
-  // query linking with backend
   return gql`
-  mutation {
-    checkoutLinesUpdate (checkoutId: "${checkoutId}", lines: ${JSON.stringify(
-    lines,
-  )
-    .replace(/"variantId"/g, 'variantId')
-    .replace(/"quantity"/g, 'quantity')}) {
-      checkout {
-        id
-      }
-      errors {
-        message
-        code
+    mutation {
+      checkoutLinesUpdate (
+        checkoutId: "${checkoutId}", 
+        lines: ${JSON.stringify(lines)
+          .replace(/"variantId"/g, 'variantId')
+          .replace(/"quantity"/g, 'quantity')}
+      ) {
+        checkout {
+          id
+        }
+        errors {
+          message
+          code
+        }
       }
     }
-  }
   `;
 };
 

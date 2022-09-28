@@ -5,7 +5,7 @@ import {
 } from 'src/public/graphqlHandler';
 import * as CheckoutQueries from 'src/graphql/queries/checkout';
 import * as UserQueries from 'src/graphql/queries/user';
-import RecordNotFound from 'src/exceptions/recordNotFound';
+import RecordNotFound from 'src/core/exceptions/recordNotFound';
 
 import {
   getLineItems,
@@ -139,9 +139,12 @@ export const checkoutLinesUpdateHandler = async (
   checkoutId: string,
   lines: Array<{ variantId: string; quantity: number }>,
 ): Promise<object> => {
-  return await graphqlCall(
-    CheckoutQueries.checkoutLinesUpdateQuery(checkoutId, lines),
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutQueries.checkoutLinesUpdateQuery(checkoutId, lines),
+    ),
   );
+  return response['checkoutLinesUpdate'];
 };
 
 export const shippingAddressHandler = async (

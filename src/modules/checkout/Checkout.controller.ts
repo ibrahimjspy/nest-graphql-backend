@@ -9,7 +9,7 @@ import {
   Res,
 } from '@nestjs/common';
 import { CheckoutService } from './Checkout.service';
-import { makeResponse } from '../../utils/response';
+import { makeResponse } from '../../core/utils/response';
 
 @Controller('checkout')
 export class CheckoutController {

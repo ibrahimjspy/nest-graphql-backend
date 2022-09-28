@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import RecordNotFound from 'src/exceptions/recordNotFound';
+import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import * as CheckoutHandlers from 'src/graphql/handlers/checkout';
 
 import {
@@ -15,7 +15,7 @@ import { graphqlExceptionHandler } from 'src/public/graphqlHandler';
 import {
   prepareFailedResponse,
   prepareSuccessResponse,
-} from 'src/utils/response';
+} from 'src/core/utils/response';
 
 @Injectable()
 export class CheckoutService {
@@ -150,24 +150,30 @@ export class CheckoutService {
     bundlesFromCart: Array<{ bundleId: string; quantity: number }>,
   ): Promise<object> {
     try {
-      const checkoutData: any =
-        await CheckoutHandlers.getMarketplaceCheckoutHandler(userId);
-      const { checkoutId, bundles } = checkoutData?.marketplaceCheckout;
+      const checkoutData = await CheckoutHandlers.getMarketplaceCheckoutHandler(
+        userId,
+        true,
+      );
+
       const saleorCheckout: any = await CheckoutHandlers.checkoutHandler(
-        checkoutId,
+        checkoutData['checkoutId'],
       );
 
       const updatedLinesWithQuantity = getUpdatedLinesWithQuantity(
-        saleorCheckout,
-        bundles,
+        saleorCheckout['lines'],
+        checkoutData['bundles'],
         bundlesFromCart,
       );
+
+      // FIXME: need to use promise all here,
+      // but for that we need to think about exception handling
+      // against each handler.
       await CheckoutHandlers.checkoutLinesUpdateHandler(
-        checkoutId,
+        checkoutData['checkoutId'],
         updatedLinesWithQuantity,
       );
       return CheckoutHandlers.addCheckoutBundlesHandler(
-        checkoutId,
+        checkoutData['checkoutId'],
         userId,
         bundlesFromCart,
       );

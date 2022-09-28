@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 import {
   SuccessResponseType,
   FailedResponseType,
-} from '../types/utils/response';
+} from './response.type';
 
 /**
  * It returns a response object with a status code and a JSON object

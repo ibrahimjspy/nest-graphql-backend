@@ -1,9 +1,9 @@
 import { request } from 'graphql-request';
 import { graphqlEndpoint } from './graphqlEndpointToggle';
-import { ResultErrorType } from '../types/graphql/exceptions/resultError';
+import { ResultErrorType } from '../graphql/exceptions/resultError.type';
 import { HttpStatus } from '@nestjs/common';
 import ResultError from '../graphql/exceptions/resultError';
-import { prepareFailedResponse } from 'src/utils/response';
+import { prepareFailedResponse } from 'src/core/utils/response';
 import e from 'express';
 
 /**
