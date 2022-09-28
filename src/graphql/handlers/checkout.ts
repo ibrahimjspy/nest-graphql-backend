@@ -84,7 +84,7 @@ export const checkoutLinesDeleteHandler = async (
   bundleIds,
 ): Promise<object> => {
   const lines = getTargetLineItems(saleorCheckout, bundles, bundleIds);
-  const lineIds = (lines || []).map((l: any) => l?.id);
+  const lineIds = (lines || []).map((l: any) => l?.variantId || l?.id);
   return await graphqlCall(CheckoutQueries.checkoutLinesDeleteQuery(lineIds));
 };
 
