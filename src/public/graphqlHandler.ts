@@ -4,6 +4,7 @@ import { ResultErrorType } from '../types/graphql/exceptions/resultError';
 import { HttpStatus } from '@nestjs/common';
 import ResultError from '../graphql/exceptions/resultError';
 import { prepareFailedResponse } from 'src/utils/response';
+import e from 'express';
 
 /**
  * This is top level function which handles graphql requests , exceptions and logic
@@ -51,26 +52,35 @@ export const graphqlResultErrorHandler = async (
   return response;
 };
 
+/**
+ * It takes an error object and returns a response object with the error message, error code, and
+ * errors array
+ * @param {Error | ResultError | any} error - Error | ResultError | any
+ * @param {HttpStatus} [status] - The HTTP status code to return.
+ * @returns A function that takes in an error and a status and returns an object with a message,
+ * status, and errors.
+ */
 export const graphqlExceptionHandler = (
   error: Error | ResultError | any,
   status?: HttpStatus,
-): object | any => {
+): any => {
   if (error instanceof ResultError) {
     return prepareFailedResponse(error.message, status, error.errors);
   }
 
-  const message = 'Something went wrong.';
-  const federation_response = error?.response?.error
-    ? message
-    : error?.response?.errors[0]?.message;
-  const error_response = {
-    message: error.type ? message : federation_response,
-  };
-  const error_message = error_response ? error_response : 'server side';
-  const error_code: number = error.type ? 500 : error?.response?.status;
-  console.log('graphql error', error_message);
-  return {
-    status: error_code == 200 ? 405 : error_code,
-    message: error_message,
-  };
+  const response = error?.response;
+  const errors = response?.errors || [];
+  const message = response?.errors[0].message
+    ? response?.errors[0].message
+    : 'Something went wrong.';
+  let error_code: number = error.type ? 500 : response?.status;
+  if (status) {
+    error_code = status;
+  } else if (error_code === 200) {
+    error_code = 400;
+  }
+
+  console.error(`[GraphQL Error][${error_code}]`, message);
+
+  return prepareFailedResponse(message, error_code, errors);
 };

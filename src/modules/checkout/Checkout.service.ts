@@ -120,8 +120,13 @@ export class CheckoutService {
 
       const { checkoutId, bundles } = checkoutData;
       const saleorCheckout: any = await CheckoutHandlers.checkoutHandler(
-        checkoutId,
+        'undefined',
+        // checkoutId,
       );
+
+      // FIXME: need to use promise all here,
+      // but for that we need to think about exception handling
+      // against each handler.
       await CheckoutHandlers.checkoutLinesDeleteHandler(
         saleorCheckout,
         bundles,
