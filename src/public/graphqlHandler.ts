@@ -66,7 +66,6 @@ export const graphqlExceptionHandler = (
 ): any => {
   // Used to handle all the expected errors.
   if (error instanceof ResultError) {
-    console.error(`[GraphQL Error][${status}]`, error.message);
     return prepareFailedResponse(error.message, status, error.errors);
   }
 
@@ -82,8 +81,6 @@ export const graphqlExceptionHandler = (
   } else if (error_code === 200) {
     error_code = 400;
   }
-
-  console.error(`[GraphQL Error][${error_code}]`, message);
 
   return prepareFailedResponse(message, error_code, errors);
 };

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import RecordNotFound from 'src/exceptions/recordNotFound';
 import * as CheckoutHandlers from 'src/graphql/handlers/checkout';
 
@@ -19,12 +19,15 @@ import {
 
 @Injectable()
 export class CheckoutService {
+  private readonly logger = new Logger(CheckoutService.name);
+
   public async getShoppingCartData(id: string): Promise<object> {
     try {
       return prepareSuccessResponse(
         await CheckoutHandlers.getMarketplaceCheckoutHandler(id, true),
       );
     } catch (err) {
+      this.logger.error(err);
       return graphqlExceptionHandler(err);
     }
   }
@@ -103,6 +106,7 @@ export class CheckoutService {
       }
       return prepareSuccessResponse(response, '', 201);
     } catch (err) {
+      this.logger.error(err);
       if (err instanceof RecordNotFound) {
         return prepareFailedResponse(err.message);
       }
@@ -136,6 +140,7 @@ export class CheckoutService {
         checkoutId,
       );
     } catch (err) {
+      this.logger.error(err);
       return graphqlExceptionHandler(err);
     }
   }
@@ -167,6 +172,7 @@ export class CheckoutService {
         bundlesFromCart,
       );
     } catch (err) {
+      this.logger.error(err);
       return graphqlExceptionHandler(err);
     }
   }
@@ -199,6 +205,7 @@ export class CheckoutService {
         updatedBundle,
       );
     } catch (err) {
+      this.logger.error(err);
       return graphqlExceptionHandler(err);
     }
   }
@@ -230,6 +237,7 @@ export class CheckoutService {
         updatedBundle,
       );
     } catch (err) {
+      this.logger.error(err);
       return graphqlExceptionHandler(err);
     }
   }
@@ -244,6 +252,7 @@ export class CheckoutService {
         addressDetails,
       );
     } catch (err) {
+      this.logger.error(err);
       return graphqlExceptionHandler(err);
     }
   }
@@ -255,6 +264,7 @@ export class CheckoutService {
     try {
       return CheckoutHandlers.billingAddressHandler(checkoutId, addressDetails);
     } catch (err) {
+      this.logger.error(err);
       return graphqlExceptionHandler(err);
     }
   }
@@ -263,6 +273,7 @@ export class CheckoutService {
     try {
       return CheckoutHandlers.shippingBillingAddress(checkoutId);
     } catch (err) {
+      this.logger.error(err);
       return graphqlExceptionHandler(err);
     }
   }
@@ -285,6 +296,7 @@ export class CheckoutService {
 
       return methodsListFromSaleor;
     } catch (err) {
+      this.logger.error(err);
       return graphqlExceptionHandler(err);
     }
   }
@@ -303,6 +315,7 @@ export class CheckoutService {
       await CheckoutHandlers.checkoutDeliveryMethodUpdateHandler(checkoutData);
       return this.getShippingMethods(userId);
     } catch (err) {
+      this.logger.error(err);
       return graphqlExceptionHandler(err);
     }
   }
@@ -318,6 +331,7 @@ export class CheckoutService {
         paymentGateways,
       );
     } catch (err) {
+      this.logger.error(err);
       return graphqlExceptionHandler(err);
     }
   }
@@ -335,6 +349,7 @@ export class CheckoutService {
       );
       return CheckoutHandlers.checkoutCompleteHandler(checkoutId);
     } catch (err) {
+      this.logger.error(err);
       return graphqlExceptionHandler(err);
     }
   }
