@@ -8,16 +8,18 @@ import { CategoriesModule } from './modules/categories/Categories.module';
 import { OrdersModule } from './modules/orders/Orders.module';
 import { ShopModule } from './modules/shop/Shop.module';
 import { CheckoutModule } from './modules/checkout/Checkout.module';
+import { AccountModule } from './modules/account/Account.module';
 
 @Module({
   imports: [
+    CacheModule.register(),
+    ConfigModule.forRoot(),
     ProductModule,
     CategoriesModule,
     OrdersModule,
     ShopModule,
     CheckoutModule,
-    CacheModule.register(),
-    ConfigModule.forRoot(),
+    AccountModule,
   ],
   controllers: [AppController],
   providers: [

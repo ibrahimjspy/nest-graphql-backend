@@ -1,6 +1,5 @@
 import {
   graphqlCall,
-  graphqlExceptionHandler,
 } from 'src/public/graphqlHandler';
 import { v4 as uuidv4 } from 'uuid';
 import * as CheckoutQueries from 'src/graphql/queries/checkout';
@@ -9,8 +8,6 @@ import * as UserQueries from 'src/graphql/queries/user';
 import {
   getLineItems,
   getBundleIds,
-  getShippingMethods,
-  getShippingMethodsWithUUID,
   getDummyGateway,
   getTargetLineItems,
 } from 'src/public/checkoutHelperFunctions';
