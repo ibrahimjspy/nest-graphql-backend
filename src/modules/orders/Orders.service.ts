@@ -1,21 +1,48 @@
-import { Injectable } from '@nestjs/common';
-import { dashboardByIdHandler } from 'src/graphql/handlers/orders';
+import { Injectable, Logger } from '@nestjs/common';
+import { dashboardByIdHandler, orderDetailsHandler } from 'src/graphql/handlers/orders';
+import { allShopOrdersHandler } from 'src/graphql/handlers/orders';
 import { shopOrdersByIdHandler } from 'src/graphql/handlers/orders';
 import { shopOrderFulfillmentsByIdHandler } from 'src/graphql/handlers/orders';
 
 @Injectable()
 export class OrdersService {
+  private readonly logger = new Logger(OrdersService.name);
   public getDashboardDataById(id): Promise<object> {
     // Pre graphQl call actions and validations -->
     // << -- >>
     // menuCategories is graphQl promise handler --->
     return dashboardByIdHandler(id);
   }
-  public getShopOrdersDataById(id): Promise<object> {
+  public async getAllShopOrdersData(): Promise<object> {
     // Pre graphQl call actions and validations -->
     // << -- >>
     // shopOrders is graphQl promise handler --->
-    return shopOrdersByIdHandler(id);
+    const response = await allShopOrdersHandler();
+    const shops = (response["edges"] || []).map((shop) => shop["node"])
+
+    await Promise.all(
+      shops.map(
+        async (shop) => {
+          const orders = shop["orders"]
+          await Promise.all(
+            orders.map(async (order) => {
+              const orderDetails = await orderDetailsHandler(order["orderId"]);
+              order["number"] = orderDetails["number"]
+              order["created"] = orderDetails["created"]
+              order["userEmail"] = orderDetails["userEmail"]
+            })
+          )
+        }
+      )
+    )
+
+    return shops
+  }
+  public async getShopOrdersDataById(id): Promise<object> {
+    // Pre graphQl call actions and validations -->
+    // << -- >>
+    // shopOrders is graphQl promise handler --->
+    return await shopOrdersByIdHandler(id);
   }
   public getShopOrderFulfillmentsDataById(id): Promise<object> {
     // Pre graphQl call actions and validations -->
