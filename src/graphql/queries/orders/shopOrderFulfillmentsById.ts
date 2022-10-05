@@ -3,28 +3,28 @@ import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 
 const federationQuery = (id: string): string => {
   return gql`
-  query{
-    marketplaceOrder(
-      filter: {
-        id: "${id}"
-      }
-    )
-    {
-      id
-      orderId
-      orderBundles{
-        orderlineIds
-        quantity
-      }
-      fulfillments{
-        fulfillmentId
-        fulfillmentBundles{
-          fulfillmentlineIds
+    query{
+      marketplaceOrder(
+        filter: {
+          id: "${id}"
+        }
+      )
+      {
+        id
+        orderId
+        orderBundles{
+          orderlineIds
           quantity
+        }
+        fulfillments{
+          fulfillmentId
+          fulfillmentBundles{
+            fulfillmentlineIds
+            quantity
+          }
         }
       }
     }
-  }
   `;
 };
 
