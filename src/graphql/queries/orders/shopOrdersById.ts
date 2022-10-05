@@ -3,20 +3,20 @@ import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 
 const federationQuery = (id: string): string => {
   return gql`
-  query{
-    marketplaceShop(
-      filter: {
-        id: "${id}"
-      }
-    ){
-      name
-      orders{
-        id
-        orderId
-        fulfillmentStatus
+    query{
+      marketplaceShop(
+        filter: {
+          id: "${id}"
+        }
+      ){
+        name
+        orders{
+          id
+          orderId
+          fulfillmentStatus
+        }
       }
     }
-  }
   `;
 };
 

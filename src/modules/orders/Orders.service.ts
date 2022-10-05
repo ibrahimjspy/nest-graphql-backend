@@ -8,15 +8,9 @@ import { shopOrderFulfillmentsByIdHandler } from 'src/graphql/handlers/orders';
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
   public getDashboardDataById(id): Promise<object> {
-    // Pre graphQl call actions and validations -->
-    // << -- >>
-    // menuCategories is graphQl promise handler --->
     return dashboardByIdHandler(id);
   }
   public async getAllShopOrdersData(): Promise<object> {
-    // Pre graphQl call actions and validations -->
-    // << -- >>
-    // shopOrders is graphQl promise handler --->
     const response = await allShopOrdersHandler();
     const shops = (response["edges"] || []).map((shop) => shop["node"])
 
@@ -39,15 +33,9 @@ export class OrdersService {
     return shops
   }
   public async getShopOrdersDataById(id): Promise<object> {
-    // Pre graphQl call actions and validations -->
-    // << -- >>
-    // shopOrders is graphQl promise handler --->
     return await shopOrdersByIdHandler(id);
   }
   public getShopOrderFulfillmentsDataById(id): Promise<object> {
-    // Pre graphQl call actions and validations -->
-    // << -- >>
-    // shopOrderFulfillments is graphQl promise handler --->
     return shopOrderFulfillmentsByIdHandler(id);
   }
 }

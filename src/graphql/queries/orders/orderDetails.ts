@@ -3,14 +3,14 @@ import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 
 const federationQuery = (id: string): string => {
   return gql`
-  query{
-    order(id: "${id}")
-    {
-      number
-      created
-      userEmail
+    query{
+      order(id: "${id}")
+      {
+        number
+        created
+        userEmail
+      }
     }
-  }
   `;
 };
 
