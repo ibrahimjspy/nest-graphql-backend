@@ -52,7 +52,7 @@ export const createCheckoutHandler = async (
 ): Promise<object> => {
   const lines = getLineItems(bundlesList, bundlesForCart);
   const response = await graphqlCall(
-    CheckoutQueries.createCheckoutQuery(email, lines),
+    CheckoutMutations.createCheckoutMutation(email, lines),
   );
   return response['checkoutCreate'];
 };
@@ -64,7 +64,7 @@ export const addCheckoutBundlesHandler = async (
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
-      CheckoutQueries.addCheckoutBundlesQuery(checkoutId, userId, bundles),
+      CheckoutMutations.addCheckoutBundlesMutation(checkoutId, userId, bundles),
     ),
   );
   return response['addCheckoutBundles'];
@@ -77,7 +77,9 @@ export const addForCartHandler = async (
 ): Promise<object> => {
   const lines = getLineItems(bundlesList, bundlesForCart);
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(CheckoutQueries.checkoutLinesAddQuery(checkoutId, lines)),
+    await graphqlCall(
+      CheckoutMutations.checkoutLinesAddMutation(checkoutId, lines),
+    ),
   );
   return response['checkoutLinesAdd'];
 };
@@ -94,7 +96,7 @@ export const checkoutLinesAddHandler = async (
     bundleIds,
   );
   return await graphqlCall(
-    CheckoutQueries.checkoutLinesAddQuery(checkoutId, targetLineItems),
+    CheckoutMutations.checkoutLinesAddMutation(checkoutId, targetLineItems),
   );
 };
 
@@ -118,7 +120,10 @@ export const checkoutLinesDeleteHandler = async (
 
   return await graphqlResultErrorHandler(
     await graphqlCall(
-      CheckoutQueries.checkoutLinesDeleteQuery(saleorCheckout?.id, lineIds),
+      CheckoutMutations.checkoutLinesDeleteMutation(
+        saleorCheckout?.id,
+        lineIds,
+      ),
     ),
   );
 };
@@ -146,7 +151,7 @@ export const checkoutLinesUpdateHandler = async (
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
-      CheckoutQueries.checkoutLinesUpdateQuery(checkoutId, lines),
+      CheckoutMutations.checkoutLinesUpdateMutation(checkoutId, lines),
     ),
   );
   return response['checkoutLinesUpdate'];

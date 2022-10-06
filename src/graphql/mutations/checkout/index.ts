@@ -5,6 +5,11 @@ import { checkoutDeliveryMethodUpdateMutation } from './checkoutDeliveryMethodUp
 import { checkoutPaymentCreateMutation } from './checkoutPaymentCreate';
 import { deleteCheckoutBundlesMutation } from './deleteCheckoutBundle';
 import { checkoutCompleteMutation } from './checkoutComplete';
+import { addCheckoutBundlesMutation } from './addCheckoutBundles';
+import { checkoutLinesAddMutation } from './checkoutLinesAdd';
+import { createCheckoutMutation } from './createCheckout';
+import { checkoutLinesUpdateMutation } from './checkoutLinesUpdate';
+import { checkoutLinesDeleteMutation } from './checkoutLinesDelete';
 
 export {
   shippingAddressMutation,
@@ -14,4 +19,9 @@ export {
   checkoutPaymentCreateMutation,
   deleteCheckoutBundlesMutation,
   checkoutCompleteMutation,
+  addCheckoutBundlesMutation,
+  checkoutLinesAddMutation,
+  createCheckoutMutation,
+  checkoutLinesDeleteMutation,
+  checkoutLinesUpdateMutation,
 };

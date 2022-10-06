@@ -1,37 +1,36 @@
 import { gql } from 'graphql-request';
+import { DEFAULT_CHANNEL } from 'src/constants';
 import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 
 const federationQuery = (
-  checkoutId: string,
+  email: string,
   bundles: Array<{ quantity: number; variantId: string }>,
 ) => {
   return gql`
     mutation {
-      checkoutLinesAdd(
-          checkoutId: "${checkoutId}",
+      checkoutCreate(
+        input: {
+          email: "${email}"
+          channel: "${DEFAULT_CHANNEL}"
           lines: ${JSON.stringify(bundles)
-            .replace(/"variantId"/g, 'variantId')
-            .replace(/"quantity"/g, 'quantity')}
+            .replace(/"quantity"/g, 'quantity')
+            .replace(/"variantId"/g, 'variantId')}
+        }
       ) {
         checkout {
           id
-        }
-        errors {
-          code
-          field
-          message
         }
       }
     }
   `;
 };
 
-export const checkoutLinesAddQuery = (
-  checkoutId,
+export const createCheckoutMutation = (
+  email: string,
   bundles: Array<{ quantity: number; variantId: string }>,
 ) => {
   return graphqlQueryCheck(
-    federationQuery(checkoutId, bundles),
-    federationQuery(checkoutId, bundles),
+    federationQuery(email, bundles),
+    federationQuery(email, bundles),
   );
 };

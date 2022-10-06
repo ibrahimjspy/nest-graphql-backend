@@ -92,7 +92,7 @@ const federationQuery = (
   `;
 };
 
-export const addCheckoutBundlesQuery = (
+export const addCheckoutBundlesMutation = (
   checkoutId: string,
   userId: string,
   bundles: Array<{ bundleId: string; quantity: number }>,

@@ -25,7 +25,7 @@ const federationQuery = (
   `;
 };
 
-export const checkoutLinesUpdateQuery = (
+export const checkoutLinesUpdateMutation = (
   checkoutId: string,
   lines: Array<{ variantId: string; quantity: number }>,
 ) => {
