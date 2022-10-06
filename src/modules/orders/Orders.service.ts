@@ -18,9 +18,16 @@ export class OrdersService {
       shops.map(
         async (shop) => {
           const orders = shop["orders"]
+          const shopName = shop["name"]
+          const shopId = shop["id"]
+          delete shop.name
+          delete shop.id
           await Promise.all(
             orders.map(async (order) => {
               const orderDetails = await orderDetailsHandler(order["orderId"]);
+              delete order.orderId
+              order["shopName"] = shopName
+              order["shopId"] = shopId
               order["number"] = orderDetails["number"]
               order["created"] = orderDetails["created"]
               order["userEmail"] = orderDetails["userEmail"]

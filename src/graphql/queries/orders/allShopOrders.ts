@@ -7,6 +7,7 @@ const federationQuery = (): string => {
       marketplaceShops{
         edges{
           node{
+            id
             name
             orders{
               id
@@ -14,8 +15,10 @@ const federationQuery = (): string => {
               fulfillmentStatus
               orderBundles{
                 bundle{
+                  id
                   variants{
                     variant{
+                      id
                       pricing{
                         price{
                           gross
@@ -26,6 +29,7 @@ const federationQuery = (): string => {
                         }
                       }
                     }
+                    quantity
                   }
                 }
               }

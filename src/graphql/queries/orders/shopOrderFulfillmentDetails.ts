@@ -4,25 +4,23 @@ import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 const federationQuery = (id: string): string => {
   return gql`
     query{
-      marketplaceOrder(
-        filter: {
-          id: "${id}"
-        }
+      order(
+        id: "${id}"
       )
       {
-        id
-        orderId
-        orderBundles{
-          orderlineIds
-          quantity
+        number
+        userEmail
+        shippingAddress
+        {
+          streetAddress1
+          streetAddress2
         }
-        fulfillments{
-          fulfillmentId
-          fulfillmentBundles{
-            fulfillmentlineIds
-            quantity
-          }
+        billingAddress
+        {
+          streetAddress1
+          streetAddress2
         }
+        customerNote
       }
     }
   `;
