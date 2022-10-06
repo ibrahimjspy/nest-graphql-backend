@@ -1,8 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import {
-  SuccessResponseType,
-  FailedResponseType,
-} from './response.type';
+import { SuccessResponseType, FailedResponseType } from './response.type';
 
 /**
  * It returns a response object with a status code and a JSON object
@@ -13,9 +10,8 @@ import {
 export const makeResponse = async (res: any, data: any) => {
   // assign the data status to response object.
   const res_status = data?.status ? data.status : HttpStatus.OK;
-  // remove status and graphql typename from the data object.
+  // remove status from the data object.
   delete data?.status;
-  delete data?.__typename;
   // assign response status to response object.
   return res.status(res_status).json(data);
 };
@@ -36,6 +32,9 @@ export const prepareSuccessResponse = async (
   message: string = '',
   status: HttpStatus = HttpStatus.OK,
 ): Promise<SuccessResponseType> => {
+  // removing typename from graphQL object
+  delete data?.__typename;
+
   let response: SuccessResponseType = {
     status: status ? status : HttpStatus.OK,
     data,
