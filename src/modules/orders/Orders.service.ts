@@ -46,7 +46,7 @@ export class OrdersService {
   }
   public async getShopOrderFulfillmentsDataById(id): Promise<object> {
     const orderFulfillments = await shopOrderFulfillmentsByIdHandler(id);
-    const fulfillmentDetails = await shopOrderFulfillmentsDetailsHandler(orderFulfillments["orderId"] || null);
+    const fulfillmentDetails = await shopOrderFulfillmentsDetailsHandler(orderFulfillments["orderId"]);
     orderFulfillments["number"] = fulfillmentDetails["number"]
     orderFulfillments["userEmail"] = fulfillmentDetails["userEmail"]
     orderFulfillments["shippingAddress"] = fulfillmentDetails["shippingAddress"]
