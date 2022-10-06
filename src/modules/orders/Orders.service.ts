@@ -14,6 +14,8 @@ export class OrdersService {
     const response = await allShopOrdersHandler();
     const shops = (response["edges"] || []).map((shop) => shop["node"])
 
+    const shopOrders = {"orders": []}
+
     await Promise.all(
       shops.map(
         async (shop) => {
@@ -31,13 +33,13 @@ export class OrdersService {
               order["number"] = orderDetails["number"]
               order["created"] = orderDetails["created"]
               order["userEmail"] = orderDetails["userEmail"]
+              shopOrders.orders.push(order)
             })
           )
         }
       )
     )
-
-    return shops
+    return shopOrders
   }
   public async getShopOrdersDataById(id): Promise<object> {
     return await shopOrdersByIdHandler(id);
