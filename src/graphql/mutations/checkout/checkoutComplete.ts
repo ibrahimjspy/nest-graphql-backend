@@ -22,7 +22,7 @@ const federationQuery = (checkoutId: string) => {
   `;
 };
 
-export const checkoutCompleteQuery = (checkoutId: string) => {
+export const checkoutCompleteMutation = (checkoutId: string) => {
   return graphqlQueryCheck(
     federationQuery(checkoutId),
     federationQuery(checkoutId),

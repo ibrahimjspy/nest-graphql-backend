@@ -126,11 +126,16 @@ export const checkoutLinesDeleteHandler = async (
 export const deleteCheckoutBundlesHandler = async (
   checkoutBundleIds: Array<string>,
   checkoutId: string,
+  throwException: boolean = false,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
-      CheckoutQueries.deleteCheckoutBundlesQuery(checkoutBundleIds, checkoutId),
+      CheckoutMutations.deleteCheckoutBundlesMutation(
+        checkoutBundleIds,
+        checkoutId,
+      ),
     ),
+    throwException,
   );
   return response['deleteCheckoutBundles'];
 };
@@ -213,28 +218,35 @@ export const checkoutDeliveryMethodUpdateHandler = async (
   return response['checkoutDeliveryMethodUpdate'];
 };
 
-export const createPaymentHandler = async (checkoutData, paymentGateways) => {
-  const { checkoutId } = checkoutData?.marketplaceCheckout;
-  const dummyGatewayId = getDummyGateway(paymentGateways);
+export const createPaymentHandler = async (
+  checkoutId: string,
+  availablePaymentGateways,
+) => {
+  const dummyGatewayId = getDummyGateway(availablePaymentGateways);
   const token = uuidv4();
-  return await graphqlCall(
-    CheckoutQueries.checkoutPaymentCreateQuery(
-      checkoutId,
-      dummyGatewayId,
-      token,
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutMutations.checkoutPaymentCreateMutation(
+        checkoutId,
+        dummyGatewayId,
+        token,
+      ),
     ),
   );
+  return response['checkoutPaymentCreate'];
 };
 
-export const getPaymentGatewaysHandler = async (checkoutData) => {
-  const { checkoutId } = checkoutData?.marketplaceCheckout;
-  return await graphqlCall(
-    CheckoutQueries.availablePaymentGatewaysQuery(checkoutId),
+export const getPaymentGatewaysHandler = async (checkoutId: string) => {
+  const response = await graphqlResultErrorHandler(
+    graphqlCall(CheckoutQueries.availablePaymentGatewaysQuery(checkoutId)),
   );
+  return response['checkout'];
 };
 
 export const getUserHandler = async (userId: string) => {
-  const response = await graphqlCall(UserQueries.userQuery(userId));
+  const response = await graphqlResultErrorHandler(
+    graphqlCall(UserQueries.userQuery(userId)),
+  );
   return response['user'];
 };
 
@@ -247,5 +259,8 @@ export const checkoutEmailUpdateHandler = async (checkoutData, userData) => {
 };
 
 export const checkoutCompleteHandler = async (checkoutId: string) => {
-  return await graphqlCall(CheckoutQueries.checkoutCompleteQuery(checkoutId));
+  const response = await graphqlResultErrorHandler(
+    graphqlCall(CheckoutMutations.checkoutCompleteMutation(checkoutId)),
+  );
+  return response['checkoutComplete'];
 };

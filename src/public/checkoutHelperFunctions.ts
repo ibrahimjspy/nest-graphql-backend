@@ -212,8 +212,9 @@ export const getCheckoutBundleIds = (bundles) => {
  * returns dummy payment gateway for testing purpose
  * @params paymentGateways: available payment gateways
  */
-export const getDummyGateway = (paymentGateways) => {
-  const options = paymentGateways?.checkout?.availablePaymentGateways || [];
-  const dummyGateway = options.find((gateway) => gateway?.name === 'Dummy');
+export const getDummyGateway = (availablePaymentGateways = []) => {
+  const dummyGateway = availablePaymentGateways.find(
+    (gateway) => gateway?.name === 'Dummy',
+  );
   return dummyGateway?.id;
 };

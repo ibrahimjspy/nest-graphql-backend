@@ -23,16 +23,17 @@ const federationQuery = (
           value
         }
       }
-      paymentErrors {
+      errors {
         field
         message
+				code
       }
     }
   }
   `;
 };
 
-export const checkoutPaymentCreateQuery = (
+export const checkoutPaymentCreateMutation = (
   checkoutId: string,
   gatewayId: string,
   token: string,

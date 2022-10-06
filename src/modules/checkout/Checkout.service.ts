@@ -317,11 +317,15 @@ export class CheckoutService {
 
   public async createPayment(userId: string): Promise<object> {
     try {
-      const checkoutData: any = await _.getMarketplaceCheckoutHandler(userId);
-      const paymentGateways: any = await _.getPaymentGatewaysHandler(
-        checkoutData,
+      const checkoutData = await _.getMarketplaceCheckoutHandler(userId);
+      const paymentGateways = await _.getPaymentGatewaysHandler(
+        checkoutData['checkoutId'],
       );
-      return _.createPaymentHandler(checkoutData, paymentGateways);
+      const response = await _.createPaymentHandler(
+        checkoutData['checkoutId'],
+        paymentGateways['availablePaymentGateways'],
+      );
+      return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
@@ -330,12 +334,18 @@ export class CheckoutService {
 
   public async checkoutComplete(userId: string): Promise<object> {
     try {
-      const checkoutData: any = await _.getMarketplaceCheckoutHandler(userId);
-      const { checkoutId, bundles } = checkoutData?.marketplaceCheckout;
-      const selectedBundles = getSelectedBundles(bundles);
+      const checkoutData = await _.getMarketplaceCheckoutHandler(userId);
+      const selectedBundles = getSelectedBundles(checkoutData['bundles']);
       const checkoutBundleIds = getCheckoutBundleIds(selectedBundles);
-      await _.deleteCheckoutBundlesHandler(checkoutBundleIds, checkoutId);
-      return _.checkoutCompleteHandler(checkoutId);
+      await _.deleteCheckoutBundlesHandler(
+        checkoutBundleIds,
+        checkoutData['checkoutId'],
+        true,
+      );
+      const response = await _.checkoutCompleteHandler(
+        checkoutData['checkoutId'],
+      );
+      return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
