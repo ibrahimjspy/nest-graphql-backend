@@ -33,6 +33,28 @@ export class OrdersService {
               order["number"] = orderDetails["number"]
               order["created"] = orderDetails["created"]
               order["userEmail"] = orderDetails["userEmail"]
+              order["totalAmount"] = 0
+              order["fulfillmentColour"] = order["fulfillmentStatus"] == "UNFULFILLED" ? "red" : ""
+              order["fulfillmentColour"] = order["fulfillmentStatus"] == "PARTIALLY FULFILLED" ? "blue" : order["fulfillmentColour"]
+              order["fulfillmentColour"] = order["fulfillmentStatus"] == "FULFILLED" ? "green" : order["fulfillmentColour"]
+              await Promise.all(
+                order.orderBundles.map(
+                  async (orderBundle) => {
+                    await Promise.all(
+                      orderBundle.bundle.variants.map(
+                        async (variant) => {
+                          order["totalAmount"] += (
+                            parseFloat(variant.variant.pricing.price.gross.amount)
+                            * parseInt(variant.quantity)
+                            * parseInt(orderBundle.quantity)
+                            )
+                        }
+                      )
+                    )
+                  }
+                )
+              )
+              delete order.orderBundles
               shopOrders.orders.push(order)
             })
           )
@@ -52,6 +74,27 @@ export class OrdersService {
     orderFulfillments["shippingAddress"] = fulfillmentDetails["shippingAddress"]
     orderFulfillments["billingAddress"] = fulfillmentDetails["billingAddress"]
     orderFulfillments["customerNote"] = fulfillmentDetails["customerNote"]
+    orderFulfillments["fulfillmentColour"] = orderFulfillments["fulfillmentStatus"] == "UNFULFILLED" ? "red" : ""
+    orderFulfillments["fulfillmentColour"] = orderFulfillments["fulfillmentStatus"] == "PARTIALLY FULFILLED" ? "blue" : orderFulfillments["fulfillmentColour"]
+    orderFulfillments["fulfillmentColour"] = orderFulfillments["fulfillmentStatus"] == "FULFILLED" ? "green" : orderFulfillments["fulfillmentColour"]
+    
+    // await Promise.all(
+    //   orderFulfillments["orderBundles"].map(
+    //     async (orderBundle) => {
+    //       await Promise.all(
+    //         orderBundle.bundle.variants.map(
+    //           async (variant) => {
+    //             orderFulfillments["totalAmount"] += (
+    //               parseFloat(variant.variant.pricing.price.gross.amount)
+    //               * parseInt(variant.quantity)
+    //               * parseInt(orderBundle.quantity)
+    //               )
+    //           }
+    //         )
+    //       )
+    //     }
+    //   )
+    // )
     return orderFulfillments
   }
 }

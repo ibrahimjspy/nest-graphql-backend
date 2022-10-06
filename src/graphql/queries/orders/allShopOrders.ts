@@ -32,6 +32,7 @@ const federationQuery = (): string => {
                     quantity
                   }
                 }
+                quantity
               }
             }
           }
