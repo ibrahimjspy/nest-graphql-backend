@@ -1,16 +1,9 @@
-import {
-  Body,
-  Query,
-  Controller,
-  Post,
-  Get,
-  Put,
-  Param,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, Post, Get, Put, Param, Res } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CheckoutService } from './Checkout.service';
 import { makeResponse } from '../../core/utils/response';
 
+@ApiTags('checkout')
 @Controller('checkout')
 export class CheckoutController {
   constructor(private readonly appService: CheckoutService) {}
