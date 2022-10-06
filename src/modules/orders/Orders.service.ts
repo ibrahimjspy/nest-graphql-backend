@@ -3,6 +3,7 @@ import { dashboardByIdHandler, orderDetailsHandler, shopOrderFulfillmentsDetails
 import { allShopOrdersHandler } from 'src/graphql/handlers/orders';
 import { shopOrdersByIdHandler } from 'src/graphql/handlers/orders';
 import { shopOrderFulfillmentsByIdHandler } from 'src/graphql/handlers/orders';
+import { CategoriesModule } from '../categories/Categories.module';
 
 @Injectable()
 export class OrdersService {
@@ -34,9 +35,9 @@ export class OrdersService {
               order["created"] = orderDetails["created"]
               order["userEmail"] = orderDetails["userEmail"]
               order["totalAmount"] = 0
-              order["fulfillmentColour"] = order["fulfillmentStatus"] == "UNFULFILLED" ? "red" : ""
-              order["fulfillmentColour"] = order["fulfillmentStatus"] == "PARTIALLY FULFILLED" ? "blue" : order["fulfillmentColour"]
-              order["fulfillmentColour"] = order["fulfillmentStatus"] == "FULFILLED" ? "green" : order["fulfillmentColour"]
+              order["fulfillmentColour"] = order["fulfillmentStatus"] == "UNFULFILLED" ? "error" : ""
+              order["fulfillmentColour"] = order["fulfillmentStatus"] == "PARTIALLY FULFILLED" ? "info" : order["fulfillmentColour"]
+              order["fulfillmentColour"] = order["fulfillmentStatus"] == "FULFILLED" ? "success" : order["fulfillmentColour"]
               await Promise.all(
                 order.orderBundles.map(
                   async (orderBundle) => {
@@ -47,7 +48,8 @@ export class OrdersService {
                             parseFloat(variant.variant.pricing.price.gross.amount)
                             * parseInt(variant.quantity)
                             * parseInt(orderBundle.quantity)
-                            )
+                          )
+                          order["currency"] = variant.variant.pricing.price.gross.currency
                         }
                       )
                     )
@@ -77,24 +79,65 @@ export class OrdersService {
     orderFulfillments["fulfillmentColour"] = orderFulfillments["fulfillmentStatus"] == "UNFULFILLED" ? "red" : ""
     orderFulfillments["fulfillmentColour"] = orderFulfillments["fulfillmentStatus"] == "PARTIALLY FULFILLED" ? "blue" : orderFulfillments["fulfillmentColour"]
     orderFulfillments["fulfillmentColour"] = orderFulfillments["fulfillmentStatus"] == "FULFILLED" ? "green" : orderFulfillments["fulfillmentColour"]
+    orderFulfillments["totalAmount"] = 0
+
+
+    await Promise.all(
+      orderFulfillments["orderBundles"].map(
+        async (orderBundle) => {
+          orderBundle["totalAmount"] = 0
+          await Promise.all(
+            orderBundle.bundle.variants.map(
+              async (variant) => {
+                orderBundle["totalAmount"] += (
+                  parseFloat(variant.variant.pricing.price.gross.amount)
+                  * parseInt(variant.quantity)
+                  * parseInt(orderBundle.quantity)
+                )
+                orderFulfillments["totalAmount"] += (
+                  parseFloat(variant.variant.pricing.price.gross.amount)
+                  * parseInt(variant.quantity)
+                  * parseInt(orderBundle.quantity)
+                )
+              }
+            )
+          )
+        }
+      )
+    )
+
+    await Promise.all(
+      orderFulfillments["fulfillments"].map(
+        async (fulfillment) => {
+          fulfillment["totalAmount"] = 0
+          await Promise.all(
+            fulfillment["fulfillmentBundles"].map(
+              async (fulfillmentBundle) => {
+                fulfillmentBundle["totalAmount"] = 0
+                await Promise.all(
+                  fulfillmentBundle.bundle.variants.map(
+                    async (variant) => {
+                      fulfillmentBundle["totalAmount"] += (
+                        parseFloat(variant.variant.pricing.price.gross.amount)
+                        * parseInt(variant.quantity)
+                        * parseInt(fulfillmentBundle.quantity)
+                      )
+                      fulfillment["totalAmount"] += (
+                        parseFloat(variant.variant.pricing.price.gross.amount)
+                        * parseInt(variant.quantity)
+                        * parseInt(fulfillmentBundle.quantity)
+                      )
+                    }
+                  )
+                )
+              }
+            )
+          )
+        }
+      )
+    )
+
     
-    // await Promise.all(
-    //   orderFulfillments["orderBundles"].map(
-    //     async (orderBundle) => {
-    //       await Promise.all(
-    //         orderBundle.bundle.variants.map(
-    //           async (variant) => {
-    //             orderFulfillments["totalAmount"] += (
-    //               parseFloat(variant.variant.pricing.price.gross.amount)
-    //               * parseInt(variant.quantity)
-    //               * parseInt(orderBundle.quantity)
-    //               )
-    //           }
-    //         )
-    //       )
-    //     }
-    //   )
-    // )
     return orderFulfillments
   }
 }
