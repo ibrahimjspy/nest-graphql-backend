@@ -4,6 +4,7 @@ import {
   graphqlResultErrorHandler,
 } from 'src/public/graphqlHandler';
 import * as CheckoutQueries from 'src/graphql/queries/checkout';
+import * as CheckoutMutations from 'src/graphql/mutations/checkout';
 import * as UserQueries from 'src/graphql/queries/user';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 
@@ -13,6 +14,7 @@ import {
   getDummyGateway,
   getTargetLineItems,
 } from 'src/public/checkoutHelperFunctions';
+import { AddressDetailTypes } from 'src/core/types/Checkout.types';
 
 export const bundlesListHandler = async (
   bundles: Array<{
@@ -147,22 +149,28 @@ export const checkoutLinesUpdateHandler = async (
   return response['checkoutLinesUpdate'];
 };
 
-export const shippingAddressHandler = async (
-  checkoutId,
-  addressDetails,
+export const shippingAddressUpdateHandler = async (
+  checkoutId: string,
+  addressDetails: AddressDetailTypes,
 ): Promise<object> => {
-  return await graphqlCall(
-    CheckoutQueries.shippingAddressQuery(checkoutId, addressDetails),
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutMutations.shippingAddressMutation(checkoutId, addressDetails),
+    ),
   );
+  return response['checkoutShippingAddressUpdate']['checkout'];
 };
 
-export const billingAddressHandler = async (
-  checkoutId,
-  addressDetails,
+export const billingAddressUpdateHandler = async (
+  checkoutId: string,
+  addressDetails: AddressDetailTypes,
 ): Promise<object> => {
-  return await graphqlCall(
-    CheckoutQueries.billingAddressQuery(checkoutId, addressDetails),
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutMutations.billingAddressMutation(checkoutId, addressDetails),
+    ),
   );
+  return response['checkoutBillingAddressUpdate']['checkout'];
 };
 
 export const shippingBillingAddress = async (

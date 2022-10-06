@@ -7,8 +7,6 @@ import { deleteCheckoutBundlesQuery } from './deleteCheckoutBundle';
 import { checkoutQuery } from './checkout';
 import { checkoutLinesDeleteQuery } from './checkoutLinesDelete';
 import { checkoutLinesUpdateQuery } from './checkoutLinesUpdate';
-import { shippingAddressQuery } from './shippingAddress';
-import { billingAddressQuery } from './billingAddress';
 import { shippingBillingAddressQuery } from './shippingBillingAddress';
 import { addCheckoutShippingMethodsQuery } from './addCheckoutShippingMethods';
 import { checkoutDeliveryMethodUpdateQuery } from './checkoutDeliveryMethodUpdate';
@@ -25,8 +23,6 @@ export {
   checkoutQuery,
   checkoutLinesDeleteQuery,
   checkoutLinesUpdateQuery,
-  shippingAddressQuery,
-  billingAddressQuery,
   shippingBillingAddressQuery,
   addCheckoutShippingMethodsQuery,
   checkoutDeliveryMethodUpdateQuery,

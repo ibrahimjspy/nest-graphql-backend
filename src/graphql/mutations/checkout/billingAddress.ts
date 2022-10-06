@@ -58,7 +58,7 @@ const federationQuery = (checkoutId, addressDetails) => {
   `;
 };
 
-export const billingAddressQuery = (checkoutId, addressDetails) => {
+export const billingAddressMutation = (checkoutId, addressDetails) => {
   return graphqlQueryCheck(
     federationQuery(checkoutId, addressDetails),
     federationQuery(checkoutId, addressDetails),
