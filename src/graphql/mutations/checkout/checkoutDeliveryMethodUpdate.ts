@@ -19,7 +19,7 @@ const federationQuery = (checkoutId: string, deliveryMethodId: string) => {
   `;
 };
 
-export const checkoutDeliveryMethodUpdateQuery = (
+export const checkoutDeliveryMethodUpdateMutation = (
   checkoutId: string,
   deliveryMethodId: string,
 ) => {

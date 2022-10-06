@@ -127,8 +127,6 @@ export const deleteCheckoutBundlesHandler = async (
   checkoutBundleIds: Array<string>,
   checkoutId: string,
 ): Promise<object> => {
-  console.log(checkoutId);
-
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
       CheckoutQueries.deleteCheckoutBundlesQuery(checkoutBundleIds, checkoutId),
@@ -183,27 +181,36 @@ export const shippingBillingAddress = async (
 };
 
 export const addCheckoutShippingMethodHandler = async (
-  checkoutData,
+  checkoutId: string,
   shopShippingMethodIds: Array<string>,
+  throwException: boolean = false,
 ) => {
-  const { checkoutId } = checkoutData?.marketplaceCheckout;
-  return await graphqlCall(
-    CheckoutQueries.addCheckoutShippingMethodsQuery(
-      checkoutId,
-      shopShippingMethodIds,
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutMutations.addCheckoutShippingMethodsMutation(
+        checkoutId,
+        shopShippingMethodIds,
+      ),
     ),
+    throwException,
   );
+  return response['addCheckoutShippingMethods'];
 };
 
-export const checkoutDeliveryMethodUpdateHandler = async (checkoutData) => {
-  const { checkoutId, selectedMethods } = checkoutData?.marketplaceCheckout;
-  const deliveryMethodId = selectedMethods[0]?.method?.shippingMethodId;
-  return await graphqlCall(
-    CheckoutQueries.checkoutDeliveryMethodUpdateQuery(
-      checkoutId,
-      deliveryMethodId,
+export const checkoutDeliveryMethodUpdateHandler = async (
+  checkoutId,
+  selectedMethods,
+) => {
+  const deliveryMethodId = selectedMethods[0]['method']['shippingMethodId'];
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutMutations.checkoutDeliveryMethodUpdateMutation(
+        checkoutId,
+        deliveryMethodId,
+      ),
     ),
   );
+  return response['checkoutDeliveryMethodUpdate'];
 };
 
 export const createPaymentHandler = async (checkoutData, paymentGateways) => {

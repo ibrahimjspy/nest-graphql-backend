@@ -8,8 +8,6 @@ import { checkoutQuery } from './checkout';
 import { checkoutLinesDeleteQuery } from './checkoutLinesDelete';
 import { checkoutLinesUpdateQuery } from './checkoutLinesUpdate';
 import { shippingBillingAddressQuery } from './shippingBillingAddress';
-import { addCheckoutShippingMethodsQuery } from './addCheckoutShippingMethods';
-import { checkoutDeliveryMethodUpdateQuery } from './checkoutDeliveryMethodUpdate';
 import { checkoutPaymentCreateQuery } from './checkoutPaymentCreate';
 import { availablePaymentGatewaysQuery } from './availablePaymentGateways';
 import { checkoutCompleteQuery } from './checkoutComplete';
@@ -24,8 +22,6 @@ export {
   checkoutLinesDeleteQuery,
   checkoutLinesUpdateQuery,
   shippingBillingAddressQuery,
-  addCheckoutShippingMethodsQuery,
-  checkoutDeliveryMethodUpdateQuery,
   checkoutPaymentCreateQuery,
   availablePaymentGatewaysQuery,
   checkoutCompleteQuery,

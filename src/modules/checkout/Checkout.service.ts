@@ -295,10 +295,20 @@ export class CheckoutService {
     shippingIds: Array<string>,
   ): Promise<object> {
     try {
-      const checkoutData: any = await _.getMarketplaceCheckoutHandler(userId);
-      await _.addCheckoutShippingMethodHandler(checkoutData, shippingIds);
-      await _.checkoutDeliveryMethodUpdateHandler(checkoutData);
-      return this.getShippingMethods(userId);
+      const checkoutData = await _.getMarketplaceCheckoutHandler(userId, true);
+      await Promise.all([
+        _.addCheckoutShippingMethodHandler(
+          checkoutData['checkoutId'],
+          shippingIds,
+          true,
+        ),
+        _.checkoutDeliveryMethodUpdateHandler(
+          checkoutData['checkoutId'],
+          checkoutData['selectedMethods'],
+        ),
+      ]);
+      const response = await this.getShippingMethods(userId);
+      return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);

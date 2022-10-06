@@ -32,7 +32,7 @@ const federationQuery = (
   `;
 };
 
-export const addCheckoutShippingMethodsQuery = (
+export const addCheckoutShippingMethodsMutation = (
   checkoutId: string,
   shopShippingMethodIds: Array<string>,
 ) => {
