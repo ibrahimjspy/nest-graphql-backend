@@ -150,7 +150,7 @@ export class CheckoutService {
     try {
       const checkoutData = await _.getMarketplaceCheckoutHandler(userId, true);
 
-      const saleorCheckout: any = await _.checkoutHandler(
+      const saleorCheckout = await _.checkoutHandler(
         checkoutData['checkoutId'],
       );
 
@@ -257,9 +257,10 @@ export class CheckoutService {
     }
   }
 
-  public getShippingBillingAddress(checkoutId: string): Promise<object> {
+  public async getShippingBillingAddress(checkoutId: string): Promise<object> {
     try {
-      return _.shippingBillingAddress(checkoutId);
+      const response = await _.shippingBillingAddress(checkoutId);
+      return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
@@ -268,21 +269,21 @@ export class CheckoutService {
 
   public async getShippingMethods(userId: string): Promise<object> {
     try {
-      const checkoutData: any = await _.getMarketplaceCheckoutHandler(
-        userId,
-        false,
+      const checkoutData = await _.getMarketplaceCheckoutHandler(userId, false);
+
+      const saleorCheckout = await _.checkoutHandler(
+        checkoutData['checkoutId'],
       );
-      const { checkoutId, selectedMethods, bundles } =
-        checkoutData?.marketplaceCheckout;
-      const saleorCheckout: any = await _.checkoutHandler(checkoutId);
-      const methodsListFromShopService = getShippingMethods(bundles);
+      const methodsListFromShopService = getShippingMethods(
+        checkoutData['bundles'],
+      );
       const methodsListFromSaleor = getShippingMethodsWithUUID(
-        saleorCheckout?.checkout?.shippingMethods,
+        saleorCheckout['shippingMethods'],
         methodsListFromShopService,
-        selectedMethods,
+        checkoutData['selectedMethods'],
       );
 
-      return methodsListFromSaleor;
+      return prepareSuccessResponse(methodsListFromSaleor, '', 201);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);

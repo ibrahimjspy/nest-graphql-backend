@@ -176,9 +176,10 @@ export const billingAddressUpdateHandler = async (
 export const shippingBillingAddress = async (
   checkoutId: string,
 ): Promise<object> => {
-  return await graphqlCall(
-    CheckoutQueries.shippingBillingAddressQuery(checkoutId),
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(CheckoutQueries.shippingBillingAddressQuery(checkoutId)),
   );
+  return response['checkout'];
 };
 
 export const addCheckoutShippingMethodHandler = async (
