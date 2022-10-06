@@ -2,6 +2,7 @@ import { dashboardQuery } from 'src/graphql/queries/orders/dashboardById';
 import { allShopOrdersQuery } from 'src/graphql/queries/orders/allShopOrders';
 import { shopOrdersQuery } from 'src/graphql/queries/orders/shopOrdersById';
 import { shopOrderFulfillmentsQuery } from 'src/graphql/queries/orders/shopOrderFulfillmentsById';
+import { shopOrderFulfillmentDetailsQuery } from 'src/graphql/queries/orders/shopOrderFulfillmentDetails';
 import {
   graphqlCall,
   graphqlExceptionHandler,
@@ -44,7 +45,18 @@ export const shopOrderFulfillmentsByIdHandler = async (
   id: string,
 ): Promise<object> => {
   try {
-    return await graphqlCall(shopOrderFulfillmentsQuery(id));
+    const response = await graphqlCall(shopOrderFulfillmentsQuery(id));
+    return response["marketplaceOrder"]
+  } catch (err) {
+    return graphqlExceptionHandler(err);
+  }
+};
+export const shopOrderFulfillmentsDetailsHandler = async (
+  id: string,
+): Promise<object> => {
+  try {
+    const response = await graphqlCall(shopOrderFulfillmentDetailsQuery(id));
+    return response["order"]
   } catch (err) {
     return graphqlExceptionHandler(err);
   }

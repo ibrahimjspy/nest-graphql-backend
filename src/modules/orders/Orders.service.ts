@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { dashboardByIdHandler, orderDetailsHandler } from 'src/graphql/handlers/orders';
+import { dashboardByIdHandler, orderDetailsHandler, shopOrderFulfillmentsDetailsHandler } from 'src/graphql/handlers/orders';
 import { allShopOrdersHandler } from 'src/graphql/handlers/orders';
 import { shopOrdersByIdHandler } from 'src/graphql/handlers/orders';
 import { shopOrderFulfillmentsByIdHandler } from 'src/graphql/handlers/orders';
@@ -44,7 +44,14 @@ export class OrdersService {
   public async getShopOrdersDataById(id): Promise<object> {
     return await shopOrdersByIdHandler(id);
   }
-  public getShopOrderFulfillmentsDataById(id): Promise<object> {
-    return shopOrderFulfillmentsByIdHandler(id);
+  public async getShopOrderFulfillmentsDataById(id): Promise<object> {
+    const orderFulfillments = await shopOrderFulfillmentsByIdHandler(id);
+    const fulfillmentDetails = await shopOrderFulfillmentsDetailsHandler(orderFulfillments["orderId"] || null);
+    orderFulfillments["number"] = fulfillmentDetails["number"]
+    orderFulfillments["userEmail"] = fulfillmentDetails["userEmail"]
+    orderFulfillments["shippingAddress"] = fulfillmentDetails["shippingAddress"]
+    orderFulfillments["billingAddress"] = fulfillmentDetails["billingAddress"]
+    orderFulfillments["customerNote"] = fulfillmentDetails["customerNote"]
+    return orderFulfillments
   }
 }

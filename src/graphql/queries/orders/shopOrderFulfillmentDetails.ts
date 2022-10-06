@@ -26,6 +26,6 @@ const federationQuery = (id: string): string => {
   `;
 };
 // returns shop orders query based on federation and mock check
-export const shopOrderFulfillmentsQuery = (id: string) => {
+export const shopOrderFulfillmentDetailsQuery = (id: string) => {
   return graphqlQueryCheck(federationQuery(id), federationQuery(id));
 };

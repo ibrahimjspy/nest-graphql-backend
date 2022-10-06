@@ -10,16 +10,83 @@ const federationQuery = (id: string): string => {
         }
       )
       {
-        id
         orderId
+        fulfillmentStatus
         orderBundles{
-          orderlineIds
+          bundle{
+            id
+            variants{
+              variant{
+                id
+                product{
+                  name
+                  media{
+                    url
+                  }
+                }
+                attributes{
+                  attribute{
+                    name
+                  }
+                  values{
+                    name
+                  }
+                }
+                pricing{
+                  price{
+                    gross{
+                      currency
+                      amount
+                    }
+                  }
+                }
+                media{
+                  url
+                }
+              }
+              quantity
+            }
+          }
           quantity
         }
         fulfillments{
+          id
           fulfillmentId
           fulfillmentBundles{
-            fulfillmentlineIds
+            bundle{
+              id
+              variants{
+                variant{
+                  id
+                  product{
+                    name
+                    media{
+                      url
+                    }
+                  }
+                  attributes{
+                    attribute{
+                      name
+                    }
+                    values{
+                      name
+                    }
+                  }
+                  pricing{
+                    price{
+                      gross{
+                        currency
+                        amount
+                      }
+                    }
+                  }
+                  media{
+                    url
+                  }
+                }
+                quantity
+              }
+            }
             quantity
           }
         }
