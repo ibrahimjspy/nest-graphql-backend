@@ -23,8 +23,8 @@ export class OrdersService {
           const orders = shop["orders"]
           const shopName = shop["name"]
           const shopId = shop["id"]
-          delete shop.name
-          delete shop.id
+          delete shop["name"]
+          delete shop["id"]
           await Promise.all(
             orders.map(async (order) => {
               const orderDetails = await orderDetailsHandler(order["orderId"]);
@@ -56,7 +56,35 @@ export class OrdersService {
                   }
                 )
               )
-              delete order.orderBundles
+
+              await Promise.all(
+                order["fulfillments"].map(
+                  async (fulfillment) => {
+                    order["fulfillments"]["totalAmount"] = 0
+                    await Promise.all(
+                      fulfillment["fulfillmentBundles"].map(
+                        async (fulfillmentBundle) => {
+                          await Promise.all(
+                            fulfillmentBundle.bundle.variants.map(
+                              async (variant) => {
+                                order["fulfillments"]["totalAmount"] += (
+                                  parseFloat(variant.variant.pricing.price.gross.amount)
+                                  * parseInt(variant.quantity)
+                                  * parseInt(fulfillmentBundle.quantity)
+                                )
+                              }
+                            )
+                          )
+                        }
+                      )
+                    )
+                  }
+                )
+              )
+
+              order["totalAmount"] += (order["fulfillments"]["totalAmount"] || 0)
+              delete order["fulfillments"]
+              delete order["orderBundles"]
               shopOrders.orders.push(order)
             })
           )
@@ -76,15 +104,16 @@ export class OrdersService {
     orderFulfillments["shippingAddress"] = fulfillmentDetails["shippingAddress"]
     orderFulfillments["billingAddress"] = fulfillmentDetails["billingAddress"]
     orderFulfillments["customerNote"] = fulfillmentDetails["customerNote"]
-    orderFulfillments["fulfillmentColour"] = orderFulfillments["fulfillmentStatus"] == "UNFULFILLED" ? "red" : ""
-    orderFulfillments["fulfillmentColour"] = orderFulfillments["fulfillmentStatus"] == "PARTIALLY FULFILLED" ? "blue" : orderFulfillments["fulfillmentColour"]
-    orderFulfillments["fulfillmentColour"] = orderFulfillments["fulfillmentStatus"] == "FULFILLED" ? "green" : orderFulfillments["fulfillmentColour"]
+    orderFulfillments["fulfillmentColour"] = orderFulfillments["fulfillmentStatus"] == "UNFULFILLED" ? "error" : ""
+    orderFulfillments["fulfillmentColour"] = orderFulfillments["fulfillmentStatus"] == "PARTIALLY FULFILLED" ? "info" : orderFulfillments["fulfillmentColour"]
+    orderFulfillments["fulfillmentColour"] = orderFulfillments["fulfillmentStatus"] == "FULFILLED" ? "success" : orderFulfillments["fulfillmentColour"]
     orderFulfillments["totalAmount"] = 0
-
 
     await Promise.all(
       orderFulfillments["orderBundles"].map(
         async (orderBundle) => {
+          orderBundle["fulfillmentStatus"] = "UNFULFILLED"
+          orderBundle["fulfillmentColour"] = "error"
           orderBundle["totalAmount"] = 0
           await Promise.all(
             orderBundle.bundle.variants.map(
@@ -113,6 +142,8 @@ export class OrdersService {
           await Promise.all(
             fulfillment["fulfillmentBundles"].map(
               async (fulfillmentBundle) => {
+                fulfillmentBundle["fulfillmentStatus"] = "FULFILLED"
+                fulfillmentBundle["fulfillmentColour"] = "success"
                 fulfillmentBundle["totalAmount"] = 0
                 await Promise.all(
                   fulfillmentBundle.bundle.variants.map(
@@ -137,7 +168,7 @@ export class OrdersService {
       )
     )
 
-    
+    delete orderFulfillments["orderId"]
     return orderFulfillments
   }
 }

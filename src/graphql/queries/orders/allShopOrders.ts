@@ -34,6 +34,29 @@ const federationQuery = (): string => {
                 }
                 quantity
               }
+              fulfillments{
+                fulfillmentBundles{
+                  bundle{
+                    id
+                    variants{
+                      variant{
+                        id
+                        pricing{
+                          price{
+                            gross
+                            {
+                              currency
+                              amount
+                            }
+                          }
+                        }
+                      }
+                      quantity
+                    }
+                  }
+                  quantity
+                }
+              }
             }
           }
         }
