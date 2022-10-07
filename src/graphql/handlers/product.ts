@@ -40,12 +40,18 @@ export const productCardHandler = async (): Promise<object> => {
   }
 };
 
-export const bundleServiceHandler = async (
+export const bundlesByVariantsIdsHandler = async (
   variantIds: Array<string>,
+): Promise<Array<object>> => {
+  const response = await graphqlCall(_.productBundlesQuery(variantIds));
+  return response['bundles'];
+};
+
+export const variantsIdsByProductIdsHandler = async (
+  productIds: Array<string>,
 ): Promise<object> => {
-  try {
-    return await graphqlCall(_.productBundlesQuery(variantIds));
-  } catch (err) {
-    return graphqlExceptionHandler(err);
-  }
+  const response = await graphqlCall(
+    _.variantsIdsByProductIdsQuery(productIds),
+  );
+  return response['products'];
 };

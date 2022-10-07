@@ -1,12 +1,12 @@
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuid4 } from 'uuid';
 import {
   graphqlCall,
   graphqlResultErrorHandler,
 } from 'src/public/graphqlHandler';
-import * as CheckoutQueries from 'src/graphql/queries/checkout';
-import * as UserQueries from 'src/graphql/queries/user';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 
+import * as CheckoutQueries from 'src/graphql/queries/checkout';
+import * as UserQueries from 'src/graphql/queries/user';
 import {
   getLineItems,
   getBundleIds,
@@ -200,7 +200,7 @@ export const checkoutDeliveryMethodUpdateHandler = async (checkoutData) => {
 export const createPaymentHandler = async (checkoutData, paymentGateways) => {
   const { checkoutId } = checkoutData?.marketplaceCheckout;
   const dummyGatewayId = getDummyGateway(paymentGateways);
-  const token = uuidv4();
+  const token = uuid4();
   return await graphqlCall(
     CheckoutQueries.checkoutPaymentCreateQuery(
       checkoutId,

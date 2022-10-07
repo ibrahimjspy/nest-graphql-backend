@@ -4,7 +4,7 @@ import {
   productCardsByCategoriesHandler,
   productListPageHandler,
   singleProductDetailsHandler,
-  bundleServiceHandler,
+  bundlesByVariantsIdsHandler,
 } from 'src/graphql/handlers/product';
 
 @Injectable()
@@ -29,6 +29,6 @@ export class ProductService {
   }
   // Bundles list relating to variant ids
   public getBundlesByVariantIds(variantIds: Array<string>): Promise<object> {
-    return bundleServiceHandler(variantIds);
+    return bundlesByVariantsIdsHandler(variantIds);
   }
 }
