@@ -25,9 +25,8 @@ export class CheckoutService {
 
   public async getShoppingCartData(id: string): Promise<object> {
     try {
-      return prepareSuccessResponse(
-        await _.getMarketplaceCheckoutHandler(id, true),
-      );
+      const response = await _.getMarketplaceCheckoutHandler(id, true);
+      return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
@@ -117,26 +116,26 @@ export class CheckoutService {
     checkoutBundleIds: Array<string>,
   ): Promise<object> {
     try {
-      const checkoutData: any = await _.getMarketplaceCheckoutHandler(
-        userId,
-        true,
-      );
+      const checkoutData = await _.getMarketplaceCheckoutHandler(userId, true);
 
-      const { checkoutId, bundles } = checkoutData;
-      const saleorCheckout: any = await _.checkoutHandler(checkoutId);
+      const saleorCheckout = await _.checkoutHandler(
+        checkoutData['checkoutId'],
+      );
 
       // FIXME: need to use promise all here,
       // but for that we need to think about exception handling
       // against each handler.
       await _.checkoutLinesDeleteHandler(
-        saleorCheckout,
-        bundles,
+        saleorCheckout['lines'],
+        checkoutData['bundles'],
+        saleorCheckout['id'],
         checkoutBundleIds,
       );
-      return await _.deleteCheckoutBundlesHandler(
+      const response = await _.deleteCheckoutBundlesHandler(
         checkoutBundleIds,
-        checkoutId,
+        checkoutData['checkoutId'],
       );
+      return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
@@ -167,11 +166,12 @@ export class CheckoutService {
         checkoutData['checkoutId'],
         updatedLinesWithQuantity,
       );
-      return _.addCheckoutBundlesHandler(
+      const response = await _.addCheckoutBundlesHandler(
         checkoutData['checkoutId'],
         userId,
         bundlesFromCart,
       );
+      return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
@@ -183,21 +183,27 @@ export class CheckoutService {
     bundleIds: Array<string>,
   ): Promise<object> {
     try {
-      const checkoutData: any = await _.getMarketplaceCheckoutHandler(userId);
-      const { checkoutId, bundles } = checkoutData?.marketplaceCheckout || {};
-      const saleorCheckout: any = await _.checkoutHandler(checkoutId);
+      const checkoutData = await _.getMarketplaceCheckoutHandler(userId);
+      const saleorCheckout = await _.checkoutHandler(
+        checkoutData['checkoutId'],
+      );
       await _.checkoutLinesAddHandler(
-        checkoutId,
-        saleorCheckout,
-        bundles,
+        checkoutData['checkoutId'],
+        saleorCheckout['lines'],
+        checkoutData['bundles'],
         bundleIds,
       );
       const updatedBundle = getUpdatedBundleForSelection(
-        bundles,
+        checkoutData['bundles'],
         bundleIds,
         true,
       );
-      return _.addCheckoutBundlesHandler(checkoutId, userId, updatedBundle);
+      const response = await _.addCheckoutBundlesHandler(
+        checkoutData['checkoutId'],
+        userId,
+        updatedBundle,
+      );
+      return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
@@ -207,18 +213,30 @@ export class CheckoutService {
   public async setBundleAsUnselected(
     userId: string,
     bundleIds: Array<string>,
+    checkoutBundleIds: Array<string>,
   ): Promise<object> {
     try {
-      const checkoutData: any = await _.getMarketplaceCheckoutHandler(userId);
-      const { checkoutId, bundles } = checkoutData?.marketplaceCheckout || {};
-      const saleorCheckout: any = await _.checkoutHandler(checkoutId);
-      await _.checkoutLinesDeleteHandler(saleorCheckout, bundles, bundleIds);
+      const checkoutData = await _.getMarketplaceCheckoutHandler(userId);
+      const saleorCheckout = await _.checkoutHandler(
+        checkoutData['checkoutId'],
+      );
+      await _.checkoutLinesDeleteHandler(
+        saleorCheckout['lines'],
+        checkoutData['bundles'],
+        saleorCheckout['id'],
+        checkoutBundleIds,
+      );
       const updatedBundle = getUpdatedBundleForSelection(
-        bundles,
+        checkoutData['bundles'],
         bundleIds,
         false,
       );
-      return _.addCheckoutBundlesHandler(checkoutId, userId, updatedBundle);
+      const response = await _.addCheckoutBundlesHandler(
+        checkoutData['checkoutId'],
+        userId,
+        updatedBundle,
+      );
+      return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);

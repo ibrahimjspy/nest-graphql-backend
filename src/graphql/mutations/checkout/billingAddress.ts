@@ -2,7 +2,6 @@ import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 
 const federationQuery = (checkoutId, addressDetails) => {
-  // query linking with backend
   const {
     country,
     countryArea,

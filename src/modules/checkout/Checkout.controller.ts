@@ -65,6 +65,7 @@ export class CheckoutController {
       await this.appService.setBundleAsUnselected(
         body?.userId,
         body?.bundleIds,
+        body?.checkoutBundleIds,
       ),
     );
   }

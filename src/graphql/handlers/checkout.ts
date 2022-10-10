@@ -85,19 +85,18 @@ export const addForCartHandler = async (
 };
 
 export const checkoutLinesAddHandler = async (
-  checkoutId,
-  saleorCheckout,
+  checkoutId: string,
+  checkoutLines,
   bundles,
   bundleIds: Array<string>,
 ): Promise<object> => {
-  const targetLineItems = getTargetLineItems(
-    saleorCheckout,
-    bundles,
-    bundleIds,
+  const targetLineItems = getTargetLineItems(checkoutLines, bundles, bundleIds);
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutMutations.checkoutLinesAddMutation(checkoutId, targetLineItems),
+    ),
   );
-  return await graphqlCall(
-    CheckoutMutations.checkoutLinesAddMutation(checkoutId, targetLineItems),
-  );
+  return response['checkoutLinesAdd'];
 };
 
 export const checkoutHandler = async (checkoutId: string): Promise<object> => {
@@ -111,21 +110,19 @@ export const checkoutHandler = async (checkoutId: string): Promise<object> => {
 };
 
 export const checkoutLinesDeleteHandler = async (
-  saleorCheckout,
+  checkoutLines,
   bundles,
+  saleorCheckoutId,
   bundleIds,
 ): Promise<object> => {
-  const lines = getTargetLineItems(saleorCheckout?.lines, bundles, bundleIds);
-  const lineIds = (lines || []).map((l: any) => l?.id);
-
-  return await graphqlResultErrorHandler(
+  const lines = getTargetLineItems(checkoutLines, bundles, bundleIds);
+  const lineIds = (lines || []).map((l: any) => l?.id || l?.variantId);
+  const response = await graphqlResultErrorHandler(
     await graphqlCall(
-      CheckoutMutations.checkoutLinesDeleteMutation(
-        saleorCheckout?.id,
-        lineIds,
-      ),
+      CheckoutMutations.checkoutLinesDeleteMutation(saleorCheckoutId, lineIds),
     ),
   );
+  return response['checkoutLinesDelete'];
 };
 
 export const deleteCheckoutBundlesHandler = async (
@@ -253,14 +250,6 @@ export const getUserHandler = async (userId: string) => {
     graphqlCall(UserQueries.userQuery(userId)),
   );
   return response['user'];
-};
-
-export const checkoutEmailUpdateHandler = async (checkoutData, userData) => {
-  const { checkoutId } = checkoutData?.marketplaceCheckout;
-  const { email } = userData.user;
-  return await graphqlCall(
-    UserQueries.checkoutEmailUpdateQuery(checkoutId, email),
-  );
 };
 
 export const checkoutCompleteHandler = async (checkoutId: string) => {

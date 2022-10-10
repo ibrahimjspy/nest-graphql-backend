@@ -111,8 +111,8 @@ export const getTargetLineItems = (lines, bundles, bundleIds) => {
  */
 export const getUpdatedBundleForSelection = (
   bundles,
-  bundleIds,
-  isSelected,
+  bundleIds: Array<string>,
+  isSelected: boolean,
 ) => {
   const targetBundle = getTargetBundleByBundleId(bundles, bundleIds);
   return (targetBundle || []).map((bundle) => ({
