@@ -1,4 +1,4 @@
-import * as _ from 'src/graphql/queries/product/index';
+import * as _ from 'src/graphql/queries/product';
 import {
   graphqlCall,
   graphqlExceptionHandler,
@@ -40,11 +40,25 @@ export const productCardHandler = async (): Promise<object> => {
   }
 };
 
-export const bundleServiceHandler = async (
+export const bundlesByVariantsIdsHandler = async (
   variantIds: Array<string>,
+): Promise<Array<object>> => {
+  try {
+    const response = await graphqlCall(_.productBundlesQuery(variantIds));
+    return response['bundles'];
+  } catch (err) {
+    return graphqlExceptionHandler(err);
+  }
+};
+
+export const variantsIdsByProductIdsHandler = async (
+  productIds: Array<string>,
 ): Promise<object> => {
   try {
-    return await graphqlCall(_.productBundlesQuery(variantIds));
+    const response = await graphqlCall(
+      _.variantsIdsByProductIdsQuery(productIds),
+    );
+    return response['products'];
   } catch (err) {
     return graphqlExceptionHandler(err);
   }

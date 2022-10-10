@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuid4 } from 'uuid';
 import {
   graphqlCall,
   graphqlResultErrorHandler,
@@ -222,10 +222,10 @@ export const checkoutDeliveryMethodUpdateHandler = async (
 
 export const createPaymentHandler = async (
   checkoutId: string,
-  availablePaymentGateways,
+  paymentGateways,
 ) => {
-  const dummyGatewayId = getDummyGateway(availablePaymentGateways);
-  const token = uuidv4();
+  const dummyGatewayId = getDummyGateway(paymentGateways);
+  const token = uuid4();
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
       CheckoutMutations.checkoutPaymentCreateMutation(
@@ -243,13 +243,6 @@ export const getPaymentGatewaysHandler = async (checkoutId: string) => {
     graphqlCall(CheckoutQueries.availablePaymentGatewaysQuery(checkoutId)),
   );
   return response['checkout'];
-};
-
-export const getUserHandler = async (userId: string) => {
-  const response = await graphqlResultErrorHandler(
-    graphqlCall(UserQueries.userQuery(userId)),
-  );
-  return response['user'];
 };
 
 export const checkoutCompleteHandler = async (checkoutId: string) => {

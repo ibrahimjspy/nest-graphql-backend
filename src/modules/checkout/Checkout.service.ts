@@ -1,7 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import * as _ from 'src/graphql/handlers/checkout';
+import { graphqlExceptionHandler } from 'src/public/graphqlHandler';
+import {
+  prepareFailedResponse,
+  prepareSuccessResponse,
+} from 'src/core/utils/response';
 
+import * as ProductHandlers from 'src/graphql/handlers/product';
+import * as UserHandlers from 'src/graphql/handlers/account';
+import * as CheckoutUtils from './Checkout.utils';
 import {
   getSelectedBundles,
   getShippingMethods,
@@ -11,11 +19,6 @@ import {
   getUpdatedBundleForSelection,
   getUpdatedLinesWithQuantity,
 } from 'src/public/checkoutHelperFunctions';
-import { graphqlExceptionHandler } from 'src/public/graphqlHandler';
-import {
-  prepareFailedResponse,
-  prepareSuccessResponse,
-} from 'src/core/utils/response';
 
 import { AddressDetailTypes } from 'src/core/types/Checkout.types';
 
@@ -25,8 +28,25 @@ export class CheckoutService {
 
   public async getShoppingCartData(id: string): Promise<object> {
     try {
-      const response = await _.getMarketplaceCheckoutHandler(id, true);
-      return prepareSuccessResponse(response, '', 201);
+      let checkoutBundles = await _.getMarketplaceCheckoutHandler(id, true);
+      const productIds = CheckoutUtils.getProductIdsByCheckoutBundles(
+        checkoutBundles['bundles'],
+      );
+      const variantIds = CheckoutUtils.getVariantsIdsByProducts(
+        await ProductHandlers.variantsIdsByProductIdsHandler(productIds),
+      );
+      const allBundles = await ProductHandlers.bundlesByVariantsIdsHandler(
+        variantIds,
+      );
+
+      checkoutBundles['bundles'] = checkoutBundles['bundles']?.concat(
+        CheckoutUtils.getBundlesNotInCheckout(
+          checkoutBundles['bundles'],
+          allBundles,
+        ),
+      );
+
+      return prepareSuccessResponse(checkoutBundles);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
@@ -81,7 +101,7 @@ export class CheckoutService {
   ): Promise<object> {
     try {
       const [userData, bundlesList, checkoutData] = await Promise.all([
-        _.getUserHandler(userId),
+        UserHandlers.userByIdHandler(userId),
         _.bundlesListHandler(bundlesForCart),
         _.getMarketplaceCheckoutHandler(userId),
       ]);
