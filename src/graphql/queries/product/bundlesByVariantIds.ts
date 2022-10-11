@@ -68,7 +68,7 @@ const federationQuery = (variantIds: Array<string>) => {
   `;
 };
 
-export const productBundlesQuery = (variantIds: Array<string>) => {
+export const productBundlesByVariantIdQuery = (variantIds: Array<string>) => {
   return graphqlQueryCheck(
     federationQuery(variantIds),
     federationQuery(variantIds),

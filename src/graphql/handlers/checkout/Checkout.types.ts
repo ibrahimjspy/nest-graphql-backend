@@ -10,3 +10,13 @@ export interface AddressDetailTypes {
   postalCode: string;
   city: string;
 }
+
+export interface BundleTypes {
+  bundleId: string;
+  quantity: number;
+}
+
+export interface LineTypes {
+  variantId: string;
+  quantity: number;
+}

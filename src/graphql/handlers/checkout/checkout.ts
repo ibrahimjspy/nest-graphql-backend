@@ -5,36 +5,20 @@ import {
 } from 'src/public/graphqlHandler';
 import * as CheckoutQueries from 'src/graphql/queries/checkout';
 import * as CheckoutMutations from 'src/graphql/mutations/checkout';
-import * as UserQueries from 'src/graphql/queries/user';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 
 import {
   getLineItems,
-  getBundleIds,
   getDummyGateway,
   getTargetLineItems,
 } from 'src/public/checkoutHelperFunctions';
-import { AddressDetailTypes } from 'src/core/types/Checkout.types';
+import {
+  AddressDetailTypes,
+  BundleTypes,
+  LineTypes,
+} from 'src/graphql/handlers/checkout/Checkout.types';
 
-export const bundlesListHandler = async (
-  bundles: Array<{
-    bundleId: string;
-    quantity: number;
-  }>,
-): Promise<object> => {
-  const bundleIds = getBundleIds(bundles);
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(CheckoutQueries.bundlesQuery(bundleIds)),
-  );
-
-  if (!response['bundles']['length']) {
-    throw new RecordNotFound('Bundles');
-  }
-
-  return response;
-};
-
-export const getMarketplaceCheckoutHandler = async (
+export const marketplaceCheckoutHandler = async (
   id: string,
   throwException: boolean = false,
 ): Promise<object> => {
@@ -48,7 +32,7 @@ export const getMarketplaceCheckoutHandler = async (
 export const createCheckoutHandler = async (
   email: string,
   bundlesList,
-  bundlesForCart: Array<{ quantity: number; bundleId: string }>,
+  bundlesForCart: Array<BundleTypes>,
 ): Promise<object> => {
   const lines = getLineItems(bundlesList, bundlesForCart);
   const response = await graphqlCall(
@@ -57,10 +41,10 @@ export const createCheckoutHandler = async (
   return response['checkoutCreate'];
 };
 
-export const addCheckoutBundlesHandler = async (
+export const addBundlesHandler = async (
   checkoutId: string,
   userId: string,
-  bundles: Array<{ bundleId: string; quantity: number }>,
+  bundles: Array<BundleTypes>,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
@@ -70,10 +54,10 @@ export const addCheckoutBundlesHandler = async (
   return response['addCheckoutBundles'];
 };
 
-export const addForCartHandler = async (
+export const addToCartHandler = async (
   checkoutId,
   bundlesList,
-  bundlesForCart: Array<{ quantity: number; bundleId: string }>,
+  bundlesForCart: Array<BundleTypes>,
 ): Promise<object> => {
   const lines = getLineItems(bundlesList, bundlesForCart);
   const response = await graphqlResultErrorHandler(
@@ -84,7 +68,7 @@ export const addForCartHandler = async (
   return response['checkoutLinesAdd'];
 };
 
-export const checkoutLinesAddHandler = async (
+export const linesAddHandler = async (
   checkoutId: string,
   checkoutLines,
   bundles,
@@ -109,7 +93,7 @@ export const checkoutHandler = async (checkoutId: string): Promise<object> => {
   return response['checkout'];
 };
 
-export const checkoutLinesDeleteHandler = async (
+export const linesDeleteHandler = async (
   checkoutLines,
   bundles,
   saleorCheckoutId,
@@ -125,7 +109,7 @@ export const checkoutLinesDeleteHandler = async (
   return response['checkoutLinesDelete'];
 };
 
-export const deleteCheckoutBundlesHandler = async (
+export const deleteBundleHandler = async (
   checkoutBundleIds: Array<string>,
   checkoutId: string,
   throwException: boolean = false,
@@ -142,9 +126,9 @@ export const deleteCheckoutBundlesHandler = async (
   return response['deleteCheckoutBundles'];
 };
 
-export const checkoutLinesUpdateHandler = async (
+export const linesUpdateHandler = async (
   checkoutId: string,
-  lines: Array<{ variantId: string; quantity: number }>,
+  lines: Array<LineTypes>,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
@@ -187,7 +171,7 @@ export const shippingBillingAddress = async (
   return response['checkout'];
 };
 
-export const addCheckoutShippingMethodHandler = async (
+export const addShippingMethodHandler = async (
   checkoutId: string,
   shopShippingMethodIds: Array<string>,
   throwException: boolean = false,
@@ -204,7 +188,7 @@ export const addCheckoutShippingMethodHandler = async (
   return response['addCheckoutShippingMethods'];
 };
 
-export const checkoutDeliveryMethodUpdateHandler = async (
+export const deliveryMethodUpdateHandler = async (
   checkoutId,
   selectedMethods,
 ) => {
@@ -238,14 +222,14 @@ export const createPaymentHandler = async (
   return response['checkoutPaymentCreate'];
 };
 
-export const getPaymentGatewaysHandler = async (checkoutId: string) => {
+export const paymentGatewayHandler = async (checkoutId: string) => {
   const response = await graphqlResultErrorHandler(
     graphqlCall(CheckoutQueries.availablePaymentGatewaysQuery(checkoutId)),
   );
   return response['checkout'];
 };
 
-export const checkoutCompleteHandler = async (checkoutId: string) => {
+export const completeCheckoutHandler = async (checkoutId: string) => {
   const response = await graphqlResultErrorHandler(
     graphqlCall(CheckoutMutations.checkoutCompleteMutation(checkoutId)),
   );

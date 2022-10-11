@@ -8,7 +8,7 @@ import { makeResponse } from '../../core/utils/response';
 export class CheckoutController {
   constructor(private readonly appService: CheckoutService) {}
 
-  @Get('shoppingCart/:userId')
+  @Get('/:userId')
   async getShoppingCartData(@Res() res, @Param() params): Promise<object> {
     return makeResponse(
       res,
@@ -16,7 +16,7 @@ export class CheckoutController {
     );
   }
 
-  @Post('addToCart')
+  @Post('cart/bundle/add')
   async addBundlesToCart(@Res() res, @Body() body): Promise<object> {
     return makeResponse(
       res,
@@ -24,8 +24,8 @@ export class CheckoutController {
     );
   }
 
-  @Put('deleteBundleFromCart')
-  async deleteCartBundle(@Res() res, @Body() body): Promise<object> {
+  @Put('cart/bundle/delete')
+  async deleteBundleFromCart(@Res() res, @Body() body): Promise<object> {
     return makeResponse(
       res,
       await this.appService.deleteBundleFromCart(
@@ -35,7 +35,7 @@ export class CheckoutController {
     );
   }
 
-  @Put('updateBundleFromCart')
+  @Put('cart/bundle/update')
   async updateCartBundle(@Res() res, @Body() body): Promise<object> {
     return makeResponse(
       res,
@@ -43,7 +43,7 @@ export class CheckoutController {
     );
   }
 
-  @Put('selectBundle')
+  @Put('cart/bundle/select')
   async selectThisShop(@Res() res, @Body() body): Promise<object> {
     return makeResponse(
       res,
@@ -51,7 +51,7 @@ export class CheckoutController {
     );
   }
 
-  @Put('unselectBundle')
+  @Put('cart/bundle/unselect')
   async unSelectThisShop(@Res() res, @Body() body): Promise<object> {
     return makeResponse(
       res,
@@ -104,7 +104,7 @@ export class CheckoutController {
     );
   }
 
-  @Put('selectShippingMethods')
+  @Put('shippingMethods/select')
   async selectShippingMethods(@Res() res, @Body() body): Promise<object> {
     return makeResponse(
       res,
@@ -115,12 +115,12 @@ export class CheckoutController {
     );
   }
 
-  @Post('createPayment')
+  @Post('payment/create')
   async createPayment(@Res() res, @Body() body): Promise<object> {
     return makeResponse(res, await this.appService.createPayment(body?.userId));
   }
 
-  @Post('checkoutComplete')
+  @Post('complete')
   async checkoutComplete(@Res() res, @Body() body): Promise<object> {
     return makeResponse(
       res,

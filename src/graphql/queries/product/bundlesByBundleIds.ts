@@ -68,7 +68,7 @@ const federationQuery = (bundleIds: Array<string>) => {
   `;
 };
 
-export const bundlesQuery = (bundleIds: Array<string>) => {
+export const productBundlesByBundleIdQuery = (bundleIds: Array<string>) => {
   return graphqlQueryCheck(
     federationQuery(bundleIds),
     federationQuery(bundleIds),
