@@ -1,4 +1,4 @@
-export interface AddressDetailTypes {
+export interface addressDetailTypes {
   country: string;
   countryArea: string;
   firstName: string;
@@ -11,12 +11,12 @@ export interface AddressDetailTypes {
   city: string;
 }
 
-export interface BundleTypes {
+export interface bundleTypes {
   bundleId: string;
   quantity: number;
 }
 
-export interface LineTypes {
+export interface lineTypes {
   variantId: string;
   quantity: number;
 }

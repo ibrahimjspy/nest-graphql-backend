@@ -40,7 +40,7 @@ const federationQuery = (checkoutId: string) => {
   `;
 };
 
-export const shippingBillingAddressQuery = (checkoutId: string) => {
+export const shippingAndBillingAddressQuery = (checkoutId: string) => {
   return graphqlQueryCheck(
     federationQuery(checkoutId),
     federationQuery(checkoutId),

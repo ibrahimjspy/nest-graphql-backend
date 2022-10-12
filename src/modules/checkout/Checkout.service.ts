@@ -1,29 +1,20 @@
 import { Injectable, Logger } from '@nestjs/common';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
-import * as _ from 'src/graphql/handlers/checkout/checkout';
 import { graphqlExceptionHandler } from 'src/public/graphqlHandler';
 import {
   prepareFailedResponse,
   prepareSuccessResponse,
 } from 'src/core/utils/response';
 
+import * as CheckoutHandlers from 'src/graphql/handlers/checkout';
 import * as ProductHandlers from 'src/graphql/handlers/product';
 import * as UserHandlers from 'src/graphql/handlers/account';
 import * as CheckoutUtils from './Checkout.utils';
-import {
-  getSelectedBundles,
-  getShippingMethods,
-  getCheckoutBundleIds,
-  updateBundlesQuantity,
-  getShippingMethodsWithUUID,
-  getUpdatedBundleForSelection,
-  getUpdatedLinesWithQuantity,
-} from 'src/public/checkoutHelperFunctions';
 
 import {
-  AddressDetailTypes,
-  BundleTypes,
-} from 'src/graphql/handlers/checkout/Checkout.types';
+  addressDetailTypes,
+  bundleTypes,
+} from 'src/graphql/handlers/checkout.types';
 
 @Injectable()
 export class CheckoutService {
@@ -31,7 +22,10 @@ export class CheckoutService {
 
   public async getShoppingCartData(id: string): Promise<object> {
     try {
-      let checkoutBundles = await _.marketplaceCheckoutHandler(id, true);
+      let checkoutBundles = await CheckoutHandlers.marketplaceCheckoutHandler(
+        id,
+        true,
+      );
       const productIds = CheckoutUtils.getProductIdsByCheckoutBundles(
         checkoutBundles['bundles'],
       );
@@ -63,7 +57,7 @@ export class CheckoutService {
     bundlesForCart,
   ) {
     const { checkoutId, bundles } = checkoutData;
-    const bundlesWithUpdatedQuantity = updateBundlesQuantity(
+    const bundlesWithUpdatedQuantity = CheckoutUtils.updateBundlesQuantity(
       bundles,
       bundlesForCart,
     );
@@ -71,8 +65,12 @@ export class CheckoutService {
     // FIXME: need to use promise all here,
     // but for that we need to think about exception handling
     // against each handler.
-    await _.addToCartHandler(checkoutId, bundlesList, bundlesForCart);
-    return await _.addBundlesHandler(
+    const checkoutLines = CheckoutUtils.getLineItems(
+      bundlesList,
+      bundlesForCart,
+    );
+    await CheckoutHandlers.addLinesHandler(checkoutId, checkoutLines);
+    return await CheckoutHandlers.addBundlesHandler(
       checkoutId,
       userId,
       bundlesWithUpdatedQuantity,
@@ -84,14 +82,17 @@ export class CheckoutService {
     bundlesList,
     bundlesForCart,
   ) {
-    const newCheckout: any = await _.createCheckoutHandler(
-      userData?.email,
+    const checkoutLines = CheckoutUtils.getLineItems(
       bundlesList,
       bundlesForCart,
     );
+    const newCheckout: any = await CheckoutHandlers.createCheckoutHandler(
+      userData?.email,
+      checkoutLines,
+    );
 
     const newCheckoutId = newCheckout?.checkout?.id;
-    return await _.addBundlesHandler(
+    return await CheckoutHandlers.addBundlesHandler(
       newCheckoutId,
       userData?.id,
       bundlesForCart,
@@ -100,13 +101,13 @@ export class CheckoutService {
 
   public async addToCart(
     userId: string,
-    bundlesForCart: Array<BundleTypes>,
+    bundlesForCart: Array<bundleTypes>,
   ): Promise<object> {
     try {
       const [userData, bundlesList, checkoutData] = await Promise.all([
         UserHandlers.userByIdHandler(userId),
         ProductHandlers.bundlesByBundleIdsHandler(bundlesForCart),
-        _.marketplaceCheckoutHandler(userId),
+        CheckoutHandlers.marketplaceCheckoutHandler(userId),
       ]);
 
       let response = {};
@@ -139,22 +140,32 @@ export class CheckoutService {
     checkoutBundleIds: Array<string>,
   ): Promise<object> {
     try {
-      const checkoutData = await _.marketplaceCheckoutHandler(userId, true);
+      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
+        userId,
+        true,
+      );
 
-      const saleorCheckout = await _.checkoutHandler(
+      const saleorCheckout = await CheckoutHandlers.checkoutHandler(
         checkoutData['checkoutId'],
       );
 
       // FIXME: need to use promise all here,
       // but for that we need to think about exception handling
       // against each handler.
-      await _.linesDeleteHandler(
+      const lines = CheckoutUtils.getCheckoutLineItems(
         saleorCheckout['lines'],
         checkoutData['bundles'],
-        saleorCheckout['id'],
         checkoutBundleIds,
       );
-      const response = await _.deleteBundleHandler(
+      const checkoutLineIds = (lines || []).map(
+        (l: any) => l?.id || l?.variantId,
+      );
+
+      await CheckoutHandlers.deleteLinesHandler(
+        saleorCheckout['id'],
+        checkoutLineIds,
+      );
+      const response = await CheckoutHandlers.deleteBundlesHandler(
         checkoutBundleIds,
         checkoutData['checkoutId'],
       );
@@ -167,29 +178,33 @@ export class CheckoutService {
 
   public async updateBundleFromCart(
     userId: string,
-    bundlesFromCart: Array<BundleTypes>,
+    bundlesFromCart: Array<bundleTypes>,
   ): Promise<object> {
     try {
-      const checkoutData = await _.marketplaceCheckoutHandler(userId, true);
+      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
+        userId,
+        true,
+      );
 
-      const saleorCheckout = await _.checkoutHandler(
+      const saleorCheckout = await CheckoutHandlers.checkoutHandler(
         checkoutData['checkoutId'],
       );
 
-      const updatedLinesWithQuantity = getUpdatedLinesWithQuantity(
-        saleorCheckout['lines'],
-        checkoutData['bundles'],
-        bundlesFromCart,
-      );
+      const updatedLinesWithQuantity =
+        CheckoutUtils.getUpdatedLinesWithQuantity(
+          saleorCheckout['lines'],
+          checkoutData['bundles'],
+          bundlesFromCart,
+        );
 
       // FIXME: need to use promise all here,
       // but for that we need to think about exception handling
       // against each handler.
-      await _.linesUpdateHandler(
+      await CheckoutHandlers.updateLinesHandler(
         checkoutData['checkoutId'],
         updatedLinesWithQuantity,
       );
-      const response = await _.addBundlesHandler(
+      const response = await CheckoutHandlers.addBundlesHandler(
         checkoutData['checkoutId'],
         userId,
         bundlesFromCart,
@@ -206,25 +221,30 @@ export class CheckoutService {
     bundleIds: Array<string>,
   ): Promise<object> {
     try {
-      const checkoutData = await _.marketplaceCheckoutHandler(userId);
-      const saleorCheckout = await _.checkoutHandler(
+      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
+        userId,
+      );
+      const saleorCheckout = await CheckoutHandlers.checkoutHandler(
         checkoutData['checkoutId'],
       );
-      await _.linesAddHandler(
-        checkoutData['checkoutId'],
+      const checkoutLines = CheckoutUtils.getCheckoutLineItems(
         saleorCheckout['lines'],
         checkoutData['bundles'],
         bundleIds,
       );
-      const updatedBundle = getUpdatedBundleForSelection(
+      await CheckoutHandlers.addLinesHandler(
+        checkoutData['checkoutId'],
+        checkoutLines,
+      );
+      const selectedBundles = CheckoutUtils.selectOrUnselectBundle(
         checkoutData['bundles'],
         bundleIds,
         true,
       );
-      const response = await _.addBundlesHandler(
+      const response = await CheckoutHandlers.addBundlesHandler(
         checkoutData['checkoutId'],
         userId,
-        updatedBundle,
+        selectedBundles,
       );
       return prepareSuccessResponse(response, '', 201);
     } catch (err) {
@@ -239,22 +259,31 @@ export class CheckoutService {
     checkoutBundleIds: Array<string>,
   ): Promise<object> {
     try {
-      const checkoutData = await _.marketplaceCheckoutHandler(userId);
-      const saleorCheckout = await _.checkoutHandler(
+      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
+        userId,
+      );
+      const saleorCheckout = await CheckoutHandlers.checkoutHandler(
         checkoutData['checkoutId'],
       );
-      await _.linesDeleteHandler(
+      const lines = CheckoutUtils.getCheckoutLineItems(
         saleorCheckout['lines'],
         checkoutData['bundles'],
-        saleorCheckout['id'],
         checkoutBundleIds,
       );
-      const updatedBundle = getUpdatedBundleForSelection(
+      const checkoutLineIds = (lines || []).map(
+        (l: any) => l?.id || l?.variantId,
+      );
+
+      await CheckoutHandlers.deleteLinesHandler(
+        checkoutLineIds,
+        saleorCheckout['id'],
+      );
+      const updatedBundle = CheckoutUtils.selectOrUnselectBundle(
         checkoutData['bundles'],
         bundleIds,
         false,
       );
-      const response = await _.addBundlesHandler(
+      const response = await CheckoutHandlers.addBundlesHandler(
         checkoutData['checkoutId'],
         userId,
         updatedBundle,
@@ -268,10 +297,10 @@ export class CheckoutService {
 
   public async addShippingAddress(
     checkoutId: string,
-    addressDetails: AddressDetailTypes,
+    addressDetails: addressDetailTypes,
   ): Promise<object> {
     try {
-      const response = await _.shippingAddressUpdateHandler(
+      const response = await CheckoutHandlers.shippingAddressUpdateHandler(
         checkoutId,
         addressDetails,
       );
@@ -284,10 +313,10 @@ export class CheckoutService {
 
   public async addBillingAddress(
     checkoutId: string,
-    addressDetails: AddressDetailTypes,
+    addressDetails: addressDetailTypes,
   ): Promise<object> {
     try {
-      const response = await _.billingAddressUpdateHandler(
+      const response = await CheckoutHandlers.billingAddressUpdateHandler(
         checkoutId,
         addressDetails,
       );
@@ -298,9 +327,13 @@ export class CheckoutService {
     }
   }
 
-  public async getShippingBillingAddress(checkoutId: string): Promise<object> {
+  public async getShippingAndBillingAddress(
+    checkoutId: string,
+  ): Promise<object> {
     try {
-      const response = await _.shippingBillingAddress(checkoutId);
+      const response = await CheckoutHandlers.shippingAndBillingAddressHandler(
+        checkoutId,
+      );
       return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
@@ -310,15 +343,18 @@ export class CheckoutService {
 
   public async getShippingMethods(userId: string): Promise<object> {
     try {
-      const checkoutData = await _.marketplaceCheckoutHandler(userId, false);
+      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
+        userId,
+        false,
+      );
 
-      const saleorCheckout = await _.checkoutHandler(
+      const saleorCheckout = await CheckoutHandlers.checkoutHandler(
         checkoutData['checkoutId'],
       );
-      const methodsListFromShopService = getShippingMethods(
+      const methodsListFromShopService = CheckoutUtils.getShippingMethods(
         checkoutData['bundles'],
       );
-      const methodsListFromSaleor = getShippingMethodsWithUUID(
+      const methodsListFromSaleor = CheckoutUtils.getShippingMethodsWithUUID(
         saleorCheckout['shippingMethods'],
         methodsListFromShopService,
         checkoutData['selectedMethods'],
@@ -336,14 +372,17 @@ export class CheckoutService {
     shippingIds: Array<string>,
   ): Promise<object> {
     try {
-      const checkoutData = await _.marketplaceCheckoutHandler(userId, true);
+      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
+        userId,
+        true,
+      );
       await Promise.all([
-        _.addShippingMethodHandler(
+        CheckoutHandlers.addShippingMethodHandler(
           checkoutData['checkoutId'],
           shippingIds,
           true,
         ),
-        _.deliveryMethodUpdateHandler(
+        CheckoutHandlers.updateDeliveryMethodHandler(
           checkoutData['checkoutId'],
           checkoutData['selectedMethods'],
         ),
@@ -358,13 +397,17 @@ export class CheckoutService {
 
   public async createPayment(userId: string): Promise<object> {
     try {
-      const checkoutData = await _.marketplaceCheckoutHandler(userId);
-      const paymentGateways = await _.paymentGatewayHandler(
+      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
+        userId,
+      );
+
+      const paymentGateways = await CheckoutHandlers.paymentGatewayHandler(
         checkoutData['checkoutId'],
       );
-      const response = await _.createPaymentHandler(
+      const dummyGatewayId = CheckoutUtils.getDummyGateway(paymentGateways);
+      const response = await CheckoutHandlers.createPaymentHandler(
         checkoutData['checkoutId'],
-        paymentGateways['availablePaymentGateways'],
+        dummyGatewayId,
       );
       return prepareSuccessResponse(response, '', 201);
     } catch (err) {
@@ -375,15 +418,20 @@ export class CheckoutService {
 
   public async checkoutComplete(userId: string): Promise<object> {
     try {
-      const checkoutData = await _.marketplaceCheckoutHandler(userId);
-      const selectedBundles = getSelectedBundles(checkoutData['bundles']);
-      const checkoutBundleIds = getCheckoutBundleIds(selectedBundles);
-      await _.deleteBundleHandler(
+      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
+        userId,
+      );
+      const selectedBundles = CheckoutUtils.getSelectedBundles(
+        checkoutData['bundles'],
+      );
+      const checkoutBundleIds =
+        CheckoutUtils.getCheckoutBundleIds(selectedBundles);
+      await CheckoutHandlers.deleteBundlesHandler(
         checkoutBundleIds,
         checkoutData['checkoutId'],
         true,
       );
-      const response = await _.completeCheckoutHandler(
+      const response = await CheckoutHandlers.completeCheckoutHandler(
         checkoutData['checkoutId'],
       );
       return prepareSuccessResponse(response, '', 201);

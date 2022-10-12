@@ -26,7 +26,7 @@ const federationQuery = (
       errors {
         field
         message
-				code
+			  code
       }
     }
   }

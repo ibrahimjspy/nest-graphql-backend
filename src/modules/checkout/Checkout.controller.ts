@@ -85,14 +85,14 @@ export class CheckoutController {
     );
   }
 
-  @Get('shippingBillingAddress/:checkoutId')
-  async getShippingBillingAddress(
+  @Get('shippingAndBillingAddress/:checkoutId')
+  async getShippingAndBillingAddress(
     @Res() res,
     @Param() params,
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getShippingBillingAddress(params?.checkoutId),
+      await this.appService.getShippingAndBillingAddress(params?.checkoutId),
     );
   }
 
