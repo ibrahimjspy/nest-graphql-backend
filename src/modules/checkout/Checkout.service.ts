@@ -152,14 +152,12 @@ export class CheckoutService {
       // FIXME: need to use promise all here,
       // but for that we need to think about exception handling
       // against each handler.
-      const lines = CheckoutUtils.getCheckoutLineItems(
+      const checkoutLines = CheckoutUtils.getCheckoutLineItems(
         saleorCheckout['lines'],
         checkoutData['bundles'],
         checkoutBundleIds,
       );
-      const checkoutLineIds = (lines || []).map(
-        (l: any) => l?.id || l?.variantId,
-      );
+      const checkoutLineIds = CheckoutUtils.getCheckoutLineIds(checkoutLines);
 
       await CheckoutHandlers.deleteLinesHandler(
         saleorCheckout['id'],
@@ -265,14 +263,13 @@ export class CheckoutService {
       const saleorCheckout = await CheckoutHandlers.checkoutHandler(
         checkoutData['checkoutId'],
       );
-      const lines = CheckoutUtils.getCheckoutLineItems(
+      const checkoutLines = CheckoutUtils.getCheckoutLineItems(
         saleorCheckout['lines'],
         checkoutData['bundles'],
         checkoutBundleIds,
       );
-      const checkoutLineIds = (lines || []).map(
-        (l: any) => l?.id || l?.variantId,
-      );
+
+      const checkoutLineIds = CheckoutUtils.getCheckoutLineIds(checkoutLines);
 
       await CheckoutHandlers.deleteLinesHandler(
         checkoutLineIds,

@@ -5,7 +5,7 @@ import {
   graphqlResultErrorHandler,
 } from 'src/public/graphqlHandler';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
-import { getBundleIds } from 'src/public/checkoutHelperFunctions';
+import { getBundleIds } from 'src/modules/product/Product.utils';
 import { bundleTypes } from 'src/graphql/handlers/checkout.types';
 
 export const productListPageHandler = async (id: string): Promise<object> => {

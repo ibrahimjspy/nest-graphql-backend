@@ -71,14 +71,6 @@ export const getBundlesNotInCheckout = (
 };
 
 /**
- * returns array of bundle ids
- * @params bundles: array with full bundle objects
- */
-export const getBundleIds = (bundles) => {
-  return (bundles || []).map((bundle) => bundle?.bundleId);
-};
-
-/**
  * returns line items (for saleor apis)
  * @params bundles: all bundles array in the checkout
  * @params targetBundles: bundles array for which we need line items
@@ -173,6 +165,15 @@ export const getCheckoutLineItems = (lines, bundles, bundleIds) => {
       variantId: line?.variant?.id,
       quantity: line?.quantity,
     }));
+};
+
+/**
+ * returns line items array for saleor api
+ * @params checkoutLines: checkout lines from saleor checkout
+ * @returns array of checkoutLineIds
+ */
+export const getCheckoutLineIds = (checkoutLines = []) => {
+  return checkoutLines.map((l: any) => l?.id || l?.variantId);
 };
 
 /**
