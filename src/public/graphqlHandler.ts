@@ -36,7 +36,7 @@ export const graphqlResultErrorHandler = async (
   throwException: boolean = true,
   message: string = '',
 ): Promise<object> => {
-  const error: ResultErrorType = response[Object.keys(response)[0]];
+  const error: ResultErrorType = response[Object.keys(response)[0]] || {};
 
   if (error.__typename === 'ResultError' && throwException) {
     // to handle sharove-services expected errors.

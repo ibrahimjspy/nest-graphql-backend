@@ -3,36 +3,17 @@ import {
   graphqlCall,
   graphqlResultErrorHandler,
 } from 'src/public/graphqlHandler';
+import * as CheckoutQueries from 'src/graphql/queries/checkout';
+import * as CheckoutMutations from 'src/graphql/mutations/checkout';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 
-import * as CheckoutQueries from 'src/graphql/queries/checkout';
-import * as UserQueries from 'src/graphql/queries/user';
 import {
-  getLineItems,
-  getBundleIds,
-  getDummyGateway,
-  getTargetLineItems,
-} from 'src/public/checkoutHelperFunctions';
+  addressDetailTypes,
+  bundleTypes,
+  lineTypes,
+} from 'src/graphql/handlers/checkout.types';
 
-export const bundlesListHandler = async (
-  bundles: Array<{
-    bundleId: string;
-    quantity: number;
-  }>,
-): Promise<object> => {
-  const bundleIds = getBundleIds(bundles);
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(CheckoutQueries.bundlesQuery(bundleIds)),
-  );
-
-  if (!response['bundles']['length']) {
-    throw new RecordNotFound('Bundles');
-  }
-
-  return response;
-};
-
-export const getMarketplaceCheckoutHandler = async (
+export const marketplaceCheckoutHandler = async (
   id: string,
   throwException: boolean = false,
 ): Promise<object> => {
@@ -45,191 +26,190 @@ export const getMarketplaceCheckoutHandler = async (
 
 export const createCheckoutHandler = async (
   email: string,
-  bundlesList,
-  bundlesForCart: Array<{ quantity: number; bundleId: string }>,
+  checkoutLines: Array<lineTypes>,
 ): Promise<object> => {
-  const lines = getLineItems(bundlesList, bundlesForCart);
   const response = await graphqlCall(
-    CheckoutQueries.createCheckoutQuery(email, lines),
+    CheckoutMutations.createCheckoutMutation(email, checkoutLines),
   );
   return response['checkoutCreate'];
 };
 
-export const addCheckoutBundlesHandler = async (
+export const addBundlesHandler = async (
   checkoutId: string,
   userId: string,
-  bundles: Array<{ bundleId: string; quantity: number }>,
+  bundles: Array<bundleTypes>,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
-      CheckoutQueries.addCheckoutBundlesQuery(checkoutId, userId, bundles),
+      CheckoutMutations.addCheckoutBundlesMutation(checkoutId, userId, bundles),
     ),
   );
   return response['addCheckoutBundles'];
 };
 
-export const addForCartHandler = async (
-  checkoutId,
-  bundlesList,
-  bundlesForCart: Array<{ quantity: number; bundleId: string }>,
+export const addLinesHandler = async (
+  checkoutId: string,
+  checkoutLines,
 ): Promise<object> => {
-  const lines = getLineItems(bundlesList, bundlesForCart);
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(CheckoutQueries.checkoutLinesAddQuery(checkoutId, lines)),
+    await graphqlCall(
+      CheckoutMutations.checkoutLinesAddMutation(checkoutId, checkoutLines),
+    ),
   );
   return response['checkoutLinesAdd'];
 };
 
-export const checkoutLinesAddHandler = async (
-  checkoutId,
-  saleorCheckout,
-  bundles,
-  bundleIds: Array<string>,
-): Promise<object> => {
-  const targetLineItems = getTargetLineItems(
-    saleorCheckout,
-    bundles,
-    bundleIds,
-  );
-  return await graphqlCall(
-    CheckoutQueries.checkoutLinesAddQuery(checkoutId, targetLineItems),
-  );
-};
-
 export const checkoutHandler = async (checkoutId: string): Promise<object> => {
   const response = await graphqlCall(CheckoutQueries.checkoutQuery(checkoutId));
-
   if (!response['checkout']) {
     throw new RecordNotFound('Checkout');
   }
-
   return response['checkout'];
 };
 
-export const checkoutLinesDeleteHandler = async (
-  saleorCheckout,
-  bundles,
-  bundleIds,
+export const deleteLinesHandler = async (
+  lineIds,
+  saleorCheckoutId,
 ): Promise<object> => {
-  const lines = getTargetLineItems(saleorCheckout?.lines, bundles, bundleIds);
-  const lineIds = (lines || []).map((l: any) => l?.id);
-
-  return await graphqlResultErrorHandler(
-    await graphqlCall(
-      CheckoutQueries.checkoutLinesDeleteQuery(saleorCheckout?.id, lineIds),
-    ),
-  );
-};
-
-export const deleteCheckoutBundlesHandler = async (
-  checkoutBundleIds: Array<string>,
-  checkoutId: string,
-): Promise<object> => {
-  console.log(checkoutId);
-
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
-      CheckoutQueries.deleteCheckoutBundlesQuery(checkoutBundleIds, checkoutId),
+      CheckoutMutations.checkoutLinesDeleteMutation(saleorCheckoutId, lineIds),
     ),
+  );
+  return response['checkoutLinesDelete'];
+};
+
+export const deleteBundlesHandler = async (
+  checkoutBundleIds: Array<string>,
+  checkoutId: string,
+  throwException: boolean = false,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutMutations.deleteCheckoutBundlesMutation(
+        checkoutBundleIds,
+        checkoutId,
+      ),
+    ),
+    throwException,
   );
   return response['deleteCheckoutBundles'];
 };
 
-export const checkoutLinesUpdateHandler = async (
+export const updateLinesHandler = async (
   checkoutId: string,
-  lines: Array<{ variantId: string; quantity: number }>,
+  lines: Array<lineTypes>,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
-      CheckoutQueries.checkoutLinesUpdateQuery(checkoutId, lines),
+      CheckoutMutations.checkoutLinesUpdateMutation(checkoutId, lines),
     ),
   );
   return response['checkoutLinesUpdate'];
 };
 
-export const shippingAddressHandler = async (
-  checkoutId,
-  addressDetails,
+export const shippingAddressUpdateHandler = async (
+  checkoutId: string,
+  addressDetails: addressDetailTypes,
 ): Promise<object> => {
-  return await graphqlCall(
-    CheckoutQueries.shippingAddressQuery(checkoutId, addressDetails),
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutMutations.shippingAddressMutation(checkoutId, addressDetails),
+    ),
   );
+
+  if (!response['checkoutShippingAddressUpdate']) {
+    throw new RecordNotFound('Shipping address data');
+  }
+
+  return response['checkoutShippingAddressUpdate']['checkout'];
 };
 
-export const billingAddressHandler = async (
-  checkoutId,
-  addressDetails,
+export const billingAddressUpdateHandler = async (
+  checkoutId: string,
+  addressDetails: addressDetailTypes,
 ): Promise<object> => {
-  return await graphqlCall(
-    CheckoutQueries.billingAddressQuery(checkoutId, addressDetails),
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutMutations.billingAddressMutation(checkoutId, addressDetails),
+    ),
   );
+
+  if (!response['checkoutBillingAddressUpdate']) {
+    throw new RecordNotFound('Billing address data');
+  }
+
+  return response['checkoutBillingAddressUpdate']['checkout'];
 };
 
-export const shippingBillingAddress = async (
+export const shippingAndBillingAddressHandler = async (
   checkoutId: string,
 ): Promise<object> => {
-  return await graphqlCall(
-    CheckoutQueries.shippingBillingAddressQuery(checkoutId),
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutQueries.shippingAndBillingAddressQuery(checkoutId),
+    ),
   );
+  return response['checkout'];
 };
 
-export const addCheckoutShippingMethodHandler = async (
-  checkoutData,
+export const addShippingMethodHandler = async (
+  checkoutId: string,
   shopShippingMethodIds: Array<string>,
+  throwException: boolean = false,
 ) => {
-  const { checkoutId } = checkoutData?.marketplaceCheckout;
-  return await graphqlCall(
-    CheckoutQueries.addCheckoutShippingMethodsQuery(
-      checkoutId,
-      shopShippingMethodIds,
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutMutations.addCheckoutShippingMethodsMutation(
+        checkoutId,
+        shopShippingMethodIds,
+      ),
     ),
+    throwException,
   );
+  return response['addCheckoutShippingMethods'];
 };
 
-export const checkoutDeliveryMethodUpdateHandler = async (checkoutData) => {
-  const { checkoutId, selectedMethods } = checkoutData?.marketplaceCheckout;
-  const deliveryMethodId = selectedMethods[0]?.method?.shippingMethodId;
-  return await graphqlCall(
-    CheckoutQueries.checkoutDeliveryMethodUpdateQuery(
-      checkoutId,
-      deliveryMethodId,
+export const updateDeliveryMethodHandler = async (
+  checkoutId,
+  selectedMethods,
+) => {
+  const deliveryMethodId = selectedMethods[0]['method']['shippingMethodId'];
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutMutations.checkoutDeliveryMethodUpdateMutation(
+        checkoutId,
+        deliveryMethodId,
+      ),
     ),
   );
+  return response['checkoutDeliveryMethodUpdate'];
 };
 
-export const createPaymentHandler = async (checkoutData, paymentGateways) => {
-  const { checkoutId } = checkoutData?.marketplaceCheckout;
-  const dummyGatewayId = getDummyGateway(paymentGateways);
+export const createPaymentHandler = async (checkoutId: string, gatewayId) => {
   const token = uuid4();
-  return await graphqlCall(
-    CheckoutQueries.checkoutPaymentCreateQuery(
-      checkoutId,
-      dummyGatewayId,
-      token,
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutMutations.checkoutPaymentCreateMutation(
+        checkoutId,
+        gatewayId,
+        token,
+      ),
     ),
   );
+  return response['checkoutPaymentCreate'];
 };
 
-export const getPaymentGatewaysHandler = async (checkoutData) => {
-  const { checkoutId } = checkoutData?.marketplaceCheckout;
-  return await graphqlCall(
-    CheckoutQueries.availablePaymentGatewaysQuery(checkoutId),
+export const paymentGatewayHandler = async (checkoutId: string) => {
+  const response = await graphqlResultErrorHandler(
+    graphqlCall(CheckoutQueries.availablePaymentGatewaysQuery(checkoutId)),
   );
+  return response['checkout'];
 };
 
-export const getUserHandler = async (userId: string) => {
-  const response = await graphqlCall(UserQueries.userQuery(userId));
-  return response['user'];
-};
-
-export const checkoutEmailUpdateHandler = async (checkoutData, userData) => {
-  const { checkoutId } = checkoutData?.marketplaceCheckout;
-  const { email } = userData.user;
-  return await graphqlCall(
-    UserQueries.checkoutEmailUpdateQuery(checkoutId, email),
+export const completeCheckoutHandler = async (checkoutId: string) => {
+  const response = await graphqlResultErrorHandler(
+    graphqlCall(CheckoutMutations.checkoutCompleteMutation(checkoutId)),
   );
-};
-
-export const checkoutCompleteHandler = async (checkoutId: string) => {
-  return await graphqlCall(CheckoutQueries.checkoutCompleteQuery(checkoutId));
+  return response['checkoutComplete'];
 };

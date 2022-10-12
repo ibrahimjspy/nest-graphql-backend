@@ -17,9 +17,9 @@ const federationQuery = (checkoutId, addressDetails) => {
   } = addressDetails;
   return gql`
   mutation {
-    checkoutBillingAddressUpdate (
+    checkoutShippingAddressUpdate (
       id: "${checkoutId}",
-      billingAddress: {
+      shippingAddress: {
         country: ${country},
         countryArea: "${countryArea || ''}",
         firstName: "${firstName}",
@@ -33,7 +33,7 @@ const federationQuery = (checkoutId, addressDetails) => {
       }
     ) {
       checkout {
-        billingAddress {
+        shippingAddress {
           firstName
           lastName
           streetAddress1
@@ -58,7 +58,7 @@ const federationQuery = (checkoutId, addressDetails) => {
   `;
 };
 
-export const billingAddressQuery = (checkoutId, addressDetails) => {
+export const shippingAddressMutation = (checkoutId, addressDetails) => {
   return graphqlQueryCheck(
     federationQuery(checkoutId, addressDetails),
     federationQuery(checkoutId, addressDetails),

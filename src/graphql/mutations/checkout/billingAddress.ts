@@ -2,7 +2,6 @@ import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
 
 const federationQuery = (checkoutId, addressDetails) => {
-  // query linking with backend
   const {
     country,
     countryArea,
@@ -17,9 +16,9 @@ const federationQuery = (checkoutId, addressDetails) => {
   } = addressDetails;
   return gql`
   mutation {
-    checkoutShippingAddressUpdate (
+    checkoutBillingAddressUpdate (
       id: "${checkoutId}",
-      shippingAddress: {
+      billingAddress: {
         country: ${country},
         countryArea: "${countryArea || ''}",
         firstName: "${firstName}",
@@ -33,7 +32,7 @@ const federationQuery = (checkoutId, addressDetails) => {
       }
     ) {
       checkout {
-        shippingAddress {
+        billingAddress {
           firstName
           lastName
           streetAddress1
@@ -58,7 +57,7 @@ const federationQuery = (checkoutId, addressDetails) => {
   `;
 };
 
-export const shippingAddressQuery = (checkoutId, addressDetails) => {
+export const billingAddressMutation = (checkoutId, addressDetails) => {
   return graphqlQueryCheck(
     federationQuery(checkoutId, addressDetails),
     federationQuery(checkoutId, addressDetails),

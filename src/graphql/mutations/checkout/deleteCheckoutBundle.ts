@@ -5,7 +5,6 @@ const federationQuery = (
   checkoutBundleIds: Array<string>,
   checkoutId: string,
 ) => {
-  // query linking with backend
   return gql`
   mutation {
     deleteCheckoutBundles(
@@ -27,7 +26,7 @@ const federationQuery = (
   `;
 };
 
-export const deleteCheckoutBundlesQuery = (
+export const deleteCheckoutBundlesMutation = (
   checkoutBundleIds: Array<string>,
   checkoutId: string,
 ) => {

@@ -1,12 +1,16 @@
-import * as _ from 'src/graphql/queries/product/index';
+import * as ProductQueries from 'src/graphql/queries/product';
 import {
   graphqlCall,
   graphqlExceptionHandler,
+  graphqlResultErrorHandler,
 } from 'src/public/graphqlHandler';
+import RecordNotFound from 'src/core/exceptions/recordNotFound';
+import { getBundleIds } from 'src/modules/product/Product.utils';
+import { bundleTypes } from 'src/graphql/handlers/checkout.types';
 
 export const productListPageHandler = async (id: string): Promise<object> => {
   try {
-    return await graphqlCall(_.productListPageQuery(id));
+    return await graphqlCall(ProductQueries.productListPageQuery(id));
   } catch (err) {
     return graphqlExceptionHandler(err);
   }
@@ -16,7 +20,7 @@ export const singleProductDetailsHandler = async (
   slug: string,
 ): Promise<object> => {
   try {
-    return await graphqlCall(_.productDetailsQuery(slug));
+    return await graphqlCall(ProductQueries.productDetailsQuery(slug));
   } catch (err) {
     return graphqlExceptionHandler(err);
   }
@@ -26,7 +30,7 @@ export const productCardsByCategoriesHandler = async (
   id: string,
 ): Promise<object> => {
   try {
-    return await graphqlCall(_.productCardsByListIdQuery(id));
+    return await graphqlCall(ProductQueries.productCardsByListIdQuery(id));
   } catch (err) {
     return graphqlExceptionHandler(err);
   }
@@ -34,7 +38,7 @@ export const productCardsByCategoriesHandler = async (
 
 export const productCardHandler = async (): Promise<object> => {
   try {
-    return await graphqlCall(_.productCardsDefaultQuery());
+    return await graphqlCall(ProductQueries.productCardsDefaultQuery());
   } catch (err) {
     return graphqlExceptionHandler(err);
   }
@@ -43,15 +47,42 @@ export const productCardHandler = async (): Promise<object> => {
 export const bundlesByVariantsIdsHandler = async (
   variantIds: Array<string>,
 ): Promise<Array<object>> => {
-  const response = await graphqlCall(_.productBundlesQuery(variantIds));
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      ProductQueries.productBundlesByVariantIdQuery(variantIds),
+    ),
+  );
+  if (!response['bundles']['length']) {
+    throw new RecordNotFound('Bundles');
+  }
   return response['bundles'];
 };
 
 export const variantsIdsByProductIdsHandler = async (
   productIds: Array<string>,
 ): Promise<object> => {
-  const response = await graphqlCall(
-    _.variantsIdsByProductIdsQuery(productIds),
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(ProductQueries.variantsIdsByProductIdsQuery(productIds)),
   );
+
+  if (!response['products']?.['edges']?.['length']) {
+    throw new RecordNotFound('Products');
+  }
+
   return response['products'];
+};
+
+export const bundlesByBundleIdsHandler = async (
+  bundles: Array<bundleTypes>,
+): Promise<object> => {
+  const bundleIds = getBundleIds(bundles);
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(ProductQueries.productBundlesByBundleIdQuery(bundleIds)),
+  );
+
+  if (!response['bundles']['length']) {
+    throw new RecordNotFound('Bundles');
+  }
+
+  return response;
 };

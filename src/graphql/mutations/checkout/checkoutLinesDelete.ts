@@ -20,7 +20,7 @@ const federationQuery = (checkoutId: string, linedIds: Array<string>) => {
   `;
 };
 
-export const checkoutLinesDeleteQuery = (
+export const checkoutLinesDeleteMutation = (
   checkoutId: string,
   linedIds: Array<string>,
 ) => {
