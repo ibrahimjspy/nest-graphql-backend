@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
+  allShopOrdersHandler,
   dashboardByIdHandler,
   orderDetailsHandler,
+  shopOrderFulfillmentsByIdHandler,
+  shopOrdersByIdHandler,
 } from 'src/graphql/handlers/orders';
-import { allShopOrdersHandler } from 'src/graphql/handlers/orders';
-import { shopOrdersByIdHandler } from 'src/graphql/handlers/orders';
-import { shopOrderFulfillmentsByIdHandler } from 'src/graphql/handlers/orders';
 
 @Injectable()
 export class OrdersService {
