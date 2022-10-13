@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
+import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
 const federationQuery = (
   checkoutId: string,
@@ -23,16 +23,17 @@ const federationQuery = (
           value
         }
       }
-      paymentErrors {
+      errors {
         field
         message
+			  code
       }
     }
   }
   `;
 };
 
-export const checkoutPaymentCreateQuery = (
+export const checkoutPaymentCreateMutation = (
   checkoutId: string,
   gatewayId: string,
   token: string,

@@ -1,74 +1,130 @@
-import { Body, Controller, Post, Get, Put, Param } from '@nestjs/common';
+import { Body, Controller, Post, Get, Put, Param, Res } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CheckoutService } from './Checkout.service';
+import { makeResponse } from '../../core/utils/response';
 
+@ApiTags('checkout')
 @Controller('checkout')
 export class CheckoutController {
   constructor(private readonly appService: CheckoutService) {}
-  // Returns shoppingCart data
-  @Post('shoppingCart')
-  getShoppingCartData(@Body() body): Promise<object> {
-    return this.appService.getShoppingCartData(body.userId);
-  }
-  // Add to cart
-  @Post('addToCart')
-  addBundlesToCart(@Body() body): Promise<object> {
-    return this.appService.addToCart(body?.userId, body?.bundles);
-  }
-  // Delete bundle
-  @Put('deleteBundleFromCart')
-  deleteCartBundle(@Body() body): Promise<object> {
-    return this.appService.deleteBundleFromCart(
-      body?.userId,
-      body?.checkoutBundleIds,
+
+  @Get('/:userId')
+  async getShoppingCartData(@Res() res, @Param() params): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.getShoppingCartData(params?.userId),
     );
   }
-  @Put('updateBundleFromCart')
-  updateCartBundle(@Body() body): Promise<object> {
-    return this.appService.updateBundleFromCart(body?.userId, body?.bundles);
+
+  @Post('cart/bundle/add')
+  async addBundlesToCart(@Res() res, @Body() body): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.addToCart(body?.userId, body?.bundles),
+    );
   }
-  @Put('selectBundle')
-  selectThisShop(@Body() body): Promise<object> {
-    return this.appService.setBundleAsSelected(body?.userId, body?.bundleIds);
+
+  @Put('cart/bundle/delete')
+  async deleteBundleFromCart(@Res() res, @Body() body): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.deleteBundleFromCart(
+        body?.userId,
+        body?.checkoutBundleIds,
+      ),
+    );
   }
-  @Put('unselectBundle')
-  unSelectThisShop(@Body() body): Promise<object> {
-    return this.appService.setBundleAsUnselected(body?.userId, body?.bundleIds);
+
+  @Put('cart/bundle/update')
+  async updateCartBundle(@Res() res, @Body() body): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.updateBundleFromCart(body?.userId, body?.bundles),
+    );
   }
+
+  @Put('cart/bundle/select')
+  async selectThisShop(@Res() res, @Body() body): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.setBundleAsSelected(body?.userId, body?.bundleIds),
+    );
+  }
+
+  @Put('cart/bundle/unselect')
+  async unSelectThisShop(@Res() res, @Body() body): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.setBundleAsUnselected(
+        body?.userId,
+        body?.bundleIds,
+        body?.checkoutBundleIds,
+      ),
+    );
+  }
+
   @Post('shippingAddress')
-  addShippingAddress(@Body() body): Promise<object> {
-    return this.appService.addShippingAddress(
-      body?.checkoutId,
-      body?.addressDetails,
+  async addShippingAddress(@Res() res, @Body() body): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.addShippingAddress(
+        body?.checkoutId,
+        body?.addressDetails,
+      ),
     );
   }
+
   @Post('billingAddress')
-  addBillingAddress(@Body() body): Promise<object> {
-    return this.appService.addBillingAddress(
-      body?.checkoutId,
-      body?.addressDetails,
+  async addBillingAddress(@Res() res, @Body() body): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.addBillingAddress(
+        body?.checkoutId,
+        body?.addressDetails,
+      ),
     );
   }
-  @Get('shippingBillingAddress/:checkoutId')
-  getShippingBillingAddress(@Param() params): Promise<object> {
-    return this.appService.getShippingBillingAddress(params?.checkoutId);
-  }
-  @Get('getShippingMethods/:userId')
-  getShippingMethod(@Param() params): Promise<object> {
-    return this.appService.getShippingMethod(params?.userId);
-  }
-  @Put('selectShippingMethods')
-  selectShippingMethods(@Body() body): Promise<object> {
-    return this.appService.selectShippingMethods(
-      body?.userId,
-      body?.shippingIds,
+
+  @Get('shippingAndBillingAddress/:checkoutId')
+  async getShippingAndBillingAddress(
+    @Res() res,
+    @Param() params,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.getShippingAndBillingAddress(params?.checkoutId),
     );
   }
-  @Post('createPayment')
-  createPayment(@Body() body): Promise<object> {
-    return this.appService.createPayment(body?.userId);
+
+  @Get('shippingMethods/:userId')
+  async getShippingMethods(@Res() res, @Param() params): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.getShippingMethods(params?.userId),
+    );
   }
-  @Post('checkoutComplete')
-  checkoutComplete(@Body() body): Promise<object> {
-    return this.appService.checkoutComplete(body?.userId);
+
+  @Put('shippingMethods/select')
+  async selectShippingMethods(@Res() res, @Body() body): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.selectShippingMethods(
+        body?.userId,
+        body?.shippingIds,
+      ),
+    );
+  }
+
+  @Post('payment/create')
+  async createPayment(@Res() res, @Body() body): Promise<object> {
+    return makeResponse(res, await this.appService.createPayment(body?.userId));
+  }
+
+  @Post('complete')
+  async checkoutComplete(@Res() res, @Body() body): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.checkoutComplete(body?.userId),
+    );
   }
 }

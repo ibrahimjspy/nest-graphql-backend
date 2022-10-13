@@ -1,14 +1,24 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
-const federationQuery = (userId: string): string => {
+const federationQuery = (
+  checkoutId: string,
+  userId: string,
+  bundles: Array<{ bundleId: string; quantity: number }>,
+) => {
   return gql`
-    query {
-      marketplaceCheckout(
-          userId: "${userId}"
+    mutation {
+      addCheckoutBundles(
+        Input: {
+          checkoutId: "${checkoutId}",
+          userId: "${userId}",
+          bundles: ${JSON.stringify(bundles)
+            .replace(/"bundleId"/g, 'bundleId')
+            .replace(/"isSelected"/g, 'isSelected')
+            .replace(/"quantity"/g, 'quantity')}
+        }
       ) {
         ... on CheckoutBundlesType {
-          __typename
           checkoutId
           userId
           bundles {
@@ -61,35 +71,34 @@ const federationQuery = (userId: string): string => {
               shop {
                 id
                 name
+                email
+                url
                 madeIn
-                shippingMethods {
-                  id
-                  shippingMethodId
-                }
+                minOrder
+                description
+                about
+                returnPolicy
+                storePolicy
               }
-            }
           }
-          selectedMethods {
-            method {
-              id
-              shippingMethodId
-            },
-            shop {
-              id
-              name
-            }
-          }
+      }
         }
         ... on ResultError {
-          __typename
-          message
-          errors
+            message
+            errors
         }
-      }
     }
+  }
   `;
 };
 
-export const getMarketplaceCheckoutQuery = (id: string) => {
-  return graphqlQueryCheck(federationQuery(id), federationQuery(id));
+export const addCheckoutBundlesMutation = (
+  checkoutId: string,
+  userId: string,
+  bundles: Array<{ bundleId: string; quantity: number }>,
+) => {
+  return graphqlQueryCheck(
+    federationQuery(checkoutId, userId, bundles),
+    federationQuery(checkoutId, userId, bundles),
+  );
 };

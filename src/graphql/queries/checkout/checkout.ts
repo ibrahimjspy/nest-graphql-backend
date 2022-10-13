@@ -1,44 +1,43 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
+import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
 const federationQuery = (checkoutId: string) => {
-  // query linking with backend
   return gql`
-  query {
-    checkout(
-        id: "${checkoutId}",
-    ) {
-      id
-      shippingMethods {
-        id,
-        name,
-        active,
-        price {
-          amount,
-          currency
-        }
-        }
-        deliveryMethod {
-          ... on ShippingMethod {
-           __typename,
-           id,
-           name
-          }
-          ... on Warehouse {
-           __typename,
-           id,
-           name
-          }
-         }
-      lines {
+    query {
+      checkout(
+          id: "${checkoutId}",
+      ) {
         id
-        quantity
-        variant {
+        shippingMethods {
+          id,
+          name,
+          active,
+          price {
+            amount,
+            currency
+          }
+          }
+          deliveryMethod {
+            ... on ShippingMethod {
+            __typename,
+            id,
+            name
+            }
+            ... on Warehouse {
+            __typename,
+            id,
+            name
+            }
+          }
+        lines {
           id
+          quantity
+          variant {
+            id
+          }
         }
       }
     }
-  }
   `;
 };
 

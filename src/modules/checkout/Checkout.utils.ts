@@ -1,9 +1,73 @@
 /**
- * returns array of bundle ids
- * @params bundles: array with full bundle objects
+ * It takes an array of checkoutBundles and returns an array of product ids
+ * @param {any[]} checkoutBundles - any[]
+ * @returns An array of product ids from the checkoutBundles
  */
-export const getBundleIds = (bundles) => {
-  return (bundles || []).map((bundle) => bundle?.bundleId);
+export const getProductIdsByCheckoutBundles = (
+  checkoutBundles: any[],
+): Array<string> => {
+  return checkoutBundles?.reduce((result, bundle) => {
+    const variants = bundle['bundle']?.variants;
+    if (variants?.length) result.push(variants[0]?.variant?.product?.id);
+    return result;
+  }, []);
+};
+
+/**
+ * It takes a list of products and returns a list of all the variants ids
+ * @param products - The products object returned from the query.
+ * @returns An array of variant ids
+ */
+export const getVariantsIdsByProducts = (products) => {
+  return products?.edges?.reduce((result, product) => {
+    const variants: Array<{ id: string }> = product?.node?.variants;
+    variants.reduce((_, currValue) => result.push(currValue?.id));
+    return result;
+  }, []);
+};
+
+/**
+ * It takes an array of checkout bundles and returns an array of bundle ids
+ * @param {any[]} checkoutBundles - any[]
+ * @returns An array of strings
+ */
+export const getCheckoutBundlesIds = (
+  checkoutBundles: any[],
+): Array<string> => {
+  return checkoutBundles?.map((bundle) => bundle['bundle']?.id);
+};
+
+/**
+ * It takes an array of checkoutBundles and an array of allBundles and returns an array of allBundles
+ * that are not in checkoutBundles
+ * @param checkoutBundles - Array<any>
+ * @param allBundles - Array<any> - this is the list of all bundles that are available to be added to
+ * the cart.
+ * @returns An array of objects with the following properties:
+ *   checkoutBundleId: string
+ *   isSelected: boolean
+ *   quantity: number
+ *   in_checkout: boolean
+ *   bundle: object
+ */
+export const getBundlesNotInCheckout = (
+  checkoutBundles: Array<any>,
+  allBundles: Array<any>,
+): Array<any> => {
+  if (checkoutBundles.length == 0) return [];
+  const checkoutBundlesIds = getCheckoutBundlesIds(checkoutBundles);
+
+  return allBundles?.reduce((result, bundle: { id: string }) => {
+    if (!checkoutBundlesIds.includes(bundle.id)) {
+      result.push({
+        checkoutBundleId: '',
+        isSelected: false,
+        quantity: 0,
+        bundle,
+      });
+    }
+    return result;
+  }, []);
 };
 
 /**
@@ -32,25 +96,25 @@ export const getLineItems = (bundles, targetBundles) => {
 
 /**
  * returns line items with updated quantity
- * @params saleorCheckout: complete checkout object from saleor checkout
+ * @params lines: checkout lines from saleor checkout
  * @params checkoutBundles: all the bundles array from the checkout data
  * @params bundlesFromCart: bundles from cart for which update (i.e quantity or color) is required
  */
 export const getUpdatedLinesWithQuantity = (
-  saleorCheckout,
+  lines,
   checkoutBundles,
   bundlesFromCart,
 ) => {
   const quantity = bundlesFromCart[0]?.quantity;
   const checkoutBundleIds = bundlesFromCart.map((bundle) => bundle?.bundleId);
 
-  const targetLineItems = getTargetLineItems(
-    saleorCheckout,
+  const checkoutLines = getCheckoutLineItems(
+    lines,
     checkoutBundles,
     checkoutBundleIds,
   );
 
-  return (targetLineItems || []).map((line) => ({
+  return (checkoutLines || []).map((line) => ({
     variantId: line?.variantId,
     quantity: line?.quantity * quantity,
   }));
@@ -87,16 +151,15 @@ export const getVariantIds = (targetBundles) => {
 
 /**
  * returns line items array for saleor api
- * @params saleorCheckout: complete checkout object from saleor checkout
+ * @params lines: checkout lines from saleor checkout
  * @params bundles: all the bundles array from the checkout data
  * @params bundleIds: array of bundle ids
  */
-export const getTargetLineItems = (saleorCheckout, bundles, bundleIds) => {
+export const getCheckoutLineItems = (lines, bundles, bundleIds) => {
   const targetBundle = getTargetBundleByBundleId(bundles, bundleIds);
   const variantIds = getVariantIds(targetBundle);
 
-  const lineItems = saleorCheckout?.checkout?.lines;
-  return (lineItems || [])
+  return (lines || [])
     .filter((line) => variantIds.includes(line?.variant?.id))
     .map((line) => ({
       variantId: line?.variant?.id,
@@ -105,15 +168,24 @@ export const getTargetLineItems = (saleorCheckout, bundles, bundleIds) => {
 };
 
 /**
+ * returns line items array for saleor api
+ * @params checkoutLines: checkout lines from saleor checkout
+ * @returns array of checkoutLineIds
+ */
+export const getCheckoutLineIds = (checkoutLines = []) => {
+  return checkoutLines.map((l: any) => l?.id || l?.variantId);
+};
+
+/**
  * returns bundle object with updated selection object and limited info (i.e bundleId, quantity, isSelected)
  * @params bundles: all the bundles array from the checkout data
  * @params bundleIds: array of bundle ids
  * @params isSelected: flag to check if bundle is selected for checkout or not
  */
-export const getUpdatedBundleForSelection = (
+export const selectOrUnselectBundle = (
   bundles,
-  bundleIds,
-  isSelected,
+  bundleIds: Array<string>,
+  isSelected: boolean,
 ) => {
   const targetBundle = getTargetBundleByBundleId(bundles, bundleIds);
   return (targetBundle || []).map((bundle) => ({
@@ -128,12 +200,14 @@ export const getUpdatedBundleForSelection = (
  * @params allCheckoutBundles: all the bundles array from the checkout data
  * @params bundlesFromCart: bundles from cart which are again added to cart
  */
-export const updateBundlesQuantity = (allCheckoutBundles, bundles) => {
-  return bundles.map((bundle) => {
+export const updateBundlesQuantity = (allCheckoutBundles, bundlesFromCart) => {
+  return bundlesFromCart.map((bundle) => {
     const targetBundle = allCheckoutBundles.find(
       (checkoutBundle) => checkoutBundle?.id === bundle?.id,
     );
-    return { ...bundle, quantity: bundle?.quantity + targetBundle?.quantity };
+    const oldQuantity = bundle?.quantity ? bundle.quantity : 0;
+    const newQuantity = targetBundle?.quantity ? targetBundle.quantity : 0;
+    return { ...bundle, quantity: oldQuantity + newQuantity };
   });
 };
 
@@ -211,8 +285,9 @@ export const getCheckoutBundleIds = (bundles) => {
  * returns dummy payment gateway for testing purpose
  * @params paymentGateways: available payment gateways
  */
-export const getDummyGateway = (paymentGateways) => {
-  const options = paymentGateways?.checkout?.availablePaymentGateways || [];
-  const dummyGateway = options.find((gateway) => gateway?.name === 'Dummy');
+export const getDummyGateway = (availablePaymentGateways = []) => {
+  const dummyGateway = availablePaymentGateways.find(
+    (gateway) => gateway?.name === 'Dummy',
+  );
   return dummyGateway?.id;
 };
