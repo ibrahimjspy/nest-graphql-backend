@@ -1,4 +1,4 @@
-import { graphqlCall } from 'src/public/graphqlHandler';
+import { graphqlCall } from 'src/core/proxies/graphqlHandler';
 import { addressCreateInputType } from '../../mutations/account';
 
 import { addressCreateMutation } from '../../mutations/account';

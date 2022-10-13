@@ -1,5 +1,5 @@
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
-import { graphqlCall } from 'src/public/graphqlHandler';
+import { graphqlCall } from 'src/core/proxies/graphqlHandler';
 import { userQuery } from '../../queries/user';
 
 export const userByIdHandler = async (userId: string): Promise<object> => {
@@ -11,4 +11,3 @@ export const userByIdHandler = async (userId: string): Promise<object> => {
 
   return response['user'];
 };
-
