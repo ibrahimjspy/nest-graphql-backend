@@ -33,8 +33,8 @@ export const graphqlCall = async (
  */
 export const graphqlResultErrorHandler = async (
   response: object,
-  throwException: boolean = true,
-  message: string = '',
+  throwException = true,
+  message = '',
 ): Promise<object> => {
   const error: ResultErrorType = response[Object.keys(response)[0]] || {};
 

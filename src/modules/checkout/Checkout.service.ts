@@ -22,7 +22,7 @@ export class CheckoutService {
 
   public async getShoppingCartData(id: string): Promise<object> {
     try {
-      let checkoutBundles = await CheckoutHandlers.marketplaceCheckoutHandler(
+      const checkoutBundles = await CheckoutHandlers.marketplaceCheckoutHandler(
         id,
         true,
       );

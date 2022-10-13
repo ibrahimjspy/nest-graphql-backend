@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import {
+  bundlesByVariantsIdsHandler,
   productCardHandler,
   productCardsByCategoriesHandler,
   productListPageHandler,
   singleProductDetailsHandler,
-  bundlesByVariantsIdsHandler,
 } from 'src/graphql/handlers/product';
 
 @Injectable()

@@ -15,7 +15,7 @@ import {
 
 export const marketplaceCheckoutHandler = async (
   id: string,
-  throwException: boolean = false,
+  throwException = false,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(CheckoutQueries.getMarketplaceCheckoutQuery(id)),
@@ -82,7 +82,7 @@ export const deleteLinesHandler = async (
 export const deleteBundlesHandler = async (
   checkoutBundleIds: Array<string>,
   checkoutId: string,
-  throwException: boolean = false,
+  throwException = false,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
@@ -162,7 +162,7 @@ export const shippingAndBillingAddressHandler = async (
 export const addShippingMethodHandler = async (
   checkoutId: string,
   shopShippingMethodIds: Array<string>,
-  throwException: boolean = false,
+  throwException = false,
 ) => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
