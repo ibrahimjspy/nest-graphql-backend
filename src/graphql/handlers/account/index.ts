@@ -1,3 +1,12 @@
-import { userByIdHandler } from './user';
+// Address Imports
+import { addressByUserIdHandler, addressCreate } from './address';
+// User Imports
+import { userEmailByIdHandler } from './user';
 
-export { userByIdHandler };
+export {
+  // Address Handlers
+  addressByUserIdHandler,
+  addressCreate,
+  // User Handlers
+  userEmailByIdHandler,
+};

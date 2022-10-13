@@ -114,7 +114,10 @@ export const shippingAddressUpdateHandler = async (
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
-      CheckoutMutations.shippingAddressMutation(checkoutId, addressDetails),
+      CheckoutMutations.checkoutShippingAddressUpdateMutation(
+        checkoutId,
+        addressDetails,
+      ),
     ),
   );
 
@@ -131,7 +134,10 @@ export const billingAddressUpdateHandler = async (
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
-      CheckoutMutations.billingAddressMutation(checkoutId, addressDetails),
+      CheckoutMutations.checkoutBillingAddressUpdateMutation(
+        checkoutId,
+        addressDetails,
+      ),
     ),
   );
 

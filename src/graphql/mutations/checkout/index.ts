@@ -1,5 +1,5 @@
-import { shippingAddressMutation } from './shippingAddress';
-import { billingAddressMutation } from './billingAddress';
+import { checkoutShippingAddressUpdateMutation } from './checkoutShippingAddressUpdate';
+import { checkoutBillingAddressUpdateMutation } from './checkoutBillingAddressUpdate';
 import { addCheckoutShippingMethodsMutation } from './addCheckoutShippingMethods';
 import { checkoutDeliveryMethodUpdateMutation } from './checkoutDeliveryMethodUpdate';
 import { checkoutPaymentCreateMutation } from './checkoutPaymentCreate';
@@ -10,10 +10,11 @@ import { checkoutLinesAddMutation } from './checkoutLinesAdd';
 import { createCheckoutMutation } from './createCheckout';
 import { checkoutLinesUpdateMutation } from './checkoutLinesUpdate';
 import { checkoutLinesDeleteMutation } from './checkoutLinesDelete';
+import { checkoutEmailUpdateMutation } from './checkoutEmailUpdate';
 
 export {
-  shippingAddressMutation,
-  billingAddressMutation,
+  checkoutShippingAddressUpdateMutation,
+  checkoutBillingAddressUpdateMutation,
   addCheckoutShippingMethodsMutation,
   checkoutDeliveryMethodUpdateMutation,
   checkoutPaymentCreateMutation,
@@ -24,4 +25,5 @@ export {
   createCheckoutMutation,
   checkoutLinesDeleteMutation,
   checkoutLinesUpdateMutation,
+  checkoutEmailUpdateMutation,
 };

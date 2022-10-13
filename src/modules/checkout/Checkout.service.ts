@@ -8,7 +8,7 @@ import {
 
 import * as CheckoutHandlers from 'src/graphql/handlers/checkout';
 import * as ProductHandlers from 'src/graphql/handlers/product';
-import * as UserHandlers from 'src/graphql/handlers/account';
+import * as AccountHandlers from 'src/graphql/handlers/account';
 import * as CheckoutUtils from './Checkout.utils';
 
 import {
@@ -105,7 +105,7 @@ export class CheckoutService {
   ): Promise<object> {
     try {
       const [userData, bundlesList, checkoutData] = await Promise.all([
-        UserHandlers.userByIdHandler(userId),
+        AccountHandlers.userEmailByIdHandler(userId),
         ProductHandlers.bundlesByBundleIdsHandler(bundlesForCart),
         CheckoutHandlers.marketplaceCheckoutHandler(userId),
       ]);

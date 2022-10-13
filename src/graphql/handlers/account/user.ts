@@ -1,9 +1,10 @@
-import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import { graphqlCall } from 'src/public/graphqlHandler';
-import { userQuery } from '../../queries/user';
 
-export const userByIdHandler = async (userId: string): Promise<object> => {
-  const response = await graphqlCall(userQuery(userId));
+import { userEmailByIdQuery } from 'src/graphql/queries/account';
+import RecordNotFound from 'src/core/exceptions/recordNotFound';
+
+export const userEmailByIdHandler = async (userId: string): Promise<object> => {
+  const response = await graphqlCall(userEmailByIdQuery(userId));
 
   if (!response['user']) {
     throw new RecordNotFound('User');
@@ -11,4 +12,3 @@ export const userByIdHandler = async (userId: string): Promise<object> => {
 
   return response['user'];
 };
-
