@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
+import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
 const federationQuery = (variantIds: Array<string>) => {
   return gql`
@@ -68,7 +68,7 @@ const federationQuery = (variantIds: Array<string>) => {
   `;
 };
 
-export const productBundlesQuery = (variantIds: Array<string>) => {
+export const productBundlesByVariantIdQuery = (variantIds: Array<string>) => {
   return graphqlQueryCheck(
     federationQuery(variantIds),
     federationQuery(variantIds),

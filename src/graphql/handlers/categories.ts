@@ -1,7 +1,7 @@
 import {
   graphqlCall,
   graphqlExceptionHandler,
-} from 'src/public/graphqlHandler';
+} from 'src/core/proxies/graphqlHandler';
 import { menuCategoriesQuery } from 'src/graphql/queries/categories/menu';
 
 export const menuCategoriesHandler = async (): Promise<object> => {

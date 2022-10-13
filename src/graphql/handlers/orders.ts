@@ -6,7 +6,7 @@ import { shopOrderFulfillmentDetailsQuery } from 'src/graphql/queries/orders/sho
 import {
   graphqlCall,
   graphqlExceptionHandler,
-} from 'src/public/graphqlHandler';
+} from 'src/core/proxies/graphqlHandler';
 import { orderDetails } from '../queries/orders/orderDetails';
 
 export const dashboardByIdHandler = async (id: string): Promise<object> => {
@@ -19,7 +19,7 @@ export const dashboardByIdHandler = async (id: string): Promise<object> => {
 export const allShopOrdersHandler = async (): Promise<object> => {
   try {
     const response = await graphqlCall(allShopOrdersQuery());
-    return response["marketplaceShops"]
+    return response['marketplaceShops'];
   } catch (err) {
     return graphqlExceptionHandler(err);
   }
@@ -27,14 +27,12 @@ export const allShopOrdersHandler = async (): Promise<object> => {
 export const orderDetailsHandler = async (id: string): Promise<object> => {
   try {
     const response = await graphqlCall(orderDetails(id));
-    return response["order"];
+    return response['order'];
   } catch (err) {
     return graphqlExceptionHandler(err);
   }
 };
-export const shopOrdersByIdHandler = async (
-  id: string
-  ): Promise<object> => {
+export const shopOrdersByIdHandler = async (id: string): Promise<object> => {
   try {
     return await graphqlCall(shopOrdersQuery(id));
   } catch (err) {

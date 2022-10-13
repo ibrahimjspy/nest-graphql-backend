@@ -4,7 +4,7 @@ import {
   productCardsByCategoriesHandler,
   productListPageHandler,
   singleProductDetailsHandler,
-  bundleServiceHandler,
+  bundlesByVariantsIdsHandler,
 } from 'src/graphql/handlers/product';
 
 @Injectable()
@@ -15,12 +15,10 @@ export class ProductService {
   }
   //Product cards by collection ~ category <id>
   public getProductsByCategory(id: string): Promise<object> {
-    console.log(id ? id : 'not found', ' category id ');
     return productCardsByCategoriesHandler(id);
   }
   // Single product details by <slug> {Quick View , SingleProductDetailsPage}
   public getProductDetailsBySlug(slug: string): Promise<object> {
-    console.log(slug ? slug : 'not found');
     return singleProductDetailsHandler(slug);
   }
   // Product list page data relating to category <slug>
@@ -29,6 +27,6 @@ export class ProductService {
   }
   // Bundles list relating to variant ids
   public getBundlesByVariantIds(variantIds: Array<string>): Promise<object> {
-    return bundleServiceHandler(variantIds);
+    return bundlesByVariantsIdsHandler(variantIds);
   }
 }

@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
+import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
 const federationQuery = (checkoutId, addressDetails) => {
   // query linking with backend
@@ -58,7 +58,7 @@ const federationQuery = (checkoutId, addressDetails) => {
   `;
 };
 
-export const shippingAddressQuery = (checkoutId, addressDetails) => {
+export const shippingAddressMutation = (checkoutId, addressDetails) => {
   return graphqlQueryCheck(
     federationQuery(checkoutId, addressDetails),
     federationQuery(checkoutId, addressDetails),

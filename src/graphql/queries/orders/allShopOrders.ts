@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
+import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
 const federationQuery = (): string => {
   return gql`
@@ -9,7 +9,7 @@ const federationQuery = (): string => {
           node{
             id
             name
-            orders{
+            orders {
               id
               orderId
               fulfillmentStatus
