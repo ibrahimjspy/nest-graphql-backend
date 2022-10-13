@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
+import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 import { DEFAULT_CHANNEL } from 'src/constants';
 
 const federationQuery = (productIds: Array<string>): string => {

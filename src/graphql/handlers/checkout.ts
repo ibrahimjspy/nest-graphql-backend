@@ -2,7 +2,7 @@ import { v4 as uuid4 } from 'uuid';
 import {
   graphqlCall,
   graphqlResultErrorHandler,
-} from 'src/public/graphqlHandler';
+} from 'src/core/proxies/graphqlHandler';
 import * as CheckoutQueries from 'src/graphql/queries/checkout';
 import * as CheckoutMutations from 'src/graphql/mutations/checkout';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
