@@ -11,7 +11,7 @@ export interface AddressDetailType {
   city: string;
 }
 
-export interface BundleType {
+export interface CheckoutBundleInputType {
   bundleId: string;
   quantity: number;
 }

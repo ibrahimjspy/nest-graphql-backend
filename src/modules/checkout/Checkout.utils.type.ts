@@ -1,4 +1,4 @@
-import { BundleType } from 'src/graphql/handlers/checkout.type';
+import { BundleType } from 'src/types/graphql/bundle.type';
 
 export interface CheckoutBundleType {
   bundle: BundleType;

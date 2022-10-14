@@ -9,7 +9,7 @@ import RecordNotFound from 'src/core/exceptions/recordNotFound';
 
 import {
   AddressDetailType,
-  BundleType,
+  CheckoutBundleInputType,
   LineType,
 } from 'src/graphql/handlers/checkout.type';
 
@@ -37,7 +37,7 @@ export const createCheckoutHandler = async (
 export const addBundlesHandler = async (
   checkoutId: string,
   userId: string,
-  bundles: Array<BundleType>,
+  bundles: Array<CheckoutBundleInputType>,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
