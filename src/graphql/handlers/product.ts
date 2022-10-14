@@ -3,7 +3,7 @@ import {
   graphqlCall,
   graphqlExceptionHandler,
   graphqlResultErrorHandler,
-} from 'src/public/graphqlHandler';
+} from 'src/core/proxies/graphqlHandler';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import { getBundleIds } from 'src/modules/product/Product.utils';
 import { bundleTypes } from 'src/graphql/handlers/checkout.types';

@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
-import { graphqlExceptionHandler } from 'src/public/graphqlHandler';
+import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import {
   prepareFailedResponse,
   prepareSuccessResponse,

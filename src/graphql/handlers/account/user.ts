@@ -1,4 +1,4 @@
-import { graphqlCall } from 'src/public/graphqlHandler';
+import { graphqlCall } from 'src/core/proxies/graphqlHandler';
 
 import { userEmailByIdQuery } from 'src/graphql/queries/account';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';

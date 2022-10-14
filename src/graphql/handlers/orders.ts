@@ -5,7 +5,7 @@ import { shopOrderFulfillmentsQuery } from 'src/graphql/queries/orders/shopOrder
 import {
   graphqlCall,
   graphqlExceptionHandler,
-} from 'src/public/graphqlHandler';
+} from 'src/core/proxies/graphqlHandler';
 import { orderDetails } from '../queries/orders/orderDetails';
 
 export const dashboardByIdHandler = async (id: string): Promise<object> => {

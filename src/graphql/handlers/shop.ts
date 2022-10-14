@@ -1,7 +1,7 @@
 import {
   graphqlCall,
   graphqlExceptionHandler,
-} from 'src/public/graphqlHandler';
+} from 'src/core/proxies/graphqlHandler';
 import { carouselQuery } from 'src/graphql/queries/shop/carousel';
 
 export const carouselHandler = async (): Promise<object> => {
