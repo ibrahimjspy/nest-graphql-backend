@@ -1,7 +1,7 @@
 import { graphqlCall } from 'src/core/proxies/graphqlHandler';
 import { userAddressesByIdQuery } from 'src/graphql/queries/account';
 import {
-  addressCreateInputType,
+  AddressCreateInputType,
   addressCreateMutation,
 } from 'src/graphql/mutations/account';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
@@ -20,7 +20,7 @@ export const addressByUserIdHandler = async (
 
 export const addressCreate = async (
   userId: string,
-  address: addressCreateInputType,
+  address: AddressCreateInputType,
 ): Promise<object> => {
   const response = await graphqlCall(addressCreateMutation(userId, address));
 

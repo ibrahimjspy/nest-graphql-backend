@@ -1,11 +1,11 @@
-export type SuccessResponseType = {
+export interface SuccessResponseType {
   status: number;
   message?: string;
   data: any;
-};
+}
 
-export type FailedResponseType = {
+export interface FailedResponseType {
   status: number;
   message: string;
   errors?: Array<any>;
-};
+}

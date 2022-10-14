@@ -1,6 +1,6 @@
 import { CountryCode } from '../../enums';
 
-export type addressCreateInputType = {
+export interface AddressCreateInputType {
   firstName: string;
   lastName: string;
   companyName: string;
@@ -12,4 +12,4 @@ export type addressCreateInputType = {
   country: CountryCode;
   countryArea?: string;
   phone: string;
-};
+}

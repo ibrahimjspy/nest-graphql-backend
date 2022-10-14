@@ -1,12 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { addressType } from 'src/graphql/handlers/account/address.type';
-import { addressCreateInputType } from 'src/graphql/mutations/account';
+import { AddressType } from 'src/graphql/handlers/account/address.type';
+import { AddressCreateInputType } from 'src/graphql/mutations/account';
 import * as AccountHandlers from 'src/graphql/handlers/account';
 
 @Injectable()
 export class AccountService {
   private readonly logger = new Logger(AccountService.name);
-  private readonly addresses: addressType[] = [
+  private readonly addresses: AddressType[] = [
     {
       id: 'QWRkcmVzczoxNTc=',
       firstName: 'Abigail',
@@ -41,7 +41,7 @@ export class AccountService {
     },
   ];
 
-  public async getAddresses(userId: string): Promise<{ data: addressType[] }> {
+  public async getAddresses(userId: string): Promise<{ data: AddressType[] }> {
     return {
       data: this.addresses,
     };
@@ -49,8 +49,8 @@ export class AccountService {
 
   public async addressCreate(
     userId: string,
-    address: addressCreateInputType,
-  ): Promise<{ data: addressType[] }> {
+    address: AddressCreateInputType,
+  ): Promise<{ data: AddressType[] }> {
     return {
       data: [
         ...this.addresses,

@@ -12,9 +12,9 @@ import * as AccountHandlers from 'src/graphql/handlers/account';
 import * as CheckoutUtils from './Checkout.utils';
 
 import {
-  addressDetailTypes,
-  bundleTypes,
-} from 'src/graphql/handlers/checkout.types';
+  AddressDetailType,
+  BundleType,
+} from 'src/graphql/handlers/checkout.type';
 
 @Injectable()
 export class CheckoutService {
@@ -101,7 +101,7 @@ export class CheckoutService {
 
   public async addToCart(
     userId: string,
-    bundlesForCart: Array<bundleTypes>,
+    bundlesForCart: Array<BundleType>,
   ): Promise<object> {
     try {
       const [userData, bundlesList, checkoutData] = await Promise.all([
@@ -176,7 +176,7 @@ export class CheckoutService {
 
   public async updateBundleFromCart(
     userId: string,
-    bundlesFromCart: Array<bundleTypes>,
+    bundlesFromCart: Array<BundleType>,
   ): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
@@ -294,7 +294,7 @@ export class CheckoutService {
 
   public async addShippingAddress(
     checkoutId: string,
-    addressDetails: addressDetailTypes,
+    addressDetails: AddressDetailType,
   ): Promise<object> {
     try {
       const response = await CheckoutHandlers.shippingAddressUpdateHandler(
@@ -310,7 +310,7 @@ export class CheckoutService {
 
   public async addBillingAddress(
     checkoutId: string,
-    addressDetails: addressDetailTypes,
+    addressDetails: AddressDetailType,
   ): Promise<object> {
     try {
       const response = await CheckoutHandlers.billingAddressUpdateHandler(

@@ -1,9 +1,9 @@
-export type countryType = {
+export interface CountryType {
   code: string;
   country: string;
-};
+}
 
-export type addressType = {
+export interface AddressType {
   id: string;
   firstName: string;
   lastName: string;
@@ -13,8 +13,8 @@ export type addressType = {
   city: string;
   cityArea?: string;
   postalCode: string;
-  country: countryType;
+  country: CountryType;
   countryArea?: string;
   phone: string;
   isDefaultShippingAddress: boolean;
-};
+}

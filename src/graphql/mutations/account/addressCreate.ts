@@ -1,8 +1,8 @@
 import { gql } from 'graphql-request';
-import { addressCreateInputType } from './addressCreate.type';
+import { AddressCreateInputType } from './addressCreate.type';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
-const federationQuery = (userId: string, address: addressCreateInputType) => {
+const federationQuery = (userId: string, address: AddressCreateInputType) => {
   return gql`
     mutation {
       addressCreate(
@@ -34,7 +34,7 @@ const federationQuery = (userId: string, address: addressCreateInputType) => {
 
 export const addressCreateMutation = (
   userId: string,
-  address: addressCreateInputType,
+  address: AddressCreateInputType,
 ) => {
   return graphqlQueryCheck(
     federationQuery(userId, address),
