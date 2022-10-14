@@ -13,8 +13,9 @@ import * as CheckoutUtils from './Checkout.utils';
 
 import {
   AddressDetailType,
-  BundleType,
+  CheckoutBundleInputType,
 } from 'src/graphql/handlers/checkout.type';
+import { BundleType } from 'src/types/graphql/bundle.type';
 
 @Injectable()
 export class CheckoutService {
@@ -53,7 +54,7 @@ export class CheckoutService {
   private async addToCartWhenCheckoutExists(
     userId,
     checkoutData,
-    bundlesList,
+    bundlesList: BundleType[],
     bundlesForCart,
   ) {
     const { checkoutId, bundles } = checkoutData;
@@ -79,7 +80,7 @@ export class CheckoutService {
 
   private async addToCartWhenCheckoutNotExists(
     userData,
-    bundlesList,
+    bundlesList: BundleType[],
     bundlesForCart,
   ) {
     const checkoutLines = CheckoutUtils.getLineItems(
@@ -101,7 +102,7 @@ export class CheckoutService {
 
   public async addToCart(
     userId: string,
-    bundlesForCart: Array<BundleType>,
+    bundlesForCart: CheckoutBundleInputType[],
   ): Promise<object> {
     try {
       const [userData, bundlesList, checkoutData] = await Promise.all([
@@ -115,13 +116,13 @@ export class CheckoutService {
         response = await this.addToCartWhenCheckoutExists(
           userId,
           checkoutData,
-          bundlesList['bundles'],
+          bundlesList,
           bundlesForCart,
         );
       } else {
         response = await this.addToCartWhenCheckoutNotExists(
           userData,
-          bundlesList['bundles'],
+          bundlesList,
           bundlesForCart,
         );
       }
@@ -137,7 +138,7 @@ export class CheckoutService {
 
   public async deleteBundleFromCart(
     userId: string,
-    checkoutBundleIds: Array<string>,
+    checkoutBundleIds: string[],
   ): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
@@ -176,7 +177,7 @@ export class CheckoutService {
 
   public async updateBundleFromCart(
     userId: string,
-    bundlesFromCart: Array<BundleType>,
+    bundlesFromCart: CheckoutBundleInputType[],
   ): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
@@ -216,7 +217,7 @@ export class CheckoutService {
 
   public async setBundleAsSelected(
     userId: string,
-    bundleIds: Array<string>,
+    bundleIds: string[],
   ): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
@@ -253,8 +254,8 @@ export class CheckoutService {
 
   public async setBundleAsUnselected(
     userId: string,
-    bundleIds: Array<string>,
-    checkoutBundleIds: Array<string>,
+    bundleIds: string[],
+    checkoutBundleIds: string[],
   ): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
@@ -366,7 +367,7 @@ export class CheckoutService {
 
   public async selectShippingMethods(
     userId: string,
-    shippingIds: Array<string>,
+    shippingIds: string[],
   ): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(

@@ -6,7 +6,8 @@ import {
 } from 'src/core/proxies/graphqlHandler';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import { getBundleIds } from 'src/modules/product/Product.utils';
-import { BundleType } from 'src/graphql/handlers/checkout.type';
+import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
+import { BundleType } from 'src/types/graphql/bundle.type';
 
 export const productListPageHandler = async (id: string): Promise<object> => {
   try {
@@ -73,8 +74,8 @@ export const variantsIdsByProductIdsHandler = async (
 };
 
 export const bundlesByBundleIdsHandler = async (
-  bundles: Array<BundleType>,
-): Promise<object> => {
+  bundles: Array<CheckoutBundleInputType>,
+): Promise<BundleType[]> => {
   const bundleIds = getBundleIds(bundles);
   const response = await graphqlResultErrorHandler(
     await graphqlCall(ProductQueries.productBundlesByBundleIdQuery(bundleIds)),
@@ -84,5 +85,5 @@ export const bundlesByBundleIdsHandler = async (
     throw new RecordNotFound('Bundles');
   }
 
-  return response;
+  return response['bundles'];
 };
