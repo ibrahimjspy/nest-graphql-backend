@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
+import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
 const federationQuery = (checkoutId: string) => {
   return gql`
@@ -22,7 +22,7 @@ const federationQuery = (checkoutId: string) => {
   `;
 };
 
-export const checkoutCompleteQuery = (checkoutId: string) => {
+export const checkoutCompleteMutation = (checkoutId: string) => {
   return graphqlQueryCheck(
     federationQuery(checkoutId),
     federationQuery(checkoutId),

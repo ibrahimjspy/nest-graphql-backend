@@ -1,15 +1,17 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
+import { DEFAULT_CHANNEL } from 'src/constants';
+import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
 const federationQuery = (
+  email: string,
   bundles: Array<{ quantity: number; variantId: string }>,
 ) => {
-  // query linking with backend
   return gql`
     mutation {
       checkoutCreate(
         input: {
-          channel: "default-channel"
+          email: "${email}"
+          channel: "${DEFAULT_CHANNEL}"
           lines: ${JSON.stringify(bundles)
             .replace(/"quantity"/g, 'quantity')
             .replace(/"variantId"/g, 'variantId')}
@@ -23,8 +25,12 @@ const federationQuery = (
   `;
 };
 
-export const createCheckoutQuery = (
+export const createCheckoutMutation = (
+  email: string,
   bundles: Array<{ quantity: number; variantId: string }>,
 ) => {
-  return graphqlQueryCheck(federationQuery(bundles), federationQuery(bundles));
+  return graphqlQueryCheck(
+    federationQuery(email, bundles),
+    federationQuery(email, bundles),
+  );
 };
