@@ -1,12 +1,13 @@
-// Address Imports
-import { addressByUserIdHandler, addressCreate } from './address';
-// User Imports
+import {
+  createAddressHandler,
+  addressesByUserIdHandler,
+  deleteAddressHandler,
+} from './address';
 import { userEmailByIdHandler } from './user';
 
 export {
-  // Address Handlers
-  addressByUserIdHandler,
-  addressCreate,
-  // User Handlers
+  addressesByUserIdHandler,
+  createAddressHandler,
+  deleteAddressHandler,
   userEmailByIdHandler,
 };

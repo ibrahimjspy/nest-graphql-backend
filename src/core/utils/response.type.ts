@@ -1,7 +1,7 @@
 export interface SuccessResponseType {
   status: number;
   message?: string;
-  data: any;
+  data?: any;
 }
 
 export interface FailedResponseType {

@@ -1,28 +1,43 @@
-import { graphqlCall } from 'src/core/proxies/graphqlHandler';
-import { userAddressesByIdQuery } from 'src/graphql/queries/account';
 import {
-  AddressCreateInputType,
-  addressCreateMutation,
-} from 'src/graphql/mutations/account';
+  graphqlCall,
+  graphqlResultErrorHandler,
+} from 'src/core/proxies/graphqlHandler';
+import * as AccountQueries from 'src/graphql/queries/account';
+import * as AccountMutations from 'src/graphql/mutations/account';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
+import { AddressType } from './address.type';
 
-export const addressByUserIdHandler = async (
+export const addressesByUserIdHandler = async (
   userId: string,
-): Promise<object> => {
-  const response = await graphqlCall(userAddressesByIdQuery(userId));
+): Promise<AddressType[]> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(AccountQueries.userAddressesByIdQuery(userId)),
+  );
 
-  if (!response['user']) {
-    throw new RecordNotFound('User');
-  }
-
-  return response['user'];
+  return response?.user?.addresses || [];
 };
 
-export const addressCreate = async (
+export const createAddressHandler = async (
   userId: string,
-  address: AddressCreateInputType,
-): Promise<object> => {
-  const response = await graphqlCall(addressCreateMutation(userId, address));
+  address: AccountMutations.AddressCreateInputType,
+): Promise<AddressType[]> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(AccountMutations.addressCreateMutation(userId, address)),
+  );
 
-  return response['addressCreate'];
+  console.log(JSON.stringify(response, null, 2));
+
+  return response?.addressCreate?.user?.addresses || [];
+};
+
+export const deleteAddressHandler = async (
+  addressId: string,
+): Promise<AddressType[]> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(AccountMutations.addressDeleteMutation(addressId)),
+  );
+
+  if (!response?.addressDelete?.user) throw new RecordNotFound('Address');
+
+  return response?.addressDelete?.user?.addresses || [];
 };

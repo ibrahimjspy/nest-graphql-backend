@@ -1,5 +1,14 @@
-import { Body, Controller, Get, Param, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Res,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { makeResponse } from 'src/core/utils/response';
 import { AccountService } from './Account.service';
 
 @ApiTags('account')
@@ -8,22 +17,30 @@ export class AccountController {
   constructor(private readonly appService: AccountService) {}
 
   @Get('/address/:userId')
-  async address(@Res() res, @Param() params): Promise<object> {
-    // TODO: Convert Mock API to Real API
-    return res
-      .status(200)
-      .json(await this.appService.getAddresses(params?.userId));
+  async addresses(@Res() res, @Param() params): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.getAddresses(params?.userId),
+    );
   }
 
   @Post('/address/:userId/create')
-  async addressCreate(
+  async createAddress(
     @Res() res,
     @Param() params,
     @Body() body,
   ): Promise<object> {
-    // TODO: Convert Mock API to Real API
-    return res
-      .status(200)
-      .json(await this.appService.addressCreate(params?.userId, body));
+    return makeResponse(
+      res,
+      await this.appService.createAddress(params?.userId, body),
+    );
+  }
+
+  @Delete('/address/:userId/delete')
+  async deleteAddress(@Res() res, @Param() params): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.deleteAddress(params?.userId),
+    );
   }
 }

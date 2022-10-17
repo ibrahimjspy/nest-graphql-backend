@@ -1,7 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { AddressType } from 'src/graphql/handlers/account/address.type';
 import { AddressCreateInputType } from 'src/graphql/mutations/account';
+import { prepareSuccessResponse } from 'src/core/utils/response';
+import { SuccessResponseType } from 'src/core/utils/response.type';
 import * as AccountHandlers from 'src/graphql/handlers/account';
+import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 
 @Injectable()
 export class AccountService {
@@ -41,36 +44,39 @@ export class AccountService {
     },
   ];
 
-  public async getAddresses(userId: string): Promise<{ data: AddressType[] }> {
-    return {
-      data: this.addresses,
-    };
+  public async getAddresses(userId: string): Promise<SuccessResponseType> {
+    try {
+      return prepareSuccessResponse(
+        await AccountHandlers.addressesByUserIdHandler(userId),
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
   }
 
-  public async addressCreate(
+  public async createAddress(
     userId: string,
     address: AddressCreateInputType,
-  ): Promise<{ data: AddressType[] }> {
-    return {
-      data: [
-        ...this.addresses,
-        {
-          id: 'Q2RkcmasdzoxNTc=',
-          firstName: address.firstName,
-          lastName: address.lastName,
-          companyName: address.companyName,
-          streetAddress1: address.streetAddress1,
-          streetAddress2: address.streetAddress2,
-          city: address.city,
-          postalCode: address.postalCode,
-          country: {
-            code: address?.country?.toString(),
-            country: address?.country?.toString(),
-          },
-          phone: address.phone,
-          isDefaultShippingAddress: false,
-        },
-      ],
-    };
+  ): Promise<SuccessResponseType> {
+    try {
+      return prepareSuccessResponse(
+        await AccountHandlers.createAddressHandler(userId, address),
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async deleteAddress(addressId: string): Promise<SuccessResponseType> {
+    try {
+      return prepareSuccessResponse(
+        await AccountHandlers.deleteAddressHandler(addressId),
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
   }
 }

@@ -7,7 +7,7 @@ import { carouselQuery } from 'src/graphql/queries/shop/carousel';
 export const carouselHandler = async (): Promise<object> => {
   try {
     return await graphqlCall(carouselQuery());
-  } catch (err) {
-    return graphqlExceptionHandler(err);
+  } catch (error) {
+    return graphqlExceptionHandler(error);
   }
 };

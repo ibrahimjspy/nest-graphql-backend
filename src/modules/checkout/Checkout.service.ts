@@ -45,9 +45,9 @@ export class CheckoutService {
       );
 
       return prepareSuccessResponse(checkoutBundles);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
@@ -127,12 +127,12 @@ export class CheckoutService {
         );
       }
       return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      if (err instanceof RecordNotFound) {
-        return prepareFailedResponse(err.message);
+    } catch (error) {
+      this.logger.error(error);
+      if (error instanceof RecordNotFound) {
+        return prepareFailedResponse(error.message);
       }
-      return graphqlExceptionHandler(err);
+      return graphqlExceptionHandler(error);
     }
   }
 
@@ -169,9 +169,9 @@ export class CheckoutService {
         checkoutData['checkoutId'],
       );
       return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
@@ -209,9 +209,9 @@ export class CheckoutService {
         bundlesFromCart,
       );
       return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
@@ -246,9 +246,9 @@ export class CheckoutService {
         selectedBundles,
       );
       return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
@@ -287,9 +287,9 @@ export class CheckoutService {
         updatedBundle,
       );
       return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
@@ -303,9 +303,9 @@ export class CheckoutService {
         addressDetails,
       );
       return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
@@ -319,9 +319,9 @@ export class CheckoutService {
         addressDetails,
       );
       return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
@@ -333,9 +333,9 @@ export class CheckoutService {
         checkoutId,
       );
       return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
@@ -359,9 +359,9 @@ export class CheckoutService {
       );
 
       return prepareSuccessResponse(methodsListFromSaleor, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
@@ -387,9 +387,9 @@ export class CheckoutService {
       ]);
       const response = await this.getShippingMethods(userId);
       return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
@@ -408,9 +408,9 @@ export class CheckoutService {
         dummyGatewayId,
       );
       return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
@@ -433,9 +433,9 @@ export class CheckoutService {
         checkoutData['checkoutId'],
       );
       return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 }

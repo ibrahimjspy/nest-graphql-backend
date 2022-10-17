@@ -12,8 +12,8 @@ import { BundleType } from 'src/types/graphql/bundle.type';
 export const productListPageHandler = async (id: string): Promise<object> => {
   try {
     return await graphqlCall(ProductQueries.productListPageQuery(id));
-  } catch (err) {
-    return graphqlExceptionHandler(err);
+  } catch (error) {
+    return graphqlExceptionHandler(error);
   }
 };
 
@@ -22,8 +22,8 @@ export const singleProductDetailsHandler = async (
 ): Promise<object> => {
   try {
     return await graphqlCall(ProductQueries.productDetailsQuery(slug));
-  } catch (err) {
-    return graphqlExceptionHandler(err);
+  } catch (error) {
+    return graphqlExceptionHandler(error);
   }
 };
 
@@ -32,16 +32,16 @@ export const productCardsByCategoriesHandler = async (
 ): Promise<object> => {
   try {
     return await graphqlCall(ProductQueries.productCardsByListIdQuery(id));
-  } catch (err) {
-    return graphqlExceptionHandler(err);
+  } catch (error) {
+    return graphqlExceptionHandler(error);
   }
 };
 
 export const productCardHandler = async (): Promise<object> => {
   try {
     return await graphqlCall(ProductQueries.productCardsDefaultQuery());
-  } catch (err) {
-    return graphqlExceptionHandler(err);
+  } catch (error) {
+    return graphqlExceptionHandler(error);
   }
 };
 
