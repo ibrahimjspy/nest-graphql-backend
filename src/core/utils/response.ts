@@ -37,7 +37,7 @@ export const prepareSuccessResponse = async (
 
   let response: SuccessResponseType = {
     status: status ? status : HttpStatus.OK,
-    data,
+    ...data,
   };
   if (message) {
     response['message'] = message;
