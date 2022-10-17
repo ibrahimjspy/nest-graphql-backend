@@ -14,11 +14,11 @@ const bootstrap = async () => {
   const app = await NestFactory.create(AppModule);
 
   // cores configuration
-  app.enableCors({
-    origin: await corsOrigins(),
-    methods: await corsMethods(),
-    // credentials: true,
-  });
+//   app.enableCors({
+//     origin: await corsOrigins(),
+//     methods: await corsMethods(),
+//     credentials: true,
+//   });
 
   // swagger configuration
   const config = new DocumentBuilder()
