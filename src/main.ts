@@ -17,7 +17,7 @@ const bootstrap = async () => {
   app.enableCors({
     origin: await corsOrigins(),
     methods: await corsMethods(),
-    credentials: true,
+    // credentials: true,
   });
 
   // swagger configuration
