@@ -137,6 +137,7 @@ export class CheckoutService {
 
   public async deleteBundleFromCart(
     userId: string,
+    bundleIds: Array<string>,
     checkoutBundleIds: Array<string>,
   ): Promise<object> {
     try {
@@ -155,14 +156,16 @@ export class CheckoutService {
       const checkoutLines = CheckoutUtils.getCheckoutLineItems(
         saleorCheckout['lines'],
         checkoutData['bundles'],
-        checkoutBundleIds,
+        bundleIds,
       );
+
       const checkoutLineIds = CheckoutUtils.getCheckoutLineIds(checkoutLines);
 
       await CheckoutHandlers.deleteLinesHandler(
-        saleorCheckout['id'],
         checkoutLineIds,
+        saleorCheckout['id'],
       );
+
       const response = await CheckoutHandlers.deleteBundlesHandler(
         checkoutBundleIds,
         checkoutData['checkoutId'],
@@ -222,11 +225,7 @@ export class CheckoutService {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
         userId,
       );
-      const saleorCheckout = await CheckoutHandlers.checkoutHandler(
-        checkoutData['checkoutId'],
-      );
-      const checkoutLines = CheckoutUtils.getCheckoutLineItems(
-        saleorCheckout['lines'],
+      const checkoutLines = CheckoutUtils.getVariants(
         checkoutData['bundles'],
         bundleIds,
       );
@@ -254,7 +253,6 @@ export class CheckoutService {
   public async setBundleAsUnselected(
     userId: string,
     bundleIds: Array<string>,
-    checkoutBundleIds: Array<string>,
   ): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
@@ -266,7 +264,7 @@ export class CheckoutService {
       const checkoutLines = CheckoutUtils.getCheckoutLineItems(
         saleorCheckout['lines'],
         checkoutData['bundles'],
-        checkoutBundleIds,
+        bundleIds,
       );
 
       const checkoutLineIds = CheckoutUtils.getCheckoutLineIds(checkoutLines);

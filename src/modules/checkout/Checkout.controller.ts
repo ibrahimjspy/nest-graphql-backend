@@ -30,6 +30,7 @@ export class CheckoutController {
       res,
       await this.appService.deleteBundleFromCart(
         body?.userId,
+        body?.bundleIds,
         body?.checkoutBundleIds,
       ),
     );
@@ -58,7 +59,6 @@ export class CheckoutController {
       await this.appService.setBundleAsUnselected(
         body?.userId,
         body?.bundleIds,
-        body?.checkoutBundleIds,
       ),
     );
   }

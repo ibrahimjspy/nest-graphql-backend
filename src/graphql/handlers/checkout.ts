@@ -204,7 +204,15 @@ export const paymentGatewayHandler = async (checkoutId: string) => {
   const response = await graphqlResultErrorHandler(
     graphqlCall(CheckoutQueries.availablePaymentGatewaysQuery(checkoutId)),
   );
-  return response['checkout'];
+
+  if (!response['checkout']) {
+    throw new RecordNotFound('Checkout');
+  }
+
+  if (!response['checkout']['availablePaymentGateways']['length']) {
+    throw new RecordNotFound('Payment ateway');
+  }
+  return response['checkout']['availablePaymentGateways'];
 };
 
 export const completeCheckoutHandler = async (checkoutId: string) => {

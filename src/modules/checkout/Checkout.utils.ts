@@ -106,18 +106,16 @@ export const getUpdatedLinesWithQuantity = (
   bundlesFromCart,
 ) => {
   const quantity = bundlesFromCart[0]?.quantity;
-  const checkoutBundleIds = bundlesFromCart.map((bundle) => bundle?.bundleId);
+  const bundleIds = bundlesFromCart.map((bundle) => bundle?.bundleId);
+  const targetBundle = getTargetBundleByBundleId(checkoutBundles, bundleIds);
+  const variantIds = getVariantIds(targetBundle);
 
-  const checkoutLines = getCheckoutLineItems(
-    lines,
-    checkoutBundles,
-    checkoutBundleIds,
-  );
-
-  return (checkoutLines || []).map((line) => ({
-    variantId: line?.variantId,
-    quantity: line?.quantity * quantity,
-  }));
+  return (lines || [])
+    .filter((line) => variantIds.includes(line?.variant?.id))
+    .map((line) => ({
+      variantId: line?.variant?.id,
+      quantity: line?.quantity * quantity,
+    }));
 };
 
 /**
@@ -162,7 +160,7 @@ export const getCheckoutLineItems = (lines, bundles, bundleIds) => {
   return (lines || [])
     .filter((line) => variantIds.includes(line?.variant?.id))
     .map((line) => ({
-      variantId: line?.variant?.id,
+      variantId: line.id,
       quantity: line?.quantity,
     }));
 };
@@ -290,4 +288,25 @@ export const getDummyGateway = (availablePaymentGateways = []) => {
     (gateway) => gateway?.name === 'Dummy',
   );
   return dummyGateway?.id;
+};
+
+/**
+ * returns array of variant ids from the target bundles
+ * @params bundles: complete arget bundles array consisting of variants info
+ * @params bundleIds: array of bundle ids
+ * @return variants list will variantId and quantity for adding lines
+ */
+export const getVariants = (bundles, bundleIds) => {
+  let variants = [];
+  (bundles || [])
+    .filter((bundleData) => bundleIds.includes(bundleData?.bundle?.id))
+    .forEach((bundleData) => {
+      bundleData?.bundle?.variants.forEach((variantData) => {
+        variants.push({
+          variantId: variantData?.variant?.id,
+          quantity: variantData?.quantity,
+        });
+      });
+    });
+  return variants;
 };
