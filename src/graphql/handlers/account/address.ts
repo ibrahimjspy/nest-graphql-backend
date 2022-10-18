@@ -19,14 +19,13 @@ export const addressesByUserIdHandler = async (
 
 export const createAddressHandler = async (
   userId: string,
-  address: AccountMutations.AddressCreateInput,
+  address: AccountMutations.AddressInput,
 ): Promise<AddressType> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(AccountMutations.addressCreateMutation(userId, address)),
   );
 
   if (!response?.addressCreate?.address) throw new RecordNotFound('Address');
-
   return response?.addressCreate?.address;
 };
 
@@ -38,7 +37,7 @@ export const deleteAddressHandler = async (
   );
 };
 
-export const setDefaultAddress = async (
+export const setDefaultAddressHandler = async (
   userId: string,
   addressId: string,
 ): Promise<AddressType[]> => {
@@ -50,4 +49,18 @@ export const setDefaultAddress = async (
 
   if (!response?.addressSetDefault?.user) throw new RecordNotFound('User');
   return response?.addressSetDefault?.user?.addresses || [];
+};
+
+export const updateAddressHandler = async (
+  addressId: string,
+  address: AccountMutations.AddressInput,
+): Promise<AddressType> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      AccountMutations.addressUpdateMutation(addressId, address),
+    ),
+  );
+
+  if (!response?.addressUpdate?.address) throw new RecordNotFound('Address');
+  return response?.addressUpdate?.address;
 };

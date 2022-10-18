@@ -56,4 +56,16 @@ export class AccountController {
       await this.appService.setDefaultAddress(body?.userId, params?.addressId),
     );
   }
+
+  @Put('/address/:addressId/update')
+  async updateAddress(
+    @Res() res,
+    @Param() params,
+    @Body() body,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.updateAddress(params?.addressId, body),
+    );
+  }
 }

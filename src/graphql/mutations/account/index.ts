@@ -1,11 +1,13 @@
 import { addressCreateMutation } from './addressCreate';
-import { AddressCreateInput } from './addressCreate.type';
+import { addressUpdateMutation } from './addressUpdate';
 import { addressDeleteMutation } from './addressDelete';
 import { addressSetDefaultMutation } from './addressSetDefault';
+import { AddressInput } from '../../../types/graphql/address.type';
 
 export {
   addressCreateMutation,
   addressDeleteMutation,
   addressSetDefaultMutation,
-  AddressCreateInput,
+  addressUpdateMutation,
+  AddressInput,
 };

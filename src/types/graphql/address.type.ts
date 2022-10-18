@@ -1,6 +1,6 @@
-import { CountryCode } from '../../enums';
+import { CountryCode } from 'src/graphql/enums';
 
-export interface AddressCreateInput {
+export interface AddressInput {
   firstName: string;
   lastName: string;
   companyName: string;

@@ -1,13 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { AddressCreateInput } from 'src/graphql/mutations/account';
+import { AddressInput } from 'src/graphql/mutations/account';
 import {
   prepareFailedResponse,
   prepareSuccessResponse,
 } from 'src/core/utils/response';
 import { SuccessResponseType } from 'src/core/utils/response.type';
-import * as AccountHandlers from 'src/graphql/handlers/account';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
+import * as AccountHandlers from 'src/graphql/handlers/account';
 
 @Injectable()
 export class AccountService {
@@ -26,7 +26,7 @@ export class AccountService {
 
   public async createAddress(
     userId: string,
-    address: AddressCreateInput,
+    address: AddressInput,
   ): Promise<SuccessResponseType> {
     try {
       return prepareSuccessResponse(
@@ -57,7 +57,24 @@ export class AccountService {
   ): Promise<SuccessResponseType> {
     try {
       return prepareSuccessResponse(
-        await AccountHandlers.setDefaultAddress(userId, addressId),
+        await AccountHandlers.setDefaultAddressHandler(userId, addressId),
+      );
+    } catch (error) {
+      this.logger.error(error);
+      if (error instanceof RecordNotFound) {
+        return prepareFailedResponse(error.message);
+      }
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async updateAddress(
+    addressId: string,
+    address: AddressInput,
+  ): Promise<SuccessResponseType> {
+    try {
+      return prepareSuccessResponse(
+        await AccountHandlers.updateAddressHandler(addressId, address),
       );
     } catch (error) {
       this.logger.error(error);
