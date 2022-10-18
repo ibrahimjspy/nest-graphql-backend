@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import packageInfo from '../package.json';
@@ -31,6 +32,9 @@ const bootstrap = async () => {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+
+  // enable auto validation
+  app.useGlobalPipes(new ValidationPipe());
 
   // app configuration
   await app.listen(process.env.PORT || 5000);

@@ -15,10 +15,6 @@ export class AddressService {
 
   public async getAddresses(userId: string): Promise<SuccessResponseType> {
     try {
-      if (!userId) {
-        throw new Error('');
-      }
-
       return prepareSuccessResponse(
         await AccountHandlers.addressesByUserIdHandler(userId),
       );

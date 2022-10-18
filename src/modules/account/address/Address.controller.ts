@@ -11,6 +11,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
 import { AddressService } from './Address.service';
+import { UserIdDto, AddressIdDto, AddressDto } from './dto';
 
 @ApiTags('account')
 @Controller()
@@ -18,54 +19,60 @@ export class AddressController {
   constructor(private readonly appService: AddressService) {}
 
   @Get('/:userId')
-  async addresses(@Res() res, @Param() params): Promise<object> {
+  async addresses(@Res() res, @Param() userIdDto: UserIdDto): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getAddresses(params?.userId),
+      await this.appService.getAddresses(userIdDto.userId),
     );
   }
 
   @Post('/:userId/create')
   async createAddress(
     @Res() res,
-    @Param() params,
-    @Body() body,
+    @Param() userIdDto: UserIdDto,
+    @Body() addressDto: AddressDto,
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.createAddress(params?.userId, body),
+      await this.appService.createAddress(userIdDto.userId, addressDto),
     );
   }
 
   @Delete('/:addressId/delete')
-  async deleteAddress(@Res() res, @Param() params): Promise<object> {
+  async deleteAddress(
+    @Res() res,
+    @Param() addressIdDto: AddressIdDto,
+  ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.deleteAddress(params?.addressId),
+      await this.appService.deleteAddress(addressIdDto.addressId),
     );
   }
 
   @Put('/:addressId/default')
   async setDefaultAddress(
     @Res() res,
-    @Param() params,
-    @Body() body,
+    @Param() addressIdDto: AddressIdDto,
+    @Body() userIdDto: UserIdDto,
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.setDefaultAddress(body?.userId, params?.addressId),
+      await this.appService.setDefaultAddress(
+        userIdDto.userId,
+        addressIdDto.addressId,
+      ),
     );
   }
 
   @Put('/:addressId/update')
   async updateAddress(
     @Res() res,
-    @Param() params,
-    @Body() body,
+    @Param() addressIdDto: AddressIdDto,
+    @Body() addressDto: AddressDto,
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.updateAddress(params?.addressId, body),
+      await this.appService.updateAddress(addressIdDto.addressId, addressDto),
     );
   }
 }
