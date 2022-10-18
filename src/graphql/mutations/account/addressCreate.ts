@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request';
-import { AddressInput } from '../../../types/graphql/address.type';
+import { AddressInput } from '../../types/address.type';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
 const federationQuery = (userId: string, address: AddressInput) => {

@@ -7,7 +7,7 @@ import { CheckoutService } from './Checkout.service';
 
 describe('Shop controller unit tests', () => {
   // Testing configurations
-  let appController: CheckoutController;
+  let controller: CheckoutController;
   const queryError = { status: 400 };
   const systemError = { status: 500 };
   const federationInternalError = { status: 405 };
@@ -63,223 +63,201 @@ describe('Shop controller unit tests', () => {
       providers: [CheckoutService],
     }).compile();
 
-    appController = app.get<CheckoutController>(CheckoutController);
+    controller = app.get<CheckoutController>(CheckoutController);
   });
 
-  describe('root', () => {
-    // checking whether calls are valid and don't fail on middleware side--->>
-
-    it('shoppingCart validation test', () => {
-      expect(
-        appController.getShoppingCartData({}, { params: userId }),
-      ).toBeDefined();
-    });
-
-    it('shoppingCart async test', async () => {
-      const data = await appController.getShoppingCartData(
-        {},
-        { params: userId },
-      );
-      expect(data).toEqual(objectContainingCheck(queryError));
-      expect(data).toEqual(objectContainingCheck(systemError));
-      expect(data).toEqual(objectContainingCheck(federationInternalError));
-      expect(data).not.toHaveProperty('graphql_error');
-    });
-
-    // it('add to cart validation test', () => {
-    //   expect(
-    //     appController.addBundlesToCart({}, testAddToCartPayload),
-    //   ).toBeDefined();
-    // });
-
-    // it('add to cart async test', async () => {
-    //   const data = await appController.addBundlesToCart(
-    //     {},
-    //     testAddToCartPayload,
-    //   );
-    //   expect(data).toEqual(objectContainingCheck(queryError));
-    //   expect(data).toEqual(objectContainingCheck(systemError));
-    //   expect(data).toEqual(objectContainingCheck(federationInternalError));
-    //   expect(data).not.toHaveProperty('graphql_error');
-    // });
-
-    // it('delete from cart validation test', () => {
-    //   expect(
-    //     appController.deleteBundleFromCart({}, testDeleteFromCartPayload),
-    //   ).toBeDefined();
-    // });
-
-    // it('delete from cart async test', async () => {
-    //   const data = await appController.deleteBundleFromCart(
-    //     {},
-    //     testDeleteFromCartPayload,
-    //   );
-    //   expect(data).toEqual(objectContainingCheck(queryError));
-    //   expect(data).toEqual(objectContainingCheck(systemError));
-    //   expect(data).toEqual(objectContainingCheck(federationInternalError));
-    //   expect(data).not.toHaveProperty('graphql_error');
-    // });
-
-    // it('update in cart validation test', () => {
-    //   expect(
-    //     appController.updateCartBundle({}, testUpdateInCartPayload),
-    //   ).toBeDefined();
-    // });
-
-    // it('update in cart async test', async () => {
-    //   const data = await appController.updateCartBundle(
-    //     {},
-    //     testUpdateInCartPayload,
-    //   );
-    //   expect(data).toEqual(objectContainingCheck(queryError));
-    //   expect(data).toEqual(objectContainingCheck(systemError));
-    //   expect(data).toEqual(objectContainingCheck(federationInternalError));
-    //   expect(data).not.toHaveProperty('graphql_error');
-    // });
-
-    // it('select shop from cart validation test', () => {
-    //   expect(
-    //     appController.selectThisShop({}, testSelectShopPayload),
-    //   ).toBeDefined();
-    // });
-
-    // it('select shop from cart async test', async () => {
-    //   const data = await appController.selectThisShop(
-    //     {},
-    //     testSelectShopPayload,
-    //   );
-    //   expect(data).toEqual(objectContainingCheck(queryError));
-    //   expect(data).toEqual(objectContainingCheck(systemError));
-    //   expect(data).toEqual(objectContainingCheck(federationInternalError));
-    //   expect(data).not.toHaveProperty('graphql_error');
-    // });
-
-    // it('unselect shop from cart validation test', () => {
-    //   expect(
-    //     appController.unSelectThisShop({}, testSelectShopPayload),
-    //   ).toBeDefined();
-    // });
-
-    // it('unselect shop from cart async test', async () => {
-    //   const data = await appController.unSelectThisShop(
-    //     {},
-    //     testSelectShopPayload,
-    //   );
-    //   expect(data).toEqual(objectContainingCheck(queryError));
-    //   expect(data).toEqual(objectContainingCheck(systemError));
-    //   expect(data).toEqual(objectContainingCheck(federationInternalError));
-    //   expect(data).not.toHaveProperty('graphql_error');
-    // });
-
-    // it('add shiping address validation test', () => {
-    //   expect(
-    //     appController.addShippingAddress({}, testAddressPayload),
-    //   ).toBeDefined();
-    // });
-
-    // it('add shiping address async test', async () => {
-    //   const data = await appController.addShippingAddress(
-    //     {},
-    //     testAddressPayload,
-    //   );
-    //   expect(data).toEqual(objectContainingCheck(queryError));
-    //   expect(data).toEqual(objectContainingCheck(systemError));
-    //   expect(data).toEqual(objectContainingCheck(federationInternalError));
-    //   expect(data).not.toHaveProperty('graphql_error');
-    // });
-
-    // it('add billing address validation test', () => {
-    //   expect(
-    //     appController.addBillingAddress({}, testAddressPayload),
-    //   ).toBeDefined();
-    // });
-
-    // it('add billing address async test', async () => {
-    //   const data = await appController.addBillingAddress(
-    //     {},
-    //     testAddressPayload,
-    //   );
-    //   expect(data).toEqual(objectContainingCheck(queryError));
-    //   expect(data).toEqual(objectContainingCheck(systemError));
-    //   expect(data).toEqual(objectContainingCheck(federationInternalError));
-    //   expect(data).not.toHaveProperty('graphql_error');
-    // });
-
-    // it('get shipping & billing address validation test', () => {
-    //   expect(
-    //     appController.getShippingBillingAddress({}, testCheckoutId),
-    //   ).toBeDefined();
-    // });
-
-    // it('get shipping & billing address async test', async () => {
-    //   const data = await appController.getShippingBillingAddress(
-    //     {},
-    //     testCheckoutId,
-    //   );
-    //   expect(data).toEqual(objectContainingCheck(queryError));
-    //   expect(data).toEqual(objectContainingCheck(systemError));
-    //   expect(data).toEqual(objectContainingCheck(federationInternalError));
-    //   expect(data).not.toHaveProperty('graphql_error');
-    // });
-
-    // it('get shipping method validation test', () => {
-    //   expect(
-    //     appController.getShippingMethods({}, { params: userId }),
-    //   ).toBeDefined();
-    // });
-
-    // it('get shipping method async test', async () => {
-    //   const data = await appController.getShippingMethods(
-    //     {},
-    //     { params: userId },
-    //   );
-    //   expect(data).toEqual(objectContainingCheck(queryError));
-    //   expect(data).toEqual(objectContainingCheck(systemError));
-    //   expect(data).toEqual(objectContainingCheck(federationInternalError));
-    //   expect(data).not.toHaveProperty('graphql_error');
-    // });
-
-    // it('select shipping method validation test', () => {
-    //   expect(
-    //     appController.selectShippingMethods({}, { params: userId }),
-    //   ).toBeDefined();
-    // });
-
-    // it('select shipping method async test', async () => {
-    //   const data = await appController.selectShippingMethods(
-    //     {},
-    //     testSelectShippingMethod,
-    //   );
-    //   expect(data).toEqual(objectContainingCheck(queryError));
-    //   expect(data).toEqual(objectContainingCheck(systemError));
-    //   expect(data).toEqual(objectContainingCheck(federationInternalError));
-    //   expect(data).not.toHaveProperty('graphql_error');
-    // });
-
-    // it('create payment validation test', () => {
-    //   expect(appController.createPayment({}, { userId })).toBeDefined();
-    // });
-
-    // it('create payment async test', async () => {
-    //   const data = await appController.createPayment({}, userId);
-    //   expect(data).toEqual(objectContainingCheck(queryError));
-    //   expect(data).toEqual(objectContainingCheck(systemError));
-    //   expect(data).toEqual(objectContainingCheck(federationInternalError));
-    //   expect(data).not.toHaveProperty('graphql_error');
-    // });
-
-    // it('checkout complete validation test', () => {
-    //   expect(appController.checkoutComplete({}, userId)).toBeDefined();
-    // });
-
-    // it('checkout complete async test', async () => {
-    //   const data = await appController.checkoutComplete({}, userId);
-    //   expect(data).toEqual(objectContainingCheck(queryError));
-    //   expect(data).toEqual(objectContainingCheck(systemError));
-    //   expect(data).toEqual(objectContainingCheck(federationInternalError));
-    //   expect(data).not.toHaveProperty('graphql_error');
-    // });
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
   });
+
+  // describe('root', () => {
+  // checking whether calls are valid and don't fail on middleware side--->>
+  // it('shoppingCart validation test', () => {
+  //   expect(
+  //     controller.getShoppingCartData({}, { params: userId }),
+  //   ).toBeDefined();
+  // });
+  // it('shoppingCart async test', async () => {
+  //   const data = await controller.getShoppingCartData(
+  //     {},
+  //     { params: userId },
+  //   );
+  //   expect(data).toEqual(objectContainingCheck(queryError));
+  //   expect(data).toEqual(objectContainingCheck(systemError));
+  //   expect(data).toEqual(objectContainingCheck(federationInternalError));
+  //   expect(data).not.toHaveProperty('graphql_error');
+  // });
+  // it('add to cart validation test', () => {
+  //   expect(
+  //     controller.addBundlesToCart({}, testAddToCartPayload),
+  //   ).toBeDefined();
+  // });
+  // it('add to cart async test', async () => {
+  //   const data = await controller.addBundlesToCart(
+  //     {},
+  //     testAddToCartPayload,
+  //   );
+  //   expect(data).toEqual(objectContainingCheck(queryError));
+  //   expect(data).toEqual(objectContainingCheck(systemError));
+  //   expect(data).toEqual(objectContainingCheck(federationInternalError));
+  //   expect(data).not.toHaveProperty('graphql_error');
+  // });
+  // it('delete from cart validation test', () => {
+  //   expect(
+  //     controller.deleteBundleFromCart({}, testDeleteFromCartPayload),
+  //   ).toBeDefined();
+  // });
+  // it('delete from cart async test', async () => {
+  //   const data = await controller.deleteBundleFromCart(
+  //     {},
+  //     testDeleteFromCartPayload,
+  //   );
+  //   expect(data).toEqual(objectContainingCheck(queryError));
+  //   expect(data).toEqual(objectContainingCheck(systemError));
+  //   expect(data).toEqual(objectContainingCheck(federationInternalError));
+  //   expect(data).not.toHaveProperty('graphql_error');
+  // });
+  // it('update in cart validation test', () => {
+  //   expect(
+  //     controller.updateCartBundle({}, testUpdateInCartPayload),
+  //   ).toBeDefined();
+  // });
+  // it('update in cart async test', async () => {
+  //   const data = await controller.updateCartBundle(
+  //     {},
+  //     testUpdateInCartPayload,
+  //   );
+  //   expect(data).toEqual(objectContainingCheck(queryError));
+  //   expect(data).toEqual(objectContainingCheck(systemError));
+  //   expect(data).toEqual(objectContainingCheck(federationInternalError));
+  //   expect(data).not.toHaveProperty('graphql_error');
+  // });
+  // it('select shop from cart validation test', () => {
+  //   expect(
+  //     controller.selectThisShop({}, testSelectShopPayload),
+  //   ).toBeDefined();
+  // });
+  // it('select shop from cart async test', async () => {
+  //   const data = await controller.selectThisShop(
+  //     {},
+  //     testSelectShopPayload,
+  //   );
+  //   expect(data).toEqual(objectContainingCheck(queryError));
+  //   expect(data).toEqual(objectContainingCheck(systemError));
+  //   expect(data).toEqual(objectContainingCheck(federationInternalError));
+  //   expect(data).not.toHaveProperty('graphql_error');
+  // });
+  // it('unselect shop from cart validation test', () => {
+  //   expect(
+  //     controller.unSelectThisShop({}, testSelectShopPayload),
+  //   ).toBeDefined();
+  // });
+  // it('unselect shop from cart async test', async () => {
+  //   const data = await controller.unSelectThisShop(
+  //     {},
+  //     testSelectShopPayload,
+  //   );
+  //   expect(data).toEqual(objectContainingCheck(queryError));
+  //   expect(data).toEqual(objectContainingCheck(systemError));
+  //   expect(data).toEqual(objectContainingCheck(federationInternalError));
+  //   expect(data).not.toHaveProperty('graphql_error');
+  // });
+  // it('add shiping address validation test', () => {
+  //   expect(
+  //     controller.addShippingAddress({}, testAddressPayload),
+  //   ).toBeDefined();
+  // });
+  // it('add shiping address async test', async () => {
+  //   const data = await controller.addShippingAddress(
+  //     {},
+  //     testAddressPayload,
+  //   );
+  //   expect(data).toEqual(objectContainingCheck(queryError));
+  //   expect(data).toEqual(objectContainingCheck(systemError));
+  //   expect(data).toEqual(objectContainingCheck(federationInternalError));
+  //   expect(data).not.toHaveProperty('graphql_error');
+  // });
+  // it('add billing address validation test', () => {
+  //   expect(
+  //     controller.addBillingAddress({}, testAddressPayload),
+  //   ).toBeDefined();
+  // });
+  // it('add billing address async test', async () => {
+  //   const data = await controller.addBillingAddress(
+  //     {},
+  //     testAddressPayload,
+  //   );
+  //   expect(data).toEqual(objectContainingCheck(queryError));
+  //   expect(data).toEqual(objectContainingCheck(systemError));
+  //   expect(data).toEqual(objectContainingCheck(federationInternalError));
+  //   expect(data).not.toHaveProperty('graphql_error');
+  // });
+  // it('get shipping & billing address validation test', () => {
+  //   expect(
+  //     controller.getShippingBillingAddress({}, testCheckoutId),
+  //   ).toBeDefined();
+  // });
+  // it('get shipping & billing address async test', async () => {
+  //   const data = await controller.getShippingBillingAddress(
+  //     {},
+  //     testCheckoutId,
+  //   );
+  //   expect(data).toEqual(objectContainingCheck(queryError));
+  //   expect(data).toEqual(objectContainingCheck(systemError));
+  //   expect(data).toEqual(objectContainingCheck(federationInternalError));
+  //   expect(data).not.toHaveProperty('graphql_error');
+  // });
+  // it('get shipping method validation test', () => {
+  //   expect(
+  //     controller.getShippingMethods({}, { params: userId }),
+  //   ).toBeDefined();
+  // });
+  // it('get shipping method async test', async () => {
+  //   const data = await controller.getShippingMethods(
+  //     {},
+  //     { params: userId },
+  //   );
+  //   expect(data).toEqual(objectContainingCheck(queryError));
+  //   expect(data).toEqual(objectContainingCheck(systemError));
+  //   expect(data).toEqual(objectContainingCheck(federationInternalError));
+  //   expect(data).not.toHaveProperty('graphql_error');
+  // });
+  // it('select shipping method validation test', () => {
+  //   expect(
+  //     controller.selectShippingMethods({}, { params: userId }),
+  //   ).toBeDefined();
+  // });
+  // it('select shipping method async test', async () => {
+  //   const data = await controller.selectShippingMethods(
+  //     {},
+  //     testSelectShippingMethod,
+  //   );
+  //   expect(data).toEqual(objectContainingCheck(queryError));
+  //   expect(data).toEqual(objectContainingCheck(systemError));
+  //   expect(data).toEqual(objectContainingCheck(federationInternalError));
+  //   expect(data).not.toHaveProperty('graphql_error');
+  // });
+  // it('create payment validation test', () => {
+  //   expect(controller.createPayment({}, { userId })).toBeDefined();
+  // });
+  // it('create payment async test', async () => {
+  //   const data = await controller.createPayment({}, userId);
+  //   expect(data).toEqual(objectContainingCheck(queryError));
+  //   expect(data).toEqual(objectContainingCheck(systemError));
+  //   expect(data).toEqual(objectContainingCheck(federationInternalError));
+  //   expect(data).not.toHaveProperty('graphql_error');
+  // });
+  // it('checkout complete validation test', () => {
+  //   expect(controller.checkoutComplete({}, userId)).toBeDefined();
+  // });
+  // it('checkout complete async test', async () => {
+  //   const data = await controller.checkoutComplete({}, userId);
+  //   expect(data).toEqual(objectContainingCheck(queryError));
+  //   expect(data).toEqual(objectContainingCheck(systemError));
+  //   expect(data).toEqual(objectContainingCheck(federationInternalError));
+  //   expect(data).not.toHaveProperty('graphql_error');
+  // });
+  // });
 });
 
 export const objectContainingCheck = (errorCode: object) => {

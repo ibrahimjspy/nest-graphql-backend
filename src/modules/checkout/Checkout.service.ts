@@ -15,7 +15,7 @@ import {
   AddressDetailType,
   CheckoutBundleInputType,
 } from 'src/graphql/handlers/checkout.type';
-import { BundleType } from 'src/types/graphql/bundle.type';
+import { BundleType } from 'src/graphql/types/bundle.type';
 
 @Injectable()
 export class CheckoutService {

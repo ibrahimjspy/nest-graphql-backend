@@ -5,11 +5,11 @@ import {
 import * as AccountQueries from 'src/graphql/queries/account';
 import * as AccountMutations from 'src/graphql/mutations/account';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
-import { AddressType } from './address.type';
+import { Address } from '../../types/address.type';
 
 export const addressesByUserIdHandler = async (
   userId: string,
-): Promise<AddressType[]> => {
+): Promise<Address[]> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(AccountQueries.userAddressesByIdQuery(userId)),
   );
@@ -20,7 +20,7 @@ export const addressesByUserIdHandler = async (
 export const createAddressHandler = async (
   userId: string,
   address: AccountMutations.AddressInput,
-): Promise<AddressType> => {
+): Promise<Address> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(AccountMutations.addressCreateMutation(userId, address)),
   );
@@ -40,7 +40,7 @@ export const deleteAddressHandler = async (
 export const setDefaultAddressHandler = async (
   userId: string,
   addressId: string,
-): Promise<AddressType[]> => {
+): Promise<Address[]> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
       AccountMutations.addressSetDefaultMutation(userId, addressId),
@@ -54,7 +54,7 @@ export const setDefaultAddressHandler = async (
 export const updateAddressHandler = async (
   addressId: string,
   address: AccountMutations.AddressInput,
-): Promise<AddressType> => {
+): Promise<Address> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
       AccountMutations.addressUpdateMutation(addressId, address),
