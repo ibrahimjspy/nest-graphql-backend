@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AccountService } from './Account.service';
 import { AccountFixtures } from './Account.service.spec.type';
 import {
-  SuccessResponseType,
   FailedResponseType,
+  SuccessResponseType,
 } from 'src/core/utils/response.type';
 
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
@@ -106,9 +106,7 @@ describe('AccountService', () => {
   });
 
   it('should delete address', async () => {
-    jest
-      .spyOn(AccountHandlers, 'deleteAddressHandler')
-      .mockImplementation(async () => {});
+    jest.spyOn(AccountHandlers, 'deleteAddressHandler').mockReturnValue(null);
 
     const expected: SuccessResponseType = {
       status: 200,

@@ -41,8 +41,8 @@ export const mockAddress = (): Address => {
   };
 };
 
-export const mockAddresses = (n: number = 2): Address[] => {
-  let addresses: Address[] = [];
+export const mockAddresses = (n = 2): Address[] => {
+  const addresses: Address[] = [];
   for (let index = 0; index < n; index++) addresses.push(mockAddress());
   return addresses;
 };
