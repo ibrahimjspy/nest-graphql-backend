@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AddressController } from './Address.controller';
+import { AddressService } from './Address.service';
 
 describe('AddressController', () => {
   let controller: AddressController;
@@ -7,6 +8,7 @@ describe('AddressController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AddressController],
+      providers: [AddressService],
     }).compile();
 
     controller = module.get<AddressController>(AddressController);
