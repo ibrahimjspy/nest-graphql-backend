@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CountryCode } from 'src/graphql/enums';
-import { IsNotEmpty, IsEnum } from 'class-validator';
+import { IsEnum, IsNotEmpty } from 'class-validator';
 
 export class AddressDto {
   @ApiProperty()
