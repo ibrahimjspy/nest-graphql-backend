@@ -10,14 +10,14 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
-import { AccountService } from './Account.service';
+import { AddressService } from './Address.service';
 
 @ApiTags('account')
-@Controller('account')
-export class AccountController {
-  constructor(private readonly appService: AccountService) {}
+@Controller()
+export class AddressController {
+  constructor(private readonly appService: AddressService) {}
 
-  @Get('/address/:userId')
+  @Get('/:userId')
   async addresses(@Res() res, @Param() params): Promise<object> {
     return makeResponse(
       res,
@@ -25,7 +25,7 @@ export class AccountController {
     );
   }
 
-  @Post('/address/:userId/create')
+  @Post('/:userId/create')
   async createAddress(
     @Res() res,
     @Param() params,
@@ -37,7 +37,7 @@ export class AccountController {
     );
   }
 
-  @Delete('/address/:addressId/delete')
+  @Delete('/:addressId/delete')
   async deleteAddress(@Res() res, @Param() params): Promise<object> {
     return makeResponse(
       res,
@@ -45,7 +45,7 @@ export class AccountController {
     );
   }
 
-  @Put('/address/:addressId/default')
+  @Put('/:addressId/default')
   async setDefaultAddress(
     @Res() res,
     @Param() params,
@@ -57,7 +57,7 @@ export class AccountController {
     );
   }
 
-  @Put('/address/:addressId/update')
+  @Put('/:addressId/update')
   async updateAddress(
     @Res() res,
     @Param() params,

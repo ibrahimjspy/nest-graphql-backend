@@ -10,11 +10,15 @@ import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import * as AccountHandlers from 'src/graphql/handlers/account';
 
 @Injectable()
-export class AccountService {
-  private readonly logger = new Logger(AccountService.name);
+export class AddressService {
+  private readonly logger = new Logger(AddressService.name);
 
   public async getAddresses(userId: string): Promise<SuccessResponseType> {
     try {
+      if (!userId) {
+        throw new Error('');
+      }
+
       return prepareSuccessResponse(
         await AccountHandlers.addressesByUserIdHandler(userId),
       );
