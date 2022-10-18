@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Get, Put, Param, Res } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CheckoutService } from './Checkout.service';
 import { makeResponse } from '../../core/utils/response';
@@ -30,7 +30,6 @@ export class CheckoutController {
       res,
       await this.appService.deleteBundleFromCart(
         body?.userId,
-        body?.bundleIds,
         body?.checkoutBundleIds,
       ),
     );
@@ -59,6 +58,7 @@ export class CheckoutController {
       await this.appService.setBundleAsUnselected(
         body?.userId,
         body?.bundleIds,
+        body?.checkoutBundleIds,
       ),
     );
   }

@@ -11,31 +11,31 @@ import { orderDetails } from '../queries/orders/orderDetails';
 export const dashboardByIdHandler = async (id: string): Promise<object> => {
   try {
     return await graphqlCall(dashboardQuery(id), 'true');
-  } catch (err) {
-    return graphqlExceptionHandler(err);
+  } catch (error) {
+    return graphqlExceptionHandler(error);
   }
 };
 export const allShopOrdersHandler = async (): Promise<object> => {
   try {
     const response = await graphqlCall(allShopOrdersQuery());
     return response['marketplaceShops'];
-  } catch (err) {
-    return graphqlExceptionHandler(err);
+  } catch (error) {
+    return graphqlExceptionHandler(error);
   }
 };
 export const orderDetailsHandler = async (id: string): Promise<object> => {
   try {
     const response = await graphqlCall(orderDetails(id));
     return response['order'];
-  } catch (err) {
-    return graphqlExceptionHandler(err);
+  } catch (error) {
+    return graphqlExceptionHandler(error);
   }
 };
 export const shopOrdersByIdHandler = async (id: string): Promise<object> => {
   try {
     return await graphqlCall(shopOrdersQuery(id));
-  } catch (err) {
-    return graphqlExceptionHandler(err);
+  } catch (error) {
+    return graphqlExceptionHandler(error);
   }
 };
 export const shopOrderFulfillmentsByIdHandler = async (
@@ -43,7 +43,7 @@ export const shopOrderFulfillmentsByIdHandler = async (
 ): Promise<object> => {
   try {
     return await graphqlCall(shopOrderFulfillmentsQuery(id));
-  } catch (err) {
-    return graphqlExceptionHandler(err);
+  } catch (error) {
+    return graphqlExceptionHandler(error);
   }
 };

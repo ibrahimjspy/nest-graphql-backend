@@ -1,4 +1,13 @@
 import { addressCreateMutation } from './addressCreate';
-import { addressCreateInputType } from './addressCreate.type';
+import { addressUpdateMutation } from './addressUpdate';
+import { addressDeleteMutation } from './addressDelete';
+import { addressSetDefaultMutation } from './addressSetDefault';
+import { AddressInput } from '../../types/address.type';
 
-export { addressCreateMutation, addressCreateInputType };
+export {
+  addressCreateMutation,
+  addressDeleteMutation,
+  addressSetDefaultMutation,
+  addressUpdateMutation,
+  AddressInput,
+};

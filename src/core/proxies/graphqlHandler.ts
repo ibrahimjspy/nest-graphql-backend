@@ -4,7 +4,6 @@ import { ResultErrorType } from 'src/graphql/exceptions/resultError.type';
 import { HttpStatus } from '@nestjs/common';
 import ResultError from 'src/graphql/exceptions/resultError';
 import { prepareFailedResponse } from 'src/core/utils/response';
-import e from 'express';
 
 /**
  * This is top level function which handles graphql requests , exceptions and logic
@@ -19,7 +18,7 @@ import e from 'express';
 export const graphqlCall = async (
   Query: string,
   Mock?: string,
-): Promise<object> => {
+): Promise<any> => {
   return await request(graphqlEndpoint(Mock ? Mock : ''), Query);
 };
 
@@ -33,9 +32,9 @@ export const graphqlCall = async (
  */
 export const graphqlResultErrorHandler = async (
   response: object,
-  throwException: boolean = true,
-  message: string = '',
-): Promise<object> => {
+  throwException = true,
+  message = '',
+): Promise<any> => {
   const error: ResultErrorType = response[Object.keys(response)[0]] || {};
 
   if (error.__typename === 'ResultError' && throwException) {

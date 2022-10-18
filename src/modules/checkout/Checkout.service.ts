@@ -8,13 +8,14 @@ import {
 
 import * as CheckoutHandlers from 'src/graphql/handlers/checkout';
 import * as ProductHandlers from 'src/graphql/handlers/product';
-import * as UserHandlers from 'src/graphql/handlers/account';
+import * as AccountHandlers from 'src/graphql/handlers/account';
 import * as CheckoutUtils from './Checkout.utils';
 
 import {
-  addressDetailTypes,
-  bundleTypes,
-} from 'src/graphql/handlers/checkout.types';
+  AddressDetailType,
+  CheckoutBundleInputType,
+} from 'src/graphql/handlers/checkout.type';
+import { BundleType } from 'src/graphql/types/bundle.type';
 
 @Injectable()
 export class CheckoutService {
@@ -22,7 +23,7 @@ export class CheckoutService {
 
   public async getShoppingCartData(id: string): Promise<object> {
     try {
-      let checkoutBundles = await CheckoutHandlers.marketplaceCheckoutHandler(
+      const checkoutBundles = await CheckoutHandlers.marketplaceCheckoutHandler(
         id,
         true,
       );
@@ -44,16 +45,16 @@ export class CheckoutService {
       );
 
       return prepareSuccessResponse(checkoutBundles);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
   private async addToCartWhenCheckoutExists(
     userId,
     checkoutData,
-    bundlesList,
+    bundlesList: BundleType[],
     bundlesForCart,
   ) {
     const { checkoutId, bundles } = checkoutData;
@@ -79,7 +80,7 @@ export class CheckoutService {
 
   private async addToCartWhenCheckoutNotExists(
     userData,
-    bundlesList,
+    bundlesList: BundleType[],
     bundlesForCart,
   ) {
     const checkoutLines = CheckoutUtils.getLineItems(
@@ -101,11 +102,11 @@ export class CheckoutService {
 
   public async addToCart(
     userId: string,
-    bundlesForCart: Array<bundleTypes>,
+    bundlesForCart: CheckoutBundleInputType[],
   ): Promise<object> {
     try {
       const [userData, bundlesList, checkoutData] = await Promise.all([
-        UserHandlers.userByIdHandler(userId),
+        AccountHandlers.userEmailByIdHandler(userId),
         ProductHandlers.bundlesByBundleIdsHandler(bundlesForCart),
         CheckoutHandlers.marketplaceCheckoutHandler(userId),
       ]);
@@ -115,30 +116,29 @@ export class CheckoutService {
         response = await this.addToCartWhenCheckoutExists(
           userId,
           checkoutData,
-          bundlesList['bundles'],
+          bundlesList,
           bundlesForCart,
         );
       } else {
         response = await this.addToCartWhenCheckoutNotExists(
           userData,
-          bundlesList['bundles'],
+          bundlesList,
           bundlesForCart,
         );
       }
       return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      if (err instanceof RecordNotFound) {
-        return prepareFailedResponse(err.message);
+    } catch (error) {
+      this.logger.error(error);
+      if (error instanceof RecordNotFound) {
+        return prepareFailedResponse(error.message);
       }
-      return graphqlExceptionHandler(err);
+      return graphqlExceptionHandler(error);
     }
   }
 
   public async deleteBundleFromCart(
     userId: string,
-    bundleIds: Array<string>,
-    checkoutBundleIds: Array<string>,
+    checkoutBundleIds: string[],
   ): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
@@ -156,30 +156,28 @@ export class CheckoutService {
       const checkoutLines = CheckoutUtils.getCheckoutLineItems(
         saleorCheckout['lines'],
         checkoutData['bundles'],
-        bundleIds,
+        checkoutBundleIds,
       );
-
       const checkoutLineIds = CheckoutUtils.getCheckoutLineIds(checkoutLines);
 
       await CheckoutHandlers.deleteLinesHandler(
-        checkoutLineIds,
         saleorCheckout['id'],
+        checkoutLineIds,
       );
-
       const response = await CheckoutHandlers.deleteBundlesHandler(
         checkoutBundleIds,
         checkoutData['checkoutId'],
       );
       return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
   public async updateBundleFromCart(
     userId: string,
-    bundlesFromCart: Array<bundleTypes>,
+    bundlesFromCart: CheckoutBundleInputType[],
   ): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
@@ -211,21 +209,25 @@ export class CheckoutService {
         bundlesFromCart,
       );
       return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
   public async setBundleAsSelected(
     userId: string,
-    bundleIds: Array<string>,
+    bundleIds: string[],
   ): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
         userId,
       );
-      const checkoutLines = CheckoutUtils.getVariants(
+      const saleorCheckout = await CheckoutHandlers.checkoutHandler(
+        checkoutData['checkoutId'],
+      );
+      const checkoutLines = CheckoutUtils.getCheckoutLineItems(
+        saleorCheckout['lines'],
         checkoutData['bundles'],
         bundleIds,
       );
@@ -244,15 +246,16 @@ export class CheckoutService {
         selectedBundles,
       );
       return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
   public async setBundleAsUnselected(
     userId: string,
-    bundleIds: Array<string>,
+    bundleIds: string[],
+    checkoutBundleIds: string[],
   ): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
@@ -264,7 +267,7 @@ export class CheckoutService {
       const checkoutLines = CheckoutUtils.getCheckoutLineItems(
         saleorCheckout['lines'],
         checkoutData['bundles'],
-        bundleIds,
+        checkoutBundleIds,
       );
 
       const checkoutLineIds = CheckoutUtils.getCheckoutLineIds(checkoutLines);
@@ -284,15 +287,15 @@ export class CheckoutService {
         updatedBundle,
       );
       return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
   public async addShippingAddress(
     checkoutId: string,
-    addressDetails: addressDetailTypes,
+    addressDetails: AddressDetailType,
   ): Promise<object> {
     try {
       const response = await CheckoutHandlers.shippingAddressUpdateHandler(
@@ -300,15 +303,15 @@ export class CheckoutService {
         addressDetails,
       );
       return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
   public async addBillingAddress(
     checkoutId: string,
-    addressDetails: addressDetailTypes,
+    addressDetails: AddressDetailType,
   ): Promise<object> {
     try {
       const response = await CheckoutHandlers.billingAddressUpdateHandler(
@@ -316,9 +319,9 @@ export class CheckoutService {
         addressDetails,
       );
       return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
@@ -330,9 +333,9 @@ export class CheckoutService {
         checkoutId,
       );
       return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
@@ -356,15 +359,15 @@ export class CheckoutService {
       );
 
       return prepareSuccessResponse(methodsListFromSaleor, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
   public async selectShippingMethods(
     userId: string,
-    shippingIds: Array<string>,
+    shippingIds: string[],
   ): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
@@ -384,9 +387,9 @@ export class CheckoutService {
       ]);
       const response = await this.getShippingMethods(userId);
       return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
@@ -405,9 +408,9 @@ export class CheckoutService {
         dummyGatewayId,
       );
       return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
@@ -430,9 +433,9 @@ export class CheckoutService {
         checkoutData['checkoutId'],
       );
       return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 }

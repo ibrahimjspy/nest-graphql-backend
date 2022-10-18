@@ -3,19 +3,19 @@ import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
 const federationQuery = (checkoutId: string, deliveryMethodId: string) => {
   return gql`
-  mutation {
-    checkoutDeliveryMethodUpdate(
-     deliveryMethodId: "${deliveryMethodId}",
-       id: "${checkoutId}"
-     ) {
-       checkout {
-         id
-       }
-       errors {
-         message
-       }
-     }
-   }
+    mutation {
+      checkoutDeliveryMethodUpdate(
+      deliveryMethodId: "${deliveryMethodId}",
+        id: "${checkoutId}"
+      ) {
+        checkout {
+          id
+        }
+        errors {
+          message
+        }
+      }
+    }
   `;
 };
 

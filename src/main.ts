@@ -3,7 +3,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import packageInfo from '../package.json';
 
-const corsOrigins = async () => (process.env.CORS_ORIGINS || '').split(',');
+const corsOrigins = async () => process.env.CORS_ORIGINS.split(',');
 
 const corsMethods = async () =>
   (process.env.CORS_METHODS || 'GET,PATCH,POST,PUT,DELETE,OPTIONS')
@@ -14,15 +14,11 @@ const bootstrap = async () => {
   const app = await NestFactory.create(AppModule);
 
   // cores configuration
-  // FIXME: need to properly configure the cors.
-  app
-    .enableCors
-    //   {
-    //   origin: await corsOrigins(),
-    //   methods: await corsMethods(),
-    //   credentials: true,
-    // }
-    ();
+  app.enableCors({
+    origin: await corsOrigins(),
+    methods: await corsMethods(),
+    credentials: true,
+  });
 
   // swagger configuration
   const config = new DocumentBuilder()

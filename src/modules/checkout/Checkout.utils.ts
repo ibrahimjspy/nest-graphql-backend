@@ -1,3 +1,5 @@
+import { CheckoutBundleType } from './Checkout.utils.type';
+
 /**
  * It takes an array of checkoutBundles and returns an array of product ids
  * @param {any[]} checkoutBundles - any[]
@@ -106,16 +108,18 @@ export const getUpdatedLinesWithQuantity = (
   bundlesFromCart,
 ) => {
   const quantity = bundlesFromCart[0]?.quantity;
-  const bundleIds = bundlesFromCart.map((bundle) => bundle?.bundleId);
-  const targetBundle = getTargetBundleByBundleId(checkoutBundles, bundleIds);
-  const variantIds = getVariantIds(targetBundle);
+  const checkoutBundleIds = bundlesFromCart.map((bundle) => bundle?.bundleId);
 
-  return (lines || [])
-    .filter((line) => variantIds.includes(line?.variant?.id))
-    .map((line) => ({
-      variantId: line?.variant?.id,
-      quantity: line?.quantity * quantity,
-    }));
+  const checkoutLines = getCheckoutLineItems(
+    lines,
+    checkoutBundles,
+    checkoutBundleIds,
+  );
+
+  return (checkoutLines || []).map((line) => ({
+    variantId: line?.variantId,
+    quantity: line?.quantity * quantity,
+  }));
 };
 
 /**
@@ -160,7 +164,7 @@ export const getCheckoutLineItems = (lines, bundles, bundleIds) => {
   return (lines || [])
     .filter((line) => variantIds.includes(line?.variant?.id))
     .map((line) => ({
-      variantId: line.id,
+      variantId: line?.variant?.id,
       quantity: line?.quantity,
     }));
 };
@@ -215,10 +219,10 @@ export const updateBundlesQuantity = (allCheckoutBundles, bundlesFromCart) => {
  */
 export const getShippingMethods = (bundles = []) => {
   let shippingMethods = [];
-  bundles.forEach((bundle) => {
+  bundles.forEach((bundle: CheckoutBundleType) => {
     shippingMethods = [
       ...shippingMethods,
-      ...bundle?.bundle?.shop?.shippingMethods,
+      ...(bundle?.bundle?.shop?.shippingMethods || []),
     ];
   });
   return shippingMethods;
@@ -288,25 +292,4 @@ export const getDummyGateway = (availablePaymentGateways = []) => {
     (gateway) => gateway?.name === 'Dummy',
   );
   return dummyGateway?.id;
-};
-
-/**
- * returns array of variant ids from the target bundles
- * @params bundles: complete arget bundles array consisting of variants info
- * @params bundleIds: array of bundle ids
- * @return variants list will variantId and quantity for adding lines
- */
-export const getVariants = (bundles, bundleIds) => {
-  let variants = [];
-  (bundles || [])
-    .filter((bundleData) => bundleIds.includes(bundleData?.bundle?.id))
-    .forEach((bundleData) => {
-      bundleData?.bundle?.variants.forEach((variantData) => {
-        variants.push({
-          variantId: variantData?.variant?.id,
-          quantity: variantData?.quantity,
-        });
-      });
-    });
-  return variants;
 };
