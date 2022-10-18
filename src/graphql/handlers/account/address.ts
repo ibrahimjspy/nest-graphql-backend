@@ -19,25 +19,35 @@ export const addressesByUserIdHandler = async (
 
 export const createAddressHandler = async (
   userId: string,
-  address: AccountMutations.AddressCreateInputType,
-): Promise<AddressType[]> => {
+  address: AccountMutations.AddressCreateInput,
+): Promise<AddressType> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(AccountMutations.addressCreateMutation(userId, address)),
   );
 
-  console.log(JSON.stringify(response, null, 2));
+  if (!response?.addressCreate?.address) throw new RecordNotFound('Address');
 
-  return response?.addressCreate?.user?.addresses || [];
+  return response?.addressCreate?.address;
 };
 
 export const deleteAddressHandler = async (
   addressId: string,
-): Promise<AddressType[]> => {
-  const response = await graphqlResultErrorHandler(
+): Promise<void> => {
+  await graphqlResultErrorHandler(
     await graphqlCall(AccountMutations.addressDeleteMutation(addressId)),
   );
+};
 
-  if (!response?.addressDelete?.user) throw new RecordNotFound('Address');
+export const setDefaultAddress = async (
+  userId: string,
+  addressId: string,
+): Promise<AddressType[]> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      AccountMutations.addressSetDefaultMutation(userId, addressId),
+    ),
+  );
 
-  return response?.addressDelete?.user?.addresses || [];
+  if (!response?.addressSetDefault?.user) throw new RecordNotFound('User');
+  return response?.addressSetDefault?.user?.addresses || [];
 };

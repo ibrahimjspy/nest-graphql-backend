@@ -1,48 +1,17 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { AddressType } from 'src/graphql/handlers/account/address.type';
-import { AddressCreateInputType } from 'src/graphql/mutations/account';
-import { prepareSuccessResponse } from 'src/core/utils/response';
+import { AddressCreateInput } from 'src/graphql/mutations/account';
+import {
+  prepareFailedResponse,
+  prepareSuccessResponse,
+} from 'src/core/utils/response';
 import { SuccessResponseType } from 'src/core/utils/response.type';
 import * as AccountHandlers from 'src/graphql/handlers/account';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
+import RecordNotFound from 'src/core/exceptions/recordNotFound';
 
 @Injectable()
 export class AccountService {
   private readonly logger = new Logger(AccountService.name);
-  private readonly addresses: AddressType[] = [
-    {
-      id: 'QWRkcmVzczoxNTc=',
-      firstName: 'Abigail',
-      lastName: 'Abraham',
-      companyName: 'Sharove',
-      streetAddress1: 'Kickstart Aiworks',
-      streetAddress2: '',
-      city: 'Kabul',
-      postalCode: '3124',
-      country: {
-        code: 'AG',
-        country: 'Antigua and Barbuda',
-      },
-      phone: '+923244150832',
-      isDefaultShippingAddress: true,
-    },
-    {
-      id: 'QDRkcmVsdzoxNTc=',
-      firstName: 'Christopher',
-      lastName: 'Baker',
-      companyName: 'Sharove',
-      streetAddress1: 'Kickstart Aiworks',
-      streetAddress2: '',
-      city: 'New York',
-      postalCode: '3434',
-      country: {
-        code: 'US',
-        country: 'United States',
-      },
-      phone: '+923244150832',
-      isDefaultShippingAddress: false,
-    },
-  ];
 
   public async getAddresses(userId: string): Promise<SuccessResponseType> {
     try {
@@ -57,7 +26,7 @@ export class AccountService {
 
   public async createAddress(
     userId: string,
-    address: AddressCreateInputType,
+    address: AddressCreateInput,
   ): Promise<SuccessResponseType> {
     try {
       return prepareSuccessResponse(
@@ -65,17 +34,36 @@ export class AccountService {
       );
     } catch (error) {
       this.logger.error(error);
+      if (error instanceof RecordNotFound) {
+        return prepareFailedResponse(error.message);
+      }
       return graphqlExceptionHandler(error);
     }
   }
 
   public async deleteAddress(addressId: string): Promise<SuccessResponseType> {
     try {
+      await AccountHandlers.deleteAddressHandler(addressId);
+      return prepareSuccessResponse(null, 'Address is deleted successfully.');
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async setDefaultAddress(
+    userId: string,
+    addressId: string,
+  ): Promise<SuccessResponseType> {
+    try {
       return prepareSuccessResponse(
-        await AccountHandlers.deleteAddressHandler(addressId),
+        await AccountHandlers.setDefaultAddress(userId, addressId),
       );
     } catch (error) {
       this.logger.error(error);
+      if (error instanceof RecordNotFound) {
+        return prepareFailedResponse(error.message);
+      }
       return graphqlExceptionHandler(error);
     }
   }

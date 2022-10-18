@@ -2,6 +2,7 @@ import {
   createAddressHandler,
   addressesByUserIdHandler,
   deleteAddressHandler,
+  setDefaultAddress,
 } from './address';
 import { userEmailByIdHandler } from './user';
 
@@ -10,4 +11,5 @@ export {
   createAddressHandler,
   deleteAddressHandler,
   userEmailByIdHandler,
+  setDefaultAddress,
 };

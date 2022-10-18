@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Res,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -36,11 +37,23 @@ export class AccountController {
     );
   }
 
-  @Delete('/address/:userId/delete')
+  @Delete('/address/:addressId/delete')
   async deleteAddress(@Res() res, @Param() params): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.deleteAddress(params?.userId),
+      await this.appService.deleteAddress(params?.addressId),
+    );
+  }
+
+  @Put('/address/:addressId/default')
+  async setDefaultAddress(
+    @Res() res,
+    @Param() params,
+    @Body() body,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.setDefaultAddress(body?.userId, params?.addressId),
     );
   }
 }
