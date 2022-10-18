@@ -1,6 +1,6 @@
 import {
-  createAddressHandler,
   addressesByUserIdHandler,
+  createAddressHandler,
   deleteAddressHandler,
   setDefaultAddressHandler,
   updateAddressHandler,
