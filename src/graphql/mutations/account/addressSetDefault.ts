@@ -30,6 +30,7 @@ const federationQuery = (
               code
               country
             }
+            countryArea
             phone
             isDefaultShippingAddress
           }

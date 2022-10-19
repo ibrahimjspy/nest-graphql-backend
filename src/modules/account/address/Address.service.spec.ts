@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AccountService } from './Account.service';
-import { AccountFixtures } from './Account.service.spec.type';
+import { AddressService } from './Address.service';
+import { AddressFixtures } from './Address.service.type';
 import {
   FailedResponseType,
   SuccessResponseType,
@@ -10,17 +10,17 @@ import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import * as Mocks from 'src/graphql/mocks/address.mock';
 import * as AccountHandlers from 'src/graphql/handlers/account';
 
-describe('AccountService', () => {
-  let service: AccountService;
-  let fd: AccountFixtures;
+describe('AddressService', () => {
+  let service: AddressService;
+  let fd: AddressFixtures;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [AccountService],
+      providers: [AddressService],
     }).compile();
     module.useLogger(false);
 
-    service = module.get<AccountService>(AccountService);
+    service = module.get<AddressService>(AddressService);
     fd = {
       userId: Mocks.mockUserId(),
       addressId: Mocks.mockAddressId(),
