@@ -26,7 +26,7 @@ export class AddressController {
     );
   }
 
-  @Post('/:userId/create')
+  @Post('/:userId')
   async createAddress(
     @Res() res,
     @Param() userIdDto: UserIdDto,
@@ -38,7 +38,7 @@ export class AddressController {
     );
   }
 
-  @Delete('/:addressId/delete')
+  @Delete('/:addressId')
   async deleteAddress(
     @Res() res,
     @Param() addressIdDto: AddressIdDto,
@@ -64,7 +64,7 @@ export class AddressController {
     );
   }
 
-  @Put('/:addressId/update')
+  @Put('/:addressId')
   async updateAddress(
     @Res() res,
     @Param() addressIdDto: AddressIdDto,

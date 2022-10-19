@@ -34,6 +34,7 @@ const federationQuery = (userId: string, address: AddressInput) => {
             code
             country
           }
+          countryArea
           phone
           isDefaultShippingAddress
         }
