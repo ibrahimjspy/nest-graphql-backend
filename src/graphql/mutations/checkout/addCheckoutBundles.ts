@@ -6,16 +6,19 @@ const federationQuery = (
   userId: string,
   bundles: Array<{ bundleId: string; quantity: number }>,
 ) => {
+  const bundles_str = JSON.stringify(bundles)
+    .replace(/"bundleId"/g, 'bundleId')
+    .replace(/"isSelected"/g, 'isSelected')
+    .replace(/"quantity"/g, 'quantity')
+    .replace(/"lines"/g, 'lines');
+
   return gql`
     mutation {
       addCheckoutBundles(
         Input: {
           checkoutId: "${checkoutId}",
           userId: "${userId}",
-          bundles: ${JSON.stringify(bundles)
-            .replace(/"bundleId"/g, 'bundleId')
-            .replace(/"isSelected"/g, 'isSelected')
-            .replace(/"quantity"/g, 'quantity')}
+          bundles: ${bundles_str}
         }
       ) {
         ... on CheckoutBundlesType {

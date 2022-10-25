@@ -2,18 +2,23 @@ import { Body, Controller, Get, Param, Post, Put, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CheckoutService } from './Checkout.service';
 import { makeResponse } from '../../core/utils/response';
-import { AddBundleDto } from './dto';
+import { AddBundleDto, UserIdDto } from './dto';
 
 @ApiTags('checkout')
 @Controller('checkout')
 export class CheckoutController {
-  constructor(private readonly appService: CheckoutService) {}
+  constructor(private readonly appService: CheckoutService) {
+    return;
+  }
 
   @Get('/:userId')
-  async getShoppingCartData(@Res() res, @Param() params): Promise<object> {
+  async getShoppingCartData(
+    @Res() res,
+    @Param() userDto: UserIdDto,
+  ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getShoppingCartData(params?.userId),
+      await this.appService.getShoppingCartData(userDto.userId),
     );
   }
 
