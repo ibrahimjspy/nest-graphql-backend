@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Post, Put, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CheckoutService } from './Checkout.service';
 import { makeResponse } from '../../core/utils/response';
+import { AddBundleDto } from './dto';
 
 @ApiTags('checkout')
 @Controller('checkout')
@@ -17,10 +18,16 @@ export class CheckoutController {
   }
 
   @Post('cart/bundle/add')
-  async addBundlesToCart(@Res() res, @Body() body): Promise<object> {
+  async addBundlesToCart(
+    @Res() res,
+    @Body() addBundleDto: AddBundleDto,
+  ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.addToCart(body?.userId, body?.bundles),
+      await this.appService.addToCart(
+        addBundleDto.userId,
+        addBundleDto.bundles,
+      ),
     );
   }
 

@@ -78,7 +78,7 @@ export const getBundlesNotInCheckout = (
  * @params targetBundles: bundles array for which we need line items
  */
 export const getLineItems = (bundles, targetBundles) => {
-  const lines = [];
+  const lines: Array<{ quantity: number; variantId: string }> = [];
   bundles.forEach((bundle) => {
     const targetBundle = (targetBundles || []).find(
       (a) => a?.bundleId === bundle?.id,

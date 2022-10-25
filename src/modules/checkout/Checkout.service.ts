@@ -81,7 +81,7 @@ export class CheckoutService {
   private async addToCartWhenCheckoutNotExists(
     userData,
     bundlesList: BundleType[],
-    bundlesForCart,
+    bundlesForCart: CheckoutBundleInputType[],
   ) {
     const checkoutLines = CheckoutUtils.getLineItems(
       bundlesList,
@@ -92,9 +92,8 @@ export class CheckoutService {
       checkoutLines,
     );
 
-    const newCheckoutId = newCheckout?.checkout?.id;
     return await CheckoutHandlers.addBundlesHandler(
-      newCheckoutId,
+      newCheckout?.checkout?.id,
       userData?.id,
       bundlesForCart,
     );

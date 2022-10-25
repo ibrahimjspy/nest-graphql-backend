@@ -26,7 +26,7 @@ export const marketplaceCheckoutHandler = async (
 
 export const createCheckoutHandler = async (
   email: string,
-  checkoutLines: Array<LineType>,
+  checkoutLines: LineType[],
 ): Promise<object> => {
   const response = await graphqlCall(
     CheckoutMutations.createCheckoutMutation(email, checkoutLines),
@@ -37,7 +37,7 @@ export const createCheckoutHandler = async (
 export const addBundlesHandler = async (
   checkoutId: string,
   userId: string,
-  bundles: Array<CheckoutBundleInputType>,
+  bundles: CheckoutBundleInputType[],
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(

@@ -4,6 +4,6 @@ import { prepareSuccessResponse } from './core/utils/response';
 @Injectable()
 export class AppService {
   async getHealthCheck(): Promise<object> {
-    return prepareSuccessResponse(null);
+    return prepareSuccessResponse(null, 'Ok');
   }
 }
