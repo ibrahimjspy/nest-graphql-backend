@@ -1,3 +1,17 @@
-import { userByIdHandler } from './user';
+import {
+  addressesByUserIdHandler,
+  createAddressHandler,
+  deleteAddressHandler,
+  setDefaultAddressHandler,
+  updateAddressHandler,
+} from './address';
+import { userEmailByIdHandler } from './user';
 
-export { userByIdHandler };
+export {
+  addressesByUserIdHandler,
+  createAddressHandler,
+  deleteAddressHandler,
+  updateAddressHandler,
+  setDefaultAddressHandler,
+  userEmailByIdHandler,
+};

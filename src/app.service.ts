@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { fetchMock } from '../test/graphql/test';
+import { prepareSuccessResponse } from './core/utils/response';
 
 @Injectable()
 export class AppService {
-  async getHello(): Promise<object> {
-    return await fetchMock();
+  async getHealthCheck(): Promise<object> {
+    return prepareSuccessResponse(null);
   }
 }

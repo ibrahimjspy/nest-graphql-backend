@@ -1,3 +1,5 @@
+import { CheckoutBundleType } from './Checkout.utils.type';
+
 /**
  * It takes an array of checkoutBundles and returns an array of product ids
  * @param {any[]} checkoutBundles - any[]
@@ -217,10 +219,10 @@ export const updateBundlesQuantity = (allCheckoutBundles, bundlesFromCart) => {
  */
 export const getShippingMethods = (bundles = []) => {
   let shippingMethods = [];
-  bundles.forEach((bundle) => {
+  bundles.forEach((bundle: CheckoutBundleType) => {
     shippingMethods = [
       ...shippingMethods,
-      ...bundle?.bundle?.shop?.shippingMethods,
+      ...(bundle?.bundle?.shop?.shippingMethods || []),
     ];
   });
   return shippingMethods;

@@ -6,13 +6,14 @@ import {
 } from 'src/core/proxies/graphqlHandler';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import { getBundleIds } from 'src/modules/product/Product.utils';
-import { bundleTypes } from 'src/graphql/handlers/checkout.types';
+import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
+import { BundleType } from 'src/graphql/types/bundle.type';
 
 export const productListPageHandler = async (id: string): Promise<object> => {
   try {
     return await graphqlCall(ProductQueries.productListPageQuery(id));
-  } catch (err) {
-    return graphqlExceptionHandler(err);
+  } catch (error) {
+    return graphqlExceptionHandler(error);
   }
 };
 
@@ -21,8 +22,8 @@ export const singleProductDetailsHandler = async (
 ): Promise<object> => {
   try {
     return await graphqlCall(ProductQueries.productDetailsQuery(slug));
-  } catch (err) {
-    return graphqlExceptionHandler(err);
+  } catch (error) {
+    return graphqlExceptionHandler(error);
   }
 };
 
@@ -31,16 +32,16 @@ export const productCardsByCategoriesHandler = async (
 ): Promise<object> => {
   try {
     return await graphqlCall(ProductQueries.productCardsByListIdQuery(id));
-  } catch (err) {
-    return graphqlExceptionHandler(err);
+  } catch (error) {
+    return graphqlExceptionHandler(error);
   }
 };
 
 export const productCardHandler = async (): Promise<object> => {
   try {
     return await graphqlCall(ProductQueries.productCardsDefaultQuery());
-  } catch (err) {
-    return graphqlExceptionHandler(err);
+  } catch (error) {
+    return graphqlExceptionHandler(error);
   }
 };
 
@@ -73,8 +74,8 @@ export const variantsIdsByProductIdsHandler = async (
 };
 
 export const bundlesByBundleIdsHandler = async (
-  bundles: Array<bundleTypes>,
-): Promise<object> => {
+  bundles: Array<CheckoutBundleInputType>,
+): Promise<BundleType[]> => {
   const bundleIds = getBundleIds(bundles);
   const response = await graphqlResultErrorHandler(
     await graphqlCall(ProductQueries.productBundlesByBundleIdQuery(bundleIds)),
@@ -84,5 +85,5 @@ export const bundlesByBundleIdsHandler = async (
     throw new RecordNotFound('Bundles');
   }
 
-  return response;
+  return response['bundles'];
 };

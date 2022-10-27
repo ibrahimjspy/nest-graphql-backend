@@ -23,6 +23,7 @@ const federationQuery = (userId: string) => {
             code
             country
           }
+          countryArea
           phone
           isDefaultShippingAddress
         }
@@ -31,6 +32,6 @@ const federationQuery = (userId: string) => {
   `;
 };
 
-export const userQuery = (userId: string) => {
+export const userAddressesByIdQuery = (userId: string) => {
   return graphqlQueryCheck(federationQuery(userId), federationQuery(userId));
 };

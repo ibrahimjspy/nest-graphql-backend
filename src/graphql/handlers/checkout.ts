@@ -8,14 +8,14 @@ import * as CheckoutMutations from 'src/graphql/mutations/checkout';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 
 import {
-  addressDetailTypes,
-  bundleTypes,
-  lineTypes,
-} from 'src/graphql/handlers/checkout.types';
+  AddressDetailType,
+  CheckoutBundleInputType,
+  LineType,
+} from 'src/graphql/handlers/checkout.type';
 
 export const marketplaceCheckoutHandler = async (
   id: string,
-  throwException: boolean = false,
+  throwException = false,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(CheckoutQueries.getMarketplaceCheckoutQuery(id)),
@@ -26,7 +26,7 @@ export const marketplaceCheckoutHandler = async (
 
 export const createCheckoutHandler = async (
   email: string,
-  checkoutLines: Array<lineTypes>,
+  checkoutLines: Array<LineType>,
 ): Promise<object> => {
   const response = await graphqlCall(
     CheckoutMutations.createCheckoutMutation(email, checkoutLines),
@@ -37,7 +37,7 @@ export const createCheckoutHandler = async (
 export const addBundlesHandler = async (
   checkoutId: string,
   userId: string,
-  bundles: Array<bundleTypes>,
+  bundles: Array<CheckoutBundleInputType>,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
@@ -82,7 +82,7 @@ export const deleteLinesHandler = async (
 export const deleteBundlesHandler = async (
   checkoutBundleIds: Array<string>,
   checkoutId: string,
-  throwException: boolean = false,
+  throwException = false,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
@@ -98,7 +98,7 @@ export const deleteBundlesHandler = async (
 
 export const updateLinesHandler = async (
   checkoutId: string,
-  lines: Array<lineTypes>,
+  lines: Array<LineType>,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
@@ -110,11 +110,14 @@ export const updateLinesHandler = async (
 
 export const shippingAddressUpdateHandler = async (
   checkoutId: string,
-  addressDetails: addressDetailTypes,
+  addressDetails: AddressDetailType,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
-      CheckoutMutations.shippingAddressMutation(checkoutId, addressDetails),
+      CheckoutMutations.checkoutShippingAddressUpdateMutation(
+        checkoutId,
+        addressDetails,
+      ),
     ),
   );
 
@@ -127,11 +130,14 @@ export const shippingAddressUpdateHandler = async (
 
 export const billingAddressUpdateHandler = async (
   checkoutId: string,
-  addressDetails: addressDetailTypes,
+  addressDetails: AddressDetailType,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
-      CheckoutMutations.billingAddressMutation(checkoutId, addressDetails),
+      CheckoutMutations.checkoutBillingAddressUpdateMutation(
+        checkoutId,
+        addressDetails,
+      ),
     ),
   );
 
@@ -156,7 +162,7 @@ export const shippingAndBillingAddressHandler = async (
 export const addShippingMethodHandler = async (
   checkoutId: string,
   shopShippingMethodIds: Array<string>,
-  throwException: boolean = false,
+  throwException = false,
 ) => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(

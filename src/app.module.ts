@@ -1,8 +1,9 @@
-import { CacheModule, Module, CacheInterceptor } from '@nestjs/common';
+import { APP_INTERCEPTOR, RouterModule } from '@nestjs/core';
+import { CacheInterceptor, CacheModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_ROUTES } from './app.routes';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ProductModule } from './modules/product/Product.module';
 import { CategoriesModule } from './modules/categories/Categories.module';
 import { OrdersModule } from './modules/orders/Orders.module';
@@ -15,6 +16,7 @@ import { RetailerModule } from './modules/retailer/Retailer.module';
   imports: [
     CacheModule.register(),
     ConfigModule.forRoot(),
+    RouterModule.register(APP_ROUTES),
     ProductModule,
     CategoriesModule,
     OrdersModule,
