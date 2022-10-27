@@ -12,17 +12,17 @@ export class OrdersController {
     return this.appService.getDashboardDataById(params?.id);
   }
   // Returns all shop orders for orders page
-  @Get('/allShopOrders')
+  @Get('/b2b/all')
   async findAllShopOrders(): Promise<object> {
     return await this.appService.getAllShopOrdersData();
   }
   // Returns shop orders for orders page
-  @Get('/shopOrdersById/:id')
+  @Get('/b2b/shop/:id')
   async findShopOrders(@Param() params): Promise<object> {
     return await this.appService.getShopOrdersDataById(params.id);
   }
   // Returns shop order fulfillments for order page
-  @Get('/shopOrderFulfillmentsById/:id')
+  @Get('/b2b/shop/fulfillment/:id')
   findShopOrderFulfillments(@Param() params): Promise<object> {
     return this.appService.getShopOrderFulfillmentsDataById(params.id);
   }
