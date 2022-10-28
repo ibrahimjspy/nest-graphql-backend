@@ -55,46 +55,55 @@ export class CheckoutService {
     userId,
     checkoutData,
     bundlesList: BundleType[],
-    bundlesForCart,
+    bundlesForCart: CheckoutBundleInputType[],
   ) {
     const { checkoutId, bundles } = checkoutData;
-    const bundlesWithUpdatedQuantity = CheckoutUtils.updateBundlesQuantity(
-      bundles,
-      bundlesForCart,
+    const [bundlesWithUpdatedQuantity, checkoutLines] = await Promise.all([
+      CheckoutUtils.updateBundlesQuantity(bundles, bundlesForCart),
+      CheckoutUtils.getLineItems(bundlesList, bundlesForCart),
+    ]);
+
+    const checkoutWithLines = await CheckoutHandlers.addLinesHandler(
+      checkoutId,
+      checkoutLines,
     );
 
-    // FIXME: need to use promise all here,
-    // but for that we need to think about exception handling
-    // against each handler.
-    const checkoutLines = CheckoutUtils.getLineItems(
+    bundlesForCart = CheckoutUtils.getBundlesWithLineIds(
       bundlesList,
-      bundlesForCart,
+      bundlesWithUpdatedQuantity,
+      checkoutWithLines,
     );
-    await CheckoutHandlers.addLinesHandler(checkoutId, checkoutLines);
+
     return await CheckoutHandlers.addBundlesHandler(
       checkoutId,
       userId,
-      bundlesWithUpdatedQuantity,
+      bundlesForCart,
     );
   }
 
   private async addToCartWhenCheckoutNotExists(
     userData,
     bundlesList: BundleType[],
-    bundlesForCart,
+    bundlesForCart: CheckoutBundleInputType[],
   ) {
-    const checkoutLines = CheckoutUtils.getLineItems(
+    const checkoutLines = await CheckoutUtils.getLineItems(
       bundlesList,
       bundlesForCart,
     );
+
     const newCheckout: any = await CheckoutHandlers.createCheckoutHandler(
       userData?.email,
       checkoutLines,
     );
 
-    const newCheckoutId = newCheckout?.checkout?.id;
+    bundlesForCart = CheckoutUtils.getBundlesWithLineIds(
+      bundlesList,
+      bundlesForCart,
+      newCheckout,
+    );
+
     return await CheckoutHandlers.addBundlesHandler(
-      newCheckoutId,
+      newCheckout?.checkout?.id,
       userData?.id,
       bundlesForCart,
     );
@@ -150,9 +159,6 @@ export class CheckoutService {
         checkoutData['checkoutId'],
       );
 
-      // FIXME: need to use promise all here,
-      // but for that we need to think about exception handling
-      // against each handler.
       const checkoutLines = CheckoutUtils.getCheckoutLineItems(
         saleorCheckout['lines'],
         checkoutData['bundles'],
@@ -196,9 +202,6 @@ export class CheckoutService {
           bundlesFromCart,
         );
 
-      // FIXME: need to use promise all here,
-      // but for that we need to think about exception handling
-      // against each handler.
       await CheckoutHandlers.updateLinesHandler(
         checkoutData['checkoutId'],
         updatedLinesWithQuantity,

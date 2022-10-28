@@ -15,6 +15,12 @@ const federationQuery = (
       ) {
         checkout {
           id
+          lines {
+            id
+            variant{
+              id
+            }
+          }
         }
         errors {
           code
