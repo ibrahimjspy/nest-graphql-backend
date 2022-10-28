@@ -27,6 +27,22 @@ export function hash<Type>(list: Array<Type>, key: string | any) {
  * @returns A function that takes a number and returns a number.
  */
 export const makeQuantity = (quantity: number): number => {
-  if (typeof quantity !== 'number') return quantity;
+  if (typeof quantity !== 'number')
+    throw new Error('Quantity should be a number.');
   return quantity > 0 ? quantity : 0;
+};
+
+/**
+ * It removes the quotes from the keys of a dictionary object
+ * @param {object} obj - The object to be converted to a string.
+ * @returns A string with all the keys in the object without quotes.
+ */
+export const remove_keys_quoutes = (obj: object) => {
+  if (typeof obj !== 'object')
+    throw new Error('`obj` should be a dictionary object');
+
+  const re = /"(\w+)"(?=:)/gi;
+  const json_str = JSON.stringify(obj);
+
+  return json_str.replace(re, (match: string) => match.replaceAll(/"/gi, ''));
 };
