@@ -14,6 +14,7 @@ export interface AddressDetailType {
 export interface CheckoutBundleInputType {
   bundleId: string;
   quantity: number;
+  lines?: string[];
 }
 
 export interface LineType {

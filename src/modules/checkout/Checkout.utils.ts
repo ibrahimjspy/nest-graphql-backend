@@ -1,3 +1,6 @@
+import { hash, makeQuantity } from 'src/core/utils/helpers';
+import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
+import { BundleType } from 'src/graphql/types/bundle.type';
 import { CheckoutBundleType } from './Checkout.utils.type';
 
 /**
@@ -77,8 +80,8 @@ export const getBundlesNotInCheckout = (
  * @params bundles: all bundles array in the checkout
  * @params targetBundles: bundles array for which we need line items
  */
-export const getLineItems = (bundles, targetBundles) => {
-  const lines = [];
+export const getLineItems = async (bundles, targetBundles) => {
+  const lines: Array<{ quantity: number; variantId: string }> = [];
   bundles.forEach((bundle) => {
     const targetBundle = (targetBundles || []).find(
       (a) => a?.bundleId === bundle?.id,
@@ -120,6 +123,45 @@ export const getUpdatedLinesWithQuantity = (
     variantId: line?.variantId,
     quantity: line?.quantity * quantity,
   }));
+};
+
+/**
+ * It takes a list of bundles, a list of bundles for cart, and a new checkout object, and returns a
+ * list of bundles for cart with line ids
+ * @param {BundleType[]} bundlesList - this is the list of bundles that are selected by
+ * the user and fetched from bundle Service.
+ * @param {CheckoutBundleInputType[]} bundlesForCart - This is the array of bundles that we want to add
+ * to the cart without lineIds.
+ * @param newCheckout - The new checkout object that is returned from the server after the checkout is
+ * created.
+ * @returns An array of CheckoutBundleInputType
+ */
+export const getBundlesWithLineIds = (
+  bundlesList: BundleType[],
+  bundlesForCart: CheckoutBundleInputType[],
+  newCheckout,
+): CheckoutBundleInputType[] => {
+  // convert bundlesForCart into hash
+  const bundlesForCartHash = hash(
+    bundlesForCart,
+    (ele: CheckoutBundleInputType) => ele.bundleId,
+  );
+
+  // iterate over all selected bundles
+  bundlesList.forEach((bundle) => {
+    bundlesForCartHash[bundle.id].lines = [];
+    // iterate over all selected bundle's variants
+    bundle.variants?.forEach((variant) => {
+      const line = (newCheckout?.checkout?.lines || []).find(
+        (line) => line?.variant?.id == variant?.variant?.id,
+      );
+
+      // add line ids to bundlesForCart
+      bundlesForCartHash[bundle.id].lines.push(line?.id);
+    });
+  });
+
+  return Object.values(bundlesForCartHash);
 };
 
 /**
@@ -199,17 +241,24 @@ export const selectOrUnselectBundle = (
 
 /**
  * returns already added bundles in cart with updated quantity
- * @params allCheckoutBundles: all the bundles array from the checkout data
+ * @params existedCheckoutBundles: all the bundles array from the checkout data
  * @params bundlesFromCart: bundles from cart which are again added to cart
  */
-export const updateBundlesQuantity = (allCheckoutBundles, bundlesFromCart) => {
+export const updateBundlesQuantity = async (
+  existedCheckoutBundles: CheckoutBundleType[],
+  bundlesFromCart: CheckoutBundleInputType[],
+) => {
   return bundlesFromCart.map((bundle) => {
-    const targetBundle = allCheckoutBundles.find(
-      (checkoutBundle) => checkoutBundle?.id === bundle?.id,
+    const existedBundle = existedCheckoutBundles.find(
+      (checkoutBundle) => checkoutBundle?.bundle?.id === bundle?.bundleId,
     );
-    const oldQuantity = bundle?.quantity ? bundle.quantity : 0;
-    const newQuantity = targetBundle?.quantity ? targetBundle.quantity : 0;
-    return { ...bundle, quantity: oldQuantity + newQuantity };
+
+    if (existedBundle) {
+      const oldQuantity = makeQuantity(existedBundle?.quantity);
+      const newQuantity = makeQuantity(bundle?.quantity);
+      return { ...bundle, quantity: oldQuantity + newQuantity };
+    }
+    return bundle;
   });
 };
 

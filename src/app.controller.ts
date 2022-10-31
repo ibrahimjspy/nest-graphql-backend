@@ -4,7 +4,9 @@ import { makeResponse } from './core/utils/response';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: AppService) {
+    return;
+  }
   @Get('/health-check')
   async healthCheck(@Res() res): Promise<object> {
     return makeResponse(res, await this.appService.getHealthCheck());

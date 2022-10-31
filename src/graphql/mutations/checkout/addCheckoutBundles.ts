@@ -1,10 +1,16 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
+import { remove_keys_quoutes } from 'src/core/utils/helpers';
 
 const federationQuery = (
   checkoutId: string,
   userId: string,
-  bundles: Array<{ bundleId: string; quantity: number }>,
+  bundles: Array<{
+    bundleId: string;
+    quantity: number;
+    isSelected?: boolean;
+    lines?: Array<string>;
+  }>,
 ) => {
   return gql`
     mutation {
@@ -12,10 +18,7 @@ const federationQuery = (
         Input: {
           checkoutId: "${checkoutId}",
           userId: "${userId}",
-          bundles: ${JSON.stringify(bundles)
-            .replace(/"bundleId"/g, 'bundleId')
-            .replace(/"isSelected"/g, 'isSelected')
-            .replace(/"quantity"/g, 'quantity')}
+          bundles: ${remove_keys_quoutes(bundles)}
         }
       ) {
         ... on CheckoutBundlesType {
