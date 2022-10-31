@@ -2,6 +2,14 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as OrderHandlers from 'src/graphql/handlers/orders';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
+import {
+  getCurrency,
+  getTotalFromBundles,
+  getFulfillmentTotal,
+  addStatusAndTotalToBundles,
+  getFulFillmentsWithStatusAndBundlesTotal,
+} from './Orders.utils';
+import { FulfillmentStatusEnum } from 'src/graphql/enums/orders';
 @Injectable()
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
@@ -21,80 +29,33 @@ export class OrdersService {
       const response = await OrderHandlers.allShopOrdersHandler();
       const shops = (response['edges'] || []).map((shop) => shop['node']);
       const shopOrders = { orders: [] };
-      await Promise.all(
-        shops.map(async (shop) => {
-          const orders = shop['orders'];
-          const shopName = shop['name'];
-          const shopId = shop['id'];
-          delete shop['name'];
-          delete shop['id'];
 
-          await Promise.all(
-            orders.map(async (order) => {
+      await Promise.all(
+        shops.forEach((shop) => {
+          const orders = shop['orders'];
+
+          Promise.all(
+            orders.forEach(async (order) => {
               const orderDetails = await OrderHandlers.orderDetailsHandler(
                 order['orderId'],
               );
-              delete order.orderId;
-              order['shopName'] = shopName;
-              order['shopId'] = shopId;
-              order['number'] = orderDetails['number'];
-              order['created'] = orderDetails['created'];
-              order['userEmail'] = orderDetails['userEmail'];
-              order['totalAmount'] = 0;
-              order['fulfillmentColour'] =
-                order['fulfillmentStatus'] == 'UNFULFILLED' ? 'error' : '';
-              order['fulfillmentColour'] =
-                order['fulfillmentStatus'] == 'PARTIALLY FULFILLED'
-                  ? 'info'
-                  : order['fulfillmentColour'];
-              order['fulfillmentColour'] =
-                order['fulfillmentStatus'] == 'FULFILLED'
-                  ? 'success'
-                  : order['fulfillmentColour'];
-
-              await Promise.all(
-                order.orderBundles.map(async (orderBundle) => {
-                  await Promise.all(
-                    orderBundle.bundle.variants.map(async (variant) => {
-                      order['totalAmount'] +=
-                        parseFloat(variant.variant.pricing.price.gross.amount) *
-                        parseInt(variant.quantity) *
-                        parseInt(orderBundle.quantity);
-                      order['currency'] =
-                        variant.variant.pricing.price.gross.currency;
-                    }),
-                  );
-                }),
+              const orderBundlesTotal = getTotalFromBundles(
+                order['orderBundles'],
+              );
+              const fulfillmentsTotal = getFulfillmentTotal(
+                order['fulfillments'],
               );
 
-              await Promise.all(
-                order['fulfillments'].map(async (fulfillment) => {
-                  order['fulfillments']['totalAmount'] = 0;
-                  await Promise.all(
-                    fulfillment['fulfillmentBundles'].map(
-                      async (fulfillmentBundle) => {
-                        await Promise.all(
-                          fulfillmentBundle.bundle.variants.map(
-                            async (variant) => {
-                              order['fulfillments']['totalAmount'] +=
-                                parseFloat(
-                                  variant.variant.pricing.price.gross.amount,
-                                ) *
-                                parseInt(variant.quantity) *
-                                parseInt(fulfillmentBundle.quantity);
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                }),
-              );
-
-              order['totalAmount'] += order['fulfillments']['totalAmount'] || 0;
               delete order['fulfillments'];
               delete order['orderBundles'];
-              shopOrders.orders.push(order);
+              shopOrders.orders.push({
+                ...order,
+                shopName: shop['name'],
+                shopId: shop['id'],
+                currency: getCurrency(order['orderBundles']),
+                totalAmount: orderBundlesTotal + fulfillmentsTotal || 0,
+                ...orderDetails,
+              });
             }),
           );
         }),
@@ -117,76 +78,33 @@ export class OrdersService {
   }
 
   public async getShopOrderFulfillmentsDataById(id): Promise<object> {
-    const orderFulfillments =
+    let orderFulfillments =
       await OrderHandlers.shopOrderFulfillmentsByIdHandler(id);
+
     const fulfillmentDetails =
       await OrderHandlers.shopOrderFulfillmentsDetailsHandler(
         orderFulfillments['orderId'],
       );
-    orderFulfillments['number'] = fulfillmentDetails['number'];
-    orderFulfillments['userEmail'] = fulfillmentDetails['userEmail'];
-    orderFulfillments['shippingAddress'] =
-      fulfillmentDetails['shippingAddress'];
-    orderFulfillments['billingAddress'] = fulfillmentDetails['billingAddress'];
-    orderFulfillments['customerNote'] = fulfillmentDetails['customerNote'];
-    orderFulfillments['fulfillmentColour'] =
-      orderFulfillments['fulfillmentStatus'] == 'UNFULFILLED' ? 'error' : '';
-    orderFulfillments['fulfillmentColour'] =
-      orderFulfillments['fulfillmentStatus'] == 'PARTIALLY FULFILLED'
-        ? 'info'
-        : orderFulfillments['fulfillmentColour'];
-    orderFulfillments['fulfillmentColour'] =
-      orderFulfillments['fulfillmentStatus'] == 'FULFILLED'
-        ? 'success'
-        : orderFulfillments['fulfillmentColour'];
-    orderFulfillments['totalAmount'] = 0;
 
-    await Promise.all(
-      orderFulfillments['orderBundles'].map(async (orderBundle) => {
-        orderBundle['fulfillmentStatus'] = 'UNFULFILLED';
-        orderBundle['fulfillmentColour'] = 'error';
-        orderBundle['totalAmount'] = 0;
-        await Promise.all(
-          orderBundle.bundle.variants.map(async (variant) => {
-            orderBundle['totalAmount'] +=
-              parseFloat(variant.variant.pricing.price.gross.amount) *
-              parseInt(variant.quantity) *
-              parseInt(orderBundle.quantity);
-            orderFulfillments['totalAmount'] +=
-              parseFloat(variant.variant.pricing.price.gross.amount) *
-              parseInt(variant.quantity) *
-              parseInt(orderBundle.quantity);
-          }),
-        );
-      }),
+    const orderFulfillmentBundles = addStatusAndTotalToBundles(
+      orderFulfillments['orderBundles'],
+      FulfillmentStatusEnum.UNFULFILLED,
+    );
+    const fulfillments = getFulFillmentsWithStatusAndBundlesTotal(
+      orderFulfillments['fulfillments'],
+      FulfillmentStatusEnum.FULFILLED,
+    );
+    const fulfillmentTotalAmount = getTotalFromBundles(
+      orderFulfillments['orderBundles'],
     );
 
-    await Promise.all(
-      orderFulfillments['fulfillments'].map(async (fulfillment) => {
-        fulfillment['totalAmount'] = 0;
-        await Promise.all(
-          fulfillment['fulfillmentBundles'].map(async (fulfillmentBundle) => {
-            fulfillmentBundle['fulfillmentStatus'] = 'FULFILLED';
-            fulfillmentBundle['fulfillmentColour'] = 'success';
-            fulfillmentBundle['totalAmount'] = 0;
-            await Promise.all(
-              fulfillmentBundle.bundle.variants.map(async (variant) => {
-                fulfillmentBundle['totalAmount'] +=
-                  parseFloat(variant.variant.pricing.price.gross.amount) *
-                  parseInt(variant.quantity) *
-                  parseInt(fulfillmentBundle.quantity);
-                fulfillment['totalAmount'] +=
-                  parseFloat(variant.variant.pricing.price.gross.amount) *
-                  parseInt(variant.quantity) *
-                  parseInt(fulfillmentBundle.quantity);
-              }),
-            );
-          }),
-        );
-      }),
-    );
+    orderFulfillments = {
+      ...fulfillmentDetails,
+      totalAmount: fulfillmentTotalAmount,
+      orderBundles: orderFulfillmentBundles,
+      fulfillments,
+    };
 
-    delete orderFulfillments['orderId'];
     return orderFulfillments;
   }
 }

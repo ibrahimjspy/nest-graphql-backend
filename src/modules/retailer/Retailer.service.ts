@@ -7,16 +7,16 @@ import {
 } from 'src/core/utils/response';
 
 import * as RetailerHandlers from 'src/graphql/handlers/retailer';
-
 @Injectable()
 export class RetailerService {
   private readonly logger = new Logger(RetailerService.name);
 
   public async getRecentOrdersData(email: string): Promise<object> {
+    const Throw_Exception = true;
     try {
       let recentOrders = await RetailerHandlers.recentOrdersHandler(
         email,
-        true,
+        Throw_Exception,
       );
 
       return prepareSuccessResponse(recentOrders);
