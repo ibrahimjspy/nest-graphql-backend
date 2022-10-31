@@ -26,4 +26,9 @@ export class OrdersController {
   findShopOrderFulfillments(@Param() params): Promise<object> {
     return this.appService.getShopOrderFulfillmentsDataById(params.id);
   }
+  // Returns shop order activities
+  @Get('/activity')
+  getOrderActivity(): Promise<object> {
+    return this.appService.getOrderActivity();
+  }
 }

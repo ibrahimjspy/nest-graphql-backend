@@ -2,11 +2,14 @@ import { dashboardQuery } from 'src/graphql/queries/orders/dashboardById';
 import { allShopOrdersQuery } from 'src/graphql/queries/orders/allShopOrders';
 import { shopOrdersQuery } from 'src/graphql/queries/orders/shopOrdersById';
 import { shopOrderFulfillmentsQuery } from 'src/graphql/queries/orders/shopOrderFulfillmentsById';
+import { orderActivityQuery } from 'src/graphql/queries/orders/orderActivity';
 import {
   graphqlCall,
   graphqlExceptionHandler,
+  graphqlResultErrorHandler,
 } from 'src/core/proxies/graphqlHandler';
 import { orderDetails } from '../queries/orders/orderDetails';
+import RecordNotFound from 'src/core/exceptions/recordNotFound';
 
 export const dashboardByIdHandler = async (id: string): Promise<object> => {
   try {
@@ -46,4 +49,13 @@ export const shopOrderFulfillmentsByIdHandler = async (
   } catch (error) {
     return graphqlExceptionHandler(error);
   }
+};
+export const orderActivityHandler = async (): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(orderActivityQuery()),
+  );
+  if (!response['homepageEvents']?.['edges']) {
+    throw new RecordNotFound('Order activity');
+  }
+  return response['homepageEvents']['edges'];
 };
