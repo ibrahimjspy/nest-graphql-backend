@@ -10,6 +10,9 @@ import {
   getFulFillmentsWithStatusAndBundlesTotal,
 } from './Orders.utils';
 import { FulfillmentStatusEnum } from 'src/graphql/enums/orders';
+import { GQL_EDGES_KEY } from 'src/constants';
+import { ShopOrdersListDto, ShopOrdersFulfillmentsDto } from './dto';
+
 @Injectable()
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
@@ -27,15 +30,15 @@ export class OrdersService {
   public async getAllShopOrdersData(): Promise<object> {
     try {
       const response = await OrderHandlers.allShopOrdersHandler();
-      const shops = (response['edges'] || []).map((shop) => shop['node']);
-      const shopOrders = { orders: [] };
+      const shops = (response[GQL_EDGES_KEY] || []).map((shop) => shop['node']);
+      const shopOrders: ShopOrdersListDto = { orders: [] };
 
       await Promise.all(
-        shops.forEach((shop) => {
+        (shops || []).map(async (shop) => {
           const orders = shop['orders'];
 
-          Promise.all(
-            orders.forEach(async (order) => {
+          await Promise.all(
+            orders.map(async (order) => {
               const orderDetails = await OrderHandlers.orderDetailsHandler(
                 order['orderId'],
               );
@@ -45,22 +48,24 @@ export class OrdersService {
               const fulfillmentsTotal = getFulfillmentTotal(
                 order['fulfillments'],
               );
-
-              delete order['fulfillments'];
-              delete order['orderBundles'];
+              const currency = getCurrency(order['orderBundles']);
+              const { fulfillments, orderBundles, ...otherOrderAttributes } =
+                order;
               shopOrders.orders.push({
-                ...order,
+                ...otherOrderAttributes,
+                ...orderDetails,
                 shopName: shop['name'],
                 shopId: shop['id'],
-                currency: getCurrency(order['orderBundles']),
-                totalAmount: orderBundlesTotal + fulfillmentsTotal || 0,
-                ...orderDetails,
+                currency: currency,
+                totalAmount:
+                  Number(orderBundlesTotal.toFixed(2)) +
+                    Number(fulfillmentsTotal.toFixed(2)) || 0,
               });
             }),
           );
         }),
       );
-      return prepareSuccessResponse(response, '', 201);
+      return prepareSuccessResponse(shopOrders, '', 201);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
@@ -98,13 +103,13 @@ export class OrdersService {
       orderFulfillments['orderBundles'],
     );
 
-    orderFulfillments = {
+    const response: ShopOrdersFulfillmentsDto = {
       ...fulfillmentDetails,
-      totalAmount: fulfillmentTotalAmount,
+      totalAmount: Number(fulfillmentTotalAmount.toFixed(2)),
       orderBundles: orderFulfillmentBundles,
       fulfillments,
     };
 
-    return orderFulfillments;
+    return response;
   }
 }

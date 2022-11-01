@@ -1,11 +1,12 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
+import { RECORDS_QUANTITY } from 'src/constants';
 
 const federationQuery = (email: string) => {
   return gql`
     query{
       orders(
-        first: 5
+        first: ${RECORDS_QUANTITY}
         filter: {
           customer: "${email}"
         }
@@ -34,8 +35,5 @@ const federationQuery = (email: string) => {
 };
 
 export const recentOrdersQuery = (email: string) => {
-  return graphqlQueryCheck(
-    federationQuery(email),
-    federationQuery(email),
-  );
+  return graphqlQueryCheck(federationQuery(email), federationQuery(email));
 };

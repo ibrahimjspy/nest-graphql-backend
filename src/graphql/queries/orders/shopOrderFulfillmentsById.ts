@@ -4,9 +4,9 @@ import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 const federationQuery = (id: string): string => {
   return gql`
     query{
-      marketplaceOrder(
+      marketplaceOrders(
         filter: {
-          id: "${id}"
+          marketplaceOrderId: "${id}"
         }
       )
       {

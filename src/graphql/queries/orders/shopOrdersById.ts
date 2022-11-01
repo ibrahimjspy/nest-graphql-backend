@@ -13,7 +13,6 @@ const federationQuery = (id: string): string => {
         orders{
           id
           orderId
-          fulfillmentStatus
         }
       }
     }
