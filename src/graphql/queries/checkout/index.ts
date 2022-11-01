@@ -1,5 +1,5 @@
 import { checkoutQuery } from './checkout';
-import { getMarketplaceCheckoutQuery } from './getCheckout';
+import { getMarketplaceCheckoutQuery } from './marketplaceCheckout';
 import { shippingAndBillingAddressQuery } from './shippingAndBillingAddress';
 import { availablePaymentGatewaysQuery } from './availablePaymentGateways';
 export {
