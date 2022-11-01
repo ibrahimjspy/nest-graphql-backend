@@ -40,6 +40,13 @@ const federationQuery = (variantIds: Array<string>) => {
                   name
                 }
               }
+              product {
+                name
+                id
+                thumbnail {
+                  url
+                }
+              }
               pricing {
                 price {
                   net {
