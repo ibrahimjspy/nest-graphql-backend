@@ -1,5 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
-import * as OrderHandlers from 'src/graphql/handlers/orders';
+import {
+  dashboardByIdHandler,
+  allShopOrdersHandler,
+  orderDetailsHandler,
+  shopOrdersByIdHandler,
+  shopOrderFulfillmentsByIdHandler,
+  shopOrderFulfillmentsDetailsHandler,
+} from 'src/graphql/handlers/orders';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
 import {
@@ -12,14 +19,13 @@ import {
 import { FulfillmentStatusEnum } from 'src/graphql/enums/orders';
 import { GQL_EDGES_KEY } from 'src/constants';
 import { ShopOrdersListDto, ShopOrdersFulfillmentsDto } from './dto';
-
 @Injectable()
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
 
   public async getDashboardDataById(id): Promise<object> {
     try {
-      const response = await OrderHandlers.dashboardByIdHandler(id);
+      const response = await dashboardByIdHandler(id);
       return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
@@ -29,7 +35,7 @@ export class OrdersService {
 
   public async getAllShopOrdersData(): Promise<object> {
     try {
-      const response = await OrderHandlers.allShopOrdersHandler();
+      const response = await allShopOrdersHandler();
       const shops = (response[GQL_EDGES_KEY] || []).map((shop) => shop['node']);
       const shopOrders: ShopOrdersListDto = { orders: [] };
 
@@ -39,9 +45,7 @@ export class OrdersService {
 
           await Promise.all(
             orders.map(async (order) => {
-              const orderDetails = await OrderHandlers.orderDetailsHandler(
-                order['orderId'],
-              );
+              const orderDetails = await orderDetailsHandler(order['orderId']);
               const orderBundlesTotal = getTotalFromBundles(
                 order['orderBundles'],
               );
@@ -57,9 +61,7 @@ export class OrdersService {
                 shopName: shop['name'],
                 shopId: shop['id'],
                 currency: currency,
-                totalAmount:
-                  Number(orderBundlesTotal.toFixed(2)) +
-                    Number(fulfillmentsTotal.toFixed(2)) || 0,
+                totalAmount: orderBundlesTotal + fulfillmentsTotal,
               });
             }),
           );
@@ -74,7 +76,7 @@ export class OrdersService {
 
   public async getShopOrdersDataById(id): Promise<object> {
     try {
-      const response = await OrderHandlers.shopOrdersByIdHandler(id);
+      const response = await shopOrdersByIdHandler(id);
       return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
@@ -83,13 +85,11 @@ export class OrdersService {
   }
 
   public async getShopOrderFulfillmentsDataById(id): Promise<object> {
-    let orderFulfillments =
-      await OrderHandlers.shopOrderFulfillmentsByIdHandler(id);
+    let orderFulfillments = await shopOrderFulfillmentsByIdHandler(id);
 
-    const fulfillmentDetails =
-      await OrderHandlers.shopOrderFulfillmentsDetailsHandler(
-        orderFulfillments['orderId'],
-      );
+    const fulfillmentDetails = await shopOrderFulfillmentsDetailsHandler(
+      orderFulfillments['orderId'],
+    );
 
     const orderFulfillmentBundles = addStatusAndTotalToBundles(
       orderFulfillments['orderBundles'],
@@ -105,7 +105,7 @@ export class OrdersService {
 
     const response: ShopOrdersFulfillmentsDto = {
       ...fulfillmentDetails,
-      totalAmount: Number(fulfillmentTotalAmount.toFixed(2)),
+      totalAmount: fulfillmentTotalAmount,
       orderBundles: orderFulfillmentBundles,
       fulfillments,
     };

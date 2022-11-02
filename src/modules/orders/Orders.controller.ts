@@ -9,7 +9,7 @@ import { UserIdDto, ShopIdDto, OrderIdDto } from './dto';
 export class OrdersController {
   constructor(private readonly appService: OrdersService) {}
   // Returns orders dashboard data for landing page
-  @Get('/dashboardById/:userId')
+  @Get('/history/:userId')
   async findDashboard(
     @Res() res,
     @Param() userDto: UserIdDto,
@@ -20,12 +20,12 @@ export class OrdersController {
     );
   }
   // Returns all shop orders for orders page
-  @Get('/b2b/all')
+  @Get('/marketplace/all')
   async findAllShopOrders(@Res() res): Promise<object> {
     return makeResponse(res, await this.appService.getAllShopOrdersData());
   }
   // Returns shop orders for orders page
-  @Get('/b2b/shop/:shopId')
+  @Get('/marketplace/shop/:shopId')
   async findShopOrders(
     @Res() res,
     @Param() shopDto: ShopIdDto,
@@ -36,7 +36,7 @@ export class OrdersController {
     );
   }
   // Returns shop order fulfillments for order page
-  @Get('/b2b/shop/fulfillment/:orderId')
+  @Get('/marketplace/shop/fulfillment/:orderId')
   async findShopOrderFulfillments(
     @Res() res,
     @Param() orderDto: OrderIdDto,

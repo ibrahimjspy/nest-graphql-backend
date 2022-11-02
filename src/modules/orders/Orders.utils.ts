@@ -1,3 +1,5 @@
+import { roundNumber } from 'src/core/utils/helpers';
+
 /**
  * It takes a list of bundles and returns a total price of all the bundles
  * @param bundles - The bundles array returned from the query.
@@ -10,7 +12,7 @@ export const getTotalFromBundles = (bundles) => {
     const quantity = bundleData?.quantity;
     total += getTotalFromVariants(variants, quantity);
   });
-  return total;
+  return roundNumber(total);
 };
 
 /**
@@ -40,7 +42,7 @@ export const getFulfillmentTotal = (fulfillments) => {
   (fulfillments || []).forEach((fulfillment) => {
     total = getTotalFromBundles(fulfillment['fulfillmentBundles']);
   });
-  return total;
+  return roundNumber(total);
 };
 
 /**
@@ -69,7 +71,7 @@ export const addStatusAndTotalToBundles = (bundles, status) => {
     const total = getTotalFromVariants(variants, quantity);
     return {
       ...bundleData,
-      totalAmount: total,
+      totalAmount: roundNumber(total),
       fulfillmentStatus: status,
     };
   });
@@ -95,7 +97,7 @@ export const getFulFillmentsWithStatusAndBundlesTotal = (
       return {
         ...fulfillmentBundle,
         fulfillmentStatus: status,
-        totalAmount: total,
+        totalAmount: roundNumber(total),
       };
     });
     return {

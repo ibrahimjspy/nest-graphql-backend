@@ -1,4 +1,11 @@
-import * as OrderQueries from 'src/graphql/queries/orders';
+import {
+  dashboardQuery,
+  allShopOrdersQuery,
+  orderDetailsQuery,
+  shopOrdersQuery,
+  shopOrderFulfillmentsQuery,
+  shopOrderFulfillmentDetailsQuery,
+} from 'src/graphql/queries/orders';
 import {
   graphqlCall,
   graphqlResultErrorHandler,
@@ -7,14 +14,14 @@ import RecordNotFound from 'src/core/exceptions/recordNotFound';
 
 export const dashboardByIdHandler = async (id: string): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(OrderQueries.dashboardQuery(id), 'true'),
+    await graphqlCall(dashboardQuery(id), 'true'),
   );
   return response;
 };
 
 export const allShopOrdersHandler = async (): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(OrderQueries.allShopOrdersQuery()),
+    await graphqlCall(allShopOrdersQuery()),
   );
   if (!response['marketplaceShops']) {
     throw new RecordNotFound('Marketplace shops');
@@ -24,7 +31,7 @@ export const allShopOrdersHandler = async (): Promise<object> => {
 
 export const orderDetailsHandler = async (id: string): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(OrderQueries.orderDetailsQuery(id)),
+    await graphqlCall(orderDetailsQuery(id)),
   );
   if (!response['order']) {
     throw new RecordNotFound('Order details');
@@ -34,7 +41,7 @@ export const orderDetailsHandler = async (id: string): Promise<object> => {
 
 export const shopOrdersByIdHandler = async (id: string): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(OrderQueries.shopOrdersQuery(id)),
+    await graphqlCall(shopOrdersQuery(id)),
   );
   if (!response['marketplaceShop']) {
     throw new RecordNotFound('Shop details');
@@ -46,7 +53,7 @@ export const shopOrderFulfillmentsByIdHandler = async (
   id: string,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(OrderQueries.shopOrderFulfillmentsQuery(id)),
+    await graphqlCall(shopOrderFulfillmentsQuery(id)),
   );
   if (!response['marketplaceOrders']?.length) {
     throw new RecordNotFound('Shop order');
@@ -58,7 +65,7 @@ export const shopOrderFulfillmentsDetailsHandler = async (
   id: string,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(OrderQueries.shopOrderFulfillmentDetailsQuery(id)),
+    await graphqlCall(shopOrderFulfillmentDetailsQuery(id)),
   );
   if (!response['order']) {
     throw new RecordNotFound('Shop order fulfillment details');
