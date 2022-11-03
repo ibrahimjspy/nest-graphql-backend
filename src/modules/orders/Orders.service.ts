@@ -1,14 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
+import { prepareSuccessResponse } from 'src/core/utils/response';
 import {
   dashboardByIdHandler,
   allShopOrdersHandler,
   orderDetailsHandler,
   shopOrdersByIdHandler,
+  orderActivityHandler,
   shopOrderFulfillmentsByIdHandler,
   shopOrderFulfillmentsDetailsHandler,
 } from 'src/graphql/handlers/orders';
-import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
-import { prepareSuccessResponse } from 'src/core/utils/response';
 import {
   getCurrency,
   getTotalFromBundles,
@@ -111,5 +112,14 @@ export class OrdersService {
     };
 
     return response;
+  }
+  public async getOrderActivity(): Promise<object> {
+    try {
+      const response = await orderActivityHandler();
+      return prepareSuccessResponse(response, '', 201);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
   }
 }

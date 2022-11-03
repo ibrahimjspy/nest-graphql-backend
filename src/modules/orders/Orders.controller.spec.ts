@@ -40,6 +40,10 @@ describe('Orders controller unit tests', () => {
       expect(appController.findShopOrderFulfillments(testUUID)).toBeDefined();
     });
 
+    it('orders activitiy validation test', () => {
+      expect(appController.getOrderActivity()).toBeDefined();
+    });
+
     // async tests for JSON data from either Mock service or backend services
 
     it('Orders dashboard async test', async () => {
@@ -60,6 +64,22 @@ describe('Orders controller unit tests', () => {
 
     it('Shop Order Fulfillments async test', async () => {
       const data = await appController.findShopOrderFulfillments(testUUID);
+      expect(data).toEqual(objectContainingCheck(queryError));
+      expect(data).toEqual(objectContainingCheck(systemError));
+      expect(data).toEqual(objectContainingCheck(federationInternalError));
+      expect(data).not.toHaveProperty('graphql_error');
+    });
+
+    it('Shop Order Fulfillments async test', async () => {
+      const data = await appController.findShopOrderFulfillments(testUUID);
+      expect(data).toEqual(objectContainingCheck(queryError));
+      expect(data).toEqual(objectContainingCheck(systemError));
+      expect(data).toEqual(objectContainingCheck(federationInternalError));
+      expect(data).not.toHaveProperty('graphql_error');
+    });
+
+    it('Order activity async test', async () => {
+      const data = await appController.getOrderActivity();
       expect(data).toEqual(objectContainingCheck(queryError));
       expect(data).toEqual(objectContainingCheck(systemError));
       expect(data).toEqual(objectContainingCheck(federationInternalError));

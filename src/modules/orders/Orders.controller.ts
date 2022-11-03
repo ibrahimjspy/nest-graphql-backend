@@ -46,4 +46,9 @@ export class OrdersController {
       await this.appService.getShopOrderFulfillmentsDataById(orderDto.orderId),
     );
   }
+  // Returns shop order activities
+  @Get('/activity')
+  async getOrderActivity(@Res() res): Promise<object> {
+    return makeResponse(res, await this.appService.getOrderActivity());
+  }
 }
