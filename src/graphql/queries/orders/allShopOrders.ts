@@ -3,29 +3,58 @@ import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
 const federationQuery = (): string => {
   return gql`
-    query {
-      marketplaceShops {
-        edges {
-          node {
+    query{
+      marketplaceShops{
+        edges{
+          node{
+            id
             name
             orders {
               id
               orderId
               fulfillmentStatus
-              orderBundles {
-                bundle {
-                  variants {
-                    variant {
-                      pricing {
-                        price {
-                          gross {
+              orderBundles{
+                bundle{
+                  id
+                  variants{
+                    variant{
+                      id
+                      pricing{
+                        price{
+                          gross
+                          {
                             currency
                             amount
                           }
                         }
                       }
                     }
+                    quantity
                   }
+                }
+                quantity
+              }
+              fulfillments{
+                fulfillmentBundles{
+                  bundle{
+                    id
+                    variants{
+                      variant{
+                        id
+                        pricing{
+                          price{
+                            gross
+                            {
+                              currency
+                              amount
+                            }
+                          }
+                        }
+                      }
+                      quantity
+                    }
+                  }
+                  quantity
                 }
               }
             }

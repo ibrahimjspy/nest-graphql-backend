@@ -10,6 +10,7 @@ import { OrdersModule } from './modules/orders/Orders.module';
 import { ShopModule } from './modules/shop/Shop.module';
 import { CheckoutModule } from './modules/checkout/Checkout.module';
 import { AccountModule } from './modules/account/Account.module';
+import { RetailerModule } from './modules/retailer/Retailer.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { AccountModule } from './modules/account/Account.module';
     ShopModule,
     CheckoutModule,
     AccountModule,
+    RetailerModule,
   ],
   controllers: [AppController],
   providers: [

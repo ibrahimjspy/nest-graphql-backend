@@ -4,22 +4,89 @@ import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 const federationQuery = (id: string): string => {
   return gql`
     query{
-      marketplaceOrder(
+      marketplaceOrders(
         filter: {
-          id: "${id}"
+          marketplaceOrderId: "${id}"
         }
       )
       {
-        id
         orderId
+        fulfillmentStatus
         orderBundles{
-          orderlineIds
+          bundle{
+            id
+            variants{
+              variant{
+                id
+                product{
+                  name
+                  media{
+                    url
+                  }
+                }
+                attributes{
+                  attribute{
+                    name
+                  }
+                  values{
+                    name
+                  }
+                }
+                pricing{
+                  price{
+                    gross{
+                      currency
+                      amount
+                    }
+                  }
+                }
+                media{
+                  url
+                }
+              }
+              quantity
+            }
+          }
           quantity
         }
         fulfillments{
+          id
           fulfillmentId
           fulfillmentBundles{
-            fulfillmentlineIds
+            bundle{
+              id
+              variants{
+                variant{
+                  id
+                  product{
+                    name
+                    media{
+                      url
+                    }
+                  }
+                  attributes{
+                    attribute{
+                      name
+                    }
+                    values{
+                      name
+                    }
+                  }
+                  pricing{
+                    price{
+                      gross{
+                        currency
+                        amount
+                      }
+                    }
+                  }
+                  media{
+                    url
+                  }
+                }
+                quantity
+              }
+            }
             quantity
           }
         }
@@ -27,25 +94,7 @@ const federationQuery = (id: string): string => {
     }
   `;
 };
-
-const mockQuery = () => {
-  return gql`
-    query {
-      shop_orders {
-        orders {
-          id
-          orderId
-          orderBundle {
-            bundleId
-            orderlineIds
-          }
-          quantity
-        }
-      }
-    }
-  `;
-};
 // returns shop orders query based on federation and mock check
 export const shopOrderFulfillmentsQuery = (id: string) => {
-  return graphqlQueryCheck(federationQuery(id), mockQuery());
+  return graphqlQueryCheck(federationQuery(id), federationQuery(id));
 };
