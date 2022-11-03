@@ -46,3 +46,12 @@ export const remove_keys_quoutes = (obj: object) => {
 
   return json_str.replace(re, (match: string) => match.replaceAll(/"/gi, ''));
 };
+
+/**
+ * It makes the number to 2 decimal places
+ * @param number - The number to be converted.
+ * @returns A number with precision to 2 decimal places
+ */
+export const roundNumber = (number: number) => {
+  return Number(number.toFixed(2));
+};
