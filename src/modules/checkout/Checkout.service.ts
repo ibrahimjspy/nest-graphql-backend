@@ -159,16 +159,15 @@ export class CheckoutService {
         checkoutData['checkoutId'],
       );
 
-      const checkoutLines = CheckoutUtils.getCheckoutLineItems(
+      const checkoutLines = CheckoutUtils.getCheckoutLineItemsForDelete(
         saleorCheckout['lines'],
         checkoutData['bundles'],
         checkoutBundleIds,
       );
       const checkoutLineIds = CheckoutUtils.getCheckoutLineIds(checkoutLines);
-
       await CheckoutHandlers.deleteLinesHandler(
-        saleorCheckout['id'],
         checkoutLineIds,
+        saleorCheckout['id'],
       );
       const response = await CheckoutHandlers.deleteBundlesHandler(
         checkoutBundleIds,
@@ -267,7 +266,7 @@ export class CheckoutService {
       const saleorCheckout = await CheckoutHandlers.checkoutHandler(
         checkoutData['checkoutId'],
       );
-      const checkoutLines = CheckoutUtils.getCheckoutLineItems(
+      const checkoutLines = CheckoutUtils.getCheckoutLineItemsForDelete(
         saleorCheckout['lines'],
         checkoutData['bundles'],
         checkoutBundleIds,
