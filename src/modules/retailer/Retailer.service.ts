@@ -14,7 +14,7 @@ export class RetailerService {
   public async getRecentOrdersData(email: string): Promise<object> {
     const Throw_Exception = true;
     try {
-      let recentOrders = await RetailerHandlers.recentOrdersHandler(
+      const recentOrders = await RetailerHandlers.recentOrdersHandler(
         email,
         Throw_Exception,
       );

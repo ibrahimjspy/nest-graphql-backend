@@ -1,6 +1,6 @@
 import { ShopOrdersListDto } from './shop-order.dto';
 import { ShopOrdersFulfillmentsDto } from './shop-order-fulfillment.dto';
-import { UserIdDto, ShopIdDto, OrderIdDto } from './common.dto';
+import { OrderIdDto, ShopIdDto, UserIdDto } from './common.dto';
 
 export {
   ShopOrdersListDto,

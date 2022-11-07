@@ -8,7 +8,7 @@ import { GQL_EDGES_KEY } from 'src/constants';
 
 export const recentOrdersHandler = async (
   email: string,
-  throwException: boolean = false,
+  throwException = false,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(RetailerQueries.recentOrdersQuery(email)),

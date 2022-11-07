@@ -1,11 +1,11 @@
 import {
-  dashboardQuery,
   allShopOrdersQuery,
-  orderDetailsQuery,
+  dashboardQuery,
   orderActivityQuery,
-  shopOrdersQuery,
-  shopOrderFulfillmentsQuery,
+  orderDetailsQuery,
   shopOrderFulfillmentDetailsQuery,
+  shopOrderFulfillmentsQuery,
+  shopOrdersQuery,
 } from 'src/graphql/queries/orders';
 import {
   graphqlCall,
