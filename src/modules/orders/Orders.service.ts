@@ -2,24 +2,24 @@ import { Injectable, Logger } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
 import {
-  dashboardByIdHandler,
   allShopOrdersHandler,
-  orderDetailsHandler,
-  shopOrdersByIdHandler,
+  dashboardByIdHandler,
   orderActivityHandler,
+  orderDetailsHandler,
   shopOrderFulfillmentsByIdHandler,
   shopOrderFulfillmentsDetailsHandler,
+  shopOrdersByIdHandler,
 } from 'src/graphql/handlers/orders';
 import {
-  getCurrency,
-  getTotalFromBundles,
-  getFulfillmentTotal,
   addStatusAndTotalToBundles,
+  getCurrency,
   getFulFillmentsWithStatusAndBundlesTotal,
+  getFulfillmentTotal,
+  getTotalFromBundles,
 } from './Orders.utils';
 import { FulfillmentStatusEnum } from 'src/graphql/enums/orders';
 import { GQL_EDGES_KEY } from 'src/constants';
-import { ShopOrdersListDto, ShopOrdersFulfillmentsDto } from './dto';
+import { ShopOrdersFulfillmentsDto, ShopOrdersListDto } from './dto';
 @Injectable()
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
@@ -86,7 +86,7 @@ export class OrdersService {
   }
 
   public async getShopOrderFulfillmentsDataById(id): Promise<object> {
-    let orderFulfillments = await shopOrderFulfillmentsByIdHandler(id);
+    const orderFulfillments = await shopOrderFulfillmentsByIdHandler(id);
 
     const fulfillmentDetails = await shopOrderFulfillmentsDetailsHandler(
       orderFulfillments['orderId'],

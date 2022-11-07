@@ -2,7 +2,7 @@ import { Controller, Get, Param, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { OrdersService } from './Orders.service';
 import { makeResponse } from '../../core/utils/response';
-import { UserIdDto, ShopIdDto, OrderIdDto } from './dto';
+import { OrderIdDto, ShopIdDto, UserIdDto } from './dto';
 
 @ApiTags('orders')
 @Controller('orders')

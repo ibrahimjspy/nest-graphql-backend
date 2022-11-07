@@ -1,4 +1,2 @@
 import { recentOrdersQuery } from './recentOrders';
-export {
-  recentOrdersQuery,
-};
+export { recentOrdersQuery };
