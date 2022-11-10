@@ -38,6 +38,9 @@ const federationQuery = (id): string => {
             thumbnail {
               url
             }
+            media {
+              url
+            }
             name
             description
           }
