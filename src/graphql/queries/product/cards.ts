@@ -38,6 +38,9 @@ export const federationQuery = (): string => {
             thumbnail {
               url
             }
+            media {
+              url
+            }
             name
             description
           }
