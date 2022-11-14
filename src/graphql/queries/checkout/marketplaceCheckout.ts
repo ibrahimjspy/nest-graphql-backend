@@ -40,6 +40,9 @@ const federationQuery = (userId: string): string => {
                       thumbnail {
                         url
                       }
+                      media {
+                        url
+                      }
                   }
                   pricing {
                     price {
