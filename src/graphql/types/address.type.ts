@@ -10,7 +10,7 @@ export interface AddressInput {
   cityArea?: string;
   postalCode: string;
   country: CountryCode;
-  countryArea?: string;
+  countryArea: string;
   phone: string;
 }
 

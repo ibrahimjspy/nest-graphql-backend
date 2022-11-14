@@ -17,6 +17,7 @@ export const mockAddressInput = (): AddressInput => {
     cityArea: faker.datatype.string(),
     postalCode: faker.address.zipCode(),
     country: CountryCode.US,
+    countryArea: faker.address.state(),
     phone: faker.phone.number(),
   };
 };

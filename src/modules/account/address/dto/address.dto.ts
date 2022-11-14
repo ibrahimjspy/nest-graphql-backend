@@ -39,6 +39,7 @@ export class AddressDto {
   country: CountryCode;
 
   @ApiProperty()
+  @IsNotEmpty()
   countryArea: string;
 
   @ApiProperty()
