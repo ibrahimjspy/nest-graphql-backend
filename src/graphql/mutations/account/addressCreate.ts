@@ -16,6 +16,7 @@ const federationQuery = (userId: string, address: AddressInput) => {
           city: "${address.city}",
           cityArea: "${address.cityArea}",
           country: ${address.country},
+          countryArea: "${address.countryArea}",
           phone: "${address.phone}",
           postalCode: "${address.postalCode}"
         }
