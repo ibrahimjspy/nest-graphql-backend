@@ -46,6 +46,9 @@ const federationQuery = (variantIds: Array<string>) => {
                 thumbnail {
                   url
                 }
+                media { 
+                  url
+                }
               }
               pricing {
                 price {

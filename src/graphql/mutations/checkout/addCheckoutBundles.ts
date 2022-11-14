@@ -53,6 +53,9 @@ const federationQuery = (
                       thumbnail {
                         url
                       }
+                      media {
+                        url
+                      }
                   }
                   pricing {
                     price {
