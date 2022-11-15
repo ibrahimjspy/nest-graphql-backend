@@ -7,6 +7,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {
     return;
   }
+
   @Get('/health')
   async healthCheck(@Res() res): Promise<object> {
     return makeResponse(res, await this.appService.getHealthCheck());

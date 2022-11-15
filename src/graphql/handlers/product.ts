@@ -37,6 +37,25 @@ export const productCardsByCategoriesHandler = async (
   }
 };
 
+export const productsHandler = async (filter): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(ProductQueries.productsQuery(filter)),
+  );
+
+  return response?.products;
+};
+
+export const popularItemsHandler = async (filter): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(ProductQueries.popularItemsQuery(filter)),
+  );
+
+  return response?.reportProductSales;
+};
+
+/**
+ * DEPRECATED: use `getProducts` method instead
+ */
 export const productCardHandler = async (): Promise<object> => {
   try {
     return await graphqlCall(ProductQueries.productCardsDefaultQuery());

@@ -1,6 +1,6 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
-import { remove_keys_quoutes } from 'src/core/utils/helpers';
+import { removeKeysQuoutes } from 'src/core/utils/helpers';
 
 const federationQuery = (
   checkoutId: string,
@@ -18,7 +18,7 @@ const federationQuery = (
         Input: {
           checkoutId: "${checkoutId}",
           userId: "${userId}",
-          bundles: ${remove_keys_quoutes(bundles)}
+          bundles: ${removeKeysQuoutes(bundles)}
         }
       ) {
         ... on CheckoutBundlesType {

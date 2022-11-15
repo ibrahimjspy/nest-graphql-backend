@@ -37,7 +37,7 @@ export const makeQuantity = (quantity: number): number => {
  * @param {object} obj - The object to be converted to a string.
  * @returns A string with all the keys in the object without quotes.
  */
-export const remove_keys_quoutes = (obj: object) => {
+export const removeKeysQuoutes = (obj: object) => {
   if (typeof obj !== 'object')
     throw new Error('`obj` should be a dictionary object');
 
@@ -54,4 +54,15 @@ export const remove_keys_quoutes = (obj: object) => {
  */
 export const roundNumber = (number: number) => {
   return Number(number.toFixed(2));
+};
+
+/**
+ * If the object is not null, is an object, and is not an array, then it is an object.
+ * @param obj - The object to check
+ * @returns true if an object otherwise false
+ */
+export const isObject = (obj) => {
+  if (obj !== null && typeof obj === 'object' && !Array.isArray(obj))
+    return true;
+  return false;
 };

@@ -5,6 +5,9 @@ import { productListPageQuery } from './listPageById';
 import { productBundlesByVariantIdQuery } from './bundlesByVariantIds';
 import { variantsIdsByProductIdsQuery } from './variantsIdsByProductIds';
 import { productBundlesByBundleIdQuery } from './bundlesByBundleIds';
+import { productsQuery } from './products';
+import { popularItemsQuery } from './popularItems';
+
 export {
   productCardsDefaultQuery,
   productDetailsQuery,
@@ -13,4 +16,6 @@ export {
   productBundlesByVariantIdQuery,
   variantsIdsByProductIdsQuery,
   productBundlesByBundleIdQuery,
+  productsQuery,
+  popularItemsQuery,
 };
