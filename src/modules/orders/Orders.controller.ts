@@ -51,4 +51,16 @@ export class OrdersController {
   async getOrderActivity(@Res() res): Promise<object> {
     return makeResponse(res, await this.appService.getOrderActivity());
   }
+
+  // Returns shop order details
+  @Get('/:orderId')
+  async getOrderDetails(
+    @Res() res,
+    @Param() orderDto: OrderIdDto,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.getOrderDetailsById(orderDto.orderId),
+    );
+  }
 }
