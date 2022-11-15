@@ -7,6 +7,7 @@ const federationQuery = (id: string): string => {
       order(id: "${id}") {
         number
         created
+        id
         user {
           firstName
           lastName
@@ -27,15 +28,6 @@ const federationQuery = (id: string): string => {
             streetAddress1
             streetAddress2
           }
-        }
-        id
-        number
-        created
-        status
-        user {
-          firstName
-          lastName
-          email
         }
         lines {
           productName
