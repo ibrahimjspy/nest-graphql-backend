@@ -54,7 +54,7 @@ export const popularItemsHandler = async (filter): Promise<object> => {
 };
 
 /**
- * DEPRECATED: use `getProducts` method instead
+ * DEPRECATED: use `productsHandler` method instead
  */
 export const productCardHandler = async (): Promise<object> => {
   try {
