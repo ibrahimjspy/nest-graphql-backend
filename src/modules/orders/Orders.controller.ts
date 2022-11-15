@@ -63,4 +63,16 @@ export class OrdersController {
       await this.appService.getOrderDetailsById(orderDto.orderId),
     );
   }
+
+  // Returns shop orders list
+  @Get('/list/:shopId')
+  async getOrdersList(
+    @Res() res,
+    @Param() shopDto: ShopIdDto,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.getOrdersListByShopId(shopDto.shopId),
+    );
+  }
 }
