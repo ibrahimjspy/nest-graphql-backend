@@ -122,4 +122,14 @@ export class OrdersService {
       return graphqlExceptionHandler(error);
     }
   }
+
+  public async getOrderDetailsById(id: string): Promise<object> {
+    try {
+      const response = await orderDetailsHandler(id);
+      return prepareSuccessResponse(response, '', 201);
+    } catch (err) {
+      this.logger.error(err);
+      return graphqlExceptionHandler(err);
+    }
+  }
 }
