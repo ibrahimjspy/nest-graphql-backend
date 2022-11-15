@@ -1,22 +1,22 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
+import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
 const federationQuery = (): string => {
   return gql`
     query {
-      categories(first: 4) {
+      categories(first: 20, level: 0) {
         edges {
           node {
             name
             id
             slug
-            children(first: 2) {
+            children(first: 20) {
               edges {
                 node {
                   name
                   id
                   slug
-                  children(first: 2) {
+                  children(first: 20) {
                     edges {
                       node {
                         name

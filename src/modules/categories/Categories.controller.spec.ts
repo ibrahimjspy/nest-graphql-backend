@@ -10,7 +10,7 @@ describe('Categories controller unit tests', () => {
   let appController: CategoriesController;
   const queryError = { status: 400 };
   const systemError = { status: 500 };
-  const federationSystemError = { status: 405 };
+  const federationInternalError = { status: 405 };
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
@@ -36,16 +36,21 @@ describe('Categories controller unit tests', () => {
 
     it('menuCategories async test', async () => {
       const data = await appController.findMenuCategories();
-      expect(data).not.toEqual(queryError);
-      expect(data).not.toEqual(systemError);
-      expect(data).not.toEqual(federationSystemError);
+      expect(data).toEqual(objectContainingCheck(queryError));
+      expect(data).toEqual(objectContainingCheck(systemError));
+      expect(data).toEqual(objectContainingCheck(federationInternalError));
+      expect(data).not.toHaveProperty('graphql_error');
     });
 
     it('productCollections async test', async () => {
       const data = await appController.findProductCollections();
-      expect(data).not.toEqual(queryError);
-      expect(data).not.toEqual(systemError);
-      expect(data).not.toEqual(federationSystemError);
+      expect(data).toEqual(objectContainingCheck(queryError));
+      expect(data).toEqual(objectContainingCheck(systemError));
+      expect(data).toEqual(objectContainingCheck(federationInternalError));
+      expect(data).not.toHaveProperty('graphql_error');
     });
   });
 });
+export const objectContainingCheck = (errorCode: object) => {
+  return expect.not.objectContaining(errorCode);
+};

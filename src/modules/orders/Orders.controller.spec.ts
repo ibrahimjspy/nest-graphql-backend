@@ -10,7 +10,9 @@ describe('Orders controller unit tests', () => {
   let appController: OrdersController;
   const queryError = { status: 400 };
   const systemError = { status: 500 };
-  const federationSystemError = { status: 405 };
+  const federationInternalError = { status: 405 };
+  const testUUID = { id: '3f0c01c1-3195-4025-b24f-3f50f4fb7e95' };
+  const testId = { id: '1' };
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
@@ -30,13 +32,61 @@ describe('Orders controller unit tests', () => {
       expect(appController.findDashboard('test')).toBeDefined();
     });
 
+    it('shop orders validation test', () => {
+      expect(appController.findShopOrders(testId)).toBeDefined();
+    });
+
+    it('shop order fulfillments validation test', () => {
+      expect(appController.findShopOrderFulfillments(testUUID)).toBeDefined();
+    });
+
+    it('orders activitiy validation test', () => {
+      expect(appController.getOrderActivity()).toBeDefined();
+    });
+
     // async tests for JSON data from either Mock service or backend services
 
     it('Orders dashboard async test', async () => {
       const data = await appController.findDashboard('test');
-      expect(data).not.toEqual(queryError);
-      expect(data).not.toEqual(systemError);
-      expect(data).not.toEqual(federationSystemError);
+      expect(data).toEqual(objectContainingCheck(queryError));
+      expect(data).toEqual(objectContainingCheck(systemError));
+      expect(data).toEqual(objectContainingCheck(federationInternalError));
+      expect(data).not.toHaveProperty('graphql_error');
+    });
+
+    it('Shop Orders async test', async () => {
+      const data = await appController.findShopOrders(testId);
+      expect(data).toEqual(objectContainingCheck(queryError));
+      expect(data).toEqual(objectContainingCheck(systemError));
+      expect(data).toEqual(objectContainingCheck(federationInternalError));
+      expect(data).not.toHaveProperty('graphql_error');
+    });
+
+    it('Shop Order Fulfillments async test', async () => {
+      const data = await appController.findShopOrderFulfillments(testUUID);
+      expect(data).toEqual(objectContainingCheck(queryError));
+      expect(data).toEqual(objectContainingCheck(systemError));
+      expect(data).toEqual(objectContainingCheck(federationInternalError));
+      expect(data).not.toHaveProperty('graphql_error');
+    });
+
+    it('Shop Order Fulfillments async test', async () => {
+      const data = await appController.findShopOrderFulfillments(testUUID);
+      expect(data).toEqual(objectContainingCheck(queryError));
+      expect(data).toEqual(objectContainingCheck(systemError));
+      expect(data).toEqual(objectContainingCheck(federationInternalError));
+      expect(data).not.toHaveProperty('graphql_error');
+    });
+
+    it('Order activity async test', async () => {
+      const data = await appController.getOrderActivity();
+      expect(data).toEqual(objectContainingCheck(queryError));
+      expect(data).toEqual(objectContainingCheck(systemError));
+      expect(data).toEqual(objectContainingCheck(federationInternalError));
+      expect(data).not.toHaveProperty('graphql_error');
     });
   });
 });
+export const objectContainingCheck = (errorCode: object) => {
+  return expect.not.objectContaining(errorCode);
+};

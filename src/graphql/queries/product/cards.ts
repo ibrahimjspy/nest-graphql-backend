@@ -1,44 +1,48 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
+import { DEFAULT_CHANNEL } from 'src/constants';
+import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
 export const federationQuery = (): string => {
   return gql`
     query {
-      marketplaceShops {
+      products(
+        first: 6
+        channel: "${DEFAULT_CHANNEL}"
+        filter: { categories: ["Q2F0ZWdvcnk6MTM="] }
+      ) {
         edges {
           node {
             id
-            name
-            products {
-              id
-              slug
-              defaultVariant {
-                sku
-                pricing {
-                  price {
-                    gross {
-                      currency
-                      amount
-                    }
+            slug
+            defaultVariant {
+              sku
+              pricing {
+                price {
+                  gross {
+                    currency
+                    amount
                   }
                 }
               }
-              variants {
-                attributes {
-                  attribute {
-                    name
-                  }
-                  values {
-                    name
-                  }
-                }
-              }
-              thumbnail {
-                url
-              }
-              name
-              description
             }
+            variants {
+              attributes {
+                attribute {
+                  name
+                }
+                values {
+                  name
+                }
+              }
+            }
+            thumbnail {
+              url
+            }
+            media {
+              url
+            }
+            name
+            description
           }
         }
       }

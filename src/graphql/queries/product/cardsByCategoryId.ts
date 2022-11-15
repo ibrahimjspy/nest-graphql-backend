@@ -1,12 +1,13 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/public/graphqlQueryToggle';
+import { DEFAULT_CHANNEL } from 'src/constants';
+import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
 const federationQuery = (id): string => {
   return gql`
     query {
       products(
         first: 6
-        channel: "default-channel"
+        channel: "${DEFAULT_CHANNEL}"
         filter: { categories: ["${id}"] }
       ) {
         edges {
@@ -35,6 +36,9 @@ const federationQuery = (id): string => {
               }
             }
             thumbnail {
+              url
+            }
+            media {
               url
             }
             name
