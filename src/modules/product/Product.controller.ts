@@ -5,7 +5,9 @@ import { ProductService } from './Product.service';
 @ApiTags('product')
 @Controller('product')
 export class ProductController {
-  constructor(private readonly appService: ProductService) {}
+  constructor(private readonly appService: ProductService) {
+    return;
+  }
   // Returns default cards data  <All>
   @Get('/cards')
   findDefaultCards(): Promise<object> {
