@@ -16,6 +16,7 @@ import {
   getCurrency,
   getFulFillmentsWithStatusAndBundlesTotal,
   getFulfillmentTotal,
+  getPendingOrders,
   getTotalFromBundles,
 } from './Orders.utils';
 import { FulfillmentStatusEnum } from 'src/graphql/enums/orders';
@@ -142,6 +143,17 @@ export class OrdersService {
       const response = { ...shopDetails, ...ordersList };
 
       return prepareSuccessResponse(response, '', 201);
+    } catch (err) {
+      this.logger.error(err);
+      return graphqlExceptionHandler(err);
+    }
+  }
+  public async getAllPendingOrders(): Promise<object> {
+    try {
+      const allOrders = await this.getAllShopOrdersData();
+      const pendingOrders = getPendingOrders(allOrders['data'].orders);
+
+      return prepareSuccessResponse(pendingOrders, '', 201);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
