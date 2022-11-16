@@ -20,7 +20,7 @@ import {
   getTotalFromBundles,
 } from './Orders.utils';
 import { FulfillmentStatusEnum } from 'src/graphql/enums/orders';
-import { GQL_EDGES_KEY } from 'src/constants';
+import { GQL_EDGES } from 'src/constants';
 import { ShopOrdersFulfillmentsDto, ShopOrdersListDto } from './dto';
 @Injectable()
 export class OrdersService {
@@ -39,7 +39,7 @@ export class OrdersService {
   public async getAllShopOrdersData(): Promise<object> {
     try {
       const response = await allShopOrdersHandler();
-      const shops = (response[GQL_EDGES_KEY] || []).map((shop) => shop['node']);
+      const shops = (response[GQL_EDGES] || []).map((shop) => shop['node']);
       const shopOrders: ShopOrdersListDto = { orders: [] };
 
       await Promise.all(
