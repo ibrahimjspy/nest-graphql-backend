@@ -45,9 +45,9 @@ export const productsHandler = async (filter): Promise<object> => {
   return response?.products;
 };
 
-export const popularItemsHandler = async (filter): Promise<object> => {
+export const popularItemsHandler = async (): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(ProductQueries.popularItemsQuery(filter)),
+    await graphqlCall(ProductQueries.popularItemsQuery()),
   );
 
   return response?.reportProductSales;

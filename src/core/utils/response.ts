@@ -1,7 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 import { FailedResponseType, SuccessResponseType } from './response.type';
 import { isObject } from './helpers';
-import { GQL_EDGES_KEY } from 'src/constants';
+import { GQL_EDGES } from 'src/constants';
 
 /**
  * It returns a response object with a status code and a JSON object
@@ -79,7 +79,7 @@ export const prepareGQLPaginatedResponse = async (input): Promise<any> => {
 
   await Promise.all(
     Object.keys(input).map(async (key) => {
-      if (input[key] && key === GQL_EDGES_KEY) {
+      if (input[key] && key === GQL_EDGES) {
         output['data'] = await Promise.all(
           input[key].map(
             async (edge) => await prepareGQLPaginatedResponse(edge.node),

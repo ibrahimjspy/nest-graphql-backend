@@ -4,7 +4,7 @@ import {
 } from 'src/core/proxies/graphqlHandler';
 import * as RetailerQueries from 'src/graphql/queries/retailer';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
-import { GQL_EDGES_KEY } from 'src/constants';
+import { GQL_EDGES } from 'src/constants';
 
 export const recentOrdersHandler = async (
   email: string,
@@ -14,8 +14,8 @@ export const recentOrdersHandler = async (
     await graphqlCall(RetailerQueries.recentOrdersQuery(email)),
     throwException,
   );
-  if (!response['orders'][GQL_EDGES_KEY]) {
+  if (!response['orders'][GQL_EDGES]) {
     throw new RecordNotFound('Orders');
   }
-  return response['orders'][GQL_EDGES_KEY];
+  return response['orders'][GQL_EDGES];
 };

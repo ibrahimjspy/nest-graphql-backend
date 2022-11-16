@@ -24,15 +24,24 @@ export class ProductService {
     }
   }
 
+  /**
+   * // FIXME: Need to create custom solution, due to Saleor is providing product-variants as
+   * popular items and we need to show products and its breaking the pagination.
+   *
+   * It gets the popular items from the database, gets the product ids from the variants, and then gets
+   * the products from the database
+   * @param {ProductFilterDto} filter - filters for products
+   */
   public async getPopularItems(filter: ProductFilterDto): Promise<object> {
     try {
-      const popularItems = await ProductsHandlers.popularItemsHandler(filter);
-      const productIds = ProductUtils.getProductIdsByVariants(popularItems);
+      const popularItems = await ProductsHandlers.popularItemsHandler();
+      const uniqueProductIds =
+        ProductUtils.getProductIdsByVariants(popularItems);
 
       return prepareGQLPaginatedResponse(
         await ProductsHandlers.productsHandler({
           ...filter,
-          ids: productIds,
+          ids: uniqueProductIds,
         }),
       );
     } catch (error) {

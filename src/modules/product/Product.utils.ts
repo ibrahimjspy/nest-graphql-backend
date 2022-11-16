@@ -1,4 +1,4 @@
-import { GQL_EDGES_KEY } from 'src/constants';
+import { GQL_EDGES } from 'src/constants';
 
 /**
  * returns array of bundle ids
@@ -14,7 +14,6 @@ export const getBundleIds = (bundles) => {
  * @returns An array of unique product ids
  */
 export const getProductIdsByVariants = (variants) => {
-  return [
-    ...new Set(variants[GQL_EDGES_KEY].map((edge) => edge?.node?.product?.id)),
-  ];
+  const edges: any[] = variants[GQL_EDGES];
+  return [...new Set(edges?.map((edge) => edge?.node?.product?.id))];
 };
