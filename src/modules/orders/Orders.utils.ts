@@ -106,3 +106,11 @@ export const getFulFillmentsWithStatusAndBundlesTotal = (
     };
   });
 };
+
+/**
+ *   returns pending orders from all orders
+ *   @params all orders
+ */
+export const getPendingOrders = (orders) => {
+  return orders.filter((order) => order.status !== 'FULFILLED');
+};

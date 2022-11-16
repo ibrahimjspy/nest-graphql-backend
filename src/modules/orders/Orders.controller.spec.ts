@@ -2,11 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
 import { OrdersController } from './Orders.controller';
 import { OrdersService } from './Orders.service';
+import { getPendingOrders } from './Orders.utils';
 
 // Orders unit tests using Jest
 
 describe('Orders controller unit tests', () => {
   // Testing configurations
+  const orders = [{ status: 'FULFILLED' }, { status: 'UNFULFIllED' }];
   let appController: OrdersController;
   const queryError = { status: 400 };
   const systemError = { status: 500 };
@@ -44,7 +46,14 @@ describe('Orders controller unit tests', () => {
       expect(appController.getOrderActivity()).toBeDefined();
     });
 
-    // async tests for JSON data from either Mock service or backend services
+    it('get pending orders filter unit test', () => {
+      expect(getPendingOrders(orders)).toBeDefined();
+      expect(getPendingOrders(orders)).toStrictEqual([
+        { status: 'UNFULFIllED' },
+      ]);
+    });
+
+    //   // async tests for JSON data from either Mock service or backend services
 
     it('Orders dashboard async test', async () => {
       const data = await appController.findDashboard('test');

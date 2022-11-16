@@ -75,4 +75,10 @@ export class OrdersController {
       await this.appService.getOrdersListByShopId(shopDto.shopId),
     );
   }
+
+  // Returns all pending shop orders for orders list page
+  @Get('/marketplace/all/pending')
+  async findAllPendingOrders(@Res() res): Promise<object> {
+    return makeResponse(res, await this.appService.getAllPendingOrders());
+  }
 }
