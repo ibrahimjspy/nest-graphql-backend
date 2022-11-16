@@ -51,4 +51,34 @@ export class OrdersController {
   async getOrderActivity(@Res() res): Promise<object> {
     return makeResponse(res, await this.appService.getOrderActivity());
   }
+
+  // Returns shop order details
+  @Get('/:orderId')
+  async getOrderDetails(
+    @Res() res,
+    @Param() orderDto: OrderIdDto,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.getOrderDetailsById(orderDto.orderId),
+    );
+  }
+
+  // Returns shop orders list
+  @Get('/list/:shopId')
+  async getOrdersList(
+    @Res() res,
+    @Param() shopDto: ShopIdDto,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.getOrdersListByShopId(shopDto.shopId),
+    );
+  }
+
+  // Returns all pending shop orders for orders list page
+  @Get('/marketplace/all/pending')
+  async findAllPendingOrders(@Res() res): Promise<object> {
+    return makeResponse(res, await this.appService.getAllPendingOrders());
+  }
 }

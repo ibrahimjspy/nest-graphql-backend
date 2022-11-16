@@ -12,7 +12,9 @@ import {
   graphqlResultErrorHandler,
 } from 'src/core/proxies/graphqlHandler';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
+import { ordersListQuery } from '../queries/orders/list';
 import { GQL_EDGES } from 'src/constants';
+
 export const dashboardByIdHandler = async (id: string): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(dashboardQuery(id), 'true'),
@@ -82,4 +84,16 @@ export const orderActivityHandler = async (): Promise<object> => {
     throw new RecordNotFound('Order activity');
   }
   return response['homepageEvents'][GQL_EDGES];
+};
+
+export const ordersListByIdsHandler = async (
+  ids: string[],
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(ordersListQuery(ids)),
+  );
+  if (!response['orders']) {
+    throw new RecordNotFound('order details');
+  }
+  return response['orders'];
 };

@@ -6,6 +6,7 @@ import {
   dashboardByIdHandler,
   orderActivityHandler,
   orderDetailsHandler,
+  ordersListByIdsHandler,
   shopOrderFulfillmentsByIdHandler,
   shopOrderFulfillmentsDetailsHandler,
   shopOrdersByIdHandler,
@@ -15,6 +16,7 @@ import {
   getCurrency,
   getFulFillmentsWithStatusAndBundlesTotal,
   getFulfillmentTotal,
+  getPendingOrders,
   getTotalFromBundles,
 } from './Orders.utils';
 import { FulfillmentStatusEnum } from 'src/graphql/enums/orders';
@@ -120,6 +122,41 @@ export class OrdersService {
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async getOrderDetailsById(id: string): Promise<object> {
+    try {
+      const response = await orderDetailsHandler(id);
+      return prepareSuccessResponse(response, '', 201);
+    } catch (err) {
+      this.logger.error(err);
+      return graphqlExceptionHandler(err);
+    }
+  }
+
+  public async getOrdersListByShopId(id: string): Promise<object> {
+    try {
+      const shopDetails = await shopOrdersByIdHandler(id);
+      const orderIds = shopDetails['orders'];
+      const ordersList = await ordersListByIdsHandler(orderIds);
+      const response = { ...shopDetails, ...ordersList };
+
+      return prepareSuccessResponse(response, '', 201);
+    } catch (err) {
+      this.logger.error(err);
+      return graphqlExceptionHandler(err);
+    }
+  }
+  public async getAllPendingOrders(): Promise<object> {
+    try {
+      const allOrders = await this.getAllShopOrdersData();
+      const pendingOrders = getPendingOrders(allOrders['data'].orders);
+
+      return prepareSuccessResponse(pendingOrders, '', 201);
+    } catch (err) {
+      this.logger.error(err);
+      return graphqlExceptionHandler(err);
     }
   }
 }
