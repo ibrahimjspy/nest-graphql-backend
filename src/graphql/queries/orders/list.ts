@@ -1,11 +1,9 @@
 import { gql } from 'graphql-request';
 
-const federationQuery = (orderIds: string[]): string => {
+const federationQuery = (orderIds: string): string => {
   return gql`
     query {
-      orders(first:50, filter: { ids: [${orderIds.map((id) => {
-        return `"${id}"`;
-      })}]} ) {
+      orders(first:50, filter: { ids: [${orderIds}] } ) {
         edges {
           node {
             id
@@ -37,6 +35,6 @@ const federationQuery = (orderIds: string[]): string => {
 };
 
 // returns shop order list query
-export const ordersListQuery = (orderIds: string[]): string => {
+export const ordersListQuery = (orderIds: string): string => {
   return federationQuery(orderIds);
 };
