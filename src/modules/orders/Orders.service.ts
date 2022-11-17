@@ -22,6 +22,9 @@ import {
 import { FulfillmentStatusEnum } from 'src/graphql/enums/orders';
 import { GQL_EDGES } from 'src/constants';
 import { ShopOrdersFulfillmentsDto, ShopOrdersListDto } from './dto';
+import { mockOrderReporting } from 'src/graphql/mocks/orderSummary.mock';
+import { OrderSummaryResponseDto } from './dto/order.summary.dto';
+import { dailySalesHandler } from 'src/graphql/handlers/orders.reporting';
 @Injectable()
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
@@ -154,6 +157,22 @@ export class OrdersService {
       const pendingOrders = getPendingOrders(allOrders['data'].orders);
 
       return prepareSuccessResponse(pendingOrders, '', 201);
+    } catch (err) {
+      this.logger.error(err);
+      return graphqlExceptionHandler(err);
+    }
+  }
+
+  public async getOrdersSummary(reportingPeriod): Promise<object> {
+    try {
+      const dailySales = await dailySalesHandler(reportingPeriod);
+      const mock = mockOrderReporting();
+      const response: OrderSummaryResponseDto = {
+        dailySales: dailySales['gross'].amount,
+        ...mock,
+      };
+
+      return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);

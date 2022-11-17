@@ -3,6 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { OrdersService } from './Orders.service';
 import { makeResponse } from '../../core/utils/response';
 import { OrderIdDto, ShopIdDto, UserIdDto } from './dto';
+import { OrderSummaryDto } from './dto/common.dto';
 
 @ApiTags('orders')
 @Controller('orders')
@@ -80,5 +81,17 @@ export class OrdersController {
   @Get('/marketplace/all/pending')
   async findAllPendingOrders(@Res() res): Promise<object> {
     return makeResponse(res, await this.appService.getAllPendingOrders());
+  }
+
+  // Returns orders summary ()
+  @Get('/summary/:reportingPeriod?')
+  async findOrdersSummary(
+    @Res() res,
+    @Param() orderSummaryDto: OrderSummaryDto,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.getOrdersSummary(orderSummaryDto.reportingPeriod),
+    );
   }
 }
