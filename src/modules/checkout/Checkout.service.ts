@@ -345,7 +345,7 @@ export class CheckoutService {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
         userId,
-        false,
+        true,
       );
 
       const shippingZones = await CheckoutHandlers.getShippingZonesHandler();
