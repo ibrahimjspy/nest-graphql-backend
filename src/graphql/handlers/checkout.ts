@@ -12,6 +12,7 @@ import {
   CheckoutBundleInputType,
   LineType,
 } from 'src/graphql/handlers/checkout.type';
+import { GQL_EDGES } from 'src/constants';
 
 export const marketplaceCheckoutHandler = async (
   id: string,
@@ -210,7 +211,7 @@ export const paymentGatewayHandler = async (checkoutId: string) => {
   const response = await graphqlResultErrorHandler(
     graphqlCall(CheckoutQueries.availablePaymentGatewaysQuery(checkoutId)),
   );
-  return response['checkout'];
+  return response['checkout']['availablePaymentGateways'];
 };
 
 export const completeCheckoutHandler = async (checkoutId: string) => {
@@ -218,4 +219,11 @@ export const completeCheckoutHandler = async (checkoutId: string) => {
     graphqlCall(CheckoutMutations.checkoutCompleteMutation(checkoutId)),
   );
   return response['checkoutComplete'];
+};
+
+export const getShippingZonesHandler = async () => {
+  const response = await graphqlResultErrorHandler(
+    graphqlCall(CheckoutQueries.shippingZonesQuery()),
+  );
+  return response['shippingZones'][GQL_EDGES];
 };

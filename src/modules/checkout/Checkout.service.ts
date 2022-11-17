@@ -345,17 +345,19 @@ export class CheckoutService {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
         userId,
-        false,
+        true,
       );
 
-      const saleorCheckout = await CheckoutHandlers.checkoutHandler(
-        checkoutData['checkoutId'],
-      );
+      const shippingZones = await CheckoutHandlers.getShippingZonesHandler();
+      const shippingMethodsFromShippingZones =
+        CheckoutUtils.getShippingMethodsFromShippingZones(shippingZones);
+
       const methodsListFromShopService = CheckoutUtils.getShippingMethods(
         checkoutData['bundles'],
       );
+
       const methodsListFromSaleor = CheckoutUtils.getShippingMethodsWithUUID(
-        saleorCheckout['shippingMethods'],
+        shippingMethodsFromShippingZones,
         methodsListFromShopService,
         checkoutData['selectedMethods'],
       );
@@ -404,6 +406,7 @@ export class CheckoutService {
       const paymentGateways = await CheckoutHandlers.paymentGatewayHandler(
         checkoutData['checkoutId'],
       );
+
       const dummyGatewayId = CheckoutUtils.getDummyGateway(paymentGateways);
       const response = await CheckoutHandlers.createPaymentHandler(
         checkoutData['checkoutId'],

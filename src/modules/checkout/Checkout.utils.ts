@@ -334,11 +334,11 @@ export const getShippingMethodsWithUUID = (
   selectedMethods,
 ) => {
   const selectedMethodsId = selectedMethods.map(
-    (shippingMethod) => shippingMethod?.method?.shippingMethodId,
+    (shippingMethod) => shippingMethod?.method?.shippingMethodTypeId,
   );
   const getUUID = (id) => {
     const sameMethod = (shippingMethodsFromShopService || []).find(
-      (method) => method?.shippingMethodId === id,
+      (method) => method?.shippingMethodTypeId === id,
     );
     return sameMethod?.id;
   };
@@ -366,7 +366,7 @@ export const getShippingMethodsWithUUID = (
  * @params bundles: all the bundles array from the checkout data
  */
 export const getSelectedBundles = (bundles) => {
-  return bundles.filter((bundle) => bundle?.isSelected);
+  return (bundles || []).filter((bundle) => bundle?.isSelected);
 };
 
 /**
@@ -374,7 +374,7 @@ export const getSelectedBundles = (bundles) => {
  * @params bundles: all the bundles array from the checkout data
  */
 export const getCheckoutBundleIds = (bundles) => {
-  return bundles.map((bundle) => bundle?.checkoutBundleId);
+  return (bundles || []).map((bundle) => bundle?.checkoutBundleId);
 };
 
 /**
@@ -382,8 +382,19 @@ export const getCheckoutBundleIds = (bundles) => {
  * @params paymentGateways: available payment gateways
  */
 export const getDummyGateway = (availablePaymentGateways = []) => {
-  const dummyGateway = availablePaymentGateways.find(
+  const dummyGateway = (availablePaymentGateways || []).find(
     (gateway) => gateway?.name === 'Dummy',
   );
   return dummyGateway?.id;
+};
+
+export const getShippingMethodsFromShippingZones = (shippingZones) => {
+  let shippingMethods = [];
+  shippingZones.forEach((shippingZone) => {
+    shippingMethods = [
+      ...shippingMethods,
+      ...shippingZone?.node?.shippingMethods,
+    ];
+  });
+  return shippingMethods;
 };
