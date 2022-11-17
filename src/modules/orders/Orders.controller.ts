@@ -53,7 +53,7 @@ export class OrdersController {
   }
 
   // Returns shop order details
-  @Get('/:orderId')
+  @Get('/detail/:orderId')
   async getOrderDetails(
     @Res() res,
     @Param() orderDto: OrderIdDto,

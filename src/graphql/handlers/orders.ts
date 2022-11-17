@@ -14,6 +14,7 @@ import {
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import { ordersListQuery } from '../queries/orders/list';
 import { GQL_EDGES } from 'src/constants';
+import { orderIdsTransformer } from '../utils/orders';
 
 export const dashboardByIdHandler = async (id: string): Promise<object> => {
   const response = await graphqlResultErrorHandler(
@@ -90,7 +91,7 @@ export const ordersListByIdsHandler = async (
   ids: string[],
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(ordersListQuery(ids)),
+    await graphqlCall(ordersListQuery(orderIdsTransformer(ids))),
   );
   if (!response['orders']) {
     throw new RecordNotFound('order details');
