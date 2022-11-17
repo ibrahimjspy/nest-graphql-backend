@@ -4,7 +4,7 @@ import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 const federationQuery = () => {
   return gql`
     query {
-      shippingZones(first: 10) {
+      shippingZones(first: 1) {
         edges {
           node {
             id
