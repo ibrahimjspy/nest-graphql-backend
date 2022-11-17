@@ -68,6 +68,7 @@ const federationQuery = (userId: string): string => {
                 shippingMethods {
                   id
                   shippingMethodId
+                  shippingMethodTypeId
                 }
               }
             }
