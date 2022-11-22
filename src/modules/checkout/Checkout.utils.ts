@@ -4,8 +4,7 @@ import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
 import { BundleType } from 'src/graphql/types/bundle.type';
 import { CheckoutBundleType } from './Checkout.utils.type';
 import { getAccessToken } from 'src/core/utils/auth';
-import * as CheckoutHandlers from 'src/graphql/handlers/checkout';
-
+import { getLegacyProductMappingHandler } from 'src/graphql/handlers/checkout';
 /**
  * It takes an array of checkoutBundles and returns an array of product ids
  * @param {any[]} checkoutBundles - any[]
@@ -482,8 +481,9 @@ const getExternalOrderPlacePayload = async (selectedBundles) => {
   const colorNames = getColorNamesByCheckoutBundles(selectedBundles);
 
   const colorResponse = await getLegacyColorMappingIDs(colorNames);
-  const productMappingResponse =
-    await CheckoutHandlers.getLegacyProductMappingHandler(currentProductIDs);
+  const productMappingResponse = await getLegacyProductMappingHandler(
+    currentProductIDs,
+  );
   const payload = payloadBuilder(
     selectedBundles,
     colorResponse,
