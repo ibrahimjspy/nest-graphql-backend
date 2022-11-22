@@ -427,16 +427,21 @@ export class CheckoutService {
       const selectedBundles = CheckoutUtils.getSelectedBundles(
         checkoutData['bundles'],
       );
+
       const checkoutBundleIds =
         CheckoutUtils.getCheckoutBundleIds(selectedBundles);
+      const response = await CheckoutHandlers.completeCheckoutHandler(
+        checkoutData['checkoutId'],
+      );
+      // To place Order on External Platform
+      CheckoutUtils.externalOrderPlace(selectedBundles);
+
       await CheckoutHandlers.deleteBundlesHandler(
         checkoutBundleIds,
         checkoutData['checkoutId'],
         true,
       );
-      const response = await CheckoutHandlers.completeCheckoutHandler(
-        checkoutData['checkoutId'],
-      );
+
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
       this.logger.error(error);

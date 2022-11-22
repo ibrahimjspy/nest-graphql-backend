@@ -227,3 +227,10 @@ export const getShippingZonesHandler = async () => {
   );
   return response['shippingZones'][GQL_EDGES];
 };
+
+export const getLegacyProductMappingHandler = async (currentProductIds) => {
+  const response = await graphqlResultErrorHandler(
+    graphqlCall(CheckoutQueries.productMappingQuery(currentProductIds)),
+  );
+  return response;
+};
