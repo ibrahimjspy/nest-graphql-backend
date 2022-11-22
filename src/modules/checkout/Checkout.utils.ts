@@ -454,6 +454,13 @@ const mapColorNameWithColorID = (data) => {
   });
   return mappingObject;
 };
+// Mock Data temporary
+const mockColorMapping = () => {
+  return {
+    White: '004_0101',
+    Black: '004_0100',
+  };
+};
 
 /**
  * It takes an array of objects and returns an object with the keys being the legacyProductIds and the
@@ -478,15 +485,15 @@ const mapCurrentProductIDswithLegacyProductIds = (elements) => {
  */
 const getExternalOrderPlacePayload = async (selectedBundles) => {
   const currentProductIDs = getProductIdsByCheckoutBundles(selectedBundles);
-  const colorNames = getColorNamesByCheckoutBundles(selectedBundles);
+  // const colorNames = getColorNamesByCheckoutBundles(selectedBundles);
 
-  const colorResponse = await getLegacyColorMappingIDs(colorNames);
+  // const colorResponse = await getLegacyColorMappingIDs(colorNames);
   const productMappingResponse = await getLegacyProductMappingHandler(
     currentProductIDs,
   );
   const payload = payloadBuilder(
     selectedBundles,
-    colorResponse,
+    mockColorMapping,
     productMappingResponse,
   );
 
@@ -568,11 +575,11 @@ const payloadBuilder = (raw_data, color_mappings, product_mapping) => {
         if (!(productId in payloadObject)) {
           payloadObject[productId] = {
             item_id: productMappings[productId],
-            color_id: color_mappings[colorName] || 1, // TODO: Need to verify from Ibrahim.
+            color_id: color_mappings[colorName] || color_mappings['White'],
             pack_qty: elements?.quantity,
             stock_type: 'in_stock',
             exp_shipout_date: '2022-05-21',
-            // TODO: Need to verify thee fields
+
             memo: '',
             sms_number: process.env.SMS_NUMBER,
             spa_id: process.env.SPA_ID,
