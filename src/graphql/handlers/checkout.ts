@@ -25,6 +25,19 @@ export const marketplaceCheckoutHandler = async (
   return response['marketplaceCheckout'];
 };
 
+export const marketplaceWithCategoriesCheckoutHandler = async (
+  id: string,
+  throwException = false,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutQueries.getMarketplaceCheckoutWithCategoriesQuery(id),
+    ),
+    throwException,
+  );
+  return response['marketplaceCheckout'];
+};
+
 export const createCheckoutHandler = async (
   email: string,
   checkoutLines: LineType[],
@@ -228,9 +241,9 @@ export const getShippingZonesHandler = async () => {
   return response['shippingZones'][GQL_EDGES];
 };
 
-export const getLegacyProductMappingHandler = async (currentProductIds) => {
+export const getLegacyMappingHandler = async (productIds, shop_ids) => {
   const response = await graphqlResultErrorHandler(
-    graphqlCall(CheckoutQueries.productMappingQuery(currentProductIds)),
+    graphqlCall(CheckoutQueries.productMappingQuery(productIds, shop_ids)),
   );
   return response;
 };

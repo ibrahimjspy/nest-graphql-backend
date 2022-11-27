@@ -1,24 +1,26 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
-const federationQuery = (current_product_ids) => {
+const federationQuery = (product_ids, shop_ids) => {
   return gql`
     query {
       productMapping(
-        filter: {
-          currentProductIds: "${current_product_ids}"
-        }
+        filter: { productIds: ${JSON.stringify(product_ids)}}
       ) {
-        currentProductId
+        productId
         legacyProductId
+      }
+      shopMapping(filter: { shopIds: ${JSON.stringify(shop_ids)}}) {
+        shopId
+        vendorId
       }
     }
   `;
 };
 
-export const productMappingQuery = (current_product_ids) => {
+export const productMappingQuery = (product_ids, shop_ids) => {
   return graphqlQueryCheck(
-    federationQuery(current_product_ids),
-    federationQuery(current_product_ids),
+    federationQuery(product_ids, shop_ids),
+    federationQuery(product_ids, shop_ids),
   );
 };

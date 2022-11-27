@@ -16,7 +16,7 @@ import {
   CheckoutBundleInputType,
 } from 'src/graphql/handlers/checkout.type';
 import { BundleType } from 'src/graphql/types/bundle.type';
-
+import { LegacyService } from 'src/core/services/checkout';
 @Injectable()
 export class CheckoutService {
   private readonly logger = new Logger(CheckoutService.name);
@@ -421,28 +421,34 @@ export class CheckoutService {
 
   public async checkoutComplete(userId: string): Promise<object> {
     try {
-      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
-        userId,
-      );
+      const checkoutData =
+        await CheckoutHandlers.marketplaceWithCategoriesCheckoutHandler(userId);
       const selectedBundles = CheckoutUtils.getSelectedBundles(
         checkoutData['bundles'],
       );
 
       const checkoutBundleIds =
         CheckoutUtils.getCheckoutBundleIds(selectedBundles);
-      const response = await CheckoutHandlers.completeCheckoutHandler(
-        checkoutData['checkoutId'],
-      );
-      // To place Order on External Platform
-      CheckoutUtils.externalOrderPlace(selectedBundles);
+      const sharoveOrderPlaceResponse =
+        await CheckoutHandlers.completeCheckoutHandler(
+          checkoutData['checkoutId'],
+        );
 
-      await CheckoutHandlers.deleteBundlesHandler(
-        checkoutBundleIds,
-        checkoutData['checkoutId'],
-        true,
-      );
+      if (
+        Array.isArray(sharoveOrderPlaceResponse?.data?.errors) &&
+        sharoveOrderPlaceResponse?.data?.errors?.length == 0
+      ) {
+        // Place Order on External System
+        const instance = new LegacyService(selectedBundles);
+        await instance.placeExternalOrder();
 
-      return prepareSuccessResponse(response, '', 201);
+        await CheckoutHandlers.deleteBundlesHandler(
+          checkoutBundleIds,
+          checkoutData['checkoutId'],
+          true,
+        );
+        return prepareSuccessResponse(sharoveOrderPlaceResponse, '', 201);
+      } else return prepareFailedResponse('Something went wrong', 400);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
