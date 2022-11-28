@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
 import {
+  addOrderToShopHandler,
   allShopOrdersHandler,
   dashboardByIdHandler,
   orderActivityHandler,
@@ -16,6 +17,7 @@ import {
   getCurrency,
   getFulFillmentsWithStatusAndBundlesTotal,
   getFulfillmentTotal,
+  getOrdersByShopId,
   getPendingOrders,
   getTotalFromBundles,
 } from './Orders.utils';
@@ -177,5 +179,22 @@ export class OrdersService {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
     }
+  }
+
+  /**
+   * this method takes checkout bundles and Saleor order data;
+   * <> -  transforms single order against each shop
+   * <> -  add that order information through mutation in shop service
+   * @params checkoutData : marketplace checkout data containing bundles and shipping information
+   * @params orderInfo : Saleor order information containing line ids of order
+   * @returns void || success response;
+   */
+  public async addOrderToShop(checkoutBundles, orderData) {
+    const ordersByShop = getOrdersByShopId(checkoutBundles, orderData);
+    return Promise.all(
+      Object.values(ordersByShop).map(async (shopOrder) => {
+        await addOrderToShopHandler(shopOrder);
+      }),
+    );
   }
 }
