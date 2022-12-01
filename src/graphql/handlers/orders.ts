@@ -14,7 +14,8 @@ import {
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import { ordersListQuery } from '../queries/orders/list';
 import { GQL_EDGES } from 'src/constants';
-import { orderIdsTransformer } from '../utils/orders';
+import { orderBundlesTransformer, orderIdsTransformer } from '../utils/orders';
+import { addOrderToShopMutation } from '../mutations/order/addOrderToShop';
 
 export const dashboardByIdHandler = async (id: string): Promise<object> => {
   const response = await graphqlResultErrorHandler(
@@ -97,4 +98,16 @@ export const ordersListByIdsHandler = async (
     throw new RecordNotFound('order details');
   }
   return response['orders'];
+};
+
+export const addOrderToShopHandler = async (order) => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      addOrderToShopMutation(
+        order[0], //uses default bundle information for shop and shipping details
+        orderBundlesTransformer(order), //transforms bundles array to graphql string
+      ),
+    ),
+  );
+  return response['addOrderToShop'];
 };

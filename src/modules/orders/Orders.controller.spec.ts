@@ -2,7 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
 import { OrdersController } from './Orders.controller';
 import { OrdersService } from './Orders.service';
-import { getPendingOrders } from './Orders.utils';
+import { getOrdersByShopId, getPendingOrders } from './Orders.utils';
+import {
+  expectedOrdersByShop,
+  mockCheckoutBundles,
+  mockOrderData,
+} from '../../../test/mock/addOrderToShop';
 
 // Orders unit tests using Jest
 
@@ -29,7 +34,6 @@ describe('Orders controller unit tests', () => {
 
   describe('root', () => {
     // Basic validation tests for categories controller
-
     it('orders dashboard validation test', () => {
       expect(appController.findDashboard('test')).toBeDefined();
     });
@@ -51,6 +55,15 @@ describe('Orders controller unit tests', () => {
       expect(getPendingOrders(orders)).toStrictEqual([
         { status: 'UNFULFIllED' },
       ]);
+    });
+
+    it('add order to shop utility is working', async () => {
+      const allOrdersByShopId = getOrdersByShopId(
+        mockCheckoutBundles.data.marketplaceCheckout,
+        mockOrderData.order,
+      );
+      expect(allOrdersByShopId).toBeDefined();
+      expect(allOrdersByShopId).toStrictEqual(expectedOrdersByShop);
     });
 
     //   // async tests for JSON data from either Mock service or backend services
