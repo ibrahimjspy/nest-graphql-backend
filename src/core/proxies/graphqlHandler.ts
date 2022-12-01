@@ -4,7 +4,6 @@ import { ResultErrorType } from 'src/graphql/exceptions/resultError.type';
 import { HttpStatus } from '@nestjs/common';
 import ResultError from 'src/graphql/exceptions/resultError';
 import { prepareFailedResponse } from 'src/core/utils/response';
-
 /**
  * This is top level function which handles graphql requests , exceptions and logic
  * @params Query ,  It must be in string format and no query based
@@ -15,11 +14,21 @@ import { prepareFailedResponse } from 'src/core/utils/response';
  * is based on env files content .
  * @returns an object with data or graphql error
  */
+
 export const graphqlCall = async (
   Query: string,
+  Headers?: string,
   Mock?: string,
 ): Promise<any> => {
-  return await request(graphqlEndpoint(Mock ? Mock : ''), Query);
+  const requestHeaders = {
+    authorization: `${Headers}`,
+  };
+
+  return await request(
+    graphqlEndpoint(Mock ? Mock : ''),
+    Query,
+    requestHeaders,
+  );
 };
 
 /**

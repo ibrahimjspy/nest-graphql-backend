@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject } from '@nestjs/common';
 import { AddressInput } from 'src/graphql/mutations/account';
 import {
   prepareFailedResponse,
@@ -8,15 +8,22 @@ import { SuccessResponseType } from 'src/core/utils/response.type';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import * as AccountHandlers from 'src/graphql/handlers/account';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
 
 @Injectable()
 export class AddressService {
+  constructor(@Inject(REQUEST) private readonly request: Request) {}
   private readonly logger = new Logger(AddressService.name);
+  private readonly authorizationToken = this.request.headers.authorization;
 
   public async getAddresses(userId: string): Promise<SuccessResponseType> {
     try {
       return prepareSuccessResponse(
-        await AccountHandlers.addressesByUserIdHandler(userId),
+        await AccountHandlers.addressesByUserIdHandler(
+          userId,
+          this.authorizationToken,
+        ),
       );
     } catch (error) {
       this.logger.error(error);
@@ -30,7 +37,11 @@ export class AddressService {
   ): Promise<SuccessResponseType> {
     try {
       return prepareSuccessResponse(
-        await AccountHandlers.createAddressHandler(userId, address),
+        await AccountHandlers.createAddressHandler(
+          userId,
+          address,
+          this.authorizationToken,
+        ),
       );
     } catch (error) {
       this.logger.error(error);
@@ -43,7 +54,10 @@ export class AddressService {
 
   public async deleteAddress(addressId: string): Promise<SuccessResponseType> {
     try {
-      await AccountHandlers.deleteAddressHandler(addressId);
+      await AccountHandlers.deleteAddressHandler(
+        addressId,
+        this.authorizationToken,
+      );
       return prepareSuccessResponse(null, 'Address is deleted successfully.');
     } catch (error) {
       this.logger.error(error);
@@ -57,7 +71,11 @@ export class AddressService {
   ): Promise<SuccessResponseType> {
     try {
       return prepareSuccessResponse(
-        await AccountHandlers.setDefaultAddressHandler(userId, addressId),
+        await AccountHandlers.setDefaultAddressHandler(
+          userId,
+          addressId,
+          this.authorizationToken,
+        ),
       );
     } catch (error) {
       this.logger.error(error);
@@ -74,7 +92,11 @@ export class AddressService {
   ): Promise<SuccessResponseType> {
     try {
       return prepareSuccessResponse(
-        await AccountHandlers.updateAddressHandler(addressId, address),
+        await AccountHandlers.updateAddressHandler(
+          addressId,
+          address,
+          this.authorizationToken,
+        ),
       );
     } catch (error) {
       this.logger.error(error);

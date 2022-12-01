@@ -9,9 +9,10 @@ import { Address } from '../../types/address.type';
 
 export const addressesByUserIdHandler = async (
   userId: string,
+  header: string,
 ): Promise<Address[]> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(AccountQueries.userAddressesByIdQuery(userId)),
+    await graphqlCall(AccountQueries.userAddressesByIdQuery(userId), header),
   );
 
   return response?.user?.addresses || [];
@@ -20,9 +21,13 @@ export const addressesByUserIdHandler = async (
 export const createAddressHandler = async (
   userId: string,
   address: AccountMutations.AddressInput,
+  header: string,
 ): Promise<Address> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(AccountMutations.addressCreateMutation(userId, address)),
+    await graphqlCall(
+      AccountMutations.addressCreateMutation(userId, address),
+      header,
+    ),
   );
 
   if (!response?.addressCreate?.address) throw new RecordNotFound('Address');
@@ -31,19 +36,25 @@ export const createAddressHandler = async (
 
 export const deleteAddressHandler = async (
   addressId: string,
+  header: string,
 ): Promise<void> => {
   await graphqlResultErrorHandler(
-    await graphqlCall(AccountMutations.addressDeleteMutation(addressId)),
+    await graphqlCall(
+      AccountMutations.addressDeleteMutation(addressId),
+      header,
+    ),
   );
 };
 
 export const setDefaultAddressHandler = async (
   userId: string,
   addressId: string,
+  header: string,
 ): Promise<Address[]> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
       AccountMutations.addressSetDefaultMutation(userId, addressId),
+      header,
     ),
   );
 
@@ -54,10 +65,12 @@ export const setDefaultAddressHandler = async (
 export const updateAddressHandler = async (
   addressId: string,
   address: AccountMutations.AddressInput,
+  header: string,
 ): Promise<Address> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
       AccountMutations.addressUpdateMutation(addressId, address),
+      header,
     ),
   );
 

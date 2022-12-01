@@ -5,18 +5,22 @@ import {
 import { categoriesFilter } from 'src/core/utils/categoryFilter';
 import { menuCategoriesQuery } from 'src/graphql/queries/categories/menu';
 
-export const menuCategoriesHandler = async (): Promise<object> => {
+export const menuCategoriesHandler = async (
+  header: string,
+): Promise<object> => {
   try {
-    const categories = await graphqlCall(menuCategoriesQuery());
+    const categories = await graphqlCall(menuCategoriesQuery(), header);
     return categoriesFilter(categories);
   } catch (error) {
     return graphqlExceptionHandler(error);
   }
 };
 
-export const productCardSectionHandler = async (): Promise<object> => {
+export const productCardSectionHandler = async (
+  header: string,
+): Promise<object> => {
   try {
-    return await graphqlCall(menuCategoriesQuery());
+    return await graphqlCall(menuCategoriesQuery(), header);
   } catch (error) {
     return graphqlExceptionHandler(error);
   }

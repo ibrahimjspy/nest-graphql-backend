@@ -1,13 +1,17 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareGQLPaginatedResponse } from 'src/core/utils/response';
 import { ProductFilterDto } from './dto';
 import * as ProductsHandlers from 'src/graphql/handlers/product';
 import * as ProductUtils from './Product.utils';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
 
 @Injectable()
 export class ProductService {
+  constructor(@Inject(REQUEST) private readonly request: Request) {}
   private readonly logger = new Logger(ProductService.name);
+  private readonly authorizationToken = this.request.headers.authorization;
 
   /**
    * Get products list from PIM
@@ -16,7 +20,7 @@ export class ProductService {
   public async getProducts(filter: ProductFilterDto): Promise<object> {
     try {
       return prepareGQLPaginatedResponse(
-        await ProductsHandlers.productsHandler(filter),
+        await ProductsHandlers.productsHandler(filter, this.authorizationToken),
       );
     } catch (error) {
       this.logger.error(error);
@@ -34,15 +38,20 @@ export class ProductService {
    */
   public async getPopularItems(filter: ProductFilterDto): Promise<object> {
     try {
-      const popularItems = await ProductsHandlers.popularItemsHandler();
+      const popularItems = await ProductsHandlers.popularItemsHandler(
+        this.authorizationToken,
+      );
       const uniqueProductIds =
         ProductUtils.getProductIdsByVariants(popularItems);
 
       return prepareGQLPaginatedResponse(
-        await ProductsHandlers.productsHandler({
-          ...filter,
-          ids: uniqueProductIds,
-        }),
+        await ProductsHandlers.productsHandler(
+          {
+            ...filter,
+            ids: uniqueProductIds,
+          },
+          this.authorizationToken,
+        ),
       );
     } catch (error) {
       this.logger.error(error);
@@ -56,26 +65,35 @@ export class ProductService {
    * @returns
    */
   public getProductCards(): Promise<object> {
-    return ProductsHandlers.productCardHandler();
+    return ProductsHandlers.productCardHandler(this.authorizationToken);
   }
 
   //Product cards by collection ~ category <id>
   public getProductsByCategory(id: string): Promise<object> {
-    return ProductsHandlers.productCardsByCategoriesHandler(id);
+    return ProductsHandlers.productCardsByCategoriesHandler(
+      id,
+      this.authorizationToken,
+    );
   }
 
   // Single product details by <slug> {Quick View , SingleProductDetailsPage}
   public getProductDetailsBySlug(slug: string): Promise<object> {
-    return ProductsHandlers.singleProductDetailsHandler(slug);
+    return ProductsHandlers.singleProductDetailsHandler(
+      slug,
+      this.authorizationToken,
+    );
   }
 
   // Product list page data relating to category <slug>
   public getProductListPageById(id: string): Promise<object> {
-    return ProductsHandlers.productListPageHandler(id);
+    return ProductsHandlers.productListPageHandler(id, this.authorizationToken);
   }
 
   // Bundles list relating to variant ids
   public getBundlesByVariantIds(variantIds: Array<string>): Promise<object> {
-    return ProductsHandlers.bundlesByVariantsIdsHandler(variantIds);
+    return ProductsHandlers.bundlesByVariantsIdsHandler(
+      variantIds,
+      this.authorizationToken,
+    );
   }
 }
