@@ -11,6 +11,7 @@ import { ShopModule } from './modules/shop/Shop.module';
 import { CheckoutModule } from './modules/checkout/Checkout.module';
 import { AccountModule } from './modules/account/Account.module';
 import { RetailerModule } from './modules/retailer/Retailer.module';
+import { ImportListModule } from './modules/importList/ImportList.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { RetailerModule } from './modules/retailer/Retailer.module';
     CheckoutModule,
     AccountModule,
     RetailerModule,
+    ImportListModule,
   ],
   controllers: [AppController],
   providers: [
