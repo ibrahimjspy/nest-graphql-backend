@@ -3,13 +3,13 @@ import { ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
 import { ShopIdDto } from 'src/modules/orders/dto';
 import { ProductFilterDto } from 'src/modules/product/dto';
-import { ImportService } from './Import.service';
+import { ImportListService } from './ImportList.service';
 import { importProductsDTO } from './dto/products';
 
 @ApiTags('import')
 @Controller()
-export class ImportController {
-  constructor(private readonly appService: ImportService) {
+export class ImportListController {
+  constructor(private readonly appService: ImportListService) {
     return;
   }
 
@@ -26,14 +26,15 @@ export class ImportController {
     @Param() shopDto: ShopIdDto,
   ): Promise<object> {
     const data = await this.appService.getImportedProduct(
-      filter,
       shopDto.shopId,
+      filter,
     );
     return makeResponse(res, data);
   }
 
   @Post('api/v1/import/products')
-  public async addProducts(@Body() body: importProductsDTO) {
-    return await this.appService.importProducts(body);
+  public async importProducts(@Res() res, @Body() body: importProductsDTO) {
+    makeResponse;
+    return await makeResponse(res, this.appService.importProducts(body));
   }
 }

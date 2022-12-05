@@ -8,7 +8,7 @@ export const getImportedProductsQuery = (
 ) => {
   const pageFilter = validatePageFilter(filter);
   return gql`
-        query {
+      query {
         importProducts(
             Filter: {
               shopId: "${shopId}"
@@ -27,20 +27,21 @@ export const getImportedProductsQuery = (
             edges {
                 node {
                 shopId
+                productVariantIds
                 product {
                     id
                     name
                     pricing{
                         priceRange{
                             stop{
-                             gross{
+                            gross{
                                 amount
-                             }
+                            }
                             }
                             start{
-                             gross{
+                            gross{
                                 amount
-                             }
+                            }
                             }      
                           }
                         }
@@ -56,9 +57,16 @@ export const getImportedProductsQuery = (
                     }
                     }
                     }
-                    variant{
+                    variants{
                         id
-                        name
+                        attributes{
+                          attribute{
+                            name
+                          }
+                          values{
+                            name
+                          }
+                        }
                     }
                 }
                 }

@@ -3,9 +3,9 @@ import {
   graphqlExceptionHandler,
   graphqlResultErrorHandler,
 } from 'src/core/proxies/graphqlHandler';
-import { importProductsDTO } from 'src/modules/Import/dto/products';
-import { importProductsMutation } from '../mutations/import/products';
-import { getImportedProductsQuery } from '../queries/import/products';
+import { importProductsDTO } from 'src/modules/importList/dto/products';
+import { importProductsMutation } from '../mutations/importList/products';
+import { getImportedProductsQuery } from '../queries/importList/products';
 
 export const getImportedProductsHandler = async (
   shopId: string,
@@ -20,7 +20,7 @@ export const getImportedProductsHandler = async (
 
 export const importProductsHandler = async (
   productData: importProductsDTO,
-): Promise<string> => {
+): Promise<object> => {
   try {
     return await graphqlResultErrorHandler(
       graphqlCall(importProductsMutation(productData)),

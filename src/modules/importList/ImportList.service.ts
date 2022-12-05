@@ -7,19 +7,18 @@ import {
 import {
   getImportedProductsHandler,
   importProductsHandler,
-} from 'src/graphql/handlers/import';
+} from 'src/graphql/handlers/importList';
 import { ProductFilterDto } from 'src/modules/product/dto';
 import { importProductsDTO } from './dto/products';
 
 @Injectable()
-export class ImportService {
+export class ImportListService {
   /**
    * Get products list from PIM
-   * @returns products list
    */
   public async getImportedProduct(
-    filter: ProductFilterDto,
     shopId: string,
+    filter: ProductFilterDto,
   ): Promise<object> {
     try {
       return prepareGQLPaginatedResponse(
@@ -29,7 +28,9 @@ export class ImportService {
       return graphqlExceptionHandler(error);
     }
   }
-
+  /**
+   * add product and variants against shop in importList
+   */
   public async importProducts(
     productsData: importProductsDTO,
   ): Promise<object> {

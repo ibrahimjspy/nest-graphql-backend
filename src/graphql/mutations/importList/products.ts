@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request';
-import { importProductsDTO } from 'src/modules/Import/dto/products';
+import { importProductsDTO } from 'src/modules/importList/dto/products';
 
 export const importProductsMutation = (productData: importProductsDTO) => {
   const { shopId, productId, productVariantIds } = productData;
