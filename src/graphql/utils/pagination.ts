@@ -11,13 +11,13 @@ import { PaginationDto } from '../dto/pagination.dto';
 export const validatePageFilter = (filter: PaginationDto): string => {
   let pageFilter = ``;
 
-  if (!filter.first && !filter.last) {
+  if (!filter?.first && !filter?.last) {
     pageFilter += `first: ${DEFAULT_PAGE_SIZE}`;
   } else if (filter.first) pageFilter += `first: ${filter.first}`;
   else if (filter.last) pageFilter += `last: ${filter.last}`;
 
-  if (filter.before) pageFilter += `\nbefore: "${filter.before}"`;
-  else if (filter.after) pageFilter += `\nafter: "${filter.after}"`;
+  if (filter?.before) pageFilter += `\nbefore: "${filter.before}"`;
+  else if (filter?.after) pageFilter += `\nafter: "${filter.after}"`;
 
   return pageFilter;
 };
