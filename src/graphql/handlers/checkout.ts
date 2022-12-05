@@ -222,28 +222,23 @@ export const createPaymentHandler = async (checkoutId: string, gatewayId) => {
 
 export const paymentGatewayHandler = async (checkoutId: string) => {
   const response = await graphqlResultErrorHandler(
-    graphqlCall(CheckoutQueries.availablePaymentGatewaysQuery(checkoutId)),
+    await graphqlCall(
+      CheckoutQueries.availablePaymentGatewaysQuery(checkoutId),
+    ),
   );
   return response['checkout']['availablePaymentGateways'];
 };
 
 export const completeCheckoutHandler = async (checkoutId: string) => {
   const response = await graphqlResultErrorHandler(
-    graphqlCall(CheckoutMutations.checkoutCompleteMutation(checkoutId)),
+    await graphqlCall(CheckoutMutations.checkoutCompleteMutation(checkoutId)),
   );
   return response['checkoutComplete'];
 };
 
 export const getShippingZonesHandler = async () => {
   const response = await graphqlResultErrorHandler(
-    graphqlCall(CheckoutQueries.shippingZonesQuery()),
+    await graphqlCall(CheckoutQueries.shippingZonesQuery()),
   );
   return response['shippingZones'][GQL_EDGES];
-};
-
-export const getLegacyMappingHandler = async (productIds, shop_ids) => {
-  const response = await graphqlResultErrorHandler(
-    graphqlCall(CheckoutQueries.productMappingQuery(productIds, shop_ids)),
-  );
-  return response;
 };

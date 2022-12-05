@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import {
@@ -16,7 +16,9 @@ import {
   CheckoutBundleInputType,
 } from 'src/graphql/handlers/checkout.type';
 import { BundleType } from 'src/graphql/types/bundle.type';
-import { LegacyService } from 'src/core/services/checkout';
+import { LegacyService } from 'src/external/services/checkout';
+import { getHttpErrorMessage } from 'src/external/utils/httpHelper';
+
 @Injectable()
 export class CheckoutService {
   private readonly logger = new Logger(CheckoutService.name);
@@ -434,24 +436,32 @@ export class CheckoutService {
           checkoutData['checkoutId'],
         );
 
-      if (
-        Array.isArray(sharoveOrderPlaceResponse?.data?.errors) &&
-        sharoveOrderPlaceResponse?.data?.errors?.length == 0
-      ) {
-        // Place Order on External System
-        const instance = new LegacyService(selectedBundles);
-        await instance.placeExternalOrder();
+      // Place Order on External System
+      const instance = new LegacyService(selectedBundles);
+      await instance.placeExternalOrder();
 
-        await CheckoutHandlers.deleteBundlesHandler(
-          checkoutBundleIds,
-          checkoutData['checkoutId'],
-          true,
-        );
-        return prepareSuccessResponse(sharoveOrderPlaceResponse, '', 201);
-      } else return prepareFailedResponse('Something went wrong', 400);
+      await CheckoutHandlers.deleteBundlesHandler(
+        checkoutBundleIds,
+        checkoutData['checkoutId'],
+        true,
+      );
+      return prepareSuccessResponse(sharoveOrderPlaceResponse, '', 201);
     } catch (error) {
       this.logger.error(error);
-      return graphqlExceptionHandler(error);
+      if (error instanceof HttpException) {
+        const parsed_error = getHttpErrorMessage(error);
+        return {
+          error: JSON.stringify(parsed_error.message?.data),
+          status: parsed_error?.status,
+        };
+      } else if (error instanceof Error) {
+        return {
+          error: error.message,
+          status: 400,
+        };
+      } else {
+        return graphqlExceptionHandler(error);
+      }
     }
   }
 }

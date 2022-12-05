@@ -13,12 +13,13 @@ import {
   SPM_ID,
   STORE_CREDIT,
 } from 'src/constants';
-import { AuthService } from 'src/core/services/auth';
-import { getLegacyMappingHandler } from 'src/graphql/handlers/checkout';
+import { AuthService } from 'src/external/services/auth';
+import { getLegacyMappingHandler } from 'src/graphql/handlers/product';
 import { hash } from 'src/core/utils/helpers';
 
 export class LegacyService {
   selectedBundles: any;
+  BASE_URL: any;
   colorMappingObject = {};
   shopIdList = [];
   productIdList = [];
@@ -27,18 +28,24 @@ export class LegacyService {
 
   constructor(selectedBundles: any) {
     this.selectedBundles = selectedBundles;
+    this.BASE_URL = `${BASE_EXTERNAL_ENDPOINT}/api/v3`;
   }
 
   public async placeExternalOrder() {
-    const instance = new AuthService(BASE_EXTERNAL_ENDPOINT);
-    const resp = await instance.getToken(SHAROVE_EMAIL, SHAROVE_PASSWORD);
-    const URL = `${BASE_EXTERNAL_ENDPOINT}/api/v3/check-out/`;
-    const header = {
-      headers: { Authorization: resp?.access },
-    };
-    const payload = await this.getExternalOrderPlacePayload();
-    const response = await http.post(URL, payload, header);
-    return response?.data;
+    // eslint-disable-next-line no-useless-catch
+    try {
+      const instance = new AuthService(this.BASE_URL);
+      const resp = await instance.getToken(SHAROVE_EMAIL, SHAROVE_PASSWORD);
+      const URL = `${this.BASE_URL}/check-out/`;
+      const header = {
+        headers: { Authorization: resp?.access },
+      };
+      const payload = await this.getExternalOrderPlacePayload();
+      const response = await http.post(URL, payload, header);
+      return response?.data;
+    } catch (error) {
+      throw error;
+    }
   }
 
   private async getExternalOrderPlacePayload() {
@@ -69,6 +76,10 @@ export class LegacyService {
       color_mapping_response,
     );
 
+    const validated_payload = await this.validate_order_quantity(payload);
+
+    // if length of resp is 0, it means payload is valid.
+    if (validated_payload?.length > 0) throw Error(validated_payload);
     return payload;
   }
 
@@ -85,6 +96,17 @@ export class LegacyService {
     }
   }
 
+  protected async validate_order_quantity(payload) {
+    // eslint-disable-next-line no-useless-catch
+    try {
+      const URL = `${this.BASE_URL}/product/quantity-validator`;
+      const response = await http.post(URL, payload);
+      return response?.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   protected payloadBuilder(productMappings, colorMappings) {
     const selectedBundlesData = this.selectedBundles;
     const payloadObject = {};
@@ -93,7 +115,11 @@ export class LegacyService {
       elements?.bundle?.variants?.map((element) => {
         const productId = element?.variant?.product?.id;
         const color_id =
-          colorMappings[element?.variant?.attributes[0]?.values[0]?.name]['id'];
+          colorMappings[
+            this.getColorAttribute(element?.variant?.attributes)?.values[0]
+              ?.name
+          ]['id'];
+
         const item_id = productMappings[productId]['legacyProductId'];
         const composite_key = `${item_id}_${color_id}`;
 
@@ -103,14 +129,13 @@ export class LegacyService {
             color_id: color_id,
             pack_qty: elements?.quantity,
             stock_type: this.stocktypeMapingObject[productId],
-            exp_shipout_date: '2022-05-21',
 
             memo: '',
             sms_number: SMS_NUMBER,
             spa_id: SPA_ID,
             spm_id: SPM_ID,
             store_credit: STORE_CREDIT,
-            signature_requested: SIGNATURE_REQUESTED,
+            signature_requested: SIGNATURE_REQUESTED === 'true',
           };
 
           /**
@@ -157,11 +182,25 @@ export class LegacyService {
   }
 
   protected async getLegacyColorMappingIDs(colorObject) {
-    const URL = `${BASE_EXTERNAL_ENDPOINT}/api/v3/product/details?color-mapping=${JSON.stringify(
-      colorObject,
-    )}`;
-    const response = await http.get(URL);
-    return hash(response?.data?.data, 'name');
+    // eslint-disable-next-line no-useless-catch
+    try {
+      const URL = `${
+        this.BASE_URL
+      }/product/details?color-mapping=${JSON.stringify(colorObject)}`;
+      const response = await http.get(URL);
+      return hash(response?.data?.data, 'name');
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  protected getColorAttribute(attributes) {
+    const result = attributes.filter(function (element) {
+      if (element.attribute.name == 'Color') {
+        return element;
+      }
+    });
+    return result[0];
   }
 
   protected getColorName(elements, shop_id) {
