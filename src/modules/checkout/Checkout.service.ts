@@ -439,6 +439,7 @@ export class CheckoutService {
       // Place Order on External System
       const instance = new LegacyService(selectedBundles);
       await instance.placeExternalOrder();
+      this.logger.log('Order Placed to OrangeShine Successfully');
 
       await CheckoutHandlers.deleteBundlesHandler(
         checkoutBundleIds,

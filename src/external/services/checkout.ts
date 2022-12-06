@@ -16,8 +16,10 @@ import {
 import { AuthService } from 'src/external/services/auth';
 import { getLegacyMappingHandler } from 'src/graphql/handlers/product';
 import { hash } from 'src/core/utils/helpers';
+import { Logger } from '@nestjs/common';
 
 export class LegacyService {
+  private readonly logger = new Logger(LegacyService.name);
   selectedBundles: any;
   BASE_URL: any;
   colorMappingObject = {};
@@ -25,6 +27,8 @@ export class LegacyService {
   productIdList = [];
   stocktypeMapingObject = {};
   categoryMappingObject = {};
+  shoeSizeNames = [];
+  shoesVendorIds = [];
 
   constructor(selectedBundles: any) {
     this.selectedBundles = selectedBundles;
@@ -41,6 +45,7 @@ export class LegacyService {
         headers: { Authorization: resp?.access },
       };
       const payload = await this.getExternalOrderPlacePayload();
+      this.logger.log('Placing order on OrangeShine');
       const response = await http.post(URL, payload, header);
       return response?.data;
     } catch (error) {
@@ -49,6 +54,7 @@ export class LegacyService {
   }
 
   private async getExternalOrderPlacePayload() {
+    let shoe_size_mapping;
     this.parseBundleDetails();
 
     const graphqlResponse = await getLegacyMappingHandler(
@@ -70,16 +76,33 @@ export class LegacyService {
     const color_mapping_response = await this.getLegacyColorMappingIDs(
       updated_color_mapping,
     );
+    // only need to call if shoe exist
+    if (this.shoeSizeNames.length > 0) {
+      const updated_shoes_vendor_ids = this.replaceShopWithVendorId(
+        this.shoesVendorIds,
+        shopMappingObject,
+      );
+      const shoes_mapping_resp = await this.getShoeSizeIDs(
+        updated_shoes_vendor_ids,
+        this.shoeSizeNames,
+      );
+      shoe_size_mapping = hash(shoes_mapping_resp?.data, 'name');
+    }
 
     const payload = this.payloadBuilder(
       productMappingObject,
       color_mapping_response,
+      shoe_size_mapping || {},
     );
 
     const validated_payload = await this.validate_order_quantity(payload);
 
+    this.logger.log('Payload validating');
     // if length of resp is 0, it means payload is valid.
-    if (validated_payload?.length > 0) throw Error(validated_payload);
+    if (validated_payload?.length > 0) {
+      this.logger.warn('Invalid Payload');
+      throw Error(validated_payload);
+    }
     return payload;
   }
 
@@ -89,10 +112,11 @@ export class LegacyService {
     for (let i = 0; i < bundleList.length; i++) {
       const element = bundleList[i];
       const shop_id = element?.bundle?.shop?.id;
+      const bundle_name = element?.bundle?.name;
       if (shop_id && !this.shopIdList.includes(shop_id))
         this.shopIdList.push(shop_id);
 
-      this.getVariantDetails(element?.bundle?.variants, shop_id);
+      this.getVariantDetails(element?.bundle?.variants, shop_id, bundle_name);
     }
   }
 
@@ -103,16 +127,18 @@ export class LegacyService {
       const response = await http.post(URL, payload);
       return response?.data;
     } catch (error) {
+      this.logger.error(error);
       throw error;
     }
   }
 
-  protected payloadBuilder(productMappings, colorMappings) {
+  protected payloadBuilder(productMappings, colorMappings, shoe_size_mapping) {
     const selectedBundlesData = this.selectedBundles;
     const payloadObject = {};
 
     selectedBundlesData?.map((elements) => {
       elements?.bundle?.variants?.map((element) => {
+        const bundle_name = elements?.bundle?.name;
         const productId = element?.variant?.product?.id;
         const color_id =
           colorMappings[
@@ -138,13 +164,9 @@ export class LegacyService {
             signature_requested: SIGNATURE_REQUESTED === 'true',
           };
 
-          /**
-           * TODO: Need to swap this hard-coded shoe_size_id.
-           * Added this only to complete the flow. Once added mapping in cdc this will be replaced.
-           */
           payloadObject[composite_key] =
             this.categoryMappingObject[productId] == CATEGORY_SHOES
-              ? { ...tempObj, shoe_size_id: 23 }
+              ? { ...tempObj, shoe_size_id: shoe_size_mapping[bundle_name]?.id }
               : tempObj;
         }
       });
@@ -153,7 +175,7 @@ export class LegacyService {
     return { orders: Object.values(payloadObject), payment_type: PAYMENT_TYPE };
   }
 
-  protected getVariantDetails(variants, shop_id) {
+  protected getVariantDetails(variants, shop_id, bundle_name) {
     for (let i = 0; i < variants.length; i++) {
       const product_id = variants[i]?.variant?.product?.id;
       const is_preorder = variants[i]?.variant?.preorder;
@@ -161,6 +183,11 @@ export class LegacyService {
       const category_name =
         variants[i]?.variant?.product?.category?.ancestors?.edges[0]?.node
           ?.name;
+      // If category is shoes we need to seperately track bundle_name & shop_id
+      if (category_name == CATEGORY_SHOES) {
+        this.shoeSizeNames.push(bundle_name);
+        this.shoesVendorIds.push(shop_id);
+      }
 
       if (product_id && !this.productIdList.includes(product_id))
         this.productIdList.push(product_id);
@@ -189,6 +216,21 @@ export class LegacyService {
       }/product/details?color-mapping=${JSON.stringify(colorObject)}`;
       const response = await http.get(URL);
       return hash(response?.data?.data, 'name');
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  protected async getShoeSizeIDs(vendor_name_list, shoe_size_name_list) {
+    // eslint-disable-next-line no-useless-catch
+    try {
+      const URL = `${
+        this.BASE_URL
+      }/product/shoe-sizes?vendor_name_list=${JSON.stringify(
+        vendor_name_list,
+      )}&shoe_size_name_list=${JSON.stringify(shoe_size_name_list)}`;
+      const response = await http.get(URL);
+      return response?.data;
     } catch (error) {
       throw error;
     }
@@ -238,5 +280,13 @@ export class LegacyService {
     }
 
     return updated_mapping_object;
+  }
+
+  protected replaceShopWithVendorId(shop_ids, mapping_object) {
+    const vendorIds = shop_ids?.map(function (element) {
+      return mapping_object[String(element)]['vendorId'];
+    });
+
+    return vendorIds;
   }
 }
