@@ -7,7 +7,7 @@ import { ProductFilterDto } from 'src/modules/product/dto';
 
 export const federationQuery = (filter: ProductFilterDto): string => {
   const pageFilter = validatePageFilter(filter);
-
+  const categoryFilter = filter['category'] ? `"${filter['category']}"` : '';
   return gql`
     query {
       products(
@@ -21,7 +21,8 @@ export const federationQuery = (filter: ProductFilterDto): string => {
           ids: ${removeKeysQuoutes(filter['ids'] || [])}
           isPublished: true,
           hasCategory: true,
-          stockAvailability: IN_STOCK
+          stockAvailability: IN_STOCK,
+          categories: [${categoryFilter}]
         }
       ) {
         pageInfo {
