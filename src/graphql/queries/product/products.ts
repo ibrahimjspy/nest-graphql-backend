@@ -1,12 +1,10 @@
 import { gql } from 'graphql-request';
 import { DEFAULT_CHANNEL } from 'src/constants';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
-import {
-  removeKeysQuoutes,
-  validateCategoryFilter,
-} from 'src/core/utils/helpers';
+import { removeKeysQuoutes } from 'src/core/utils/helpers';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
 import { ProductFilterDto } from 'src/modules/product/dto';
+import { validateCategoryFilter } from 'src/modules/product/Product.utils';
 
 export const federationQuery = (filter: ProductFilterDto): string => {
   const pageFilter = validatePageFilter(filter);
@@ -25,7 +23,7 @@ export const federationQuery = (filter: ProductFilterDto): string => {
           isPublished: true,
           hasCategory: true,
           stockAvailability: IN_STOCK,
-          ${categoryFilter}
+          categories: ${categoryFilter}
         }
       ) {
         pageInfo {

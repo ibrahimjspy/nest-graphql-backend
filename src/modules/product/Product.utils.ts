@@ -17,3 +17,16 @@ export const getProductIdsByVariants = (variants) => {
   const edges: any[] = variants[GQL_EDGES];
   return [...new Set(edges?.map((edge) => edge?.node?.product?.id))];
 };
+
+/**
+ * If the user doesn't provide a category, then categories filter will be applied otherwise not
+ * @param category - This is the category id
+ * @returns A string
+ */
+export const validateCategoryFilter = (category: string) => {
+  if (category) {
+    return `["${category}"]`;
+  } else {
+    return `[]`;
+  }
+};
