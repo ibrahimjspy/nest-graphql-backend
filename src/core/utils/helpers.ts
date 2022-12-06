@@ -66,3 +66,16 @@ export const isObject = (obj) => {
     return true;
   return false;
 };
+
+/**
+ * If the user doesn't provide a category, then categories filter will be applied otherwise not
+ * @param category - This is the category id
+ * @returns A string
+ */
+export const validateCategoryFilter = (category: string) => {
+  if (category) {
+    return `categories: ["${category}"]`;
+  } else {
+    return ``;
+  }
+};

@@ -16,4 +16,5 @@ export class ProductFilterDto extends PaginationDto {
   @IsEnum(ProductFilterTypeEnum)
   @IsOptional()
   type: ProductFilterTypeEnum;
+  category: string;
 }
