@@ -25,15 +25,11 @@ export const graphqlCall = async (
     authorization: `${Headers}`,
   };
 
-  if (Headers) {
-    return await request(
-      graphqlEndpoint(Mock ? Mock : ''),
-      Query,
-      // requestHeaders,
-    );
-  } else {
-    return await request(graphqlEndpoint(Mock ? Mock : ''), Query);
-  }
+  return await request(
+    graphqlEndpoint(Mock ? Mock : ''),
+    Query,
+    requestHeaders,
+  );
 };
 
 /**
