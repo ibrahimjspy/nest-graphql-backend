@@ -31,9 +31,9 @@ import { dailySalesHandler } from 'src/graphql/handlers/orders.reporting';
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
 
-  public async getDashboardDataById(id): Promise<object> {
+  public async getDashboardDataById(id, headers: string): Promise<object> {
     try {
-      const response = await dashboardByIdHandler(id);
+      const response = await dashboardByIdHandler(id, headers);
       return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
@@ -82,9 +82,9 @@ export class OrdersService {
     }
   }
 
-  public async getShopOrdersDataById(id): Promise<object> {
+  public async getShopOrdersDataById(id, headers: string): Promise<object> {
     try {
-      const response = await shopOrdersByIdHandler(id);
+      const response = await shopOrdersByIdHandler(id, headers);
       return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
@@ -140,11 +140,14 @@ export class OrdersService {
     }
   }
 
-  public async getOrdersListByShopId(id: string): Promise<object> {
+  public async getOrdersListByShopId(
+    id: string,
+    headers: string,
+  ): Promise<object> {
     try {
-      const shopDetails = await shopOrdersByIdHandler(id);
+      const shopDetails = await shopOrdersByIdHandler(id, headers);
       const orderIds = shopDetails['orders'];
-      const ordersList = await ordersListByIdsHandler(orderIds);
+      const ordersList = await ordersListByIdsHandler(orderIds, headers);
       const response = { ...shopDetails, ...ordersList };
 
       return prepareSuccessResponse(response, '', 201);
@@ -165,9 +168,12 @@ export class OrdersService {
     }
   }
 
-  public async getOrdersSummary(reportingPeriod): Promise<object> {
+  public async getOrdersSummary(
+    reportingPeriod,
+    headers: string,
+  ): Promise<object> {
     try {
-      const dailySales = await dailySalesHandler(reportingPeriod);
+      const dailySales = await dailySalesHandler(reportingPeriod, headers);
       const mock = mockOrderReporting();
       const response: OrderSummaryResponseDto = {
         dailySales: dailySales['gross'].amount,

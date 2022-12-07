@@ -17,9 +17,12 @@ import { GQL_EDGES } from 'src/constants';
 import { orderBundlesTransformer, orderIdsTransformer } from '../utils/orders';
 import { addOrderToShopMutation } from '../mutations/order/addOrderToShop';
 
-export const dashboardByIdHandler = async (id: string): Promise<object> => {
+export const dashboardByIdHandler = async (
+  id: string,
+  headers: string,
+): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(dashboardQuery(id), 'true'),
+    await graphqlCall(dashboardQuery(id), headers, 'true'),
   );
   return response;
 };
@@ -44,9 +47,12 @@ export const orderDetailsHandler = async (id: string): Promise<object> => {
   return response['order'];
 };
 
-export const shopOrdersByIdHandler = async (id: string): Promise<object> => {
+export const shopOrdersByIdHandler = async (
+  id: string,
+  headers: string,
+): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(shopOrdersQuery(id)),
+    await graphqlCall(shopOrdersQuery(id), headers),
   );
   if (!response['marketplaceShop']) {
     throw new RecordNotFound('Shop details');
@@ -90,6 +96,7 @@ export const orderActivityHandler = async (): Promise<object> => {
 
 export const ordersListByIdsHandler = async (
   ids: string[],
+  headers: string,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(ordersListQuery(orderIdsTransformer(ids))),

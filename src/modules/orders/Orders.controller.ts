@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Res } from '@nestjs/common';
+import { Controller, Get, Param, Res, Headers, Header } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { OrdersService } from './Orders.service';
 import { makeResponse } from '../../core/utils/response';
@@ -14,10 +14,11 @@ export class OrdersController {
   async findDashboard(
     @Res() res,
     @Param() userDto: UserIdDto,
+    @Headers() headers,
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getDashboardDataById(userDto?.userId),
+      await this.appService.getDashboardDataById(userDto?.userId, headers),
     );
   }
   // Returns all shop orders for orders page
@@ -30,10 +31,11 @@ export class OrdersController {
   async findShopOrders(
     @Res() res,
     @Param() shopDto: ShopIdDto,
+    @Headers() headers,
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getShopOrdersDataById(shopDto.shopId),
+      await this.appService.getShopOrdersDataById(shopDto.shopId, headers),
     );
   }
   // Returns shop order fulfillments for order page
@@ -70,10 +72,14 @@ export class OrdersController {
   async getOrdersList(
     @Res() res,
     @Param() shopDto: ShopIdDto,
+    @Headers() headers,
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getOrdersListByShopId(shopDto.shopId),
+      await this.appService.getOrdersListByShopId(
+        shopDto.shopId,
+        headers.authorization,
+      ),
     );
   }
 
@@ -88,10 +94,14 @@ export class OrdersController {
   async findOrdersSummary(
     @Res() res,
     @Param() orderSummaryDto: OrderSummaryDto,
+    @Headers() headers,
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getOrdersSummary(orderSummaryDto.reportingPeriod),
+      await this.appService.getOrdersSummary(
+        orderSummaryDto.reportingPeriod,
+        headers.authorization,
+      ),
     );
   }
 }
