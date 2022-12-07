@@ -20,7 +20,6 @@ export const graphqlCall = async (
   Headers?: string,
   Mock?: string,
 ): Promise<any> => {
-  console.log('headers: ', Headers);
   const requestHeaders = {
     authorization: `${Headers}`,
   };
