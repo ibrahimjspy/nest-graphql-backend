@@ -20,15 +20,20 @@ export const graphqlCall = async (
   Headers?: string,
   Mock?: string,
 ): Promise<any> => {
+  console.log('headers: ', Headers);
   const requestHeaders = {
     authorization: `${Headers}`,
   };
 
-  return await request(
-    graphqlEndpoint(Mock ? Mock : ''),
-    Query,
-    requestHeaders,
-  );
+  if (Headers) {
+    return await request(
+      graphqlEndpoint(Mock ? Mock : ''),
+      Query,
+      // requestHeaders,
+    );
+  } else {
+    return await request(graphqlEndpoint(Mock ? Mock : ''), Query);
+  }
 };
 
 /**

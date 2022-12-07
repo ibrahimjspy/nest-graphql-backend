@@ -25,18 +25,14 @@ import { ShopOrdersFulfillmentsDto, ShopOrdersListDto } from './dto';
 import { mockOrderReporting } from 'src/graphql/mocks/orderSummary.mock';
 import { OrderSummaryResponseDto } from './dto/order.summary.dto';
 import { dailySalesHandler } from 'src/graphql/handlers/orders.reporting';
-import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
 
 @Injectable()
 export class OrdersService {
-  constructor(@Inject(REQUEST) private readonly request: Request) {}
   private readonly logger = new Logger(OrdersService.name);
-  private readonly authorizationToken = this.request.headers.authorization;
 
   public async getDashboardDataById(id): Promise<object> {
     try {
-      const response = await dashboardByIdHandler(id, this.authorizationToken);
+      const response = await dashboardByIdHandler(id);
       return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
@@ -46,7 +42,7 @@ export class OrdersService {
 
   public async getAllShopOrdersData(): Promise<object> {
     try {
-      const response = await allShopOrdersHandler(this.authorizationToken);
+      const response = await allShopOrdersHandler();
       const shops = (response[GQL_EDGES] || []).map((shop) => shop['node']);
       const shopOrders: ShopOrdersListDto = { orders: [] };
 
@@ -56,10 +52,7 @@ export class OrdersService {
 
           await Promise.all(
             orders.map(async (order) => {
-              const orderDetails = await orderDetailsHandler(
-                order['orderId'],
-                this.authorizationToken,
-              );
+              const orderDetails = await orderDetailsHandler(order['orderId']);
               const orderBundlesTotal = getTotalFromBundles(
                 order['orderBundles'],
               );
@@ -90,7 +83,7 @@ export class OrdersService {
 
   public async getShopOrdersDataById(id): Promise<object> {
     try {
-      const response = await shopOrdersByIdHandler(id, this.authorizationToken);
+      const response = await shopOrdersByIdHandler(id);
       return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
@@ -99,14 +92,10 @@ export class OrdersService {
   }
 
   public async getShopOrderFulfillmentsDataById(id): Promise<object> {
-    const orderFulfillments = await shopOrderFulfillmentsByIdHandler(
-      id,
-      this.authorizationToken,
-    );
+    const orderFulfillments = await shopOrderFulfillmentsByIdHandler(id);
 
     const fulfillmentDetails = await shopOrderFulfillmentsDetailsHandler(
       orderFulfillments['orderId'],
-      this.authorizationToken,
     );
 
     const orderFulfillmentBundles = addStatusAndTotalToBundles(
@@ -132,7 +121,7 @@ export class OrdersService {
   }
   public async getOrderActivity(): Promise<object> {
     try {
-      const response = await orderActivityHandler(this.authorizationToken);
+      const response = await orderActivityHandler();
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
       this.logger.error(error);
@@ -142,7 +131,7 @@ export class OrdersService {
 
   public async getOrderDetailsById(id: string): Promise<object> {
     try {
-      const response = await orderDetailsHandler(id, this.authorizationToken);
+      const response = await orderDetailsHandler(id);
       return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
@@ -152,15 +141,9 @@ export class OrdersService {
 
   public async getOrdersListByShopId(id: string): Promise<object> {
     try {
-      const shopDetails = await shopOrdersByIdHandler(
-        id,
-        this.authorizationToken,
-      );
+      const shopDetails = await shopOrdersByIdHandler(id);
       const orderIds = shopDetails['orders'];
-      const ordersList = await ordersListByIdsHandler(
-        orderIds,
-        this.authorizationToken,
-      );
+      const ordersList = await ordersListByIdsHandler(orderIds);
       const response = { ...shopDetails, ...ordersList };
 
       return prepareSuccessResponse(response, '', 201);
@@ -183,10 +166,7 @@ export class OrdersService {
 
   public async getOrdersSummary(reportingPeriod): Promise<object> {
     try {
-      const dailySales = await dailySalesHandler(
-        reportingPeriod,
-        this.authorizationToken,
-      );
+      const dailySales = await dailySalesHandler(reportingPeriod);
       const mock = mockOrderReporting();
       const response: OrderSummaryResponseDto = {
         dailySales: dailySales['gross'].amount,

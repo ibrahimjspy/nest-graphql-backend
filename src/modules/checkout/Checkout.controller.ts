@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Put, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Res,
+  Headers,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CheckoutService } from './Checkout.service';
 import { makeResponse } from '../../core/utils/response';
@@ -15,10 +24,14 @@ export class CheckoutController {
   async getShoppingCartData(
     @Res() res,
     @Param() userDto: UserIdDto,
+    @Headers() headers,
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getShoppingCartData(userDto.userId),
+      await this.appService.getShoppingCartData(
+        userDto.userId,
+        headers.authorization,
+      ),
     );
   }
 
@@ -26,51 +39,79 @@ export class CheckoutController {
   async addBundlesToCart(
     @Res() res,
     @Body() addBundleDto: AddBundleDto,
+    @Headers() headers,
   ): Promise<object> {
     return makeResponse(
       res,
       await this.appService.addToCart(
         addBundleDto.userId,
         addBundleDto.bundles,
+        headers.authorization,
       ),
     );
   }
 
   @Put('cart/bundle/delete')
-  async deleteBundleFromCart(@Res() res, @Body() body): Promise<object> {
+  async deleteBundleFromCart(
+    @Res() res,
+    @Body() body,
+    @Headers() headers,
+  ): Promise<object> {
     return makeResponse(
       res,
       await this.appService.deleteBundleFromCart(
         body?.userId,
         body?.checkoutBundleIds,
+        headers.authorization,
       ),
     );
   }
 
   @Put('cart/bundle/update')
-  async updateCartBundle(@Res() res, @Body() body): Promise<object> {
+  async updateCartBundle(
+    @Res() res,
+    @Body() body,
+    @Headers() headers,
+  ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.updateBundleFromCart(body?.userId, body?.bundles),
+      await this.appService.updateBundleFromCart(
+        body?.userId,
+        body?.bundles,
+        headers.authorization,
+      ),
     );
   }
 
   @Put('cart/bundle/select')
-  async selectThisShop(@Res() res, @Body() body): Promise<object> {
+  async selectThisShop(
+    @Res() res,
+    @Body() body,
+    @Headers() headers,
+  ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.setBundleAsSelected(body?.userId, body?.bundleIds),
+      await this.appService.setBundleAsSelected(
+        body?.userId,
+        body?.bundleIds,
+        headers.authorization,
+      ),
     );
   }
 
   @Put('cart/bundle/unselect')
-  async unSelectThisShop(@Res() res, @Body() body): Promise<object> {
+  async unSelectThisShop(
+    @Res() res,
+    @Body() body,
+    @Headers() headers,
+  ): Promise<object> {
     return makeResponse(
       res,
       await this.appService.setBundleAsUnselected(
         body?.userId,
         body?.bundleIds,
         body?.checkoutBundleIds,
+        headers?.Authorization,
       ),
     );
   }
@@ -109,34 +150,60 @@ export class CheckoutController {
   }
 
   @Get('shippingMethods/:userId')
-  async getShippingMethods(@Res() res, @Param() params): Promise<object> {
+  async getShippingMethods(
+    @Res() res,
+    @Param() params,
+    @Headers() headers,
+  ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getShippingMethods(params?.userId),
+      await this.appService.getShippingMethods(
+        params?.userId,
+        headers?.Authorization,
+      ),
     );
   }
 
   @Put('shippingMethods/select')
-  async selectShippingMethods(@Res() res, @Body() body): Promise<object> {
+  async selectShippingMethods(
+    @Res() res,
+    @Body() body,
+    @Headers() headers,
+  ): Promise<object> {
     return makeResponse(
       res,
       await this.appService.selectShippingMethods(
         body?.userId,
         body?.shippingIds,
+        headers?.Authorization,
       ),
     );
   }
 
   @Post('payment/create')
-  async createPayment(@Res() res, @Body() body): Promise<object> {
-    return makeResponse(res, await this.appService.createPayment(body?.userId));
+  async createPayment(
+    @Res() res,
+    @Body() body,
+    @Headers() headers,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.createPayment(body?.userId, headers?.Authorization),
+    );
   }
 
   @Post('complete')
-  async checkoutComplete(@Res() res, @Body() body): Promise<object> {
+  async checkoutComplete(
+    @Res() res,
+    @Body() body,
+    @Headers() headers,
+  ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.checkoutComplete(body?.userId),
+      await this.appService.checkoutComplete(
+        body?.userId,
+        headers?.Authorization,
+      ),
     );
   }
 }

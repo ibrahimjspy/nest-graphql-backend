@@ -9,12 +9,9 @@ import { getBundleIds } from 'src/modules/product/Product.utils';
 import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
 import { BundleType } from 'src/graphql/types/bundle.type';
 
-export const productListPageHandler = async (
-  id: string,
-  header: string,
-): Promise<object> => {
+export const productListPageHandler = async (id: string): Promise<object> => {
   try {
-    return await graphqlCall(ProductQueries.productListPageQuery(id), header);
+    return await graphqlCall(ProductQueries.productListPageQuery(id));
   } catch (error) {
     return graphqlExceptionHandler(error);
   }
@@ -22,10 +19,9 @@ export const productListPageHandler = async (
 
 export const singleProductDetailsHandler = async (
   slug: string,
-  header: string,
 ): Promise<object> => {
   try {
-    return await graphqlCall(ProductQueries.productDetailsQuery(slug), header);
+    return await graphqlCall(ProductQueries.productDetailsQuery(slug));
   } catch (error) {
     return graphqlExceptionHandler(error);
   }
@@ -33,32 +29,25 @@ export const singleProductDetailsHandler = async (
 
 export const productCardsByCategoriesHandler = async (
   id: string,
-  header: string,
 ): Promise<object> => {
   try {
-    return await graphqlCall(
-      ProductQueries.productCardsByListIdQuery(id),
-      header,
-    );
+    return await graphqlCall(ProductQueries.productCardsByListIdQuery(id));
   } catch (error) {
     return graphqlExceptionHandler(error);
   }
 };
 
-export const productsHandler = async (
-  filter,
-  header: string,
-): Promise<object> => {
+export const productsHandler = async (filter): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(ProductQueries.productsQuery(filter), header),
+    await graphqlCall(ProductQueries.productsQuery(filter)),
   );
 
   return response?.products;
 };
 
-export const popularItemsHandler = async (header: string): Promise<object> => {
+export const popularItemsHandler = async (): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(ProductQueries.popularItemsQuery(), header),
+    await graphqlCall(ProductQueries.popularItemsQuery()),
   );
 
   return response?.reportProductSales;
@@ -67,9 +56,9 @@ export const popularItemsHandler = async (header: string): Promise<object> => {
 /**
  * DEPRECATED: use `productsHandler` method instead
  */
-export const productCardHandler = async (header: string): Promise<object> => {
+export const productCardHandler = async (): Promise<object> => {
   try {
-    return await graphqlCall(ProductQueries.productCardsDefaultQuery(), header);
+    return await graphqlCall(ProductQueries.productCardsDefaultQuery());
   } catch (error) {
     return graphqlExceptionHandler(error);
   }
@@ -77,12 +66,10 @@ export const productCardHandler = async (header: string): Promise<object> => {
 
 export const bundlesByVariantsIdsHandler = async (
   variantIds: Array<string>,
-  header: string,
 ): Promise<Array<object>> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
       ProductQueries.productBundlesByVariantIdQuery(variantIds),
-      header,
     ),
   );
   if (!response['bundles']['length']) {
@@ -93,13 +80,9 @@ export const bundlesByVariantsIdsHandler = async (
 
 export const variantsIdsByProductIdsHandler = async (
   productIds: Array<string>,
-  header: string,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(
-      ProductQueries.variantsIdsByProductIdsQuery(productIds),
-      header,
-    ),
+    await graphqlCall(ProductQueries.variantsIdsByProductIdsQuery(productIds)),
   );
 
   if (!response['products']?.['edges']?.['length']) {
@@ -111,14 +94,10 @@ export const variantsIdsByProductIdsHandler = async (
 
 export const bundlesByBundleIdsHandler = async (
   bundles: Array<CheckoutBundleInputType>,
-  header: string,
 ): Promise<BundleType[]> => {
   const bundleIds = getBundleIds(bundles);
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(
-      ProductQueries.productBundlesByBundleIdQuery(bundleIds),
-      header,
-    ),
+    await graphqlCall(ProductQueries.productBundlesByBundleIdQuery(bundleIds)),
   );
 
   if (!response['bundles']['length']) {
