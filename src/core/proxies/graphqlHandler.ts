@@ -17,9 +17,18 @@ import { prepareFailedResponse } from 'src/core/utils/response';
  */
 export const graphqlCall = async (
   Query: string,
+  Headers?: string,
   Mock?: string,
 ): Promise<any> => {
-  return await request(graphqlEndpoint(Mock ? Mock : ''), Query);
+  const requestHeaders = {
+    authorization: `${Headers}`,
+  };
+
+  return await request(
+    graphqlEndpoint(Mock ? Mock : ''),
+    Query,
+    requestHeaders,
+  );
 };
 
 /**
