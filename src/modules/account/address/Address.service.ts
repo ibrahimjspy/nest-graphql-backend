@@ -1,4 +1,4 @@
-import { Injectable, Logger, Inject } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { AddressInput } from 'src/graphql/mutations/account';
 import {
   prepareFailedResponse,

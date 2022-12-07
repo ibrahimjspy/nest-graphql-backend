@@ -1,4 +1,4 @@
-import { Injectable, Logger, Inject } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import {
