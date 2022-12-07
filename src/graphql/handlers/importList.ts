@@ -12,7 +12,10 @@ export const getImportedProductsHandler = async (
   productFilter,
 ): Promise<object> => {
   try {
-    return await graphqlCall(getImportedProductsQuery(shopId, productFilter));
+    const response = await graphqlCall(
+      getImportedProductsQuery(shopId, productFilter),
+    );
+    return response['importProducts'];
   } catch (error) {
     return graphqlExceptionHandler(error);
   }
