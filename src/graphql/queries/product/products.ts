@@ -48,6 +48,7 @@ export const federationQuery = (filter: ProductFilterDto): string => {
               }
             }
             variants {
+              id
               attributes {
                 attribute {
                   name
