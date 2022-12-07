@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Res, Headers, Header } from '@nestjs/common';
+import { Controller, Get, Param, Res, Headers } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { OrdersService } from './Orders.service';
 import { makeResponse } from '../../core/utils/response';
@@ -23,8 +23,11 @@ export class OrdersController {
   }
   // Returns all shop orders for orders page
   @Get('/marketplace/all')
-  async findAllShopOrders(@Res() res): Promise<object> {
-    return makeResponse(res, await this.appService.getAllShopOrdersData());
+  async findAllShopOrders(@Res() res, @Headers() headers): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.getAllShopOrdersData(headers.authorization),
+    );
   }
   // Returns shop orders for orders page
   @Get('/marketplace/shop/:shopId')
@@ -43,16 +46,23 @@ export class OrdersController {
   async findShopOrderFulfillments(
     @Res() res,
     @Param() orderDto: OrderIdDto,
+    @Headers() headers,
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getShopOrderFulfillmentsDataById(orderDto.orderId),
+      await this.appService.getShopOrderFulfillmentsDataById(
+        orderDto.orderId,
+        headers.authorization,
+      ),
     );
   }
   // Returns shop order activities
   @Get('/activity')
-  async getOrderActivity(@Res() res): Promise<object> {
-    return makeResponse(res, await this.appService.getOrderActivity());
+  async getOrderActivity(@Res() res, @Headers() headers): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.getOrderActivity(headers.authorization),
+    );
   }
 
   // Returns shop order details
@@ -60,10 +70,14 @@ export class OrdersController {
   async getOrderDetails(
     @Res() res,
     @Param() orderDto: OrderIdDto,
+    @Headers() headers,
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getOrderDetailsById(orderDto.orderId),
+      await this.appService.getOrderDetailsById(
+        orderDto.orderId,
+        headers.authorization,
+      ),
     );
   }
 
@@ -85,8 +99,11 @@ export class OrdersController {
 
   // Returns all pending shop orders for orders list page
   @Get('/marketplace/all/pending')
-  async findAllPendingOrders(@Res() res): Promise<object> {
-    return makeResponse(res, await this.appService.getAllPendingOrders());
+  async findAllPendingOrders(@Res() res, @Headers() headers): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.getAllPendingOrders(headers.authorization),
+    );
   }
 
   // Returns orders summary ()
