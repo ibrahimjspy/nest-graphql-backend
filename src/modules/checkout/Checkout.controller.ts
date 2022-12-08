@@ -2,11 +2,11 @@ import {
   Body,
   Controller,
   Get,
+  Headers,
   Param,
   Post,
   Put,
   Res,
-  Headers,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CheckoutService } from './Checkout.service';
