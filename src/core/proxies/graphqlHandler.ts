@@ -17,12 +17,12 @@ import { prepareFailedResponse } from 'src/core/utils/response';
 
 export const graphqlCall = async (
   Query: string,
-  Headers?: string,
+  Token?: string,
   Mock?: string,
 ): Promise<any> => {
   const graphQLClient = new GraphQLClient(graphqlEndpoint(Mock ? Mock : ''), {
     headers: {
-      authorization: `${Headers}`,
+      authorization: `${Token}`,
     },
   });
   return await graphQLClient.request(Query);

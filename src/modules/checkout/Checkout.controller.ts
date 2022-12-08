@@ -31,7 +31,7 @@ export class CheckoutController {
       res,
       await this.appService.getShoppingCartData(
         userDto.userId,
-        headers.authorization,
+        headers.Authorization,
       ),
     );
   }
@@ -47,7 +47,7 @@ export class CheckoutController {
       await this.appService.addToCart(
         addBundleDto.userId,
         addBundleDto.bundles,
-        headers.authorization,
+        headers.Authorization,
       ),
     );
   }
@@ -63,7 +63,7 @@ export class CheckoutController {
       await this.appService.deleteBundleFromCart(
         body?.userId,
         body?.checkoutBundleIds,
-        headers.authorization,
+        headers.Authorization,
       ),
     );
   }
@@ -79,7 +79,7 @@ export class CheckoutController {
       await this.appService.updateBundleFromCart(
         body?.userId,
         body?.bundles,
-        headers.authorization,
+        headers.Authorization,
       ),
     );
   }
@@ -95,7 +95,7 @@ export class CheckoutController {
       await this.appService.setBundleAsSelected(
         body?.userId,
         body?.bundleIds,
-        headers.authorization,
+        headers.Authorization,
       ),
     );
   }
@@ -110,7 +110,7 @@ export class CheckoutController {
       userId: body?.userId,
       bundleIds: body?.bundleIds,
       checkoutBundleIds: body?.checkoutBundleIds,
-      headers: headers?.Authorization,
+      token: headers?.Authorization,
     };
     return makeResponse(
       res,

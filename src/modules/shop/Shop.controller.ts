@@ -9,6 +9,6 @@ export class ShopController {
   // Returns landing page banner data
   @Get('/carousel')
   findBanner(@Headers() headers): Promise<object> {
-    return this.appService.getCarouselData(headers.authorization);
+    return this.appService.getCarouselData(headers.Authorization);
   }
 }

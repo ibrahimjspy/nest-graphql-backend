@@ -17,10 +17,10 @@ import { GQL_EDGES } from 'src/constants';
 export const marketplaceCheckoutHandler = async (
   id: string,
   throwException = false,
-  headers: string,
+  token: string,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(CheckoutQueries.getMarketplaceCheckoutQuery(id), headers),
+    await graphqlCall(CheckoutQueries.getMarketplaceCheckoutQuery(id), token),
     throwException,
   );
   return response['marketplaceCheckout'];

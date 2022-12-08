@@ -21,5 +21,5 @@ export interface UnSelectBundlesType {
   userId: string;
   bundleIds: string[];
   checkoutBundleIds: string[];
-  headers: string;
+  token: string;
 }
