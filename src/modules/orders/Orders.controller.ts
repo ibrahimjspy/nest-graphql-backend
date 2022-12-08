@@ -113,11 +113,12 @@ export class OrdersController {
     @Param() orderSummaryDto: OrderSummaryDto,
     @Headers() headers,
   ): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
       await this.appService.getOrdersSummary(
         orderSummaryDto.reportingPeriod,
-        headers.Authorization,
+        Authorization,
       ),
     );
   }
