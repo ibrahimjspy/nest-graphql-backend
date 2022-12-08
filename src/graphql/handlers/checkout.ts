@@ -113,6 +113,7 @@ export const updateLinesHandler = async (
 export const shippingAddressUpdateHandler = async (
   checkoutId: string,
   addressDetails: AddressDetailType,
+  token: string,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
@@ -120,6 +121,7 @@ export const shippingAddressUpdateHandler = async (
         checkoutId,
         addressDetails,
       ),
+      token,
     ),
   );
 
@@ -133,6 +135,7 @@ export const shippingAddressUpdateHandler = async (
 export const billingAddressUpdateHandler = async (
   checkoutId: string,
   addressDetails: AddressDetailType,
+  token: string,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
@@ -140,6 +143,7 @@ export const billingAddressUpdateHandler = async (
         checkoutId,
         addressDetails,
       ),
+      token,
     ),
   );
 
