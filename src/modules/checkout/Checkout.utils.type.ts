@@ -16,3 +16,10 @@ export interface MarketplaceCheckoutType {
   checkoutId: string;
   bundles: CheckoutBundleType[];
 }
+
+export interface UnSelectBundlesType {
+  userId: string;
+  bundleIds: string[];
+  checkoutBundleIds: string[];
+  token: string;
+}

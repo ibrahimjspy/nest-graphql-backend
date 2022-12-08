@@ -10,7 +10,6 @@ import * as CheckoutHandlers from 'src/graphql/handlers/checkout';
 import * as ProductHandlers from 'src/graphql/handlers/product';
 import * as AccountHandlers from 'src/graphql/handlers/account';
 import * as CheckoutUtils from './Checkout.utils';
-
 import {
   AddressDetailType,
   CheckoutBundleInputType,
@@ -21,11 +20,12 @@ import { BundleType } from 'src/graphql/types/bundle.type';
 export class CheckoutService {
   private readonly logger = new Logger(CheckoutService.name);
 
-  public async getShoppingCartData(id: string): Promise<object> {
+  public async getShoppingCartData(id: string, token: string): Promise<object> {
     try {
       const checkoutBundles = await CheckoutHandlers.marketplaceCheckoutHandler(
         id,
         true,
+        token,
       );
       const productIds = CheckoutUtils.getProductIdsByCheckoutBundles(
         checkoutBundles['bundles'],
@@ -112,12 +112,13 @@ export class CheckoutService {
   public async addToCart(
     userId: string,
     bundlesForCart: CheckoutBundleInputType[],
+    token: string,
   ): Promise<object> {
     try {
       const [userData, bundlesList, checkoutData] = await Promise.all([
         AccountHandlers.userEmailByIdHandler(userId),
         ProductHandlers.bundlesByBundleIdsHandler(bundlesForCart),
-        CheckoutHandlers.marketplaceCheckoutHandler(userId),
+        CheckoutHandlers.marketplaceCheckoutHandler(userId, false, token),
       ]);
 
       let response = {};
@@ -148,11 +149,13 @@ export class CheckoutService {
   public async deleteBundleFromCart(
     userId: string,
     checkoutBundleIds: string[],
+    token: string,
   ): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
         userId,
         true,
+        token,
       );
 
       const saleorCheckout = await CheckoutHandlers.checkoutHandler(
@@ -172,6 +175,7 @@ export class CheckoutService {
       const response = await CheckoutHandlers.deleteBundlesHandler(
         checkoutBundleIds,
         checkoutData['checkoutId'],
+        false,
       );
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
@@ -183,11 +187,13 @@ export class CheckoutService {
   public async updateBundleFromCart(
     userId: string,
     bundlesFromCart: CheckoutBundleInputType[],
+    token: string,
   ): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
         userId,
         true,
+        token,
       );
 
       const saleorCheckout = await CheckoutHandlers.checkoutHandler(
@@ -220,10 +226,13 @@ export class CheckoutService {
   public async setBundleAsSelected(
     userId: string,
     bundleIds: string[],
+    token: string,
   ): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
         userId,
+        false,
+        token,
       );
       const saleorCheckout = await CheckoutHandlers.checkoutHandler(
         checkoutData['checkoutId'],
@@ -254,14 +263,17 @@ export class CheckoutService {
     }
   }
 
-  public async setBundleAsUnselected(
-    userId: string,
-    bundleIds: string[],
-    checkoutBundleIds: string[],
-  ): Promise<object> {
+  public async setBundleAsUnselected({
+    userId,
+    bundleIds,
+    checkoutBundleIds,
+    token,
+  }): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
         userId,
+        false,
+        token,
       );
       const saleorCheckout = await CheckoutHandlers.checkoutHandler(
         checkoutData['checkoutId'],
@@ -341,11 +353,15 @@ export class CheckoutService {
     }
   }
 
-  public async getShippingMethods(userId: string): Promise<object> {
+  public async getShippingMethods(
+    userId: string,
+    token: string,
+  ): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
         userId,
         true,
+        token,
       );
 
       const shippingZones = await CheckoutHandlers.getShippingZonesHandler();
@@ -372,11 +388,13 @@ export class CheckoutService {
   public async selectShippingMethods(
     userId: string,
     shippingIds: string[],
+    token: string,
   ): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
         userId,
         true,
+        token,
       );
       await Promise.all([
         CheckoutHandlers.addShippingMethodHandler(
@@ -389,7 +407,7 @@ export class CheckoutService {
           checkoutData['selectedMethods'],
         ),
       ]);
-      const response = await this.getShippingMethods(userId);
+      const response = await this.getShippingMethods(userId, token);
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
       this.logger.error(error);
@@ -397,10 +415,12 @@ export class CheckoutService {
     }
   }
 
-  public async createPayment(userId: string): Promise<object> {
+  public async createPayment(userId: string, token: string): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
         userId,
+        false,
+        token,
       );
 
       const paymentGateways = await CheckoutHandlers.paymentGatewayHandler(
@@ -419,10 +439,15 @@ export class CheckoutService {
     }
   }
 
-  public async checkoutComplete(userId: string): Promise<object> {
+  public async checkoutComplete(
+    userId: string,
+    token: string,
+  ): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
         userId,
+        false,
+        token,
       );
       const selectedBundles = CheckoutUtils.getSelectedBundles(
         checkoutData['bundles'],

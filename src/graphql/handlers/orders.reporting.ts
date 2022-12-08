@@ -8,12 +8,12 @@ import { dailySalesQuery } from '../queries/orders/reporting/dailySales';
 
 export const dailySalesHandler = async (
   reportingTime = 'TODAY',
-  headers,
+  token: string,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
       dailySalesQuery(ReportingPeriodEnum[reportingTime]),
-      headers,
+      token,
     ),
   );
   if (!response['ordersTotal']) {

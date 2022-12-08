@@ -26,7 +26,7 @@ export class OrdersController {
   async findAllShopOrders(@Res() res, @Headers() headers): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getAllShopOrdersData(headers.authorization),
+      await this.appService.getAllShopOrdersData(headers.Authorization),
     );
   }
   // Returns shop orders for orders page
@@ -52,7 +52,7 @@ export class OrdersController {
       res,
       await this.appService.getShopOrderFulfillmentsDataById(
         orderDto.orderId,
-        headers.authorization,
+        headers.Authorization,
       ),
     );
   }
@@ -61,7 +61,7 @@ export class OrdersController {
   async getOrderActivity(@Res() res, @Headers() headers): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getOrderActivity(headers.authorization),
+      await this.appService.getOrderActivity(headers.Authorization),
     );
   }
 
@@ -76,7 +76,7 @@ export class OrdersController {
       res,
       await this.appService.getOrderDetailsById(
         orderDto.orderId,
-        headers.authorization,
+        headers.Authorization,
       ),
     );
   }
@@ -92,7 +92,7 @@ export class OrdersController {
       res,
       await this.appService.getOrdersListByShopId(
         shopDto.shopId,
-        headers.authorization,
+        headers.Authorization,
       ),
     );
   }
@@ -102,7 +102,7 @@ export class OrdersController {
   async findAllPendingOrders(@Res() res, @Headers() headers): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getAllPendingOrders(headers.authorization),
+      await this.appService.getAllPendingOrders(headers.Authorization),
     );
   }
 
@@ -117,7 +117,7 @@ export class OrdersController {
       res,
       await this.appService.getOrdersSummary(
         orderSummaryDto.reportingPeriod,
-        headers.authorization,
+        headers.Authorization,
       ),
     );
   }

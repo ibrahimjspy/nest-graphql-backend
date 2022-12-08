@@ -27,13 +27,14 @@ import { ShopOrdersFulfillmentsDto, ShopOrdersListDto } from './dto';
 import { mockOrderReporting } from 'src/graphql/mocks/orderSummary.mock';
 import { OrderSummaryResponseDto } from './dto/order.summary.dto';
 import { dailySalesHandler } from 'src/graphql/handlers/orders.reporting';
+
 @Injectable()
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
 
-  public async getDashboardDataById(id, headers: string): Promise<object> {
+  public async getDashboardDataById(id, token: string): Promise<object> {
     try {
-      const response = await dashboardByIdHandler(id, headers);
+      const response = await dashboardByIdHandler(id, token);
       return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
@@ -41,9 +42,9 @@ export class OrdersService {
     }
   }
 
-  public async getAllShopOrdersData(headers: string): Promise<object> {
+  public async getAllShopOrdersData(token: string): Promise<object> {
     try {
-      const response = await allShopOrdersHandler(headers);
+      const response = await allShopOrdersHandler(token);
       const shops = (response[GQL_EDGES] || []).map((shop) => shop['node']);
       const shopOrders: ShopOrdersListDto = { orders: [] };
 
@@ -55,7 +56,7 @@ export class OrdersService {
             orders.map(async (order) => {
               const orderDetails = await orderDetailsHandler(
                 order['orderId'],
-                headers,
+                token,
               );
               const orderBundlesTotal = getTotalFromBundles(
                 order['orderBundles'],
@@ -85,9 +86,9 @@ export class OrdersService {
     }
   }
 
-  public async getShopOrdersDataById(id, headers: string): Promise<object> {
+  public async getShopOrdersDataById(id, token: string): Promise<object> {
     try {
-      const response = await shopOrdersByIdHandler(id, headers);
+      const response = await shopOrdersByIdHandler(id, token);
       return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
@@ -97,16 +98,13 @@ export class OrdersService {
 
   public async getShopOrderFulfillmentsDataById(
     id,
-    headers: string,
+    token: string,
   ): Promise<object> {
-    const orderFulfillments = await shopOrderFulfillmentsByIdHandler(
-      id,
-      headers,
-    );
+    const orderFulfillments = await shopOrderFulfillmentsByIdHandler(id, token);
 
     const fulfillmentDetails = await shopOrderFulfillmentsDetailsHandler(
       orderFulfillments['orderId'],
-      headers,
+      token,
     );
 
     const orderFulfillmentBundles = addStatusAndTotalToBundles(
@@ -130,9 +128,9 @@ export class OrdersService {
 
     return response;
   }
-  public async getOrderActivity(headers: string): Promise<object> {
+  public async getOrderActivity(token: string): Promise<object> {
     try {
-      const response = await orderActivityHandler(headers);
+      const response = await orderActivityHandler(token);
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
       this.logger.error(error);
@@ -140,12 +138,9 @@ export class OrdersService {
     }
   }
 
-  public async getOrderDetailsById(
-    id: string,
-    headers: string,
-  ): Promise<object> {
+  public async getOrderDetailsById(id: string, token: string): Promise<object> {
     try {
-      const response = await orderDetailsHandler(id, headers);
+      const response = await orderDetailsHandler(id, token);
       return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
@@ -155,12 +150,12 @@ export class OrdersService {
 
   public async getOrdersListByShopId(
     id: string,
-    headers: string,
+    token: string,
   ): Promise<object> {
     try {
-      const shopDetails = await shopOrdersByIdHandler(id, headers);
+      const shopDetails = await shopOrdersByIdHandler(id, token);
       const orderIds = shopDetails['orders'];
-      const ordersList = await ordersListByIdsHandler(orderIds, headers);
+      const ordersList = await ordersListByIdsHandler(orderIds, token);
       const response = { ...shopDetails, ...ordersList };
 
       return prepareSuccessResponse(response, '', 201);
@@ -169,9 +164,9 @@ export class OrdersService {
       return graphqlExceptionHandler(err);
     }
   }
-  public async getAllPendingOrders(headers: string): Promise<object> {
+  public async getAllPendingOrders(token: string): Promise<object> {
     try {
-      const allOrders = await this.getAllShopOrdersData(headers);
+      const allOrders = await this.getAllShopOrdersData(token);
       const pendingOrders = getPendingOrders(allOrders['data'].orders);
 
       return prepareSuccessResponse(pendingOrders, '', 201);
@@ -183,10 +178,10 @@ export class OrdersService {
 
   public async getOrdersSummary(
     reportingPeriod,
-    headers: string,
+    token: string,
   ): Promise<object> {
     try {
-      const dailySales = await dailySalesHandler(reportingPeriod, headers);
+      const dailySales = await dailySalesHandler(reportingPeriod, token);
       const mock = mockOrderReporting();
       const response: OrderSummaryResponseDto = {
         dailySales: dailySales['gross'].amount,
