@@ -16,17 +16,22 @@ export class OrdersController {
     @Param() userDto: UserIdDto,
     @Headers() headers,
   ): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.getDashboardDataById(userDto?.userId, headers),
+      await this.appService.getDashboardDataById(
+        userDto?.userId,
+        Authorization,
+      ),
     );
   }
   // Returns all shop orders for orders page
   @Get('/marketplace/all')
   async findAllShopOrders(@Res() res, @Headers() headers): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.getAllShopOrdersData(headers.Authorization),
+      await this.appService.getAllShopOrdersData(Authorization),
     );
   }
   // Returns shop orders for orders page
@@ -36,9 +41,13 @@ export class OrdersController {
     @Param() shopDto: ShopIdDto,
     @Headers() headers,
   ): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.getShopOrdersDataById(shopDto.shopId, headers),
+      await this.appService.getShopOrdersDataById(
+        shopDto.shopId,
+        Authorization,
+      ),
     );
   }
   // Returns shop order fulfillments for order page
@@ -48,20 +57,22 @@ export class OrdersController {
     @Param() orderDto: OrderIdDto,
     @Headers() headers,
   ): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
       await this.appService.getShopOrderFulfillmentsDataById(
         orderDto.orderId,
-        headers.Authorization,
+        Authorization,
       ),
     );
   }
   // Returns shop order activities
   @Get('/activity')
   async getOrderActivity(@Res() res, @Headers() headers): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.getOrderActivity(headers.Authorization),
+      await this.appService.getOrderActivity(Authorization),
     );
   }
 
@@ -72,11 +83,12 @@ export class OrdersController {
     @Param() orderDto: OrderIdDto,
     @Headers() headers,
   ): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
       await this.appService.getOrderDetailsById(
         orderDto.orderId,
-        headers.Authorization,
+        Authorization,
       ),
     );
   }
@@ -88,11 +100,12 @@ export class OrdersController {
     @Param() shopDto: ShopIdDto,
     @Headers() headers,
   ): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
       await this.appService.getOrdersListByShopId(
         shopDto.shopId,
-        headers.Authorization,
+        Authorization,
       ),
     );
   }
@@ -100,9 +113,10 @@ export class OrdersController {
   // Returns all pending shop orders for orders list page
   @Get('/marketplace/all/pending')
   async findAllPendingOrders(@Res() res, @Headers() headers): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.getAllPendingOrders(headers.Authorization),
+      await this.appService.getAllPendingOrders(Authorization),
     );
   }
 

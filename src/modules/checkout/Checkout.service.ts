@@ -310,11 +310,13 @@ export class CheckoutService {
   public async addShippingAddress(
     checkoutId: string,
     addressDetails: AddressDetailType,
+    token: string,
   ): Promise<object> {
     try {
       const response = await CheckoutHandlers.shippingAddressUpdateHandler(
         checkoutId,
         addressDetails,
+        token,
       );
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
@@ -326,11 +328,13 @@ export class CheckoutService {
   public async addBillingAddress(
     checkoutId: string,
     addressDetails: AddressDetailType,
+    token: string,
   ): Promise<object> {
     try {
       const response = await CheckoutHandlers.billingAddressUpdateHandler(
         checkoutId,
         addressDetails,
+        token,
       );
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
