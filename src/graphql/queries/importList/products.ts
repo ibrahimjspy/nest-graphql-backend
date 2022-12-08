@@ -31,20 +31,23 @@ export const getImportedProductsQuery = (
                 product {
                     id
                     name
-                    pricing{
-                        priceRange{
-                            stop{
-                            gross{
-                                amount
-                            }
-                            }
-                            start{
-                            gross{
-                                amount
-                            }
-                            }      
+                    thumbnail {
+                      url
+                    }
+                    media {
+                      url
+                    }
+                    defaultVariant {
+                      sku
+                      pricing {
+                        price {
+                          gross {
+                            currency
+                            amount
                           }
                         }
+                      }
+                    }
                 category{
                     name
                     id
