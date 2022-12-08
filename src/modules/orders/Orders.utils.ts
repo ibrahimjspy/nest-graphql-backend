@@ -114,3 +114,86 @@ export const getFulFillmentsWithStatusAndBundlesTotal = (
 export const getPendingOrders = (orders) => {
   return orders.filter((order) => order.status !== 'FULFILLED');
 };
+
+/**
+ * transforms single Saleor order against each shop with line ids mapped against variant ids
+ * @links getOrdersLineIds, getSelectedShippingMethods
+ * @author Muhammad Ibrahim
+ * @params checkoutData : marketplace checkout data containing bundles and shipping information
+ * @params orderInfo : Saleor order information containing line ids of order
+ */
+export const getOrdersByShopId = (checkoutData: object, orderInfo: object) => {
+  // utility functions
+  // appends single shop order to all shop orders
+  const addShopOrderToAllOrders = (
+    allOrders: object,
+    shopOrder: object,
+    shopId: string,
+  ) => {
+    allOrders[`${shopId}`] = allOrders[`${shopId}`]?.length
+      ? [...allOrders[`${shopId}`], shopOrder]
+      : [shopOrder];
+  };
+
+  const allOrders: object = {};
+  checkoutData['bundles'].map((checkoutBundle) => {
+    const shopOrder: object = {};
+    const bundle: object = {};
+    const shopId = checkoutBundle?.bundle?.shop?.id;
+
+    //adds bundle to shop object
+    bundle['bundleId'] = checkoutBundle?.bundle.id;
+    bundle['quantity'] = checkoutBundle?.quantity;
+    bundle['orderlineIds'] = getOrdersLineIds(
+      checkoutBundle?.bundle.variants,
+      orderInfo,
+    );
+
+    //add additional information to object
+    shopOrder['shippingMethodId'] = getOrderShippingMethods(
+      checkoutData['selectedMethods'],
+      shopId,
+    );
+    shopOrder['shopId'] = checkoutBundle?.bundle?.shop?.id;
+    shopOrder['orderId'] = orderInfo['id'];
+
+    shopOrder['bundle'] = bundle;
+    addShopOrderToAllOrders(allOrders, shopOrder, shopId);
+  });
+  return allOrders;
+};
+
+/**
+ * @returns order line ids against bundle variants
+ * @links getOrdersByShop, <dependency>
+ * @author Muhammad Ibrahim
+ * @params bundleVariants : containing bundle and variant ids
+ * @params orderInfo : containing orderLines
+ */
+const getOrdersLineIds = (bundleVariants, orderInfo: object) => {
+  const lineIds = [];
+  bundleVariants.map((bundleVariant) => {
+    orderInfo['lines'].map((line) => {
+      if (bundleVariant?.variant?.id === line?.variant?.id) {
+        lineIds.push(line.id);
+      }
+    });
+  });
+  return lineIds;
+};
+
+/**
+ * returns selected shipping methods of given marketplace checkout mapped against shop id
+ * @fallback if there is no shipping method id against that shop id , return first selected method
+ * @author Muhammad Ibrahim
+ * @links getOrdersByShop function = () => object
+ * @params selectedMethods : shipping methods of all shops : object
+ * @params shopId : string
+ */
+const getOrderShippingMethods = (selectedMethods, shopId: string) => {
+  return (
+    selectedMethods.find((shippingMethod) => shippingMethod.shop.id === shopId)
+      ?.method.shippingMethodTypeId ||
+    selectedMethods[0].method.shippingMethodTypeId
+  );
+};

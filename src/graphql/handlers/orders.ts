@@ -14,18 +14,24 @@ import {
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import { ordersListQuery } from '../queries/orders/list';
 import { GQL_EDGES } from 'src/constants';
-import { orderIdsTransformer } from '../utils/orders';
+import { orderBundlesTransformer, orderIdsTransformer } from '../utils/orders';
+import { addOrderToShopMutation } from '../mutations/order/addOrderToShop';
 
-export const dashboardByIdHandler = async (id: string): Promise<object> => {
+export const dashboardByIdHandler = async (
+  id: string,
+  headers: string,
+): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(dashboardQuery(id), 'true'),
+    await graphqlCall(dashboardQuery(id), headers, 'true'),
   );
   return response;
 };
 
-export const allShopOrdersHandler = async (): Promise<object> => {
+export const allShopOrdersHandler = async (
+  headers: string,
+): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(allShopOrdersQuery()),
+    await graphqlCall(allShopOrdersQuery(), headers),
   );
   if (!response['marketplaceShops']) {
     throw new RecordNotFound('Marketplace shops');
@@ -33,9 +39,12 @@ export const allShopOrdersHandler = async (): Promise<object> => {
   return response['marketplaceShops'];
 };
 
-export const orderDetailsHandler = async (id: string): Promise<object> => {
+export const orderDetailsHandler = async (
+  id: string,
+  headers: string,
+): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(orderDetailsQuery(id)),
+    await graphqlCall(orderDetailsQuery(id), headers),
   );
   if (!response['order']) {
     throw new RecordNotFound('Order details');
@@ -43,9 +52,12 @@ export const orderDetailsHandler = async (id: string): Promise<object> => {
   return response['order'];
 };
 
-export const shopOrdersByIdHandler = async (id: string): Promise<object> => {
+export const shopOrdersByIdHandler = async (
+  id: string,
+  headers: string,
+): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(shopOrdersQuery(id)),
+    await graphqlCall(shopOrdersQuery(id), headers),
   );
   if (!response['marketplaceShop']) {
     throw new RecordNotFound('Shop details');
@@ -55,9 +67,10 @@ export const shopOrdersByIdHandler = async (id: string): Promise<object> => {
 
 export const shopOrderFulfillmentsByIdHandler = async (
   id: string,
+  headers: string,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(shopOrderFulfillmentsQuery(id)),
+    await graphqlCall(shopOrderFulfillmentsQuery(id), headers),
   );
   if (!response['marketplaceOrders']?.length) {
     throw new RecordNotFound('Shop order');
@@ -67,18 +80,21 @@ export const shopOrderFulfillmentsByIdHandler = async (
 
 export const shopOrderFulfillmentsDetailsHandler = async (
   id: string,
+  headers: string,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(shopOrderFulfillmentDetailsQuery(id)),
+    await graphqlCall(shopOrderFulfillmentDetailsQuery(id), headers),
   );
   if (!response['order']) {
     throw new RecordNotFound('Shop order fulfillment details');
   }
   return response['order'];
 };
-export const orderActivityHandler = async (): Promise<object> => {
+export const orderActivityHandler = async (
+  headers: string,
+): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(orderActivityQuery()),
+    await graphqlCall(orderActivityQuery(), headers),
   );
 
   if (!response['homepageEvents']?.[GQL_EDGES]?.length) {
@@ -89,12 +105,25 @@ export const orderActivityHandler = async (): Promise<object> => {
 
 export const ordersListByIdsHandler = async (
   ids: string[],
+  headers: string,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(ordersListQuery(orderIdsTransformer(ids))),
+    await graphqlCall(ordersListQuery(orderIdsTransformer(ids)), headers),
   );
   if (!response['orders']) {
     throw new RecordNotFound('order details');
   }
   return response['orders'];
+};
+
+export const addOrderToShopHandler = async (order) => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      addOrderToShopMutation(
+        order[0], //uses default bundle information for shop and shipping details
+        orderBundlesTransformer(order), //transforms bundles array to graphql string
+      ),
+    ),
+  );
+  return response['addOrderToShop'];
 };

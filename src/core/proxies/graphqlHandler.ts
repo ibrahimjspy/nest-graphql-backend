@@ -1,4 +1,4 @@
-import { request } from 'graphql-request';
+import { GraphQLClient } from 'graphql-request';
 import { graphqlEndpoint } from './graphqlEndpointToggle';
 import { ResultErrorType } from 'src/graphql/exceptions/resultError.type';
 import { HttpStatus } from '@nestjs/common';
@@ -20,16 +20,12 @@ export const graphqlCall = async (
   Headers?: string,
   Mock?: string,
 ): Promise<any> => {
-  console.log('headers: ', Headers);
-  const requestHeaders = {
-    authorization: `${Headers}`,
-  };
-
-  return await request(
-    graphqlEndpoint(Mock ? Mock : ''),
-    Query,
-    requestHeaders,
-  );
+  const graphQLClient = new GraphQLClient(graphqlEndpoint(Mock ? Mock : ''), {
+    headers: {
+      authorization: `${Headers}`,
+    },
+  });
+  return await graphQLClient.request(Query);
 };
 
 /**
