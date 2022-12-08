@@ -266,12 +266,12 @@ export class CheckoutService {
     }
   }
 
-  public async setBundleAsUnselected(
-    userId: string,
-    bundleIds: string[],
-    checkoutBundleIds: string[],
-    headers: string,
-  ): Promise<object> {
+  public async setBundleAsUnselected({
+    userId,
+    bundleIds,
+    checkoutBundleIds,
+    headers,
+  }): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
         userId,

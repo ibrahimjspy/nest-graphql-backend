@@ -12,6 +12,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { CheckoutService } from './Checkout.service';
 import { makeResponse } from '../../core/utils/response';
 import { AddBundleDto, UserIdDto } from './dto';
+import { UnSelectBundlesType } from './Checkout.utils.type';
 
 @ApiTags('checkout')
 @Controller('checkout')
@@ -105,14 +106,15 @@ export class CheckoutController {
     @Body() body,
     @Headers() headers,
   ): Promise<object> {
+    const unSelectBundle: UnSelectBundlesType = {
+      userId: body?.userId,
+      bundleIds: body?.bundleIds,
+      checkoutBundleIds: body?.checkoutBundleIds,
+      headers: headers?.Authorization,
+    };
     return makeResponse(
       res,
-      await this.appService.setBundleAsUnselected(
-        body?.userId,
-        body?.bundleIds,
-        body?.checkoutBundleIds,
-        headers?.Authorization,
-      ),
+      await this.appService.setBundleAsUnselected(unSelectBundle),
     );
   }
 
