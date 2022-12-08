@@ -27,12 +27,10 @@ export class CheckoutController {
     @Param() userDto: UserIdDto,
     @Headers() headers,
   ): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.getShoppingCartData(
-        userDto.userId,
-        headers.Authorization,
-      ),
+      await this.appService.getShoppingCartData(userDto.userId, Authorization),
     );
   }
 
@@ -42,12 +40,13 @@ export class CheckoutController {
     @Body() addBundleDto: AddBundleDto,
     @Headers() headers,
   ): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
       await this.appService.addToCart(
         addBundleDto.userId,
         addBundleDto.bundles,
-        headers.Authorization,
+        Authorization,
       ),
     );
   }
@@ -58,12 +57,13 @@ export class CheckoutController {
     @Body() body,
     @Headers() headers,
   ): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
       await this.appService.deleteBundleFromCart(
         body?.userId,
         body?.checkoutBundleIds,
-        headers.Authorization,
+        Authorization,
       ),
     );
   }
@@ -74,12 +74,13 @@ export class CheckoutController {
     @Body() body,
     @Headers() headers,
   ): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
       await this.appService.updateBundleFromCart(
         body?.userId,
         body?.bundles,
-        headers.Authorization,
+        Authorization,
       ),
     );
   }
@@ -90,12 +91,13 @@ export class CheckoutController {
     @Body() body,
     @Headers() headers,
   ): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
       await this.appService.setBundleAsSelected(
         body?.userId,
         body?.bundleIds,
-        headers.Authorization,
+        Authorization,
       ),
     );
   }
@@ -106,11 +108,12 @@ export class CheckoutController {
     @Body() body,
     @Headers() headers,
   ): Promise<object> {
+    const Authorization: string = headers.authorization;
     const unSelectBundle: UnSelectBundlesType = {
       userId: body?.userId,
       bundleIds: body?.bundleIds,
       checkoutBundleIds: body?.checkoutBundleIds,
-      token: headers?.Authorization,
+      token: Authorization,
     };
     return makeResponse(
       res,
@@ -119,23 +122,35 @@ export class CheckoutController {
   }
 
   @Post('shippingAddress')
-  async addShippingAddress(@Res() res, @Body() body): Promise<object> {
+  async addShippingAddress(
+    @Res() res,
+    @Body() body,
+    @Headers() headers,
+  ): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
       await this.appService.addShippingAddress(
         body?.checkoutId,
         body?.addressDetails,
+        Authorization,
       ),
     );
   }
 
   @Post('billingAddress')
-  async addBillingAddress(@Res() res, @Body() body): Promise<object> {
+  async addBillingAddress(
+    @Res() res,
+    @Body() body,
+    @Headers() headers,
+  ): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
       await this.appService.addBillingAddress(
         body?.checkoutId,
         body?.addressDetails,
+        Authorization,
       ),
     );
   }
@@ -157,12 +172,10 @@ export class CheckoutController {
     @Param() params,
     @Headers() headers,
   ): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.getShippingMethods(
-        params?.userId,
-        headers?.Authorization,
-      ),
+      await this.appService.getShippingMethods(params?.userId, Authorization),
     );
   }
 
@@ -172,12 +185,13 @@ export class CheckoutController {
     @Body() body,
     @Headers() headers,
   ): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
       await this.appService.selectShippingMethods(
         body?.userId,
         body?.shippingIds,
-        headers?.Authorization,
+        Authorization,
       ),
     );
   }
@@ -188,9 +202,10 @@ export class CheckoutController {
     @Body() body,
     @Headers() headers,
   ): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.createPayment(body?.userId, headers?.Authorization),
+      await this.appService.createPayment(body?.userId, Authorization),
     );
   }
 
@@ -200,12 +215,10 @@ export class CheckoutController {
     @Body() body,
     @Headers() headers,
   ): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.checkoutComplete(
-        body?.userId,
-        headers?.Authorization,
-      ),
+      await this.appService.checkoutComplete(body?.userId, Authorization),
     );
   }
 }
