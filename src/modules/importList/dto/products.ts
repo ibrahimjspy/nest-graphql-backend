@@ -14,3 +14,13 @@ export class importProductsDTO {
   @IsNotEmpty()
   productVariantIds: string[];
 }
+
+export class deleteImportedProductsDTO {
+  @ApiProperty()
+  @IsNotEmpty()
+  shopId: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  productIds: string[];
+}
