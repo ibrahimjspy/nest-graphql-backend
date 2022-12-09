@@ -3,11 +3,11 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
   Param,
   Post,
   Put,
   Res,
-  Headers,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
