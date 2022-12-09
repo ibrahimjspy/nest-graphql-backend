@@ -80,6 +80,7 @@ export class CheckoutService {
       checkoutId,
       userId,
       bundlesForCart,
+      token,
     );
   }
 
@@ -110,6 +111,7 @@ export class CheckoutService {
       newCheckout?.checkout?.id,
       userData?.id,
       bundlesForCart,
+      token,
     );
   }
 
@@ -166,6 +168,7 @@ export class CheckoutService {
 
       const saleorCheckout = await CheckoutHandlers.checkoutHandler(
         checkoutData['checkoutId'],
+        token,
       );
 
       const checkoutLines = CheckoutUtils.getCheckoutLineItemsForDelete(
@@ -177,11 +180,13 @@ export class CheckoutService {
       await CheckoutHandlers.deleteLinesHandler(
         checkoutLineIds,
         saleorCheckout['id'],
+        token,
       );
       const response = await CheckoutHandlers.deleteBundlesHandler(
         checkoutBundleIds,
         checkoutData['checkoutId'],
         false,
+        token,
       );
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
@@ -204,6 +209,7 @@ export class CheckoutService {
 
       const saleorCheckout = await CheckoutHandlers.checkoutHandler(
         checkoutData['checkoutId'],
+        token,
       );
 
       const updatedLinesWithQuantity =
@@ -216,11 +222,13 @@ export class CheckoutService {
       await CheckoutHandlers.updateLinesHandler(
         checkoutData['checkoutId'],
         updatedLinesWithQuantity,
+        token,
       );
       const response = await CheckoutHandlers.addBundlesHandler(
         checkoutData['checkoutId'],
         userId,
         bundlesFromCart,
+        token,
       );
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
@@ -242,6 +250,7 @@ export class CheckoutService {
       );
       const saleorCheckout = await CheckoutHandlers.checkoutHandler(
         checkoutData['checkoutId'],
+        token,
       );
       const checkoutLines = CheckoutUtils.getCheckoutLineItems(
         saleorCheckout['lines'],
@@ -262,6 +271,7 @@ export class CheckoutService {
         checkoutData['checkoutId'],
         userId,
         selectedBundles,
+        token,
       );
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
@@ -284,6 +294,7 @@ export class CheckoutService {
       );
       const saleorCheckout = await CheckoutHandlers.checkoutHandler(
         checkoutData['checkoutId'],
+        token,
       );
       const checkoutLines = CheckoutUtils.getCheckoutLineItemsForDelete(
         saleorCheckout['lines'],
@@ -296,6 +307,7 @@ export class CheckoutService {
       await CheckoutHandlers.deleteLinesHandler(
         checkoutLineIds,
         saleorCheckout['id'],
+        token,
       );
       const updatedBundle = CheckoutUtils.selectOrUnselectBundle(
         checkoutData['bundles'],
@@ -306,6 +318,7 @@ export class CheckoutService {
         checkoutData['checkoutId'],
         userId,
         updatedBundle,
+        token,
       );
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
@@ -352,10 +365,12 @@ export class CheckoutService {
 
   public async getShippingAndBillingAddress(
     checkoutId: string,
+    token: string,
   ): Promise<object> {
     try {
       const response = await CheckoutHandlers.shippingAndBillingAddressHandler(
         checkoutId,
+        token,
       );
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
@@ -375,7 +390,9 @@ export class CheckoutService {
         token,
       );
 
-      const shippingZones = await CheckoutHandlers.getShippingZonesHandler();
+      const shippingZones = await CheckoutHandlers.getShippingZonesHandler(
+        token,
+      );
       const shippingMethodsFromShippingZones =
         CheckoutUtils.getShippingMethodsFromShippingZones(shippingZones);
 
@@ -412,10 +429,12 @@ export class CheckoutService {
           checkoutData['checkoutId'],
           shippingIds,
           true,
+          token,
         ),
         CheckoutHandlers.updateDeliveryMethodHandler(
           checkoutData['checkoutId'],
           checkoutData['selectedMethods'],
+          token,
         ),
       ]);
       const response = await this.getShippingMethods(userId, token);
@@ -436,12 +455,14 @@ export class CheckoutService {
 
       const paymentGateways = await CheckoutHandlers.paymentGatewayHandler(
         checkoutData['checkoutId'],
+        token,
       );
 
       const dummyGatewayId = CheckoutUtils.getDummyGateway(paymentGateways);
       const response = await CheckoutHandlers.createPaymentHandler(
         checkoutData['checkoutId'],
         dummyGatewayId,
+        token,
       );
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
@@ -469,9 +490,11 @@ export class CheckoutService {
         checkoutBundleIds,
         checkoutData['checkoutId'],
         true,
+        token,
       );
       const response = await CheckoutHandlers.completeCheckoutHandler(
         checkoutData['checkoutId'],
+        token,
       );
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
