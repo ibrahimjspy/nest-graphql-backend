@@ -159,10 +159,15 @@ export class CheckoutController {
   async getShippingAndBillingAddress(
     @Res() res,
     @Param() params,
+    @Headers() headers,
   ): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.getShippingAndBillingAddress(params?.checkoutId),
+      await this.appService.getShippingAndBillingAddress(
+        params?.checkoutId,
+        Authorization,
+      ),
     );
   }
 

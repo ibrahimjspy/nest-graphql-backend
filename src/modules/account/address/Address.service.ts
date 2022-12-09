@@ -13,10 +13,13 @@ import * as AccountHandlers from 'src/graphql/handlers/account';
 export class AddressService {
   private readonly logger = new Logger(AddressService.name);
 
-  public async getAddresses(userId: string): Promise<SuccessResponseType> {
+  public async getAddresses(
+    userId: string,
+    token: string,
+  ): Promise<SuccessResponseType> {
     try {
       return prepareSuccessResponse(
-        await AccountHandlers.addressesByUserIdHandler(userId),
+        await AccountHandlers.addressesByUserIdHandler(userId, token),
       );
     } catch (error) {
       this.logger.error(error);
@@ -27,10 +30,11 @@ export class AddressService {
   public async createAddress(
     userId: string,
     address: AddressInput,
+    token: string,
   ): Promise<SuccessResponseType> {
     try {
       return prepareSuccessResponse(
-        await AccountHandlers.createAddressHandler(userId, address),
+        await AccountHandlers.createAddressHandler(userId, address, token),
       );
     } catch (error) {
       this.logger.error(error);
@@ -41,9 +45,12 @@ export class AddressService {
     }
   }
 
-  public async deleteAddress(addressId: string): Promise<SuccessResponseType> {
+  public async deleteAddress(
+    addressId: string,
+    token: string,
+  ): Promise<SuccessResponseType> {
     try {
-      await AccountHandlers.deleteAddressHandler(addressId);
+      await AccountHandlers.deleteAddressHandler(addressId, token);
       return prepareSuccessResponse(null, 'Address is deleted successfully.');
     } catch (error) {
       this.logger.error(error);
@@ -54,10 +61,15 @@ export class AddressService {
   public async setDefaultAddress(
     userId: string,
     addressId: string,
+    token: string,
   ): Promise<SuccessResponseType> {
     try {
       return prepareSuccessResponse(
-        await AccountHandlers.setDefaultAddressHandler(userId, addressId),
+        await AccountHandlers.setDefaultAddressHandler(
+          userId,
+          addressId,
+          token,
+        ),
       );
     } catch (error) {
       this.logger.error(error);
@@ -71,10 +83,11 @@ export class AddressService {
   public async updateAddress(
     addressId: string,
     address: AddressInput,
+    token: string,
   ): Promise<SuccessResponseType> {
     try {
       return prepareSuccessResponse(
-        await AccountHandlers.updateAddressHandler(addressId, address),
+        await AccountHandlers.updateAddressHandler(addressId, address, token),
       );
     } catch (error) {
       this.logger.error(error);
