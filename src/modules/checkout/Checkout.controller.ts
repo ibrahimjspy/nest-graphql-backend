@@ -41,6 +41,7 @@ export class CheckoutController {
     @Headers() headers,
   ): Promise<object> {
     const Authorization: string = headers.authorization;
+    console.log('Authorization', Authorization);
     return makeResponse(
       res,
       await this.appService.addToCart(

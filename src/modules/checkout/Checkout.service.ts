@@ -56,6 +56,7 @@ export class CheckoutService {
     checkoutData,
     bundlesList: BundleType[],
     bundlesForCart: CheckoutBundleInputType[],
+    token: string,
   ) {
     const { checkoutId, bundles } = checkoutData;
     const [bundlesWithUpdatedQuantity, checkoutLines] = await Promise.all([
@@ -66,6 +67,7 @@ export class CheckoutService {
     const checkoutWithLines = await CheckoutHandlers.addLinesHandler(
       checkoutId,
       checkoutLines,
+      token,
     );
 
     bundlesForCart = CheckoutUtils.getBundlesWithLineIds(
@@ -85,6 +87,7 @@ export class CheckoutService {
     userData,
     bundlesList: BundleType[],
     bundlesForCart: CheckoutBundleInputType[],
+    token: string,
   ) {
     const checkoutLines = await CheckoutUtils.getLineItems(
       bundlesList,
@@ -94,6 +97,7 @@ export class CheckoutService {
     const newCheckout: any = await CheckoutHandlers.createCheckoutHandler(
       userData?.email,
       checkoutLines,
+      token,
     );
 
     bundlesForCart = CheckoutUtils.getBundlesWithLineIds(
@@ -116,8 +120,8 @@ export class CheckoutService {
   ): Promise<object> {
     try {
       const [userData, bundlesList, checkoutData] = await Promise.all([
-        AccountHandlers.userEmailByIdHandler(userId),
-        ProductHandlers.bundlesByBundleIdsHandler(bundlesForCart),
+        AccountHandlers.userEmailByIdHandler(userId, token),
+        ProductHandlers.bundlesByBundleIdsHandler(bundlesForCart, token),
         CheckoutHandlers.marketplaceCheckoutHandler(userId, false, token),
       ]);
 
@@ -128,12 +132,14 @@ export class CheckoutService {
           checkoutData,
           bundlesList,
           bundlesForCart,
+          token,
         );
       } else {
         response = await this.addToCartWhenCheckoutNotExists(
           userData,
           bundlesList,
           bundlesForCart,
+          token,
         );
       }
       return prepareSuccessResponse(response, '', 201);
@@ -245,6 +251,7 @@ export class CheckoutService {
       await CheckoutHandlers.addLinesHandler(
         checkoutData['checkoutId'],
         checkoutLines,
+        token,
       );
       const selectedBundles = CheckoutUtils.selectOrUnselectBundle(
         checkoutData['bundles'],
