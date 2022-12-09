@@ -29,9 +29,11 @@ export const marketplaceCheckoutHandler = async (
 export const createCheckoutHandler = async (
   email: string,
   checkoutLines: LineType[],
+  token: string,
 ): Promise<object> => {
   const response = await graphqlCall(
     CheckoutMutations.createCheckoutMutation(email, checkoutLines),
+    token,
   );
   return response['checkoutCreate'];
 };
@@ -52,10 +54,12 @@ export const addBundlesHandler = async (
 export const addLinesHandler = async (
   checkoutId: string,
   checkoutLines,
+  token: string,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
       CheckoutMutations.checkoutLinesAddMutation(checkoutId, checkoutLines),
+      token,
     ),
   );
   return response['checkoutLinesAdd'];
