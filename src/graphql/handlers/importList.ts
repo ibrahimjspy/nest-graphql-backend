@@ -3,8 +3,12 @@ import {
   graphqlExceptionHandler,
   graphqlResultErrorHandler,
 } from 'src/core/proxies/graphqlHandler';
-import { importProductsDTO } from 'src/modules/importList/dto/products';
-import { importProductsMutation } from '../mutations/importList/products';
+import {
+  deleteImportedProductsDTO,
+  importProductsDTO,
+} from 'src/modules/importList/dto/products';
+import { deleteImportedProductMutation } from '../mutations/importList/deleteProducts';
+import { importProductsMutation } from '../mutations/importList/addProducts';
 import { getImportedProductsQuery } from '../queries/importList/products';
 
 export const getImportedProductsHandler = async (
@@ -26,8 +30,22 @@ export const importProductsHandler = async (
 ): Promise<object> => {
   try {
     return await graphqlResultErrorHandler(
-      graphqlCall(importProductsMutation(productData)),
+      await graphqlCall(importProductsMutation(productData)),
     );
+  } catch (error) {
+    return graphqlExceptionHandler(error);
+  }
+};
+
+export const deleteImportedProductsHandler = async (
+  productData: deleteImportedProductsDTO,
+): Promise<object> => {
+  try {
+    const response = await graphqlResultErrorHandler(
+      await graphqlCall(deleteImportedProductMutation(productData)),
+      false,
+    );
+    return response['deleteImportedProduct'];
   } catch (error) {
     return graphqlExceptionHandler(error);
   }

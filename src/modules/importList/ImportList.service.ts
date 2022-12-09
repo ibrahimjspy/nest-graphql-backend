@@ -5,11 +5,12 @@ import {
   prepareSuccessResponse,
 } from 'src/core/utils/response';
 import {
+  deleteImportedProductsHandler,
   getImportedProductsHandler,
   importProductsHandler,
 } from 'src/graphql/handlers/importList';
 import { ProductFilterDto } from 'src/modules/product/dto';
-import { importProductsDTO } from './dto/products';
+import { deleteImportedProductsDTO, importProductsDTO } from './dto/products';
 
 @Injectable()
 export class ImportListService {
@@ -36,6 +37,21 @@ export class ImportListService {
   ): Promise<object> {
     try {
       return prepareSuccessResponse(await importProductsHandler(productsData));
+    } catch (error) {
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * deletes product and variants against shop in importList
+   */
+  public async deleteImportedProducts(
+    productsData: deleteImportedProductsDTO,
+  ): Promise<object> {
+    try {
+      return prepareSuccessResponse(
+        await deleteImportedProductsHandler(productsData),
+      );
     } catch (error) {
       return graphqlExceptionHandler(error);
     }
