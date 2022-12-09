@@ -31,6 +31,7 @@ export const getImportedProductsQuery = (
                 product {
                     id
                     name
+                    description
                     slug
                     thumbnail {
                       url
