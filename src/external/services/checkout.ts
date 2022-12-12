@@ -9,18 +9,18 @@ import {
   SHAROVE_PASSWORD,
   SIGNATURE_REQUESTED,
   SMS_NUMBER,
-  SPA_ID,
-  SPM_ID,
   STORE_CREDIT,
 } from 'src/constants';
 import { AuthService } from 'src/external/services/auth';
 import { getLegacyMappingHandler } from 'src/graphql/handlers/product';
 import { hash } from 'src/core/utils/helpers';
 import { Logger } from '@nestjs/common';
+import { addShippingAddressInfo } from '../endpoints/checkout';
 
 export class LegacyService {
   private readonly logger = new Logger(LegacyService.name);
   selectedBundles: any;
+  shipping_info: any;
   BASE_URL: any;
   colorMappingObject = {};
   shopIdList = [];
@@ -30,8 +30,9 @@ export class LegacyService {
   shoeSizeNames = [];
   shoesVendorIds = [];
 
-  constructor(selectedBundles: any) {
+  constructor(selectedBundles: any, shipping_info: any) {
     this.selectedBundles = selectedBundles;
+    this.shipping_info = shipping_info;
     this.BASE_URL = `${BASE_EXTERNAL_ENDPOINT}/api/v3`;
   }
 
@@ -49,6 +50,7 @@ export class LegacyService {
       const response = await http.post(URL, payload, header);
       return response?.data;
     } catch (error) {
+      this.logger.error(error?.response?.data?.message);
       throw error;
     }
   }
@@ -88,19 +90,30 @@ export class LegacyService {
       );
       shoe_size_mapping = hash(shoes_mapping_resp?.data, 'name');
     }
+    const shippingData = {
+      address1: this.shipping_info?.streetAddress1,
+      address2: this.shipping_info?.streetAddress2,
+      city: this.shipping_info?.city,
+      state: this.shipping_info?.countryArea,
+      zipcode: this.shipping_info?.postalCode,
+    };
+
+    const shippingAddressInfo = await this.getOrCreateShippingAddressID(
+      shippingData,
+    );
 
     const payload = this.payloadBuilder(
       productMappingObject,
       color_mapping_response,
       shoe_size_mapping || {},
+      shippingAddressInfo,
     );
-
     const validated_payload = await this.validate_order_quantity(payload);
 
     this.logger.log('Payload validating');
     // if length of resp is 0, it means payload is valid.
     if (validated_payload?.length > 0) {
-      this.logger.warn('Invalid Payload');
+      this.logger.warn('Payload validation Failed');
       throw Error(validated_payload);
     }
     return payload;
@@ -108,7 +121,6 @@ export class LegacyService {
 
   protected parseBundleDetails() {
     const bundleList = this.selectedBundles;
-
     for (let i = 0; i < bundleList.length; i++) {
       const element = bundleList[i];
       const shop_id = element?.bundle?.shop?.id;
@@ -132,7 +144,12 @@ export class LegacyService {
     }
   }
 
-  protected payloadBuilder(productMappings, colorMappings, shoe_size_mapping) {
+  protected payloadBuilder(
+    productMappings,
+    colorMappings,
+    shoe_size_mapping,
+    shippingAddressInfo,
+  ) {
     const selectedBundlesData = this.selectedBundles;
     const payloadObject = {};
 
@@ -158,8 +175,8 @@ export class LegacyService {
 
             memo: '',
             sms_number: SMS_NUMBER,
-            spa_id: SPA_ID,
-            spm_id: SPM_ID,
+            spa_id: shippingAddressInfo?.data?.id,
+            spm_name: 'UPS',
             store_credit: STORE_CREDIT,
             signature_requested: SIGNATURE_REQUESTED === 'true',
           };
@@ -172,7 +189,11 @@ export class LegacyService {
       });
     });
 
-    return { orders: Object.values(payloadObject), payment_type: PAYMENT_TYPE };
+    return {
+      orders: Object.values(payloadObject),
+      payment_type: PAYMENT_TYPE,
+      spa_id: parseInt(shippingAddressInfo?.data?.id),
+    };
   }
 
   protected getVariantDetails(variants, shop_id, bundle_name) {
@@ -231,6 +252,16 @@ export class LegacyService {
       )}&shoe_size_name_list=${JSON.stringify(shoe_size_name_list)}`;
       const response = await http.get(URL);
       return response?.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  protected async getOrCreateShippingAddressID(shipping_info) {
+    // eslint-disable-next-line no-useless-catch
+    try {
+      const response = await addShippingAddressInfo(shipping_info);
+      return response;
     } catch (error) {
       throw error;
     }

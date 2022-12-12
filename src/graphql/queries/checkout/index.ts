@@ -4,6 +4,7 @@ import { shippingAndBillingAddressQuery } from './shippingAndBillingAddress';
 import { availablePaymentGatewaysQuery } from './availablePaymentGateways';
 import { shippingZonesQuery } from './shippingZones';
 import { getMarketplaceCheckoutWithCategoriesQuery } from './marketplaceCheckoutWithCategories';
+import { checkoutWithShippingInfoQuery } from './checkourtWithShippingInfo';
 export {
   checkoutQuery,
   shippingZonesQuery,
@@ -11,4 +12,5 @@ export {
   shippingAndBillingAddressQuery,
   availablePaymentGatewaysQuery,
   getMarketplaceCheckoutWithCategoriesQuery,
+  checkoutWithShippingInfoQuery,
 };

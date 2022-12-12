@@ -81,6 +81,15 @@ export const checkoutHandler = async (checkoutId: string): Promise<object> => {
   return response['checkout'];
 };
 
+export const checkoutWithShippingInfoHandler = async (
+  checkoutId: string,
+): Promise<object> => {
+  const response = await graphqlCall(
+    CheckoutQueries.checkoutWithShippingInfoQuery(checkoutId),
+  );
+  return response['checkout'];
+};
+
 export const deleteLinesHandler = async (
   lineIds,
   saleorCheckoutId,

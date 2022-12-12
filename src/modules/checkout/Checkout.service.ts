@@ -18,7 +18,7 @@ import {
 import { BundleType } from 'src/graphql/types/bundle.type';
 import { LegacyService } from 'src/external/services/checkout';
 import { getHttpErrorMessage } from 'src/external/utils/httpHelper';
-
+import { addShippingAddressInfo } from '../../external/endpoints/checkout';
 @Injectable()
 export class CheckoutService {
   private readonly logger = new Logger(CheckoutService.name);
@@ -306,10 +306,26 @@ export class CheckoutService {
         checkoutId,
         addressDetails,
       );
+      // When address is added we also need to update on OrangeShine.
+      addShippingAddressInfo({
+        address1: addressDetails.streetAddress1,
+        address2: addressDetails.streetAddress2,
+        city: addressDetails.city,
+        state: addressDetails.countryArea,
+        zipcode: addressDetails.postalCode,
+      });
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
       this.logger.error(error);
-      return graphqlExceptionHandler(error);
+      if (error instanceof HttpException) {
+        const parsed_error = getHttpErrorMessage(error);
+        return {
+          error: JSON.stringify(parsed_error.message?.data),
+          status: parsed_error?.status,
+        };
+      } else {
+        return graphqlExceptionHandler(error);
+      }
     }
   }
 
@@ -431,13 +447,16 @@ export class CheckoutService {
 
       const checkoutBundleIds =
         CheckoutUtils.getCheckoutBundleIds(selectedBundles);
-      const sharoveOrderPlaceResponse =
-        await CheckoutHandlers.completeCheckoutHandler(
-          checkoutData['checkoutId'],
-        );
 
-      // Place Order on External System
-      const instance = new LegacyService(selectedBundles);
+      const [sharoveOrderPlaceResponse, shippingAddressInfo] =
+        await Promise.all([
+          CheckoutHandlers.completeCheckoutHandler(checkoutData['checkoutId']),
+          CheckoutHandlers.checkoutWithShippingInfoHandler(
+            checkoutData['checkoutId'],
+          ),
+        ]);
+
+      const instance = new LegacyService(selectedBundles, shippingAddressInfo);
       await instance.placeExternalOrder();
       this.logger.log('Order Placed to OrangeShine Successfully');
 
