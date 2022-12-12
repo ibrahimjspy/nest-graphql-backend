@@ -94,10 +94,14 @@ export const variantsIdsByProductIdsHandler = async (
 
 export const bundlesByBundleIdsHandler = async (
   bundles: Array<CheckoutBundleInputType>,
+  token: string,
 ): Promise<BundleType[]> => {
   const bundleIds = getBundleIds(bundles);
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(ProductQueries.productBundlesByBundleIdQuery(bundleIds)),
+    await graphqlCall(
+      ProductQueries.productBundlesByBundleIdQuery(bundleIds),
+      token,
+    ),
   );
 
   if (!response['bundles']['length']) {

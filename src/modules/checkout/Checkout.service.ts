@@ -10,7 +10,6 @@ import * as CheckoutHandlers from 'src/graphql/handlers/checkout';
 import * as ProductHandlers from 'src/graphql/handlers/product';
 import * as AccountHandlers from 'src/graphql/handlers/account';
 import * as CheckoutUtils from './Checkout.utils';
-
 import {
   AddressDetailType,
   CheckoutBundleInputType,
@@ -23,11 +22,12 @@ import { addShippingAddressInfo } from '../../external/endpoints/checkout';
 export class CheckoutService {
   private readonly logger = new Logger(CheckoutService.name);
 
-  public async getShoppingCartData(id: string): Promise<object> {
+  public async getShoppingCartData(id: string, token: string): Promise<object> {
     try {
       const checkoutBundles = await CheckoutHandlers.marketplaceCheckoutHandler(
         id,
         true,
+        token,
       );
       const productIds = CheckoutUtils.getProductIdsByCheckoutBundles(
         checkoutBundles['bundles'],
@@ -58,6 +58,7 @@ export class CheckoutService {
     checkoutData,
     bundlesList: BundleType[],
     bundlesForCart: CheckoutBundleInputType[],
+    token: string,
   ) {
     const { checkoutId, bundles } = checkoutData;
     const [bundlesWithUpdatedQuantity, checkoutLines] = await Promise.all([
@@ -68,6 +69,7 @@ export class CheckoutService {
     const checkoutWithLines = await CheckoutHandlers.addLinesHandler(
       checkoutId,
       checkoutLines,
+      token,
     );
 
     bundlesForCart = CheckoutUtils.getBundlesWithLineIds(
@@ -80,6 +82,7 @@ export class CheckoutService {
       checkoutId,
       userId,
       bundlesForCart,
+      token,
     );
   }
 
@@ -87,6 +90,7 @@ export class CheckoutService {
     userData,
     bundlesList: BundleType[],
     bundlesForCart: CheckoutBundleInputType[],
+    token: string,
   ) {
     const checkoutLines = await CheckoutUtils.getLineItems(
       bundlesList,
@@ -96,6 +100,7 @@ export class CheckoutService {
     const newCheckout: any = await CheckoutHandlers.createCheckoutHandler(
       userData?.email,
       checkoutLines,
+      token,
     );
 
     bundlesForCart = CheckoutUtils.getBundlesWithLineIds(
@@ -108,18 +113,20 @@ export class CheckoutService {
       newCheckout?.checkout?.id,
       userData?.id,
       bundlesForCart,
+      token,
     );
   }
 
   public async addToCart(
     userId: string,
     bundlesForCart: CheckoutBundleInputType[],
+    token: string,
   ): Promise<object> {
     try {
       const [userData, bundlesList, checkoutData] = await Promise.all([
-        AccountHandlers.userEmailByIdHandler(userId),
-        ProductHandlers.bundlesByBundleIdsHandler(bundlesForCart),
-        CheckoutHandlers.marketplaceCheckoutHandler(userId),
+        AccountHandlers.userEmailByIdHandler(userId, token),
+        ProductHandlers.bundlesByBundleIdsHandler(bundlesForCart, token),
+        CheckoutHandlers.marketplaceCheckoutHandler(userId, false, token),
       ]);
 
       let response = {};
@@ -129,12 +136,14 @@ export class CheckoutService {
           checkoutData,
           bundlesList,
           bundlesForCart,
+          token,
         );
       } else {
         response = await this.addToCartWhenCheckoutNotExists(
           userData,
           bundlesList,
           bundlesForCart,
+          token,
         );
       }
       return prepareSuccessResponse(response, '', 201);
@@ -150,15 +159,18 @@ export class CheckoutService {
   public async deleteBundleFromCart(
     userId: string,
     checkoutBundleIds: string[],
+    token: string,
   ): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
         userId,
         true,
+        token,
       );
 
       const saleorCheckout = await CheckoutHandlers.checkoutHandler(
         checkoutData['checkoutId'],
+        token,
       );
 
       const checkoutLines = CheckoutUtils.getCheckoutLineItemsForDelete(
@@ -170,10 +182,13 @@ export class CheckoutService {
       await CheckoutHandlers.deleteLinesHandler(
         checkoutLineIds,
         saleorCheckout['id'],
+        token,
       );
       const response = await CheckoutHandlers.deleteBundlesHandler(
         checkoutBundleIds,
         checkoutData['checkoutId'],
+        false,
+        token,
       );
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
@@ -185,15 +200,18 @@ export class CheckoutService {
   public async updateBundleFromCart(
     userId: string,
     bundlesFromCart: CheckoutBundleInputType[],
+    token: string,
   ): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
         userId,
         true,
+        token,
       );
 
       const saleorCheckout = await CheckoutHandlers.checkoutHandler(
         checkoutData['checkoutId'],
+        token,
       );
 
       const updatedLinesWithQuantity =
@@ -206,11 +224,13 @@ export class CheckoutService {
       await CheckoutHandlers.updateLinesHandler(
         checkoutData['checkoutId'],
         updatedLinesWithQuantity,
+        token,
       );
       const response = await CheckoutHandlers.addBundlesHandler(
         checkoutData['checkoutId'],
         userId,
         bundlesFromCart,
+        token,
       );
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
@@ -222,13 +242,17 @@ export class CheckoutService {
   public async setBundleAsSelected(
     userId: string,
     bundleIds: string[],
+    token: string,
   ): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
         userId,
+        false,
+        token,
       );
       const saleorCheckout = await CheckoutHandlers.checkoutHandler(
         checkoutData['checkoutId'],
+        token,
       );
       const checkoutLines = CheckoutUtils.getCheckoutLineItems(
         saleorCheckout['lines'],
@@ -238,6 +262,7 @@ export class CheckoutService {
       await CheckoutHandlers.addLinesHandler(
         checkoutData['checkoutId'],
         checkoutLines,
+        token,
       );
       const selectedBundles = CheckoutUtils.selectOrUnselectBundle(
         checkoutData['bundles'],
@@ -248,6 +273,7 @@ export class CheckoutService {
         checkoutData['checkoutId'],
         userId,
         selectedBundles,
+        token,
       );
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
@@ -256,17 +282,21 @@ export class CheckoutService {
     }
   }
 
-  public async setBundleAsUnselected(
-    userId: string,
-    bundleIds: string[],
-    checkoutBundleIds: string[],
-  ): Promise<object> {
+  public async setBundleAsUnselected({
+    userId,
+    bundleIds,
+    checkoutBundleIds,
+    token,
+  }): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
         userId,
+        false,
+        token,
       );
       const saleorCheckout = await CheckoutHandlers.checkoutHandler(
         checkoutData['checkoutId'],
+        token,
       );
       const checkoutLines = CheckoutUtils.getCheckoutLineItemsForDelete(
         saleorCheckout['lines'],
@@ -279,6 +309,7 @@ export class CheckoutService {
       await CheckoutHandlers.deleteLinesHandler(
         checkoutLineIds,
         saleorCheckout['id'],
+        token,
       );
       const updatedBundle = CheckoutUtils.selectOrUnselectBundle(
         checkoutData['bundles'],
@@ -289,6 +320,7 @@ export class CheckoutService {
         checkoutData['checkoutId'],
         userId,
         updatedBundle,
+        token,
       );
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
@@ -300,11 +332,13 @@ export class CheckoutService {
   public async addShippingAddress(
     checkoutId: string,
     addressDetails: AddressDetailType,
+    token: string,
   ): Promise<object> {
     try {
       const response = await CheckoutHandlers.shippingAddressUpdateHandler(
         checkoutId,
         addressDetails,
+        token,
       );
       // When address is added we also need to update on OrangeShine.
       addShippingAddressInfo({
@@ -332,11 +366,13 @@ export class CheckoutService {
   public async addBillingAddress(
     checkoutId: string,
     addressDetails: AddressDetailType,
+    token: string,
   ): Promise<object> {
     try {
       const response = await CheckoutHandlers.billingAddressUpdateHandler(
         checkoutId,
         addressDetails,
+        token,
       );
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
@@ -347,10 +383,12 @@ export class CheckoutService {
 
   public async getShippingAndBillingAddress(
     checkoutId: string,
+    token: string,
   ): Promise<object> {
     try {
       const response = await CheckoutHandlers.shippingAndBillingAddressHandler(
         checkoutId,
+        token,
       );
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
@@ -359,14 +397,20 @@ export class CheckoutService {
     }
   }
 
-  public async getShippingMethods(userId: string): Promise<object> {
+  public async getShippingMethods(
+    userId: string,
+    token: string,
+  ): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
         userId,
         true,
+        token,
       );
 
-      const shippingZones = await CheckoutHandlers.getShippingZonesHandler();
+      const shippingZones = await CheckoutHandlers.getShippingZonesHandler(
+        token,
+      );
       const shippingMethodsFromShippingZones =
         CheckoutUtils.getShippingMethodsFromShippingZones(shippingZones);
 
@@ -390,24 +434,28 @@ export class CheckoutService {
   public async selectShippingMethods(
     userId: string,
     shippingIds: string[],
+    token: string,
   ): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
         userId,
         true,
+        token,
       );
       await Promise.all([
         CheckoutHandlers.addShippingMethodHandler(
           checkoutData['checkoutId'],
           shippingIds,
           true,
+          token,
         ),
         CheckoutHandlers.updateDeliveryMethodHandler(
           checkoutData['checkoutId'],
           checkoutData['selectedMethods'],
+          token,
         ),
       ]);
-      const response = await this.getShippingMethods(userId);
+      const response = await this.getShippingMethods(userId, token);
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
       this.logger.error(error);
@@ -415,20 +463,24 @@ export class CheckoutService {
     }
   }
 
-  public async createPayment(userId: string): Promise<object> {
+  public async createPayment(userId: string, token: string): Promise<object> {
     try {
       const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
         userId,
+        false,
+        token,
       );
 
       const paymentGateways = await CheckoutHandlers.paymentGatewayHandler(
         checkoutData['checkoutId'],
+        token,
       );
 
       const dummyGatewayId = CheckoutUtils.getDummyGateway(paymentGateways);
       const response = await CheckoutHandlers.createPaymentHandler(
         checkoutData['checkoutId'],
         dummyGatewayId,
+        token,
       );
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
@@ -437,10 +489,16 @@ export class CheckoutService {
     }
   }
 
-  public async checkoutComplete(userId: string): Promise<object> {
+  public async checkoutComplete(
+    userId: string,
+    token: string,
+  ): Promise<object> {
     try {
-      const checkoutData =
-        await CheckoutHandlers.marketplaceWithCategoriesCheckoutHandler(userId);
+      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
+        userId,
+        false,
+        token,
+      );
       const selectedBundles = CheckoutUtils.getSelectedBundles(
         checkoutData['bundles'],
       );
@@ -450,7 +508,10 @@ export class CheckoutService {
 
       const [sharoveOrderPlaceResponse, shippingAddressInfo] =
         await Promise.all([
-          CheckoutHandlers.completeCheckoutHandler(checkoutData['checkoutId']),
+          CheckoutHandlers.completeCheckoutHandler(
+            checkoutData['checkoutId'],
+            token,
+          ),
           CheckoutHandlers.checkoutWithShippingInfoHandler(
             checkoutData['checkoutId'],
           ),
@@ -464,7 +525,9 @@ export class CheckoutService {
         checkoutBundleIds,
         checkoutData['checkoutId'],
         true,
+        token,
       );
+
       return prepareSuccessResponse(sharoveOrderPlaceResponse, '', 201);
     } catch (error) {
       this.logger.error(error);

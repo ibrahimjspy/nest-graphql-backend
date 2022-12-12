@@ -5,8 +5,8 @@ import {
   prepareFailedResponse,
   prepareSuccessResponse,
 } from 'src/core/utils/response';
-
 import * as RetailerHandlers from 'src/graphql/handlers/retailer';
+
 @Injectable()
 export class RetailerService {
   private readonly logger = new Logger(RetailerService.name);

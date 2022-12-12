@@ -3,9 +3,19 @@ import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
 const federationQuery = (id: string): string => {
   return gql`
-    query {
+query {
       order(id: "${id}") {
         number
+        shippingPrice{
+          gross{
+            amount
+          }
+        }
+        shippingMethods{
+          name
+          id
+          description
+        }
         created
         id
         user {
@@ -29,10 +39,11 @@ const federationQuery = (id: string): string => {
             streetAddress2
           }
         }
-        lines {
+        lines { 
           productName
           quantity
           productSku
+          
           totalPrice {
             net {
               amount
@@ -50,6 +61,8 @@ const federationQuery = (id: string): string => {
             }
           }
           variant {
+            quantityOrdered
+            quantityAvailable
             pricing {
               price {
                 gross {
@@ -61,6 +74,7 @@ const federationQuery = (id: string): string => {
               }
             }
             product {
+              id
               media {
                 url
               }

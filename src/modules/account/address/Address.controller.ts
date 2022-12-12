@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
   Param,
   Post,
   Put,
@@ -19,10 +20,15 @@ export class AddressController {
   constructor(private readonly appService: AddressService) {}
 
   @Get('/:userId')
-  async addresses(@Res() res, @Param() userIdDto: UserIdDto): Promise<object> {
+  async addresses(
+    @Res() res,
+    @Param() userIdDto: UserIdDto,
+    @Headers() headers,
+  ): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.getAddresses(userIdDto.userId),
+      await this.appService.getAddresses(userIdDto.userId, Authorization),
     );
   }
 
@@ -31,10 +37,16 @@ export class AddressController {
     @Res() res,
     @Param() userIdDto: UserIdDto,
     @Body() addressDto: AddressDto,
+    @Headers() headers,
   ): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.createAddress(userIdDto.userId, addressDto),
+      await this.appService.createAddress(
+        userIdDto.userId,
+        addressDto,
+        Authorization,
+      ),
     );
   }
 
@@ -42,10 +54,15 @@ export class AddressController {
   async deleteAddress(
     @Res() res,
     @Param() addressIdDto: AddressIdDto,
+    @Headers() headers,
   ): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.deleteAddress(addressIdDto.addressId),
+      await this.appService.deleteAddress(
+        addressIdDto.addressId,
+        Authorization,
+      ),
     );
   }
 
@@ -54,12 +71,15 @@ export class AddressController {
     @Res() res,
     @Param() addressIdDto: AddressIdDto,
     @Body() userIdDto: UserIdDto,
+    @Headers() headers,
   ): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
       await this.appService.setDefaultAddress(
         userIdDto.userId,
         addressIdDto.addressId,
+        Authorization,
       ),
     );
   }
@@ -69,10 +89,16 @@ export class AddressController {
     @Res() res,
     @Param() addressIdDto: AddressIdDto,
     @Body() addressDto: AddressDto,
+    @Headers() headers,
   ): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.updateAddress(addressIdDto.addressId, addressDto),
+      await this.appService.updateAddress(
+        addressIdDto.addressId,
+        addressDto,
+        Authorization,
+      ),
     );
   }
 }
