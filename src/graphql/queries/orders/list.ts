@@ -10,6 +10,14 @@ const federationQuery = (orderIds: string): string => {
             number
             created
             status
+            shippingAddress{
+              firstName
+              lastName
+            }
+            shippingMethods{
+               maximumDeliveryDays,
+               name
+            }
             user {
               firstName
               lastName
