@@ -26,6 +26,19 @@ export const marketplaceCheckoutHandler = async (
   return response['marketplaceCheckout'];
 };
 
+export const marketplaceWithCategoriesCheckoutHandler = async (
+  id: string,
+  throwException = false,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutQueries.getMarketplaceCheckoutWithCategoriesQuery(id),
+    ),
+    throwException,
+  );
+  return response['marketplaceCheckout'];
+};
+
 export const createCheckoutHandler = async (
   email: string,
   checkoutLines: LineType[],
@@ -78,6 +91,15 @@ export const checkoutHandler = async (
   if (!response['checkout']) {
     throw new RecordNotFound('Checkout');
   }
+  return response['checkout'];
+};
+
+export const checkoutWithShippingInfoHandler = async (
+  checkoutId: string,
+): Promise<object> => {
+  const response = await graphqlCall(
+    CheckoutQueries.checkoutWithShippingInfoQuery(checkoutId),
+  );
   return response['checkout'];
 };
 
@@ -246,9 +268,8 @@ export const paymentGatewayHandler = async (
   token: string,
 ) => {
   const response = await graphqlResultErrorHandler(
-    graphqlCall(
+    await graphqlCall(
       CheckoutQueries.availablePaymentGatewaysQuery(checkoutId),
-      token,
     ),
   );
   return response['checkout']['availablePaymentGateways'];
@@ -259,14 +280,14 @@ export const completeCheckoutHandler = async (
   token: string,
 ) => {
   const response = await graphqlResultErrorHandler(
-    graphqlCall(CheckoutMutations.checkoutCompleteMutation(checkoutId), token),
+    await graphqlCall(CheckoutMutations.checkoutCompleteMutation(checkoutId)),
   );
   return response['checkoutComplete'];
 };
 
 export const getShippingZonesHandler = async (token: string) => {
   const response = await graphqlResultErrorHandler(
-    graphqlCall(CheckoutQueries.shippingZonesQuery(), token),
+    await graphqlCall(CheckoutQueries.shippingZonesQuery()),
   );
   return response['shippingZones'][GQL_EDGES];
 };

@@ -7,7 +7,7 @@ import { variantsIdsByProductIdsQuery } from './variantsIdsByProductIds';
 import { productBundlesByBundleIdQuery } from './bundlesByBundleIds';
 import { productsQuery } from './products';
 import { popularItemsQuery } from './popularItems';
-
+import { productMappingQuery } from './externalMapping';
 export {
   productCardsDefaultQuery,
   productDetailsQuery,
@@ -18,4 +18,5 @@ export {
   productBundlesByBundleIdQuery,
   productsQuery,
   popularItemsQuery,
+  productMappingQuery,
 };
