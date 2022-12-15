@@ -54,6 +54,7 @@ jobs:
           (echo "OS_STORE_CREDIT=${{ secrets.OS_STORE_CREDIT }}") >> .env
           (echo "OS_SIGNATURE_REQUESTED=${{ secrets.OS_SIGNATURE_REQUESTED }}") >> .env
           (echo "OS_PAYMENT_TYPE=${{ secrets.OS_PAYMENT_TYPE }}") >> .env
+          (echo "OS_AWS_API_GATEWAY_ENDPOINT=${{ secrets.OS_AWS_API_GATEWAY_ENDPOINT }}") >> .env
 
         # Docker login
       - name: Login to DockerHub
