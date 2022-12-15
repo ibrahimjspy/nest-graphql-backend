@@ -78,4 +78,9 @@ export class ProductService {
   public getBundlesByVariantIds(variantIds: Array<string>): Promise<object> {
     return ProductsHandlers.bundlesByVariantsIdsHandler(variantIds);
   }
+
+  // Returns product images
+  public downloadProductImages(urls: Array<string>): Promise<object> {
+    return ProductsHandlers.downloadProductImagesHandler(urls);
+  }
 }

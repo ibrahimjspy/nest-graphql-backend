@@ -63,4 +63,10 @@ export class ProductController {
   findBundlesByVariantIds(@Body() body): Promise<object> {
     return this.appService.getBundlesByVariantIds(body?.variantIds);
   }
+
+  // Returns product images
+  @Post('/api/v1/product/images')
+  downloadProductImages(@Body() body): Promise<object> {
+    return this.appService.downloadProductImages(body?.urls);
+  }
 }
