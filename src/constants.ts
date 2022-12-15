@@ -16,15 +16,15 @@ export const GQL_PAGE_INFO = 'pageInfo';
 export const GQL_TOTAL_COUNT = 'totalCount';
 
 // OrangeShine Variables
-export const SHAROVE_EMAIL = process.env.EMAIL;
-export const SHAROVE_PASSWORD = process.env.PASSWORD;
-export const BASE_EXTERNAL_ENDPOINT = process.env.EXTERNAL_ENDPOINT;
-export const PAYMENT_TYPE = process.env.PAYMENT_TYPE;
-export const STORE_CREDIT = process.env.STORE_CREDIT;
-export const SIGNATURE_REQUESTED = process.env.SIGNATURE_REQUESTED;
-export const SPM_ID = process.env.SPM_ID;
-export const SPA_ID = process.env.SPA_ID;
-export const SMS_NUMBER = process.env.SMS_NUMBER;
+export const SHAROVE_EMAIL = process.env.OS_EMAIL;
+export const SHAROVE_PASSWORD = process.env.OS_PASSWORD;
+export const BASE_EXTERNAL_ENDPOINT = process.env.OS_ENDPOINT;
+export const PAYMENT_TYPE = process.env.OS_PAYMENT_TYPE;
+export const STORE_CREDIT = process.env.OS_STORE_CREDIT;
+export const SIGNATURE_REQUESTED = process.env.OS_SIGNATURE_REQUESTED;
+export const SPM_ID = process.env.OS_SPM_ID;
+export const SPA_ID = process.env.OS_SPA_ID;
+export const SMS_NUMBER = process.env.OS_SMS_NUMBER;
 export const IN_STOCK = 'in_stock';
 export const PRE_ORDER = 'pre_order';
 export const CATEGORY_SHOES = 'Shoes';

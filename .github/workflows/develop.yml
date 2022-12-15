@@ -45,6 +45,15 @@ jobs:
           (echo "PORT=${{ secrets.PORT }}") >> .env
           (echo "CORS_ORIGINS=${{ secrets.CORS_ORIGINS }}") >> .env
           (echo "MOCK=${{ secrets.MOCK }}") >> .env
+          (echo "OS_ENDPOINT=${{ secrets.OS_ENDPOINT }}") >> .env
+          (echo "OS_EMAIL=${{ secrets.OS_EMAIL }}") >> .env
+          (echo "OS_PASSWORD=${{ secrets.OS_PASSWORD }}") >> .env
+          (echo "OS_SMS_NUMBER=${{ secrets.OS_SMS_NUMBER }}") >> .env
+          (echo "OS_SPA_ID=${{ secrets.OS_SPA_ID }}") >> .env
+          (echo "OS_SPM_ID=${{ secrets.OS_SPM_ID }}") >> .env
+          (echo "OS_STORE_CREDIT=${{ secrets.OS_STORE_CREDIT }}") >> .env
+          (echo "OS_SIGNATURE_REQUESTED=${{ secrets.OS_SIGNATURE_REQUESTED }}") >> .env
+          (echo "OS_PAYMENT_TYPE=${{ secrets.OS_PAYMENT_TYPE }}") >> .env
 
         # Docker login
       - name: Login to DockerHub
