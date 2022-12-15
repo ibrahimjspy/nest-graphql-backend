@@ -4,7 +4,7 @@ import { prepareGQLPaginatedResponse } from 'src/core/utils/response';
 import { ProductFilterDto } from './dto';
 import * as ProductsHandlers from 'src/graphql/handlers/product';
 import * as ProductUtils from './Product.utils';
-
+import { downloadProductImagesHandler } from 'src/external/services/download_images';
 @Injectable()
 export class ProductService {
   private readonly logger = new Logger(ProductService.name);
@@ -79,8 +79,8 @@ export class ProductService {
     return ProductsHandlers.bundlesByVariantsIdsHandler(variantIds);
   }
 
-  // Returns product images
-  public downloadProductImages(urls: Array<string>): Promise<object> {
-    return ProductsHandlers.downloadProductImagesHandler(urls);
+  // Return product images downloadable URL.
+  public getDownloadProductImages(urls: Array<string>): Promise<object> {
+    return downloadProductImagesHandler(urls);
   }
 }
