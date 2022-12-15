@@ -506,20 +506,16 @@ export class CheckoutService {
       const checkoutBundleIds =
         CheckoutUtils.getCheckoutBundleIds(selectedBundles);
 
-      const [sharoveOrderPlaceResponse, shippingAddressInfo] =
-        await Promise.all([
-          CheckoutHandlers.completeCheckoutHandler(
-            checkoutData['checkoutId'],
-            token,
-          ),
-          CheckoutHandlers.checkoutWithShippingInfoHandler(
-            checkoutData['checkoutId'],
-          ),
-        ]);
+      const [sharoveOrderPlaceResponse] = await Promise.all([
+        CheckoutHandlers.completeCheckoutHandler(
+          checkoutData['checkoutId'],
+          token,
+        ),
+      ]);
 
-      const instance = new LegacyService(selectedBundles, shippingAddressInfo);
-      await instance.placeExternalOrder();
-      this.logger.log('Order Placed to OrangeShine Successfully');
+      // const instance = new LegacyService(selectedBundles, shippingAddressInfo);
+      // await instance.placeExternalOrder();
+      // this.logger.log('Order Placed to OrangeShine Successfully');
 
       await CheckoutHandlers.deleteBundlesHandler(
         checkoutBundleIds,
