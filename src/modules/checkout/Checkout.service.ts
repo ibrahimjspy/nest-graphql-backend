@@ -341,13 +341,13 @@ export class CheckoutService {
         token,
       );
       // When address is added we also need to update on OrangeShine.
-      addShippingAddressInfo({
-        address1: addressDetails.streetAddress1,
-        address2: addressDetails.streetAddress2,
-        city: addressDetails.city,
-        state: addressDetails.countryArea,
-        zipcode: addressDetails.postalCode,
-      });
+      // addShippingAddressInfo({
+      //   address1: addressDetails.streetAddress1,
+      //   address2: addressDetails.streetAddress2,
+      //   city: addressDetails.city,
+      //   state: addressDetails.countryArea,
+      //   zipcode: addressDetails.postalCode,
+      // });
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
       this.logger.error(error);
