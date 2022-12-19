@@ -8,6 +8,14 @@ const federationQuery = (slug): string => {
       product(slug: "${slug}", channel: "${DEFAULT_CHANNEL}") {
         name
         id
+        attributes{
+          attribute{
+            name
+          }
+          values{
+            name
+          }
+        }
         slug
         media {
           url
@@ -25,6 +33,9 @@ const federationQuery = (slug): string => {
           }
         }
         variants {
+          media{
+            url
+          }
           id
           attributes {
             attribute {
