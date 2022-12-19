@@ -11,6 +11,7 @@ const federationQuery = (id: string): string => {
             amount
           }
         }
+        status
         shippingMethods {
           name
           id
@@ -18,12 +19,14 @@ const federationQuery = (id: string): string => {
         }
         userEmail
         billingAddress {
+          postalCode
           firstName
           lastName
           streetAddress1
           streetAddress2
         }
         shippingAddress {
+          postalCode
           firstName
           lastName
           streetAddress1
