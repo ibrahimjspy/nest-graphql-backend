@@ -3,89 +3,95 @@ import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
 const federationQuery = (id: string): string => {
   return gql`
-query {
-      order(id: "${id}") {
-        number
-        shippingPrice{
-          gross{
-            amount
-          }
-        }
-        shippingMethods{
-          name
-          id
-          description
-        }
-        created
-        id
-        user {
-          firstName
-          lastName
-          email
-          defaultShippingAddress {
-            firstName
-            lastName
-            city
-            phone
-            streetAddress1
-            streetAddress2
-          }
-          defaultBillingAddress {
-            firstName
-            lastName
-            city
-            phone
-            streetAddress1
-            streetAddress2
-          }
-        }
-        lines { 
-          productName
-          quantity
-          productSku
-          
-          totalPrice {
-            net {
-              amount
-            }
-            gross {
-              amount
-            }
-          }
-          unitPrice {
-            net {
-              amount
-            }
-            gross {
-              amount
-            }
-          }
-          variant {
-            quantityOrdered
-            quantityAvailable
-            pricing {
-              price {
+          query {
+            order(id: "${id}") {
+              number
+              shippingPrice {
                 gross {
                   amount
                 }
-                net {
-                  amount
+              }
+              shippingMethods {
+                name
+                id
+                description
+              }
+              userEmail
+              shippingAddress {
+                firstName
+                lastName
+                streetAddress1
+              }
+              created
+              id
+              user {
+                firstName
+                lastName
+                email
+                defaultShippingAddress {
+                  firstName
+                  lastName
+                  city
+                  phone
+                  streetAddress1
+                  streetAddress2
+                }
+                defaultBillingAddress {
+                  firstName
+                  lastName
+                  city
+                  phone
+                  streetAddress1
+                  streetAddress2
+                }
+              }
+              lines {
+                productName
+                quantity
+                productSku
+
+                totalPrice {
+                  net {
+                    amount
+                  }
+                  gross {
+                    amount
+                  }
+                }
+                unitPrice {
+                  net {
+                    amount
+                  }
+                  gross {
+                    amount
+                  }
+                }
+                variant {
+                  quantityOrdered
+                  quantityAvailable
+                  pricing {
+                    price {
+                      gross {
+                        amount
+                      }
+                      net {
+                        amount
+                      }
+                    }
+                  }
+                  product {
+                    id
+                    media {
+                      url
+                    }
+                    thumbnail {
+                      url
+                    }
+                  }
                 }
               }
             }
-            product {
-              id
-              media {
-                url
-              }
-              thumbnail {
-                url
-              }
-            }
           }
-        }
-      }
-    }
   `;
 };
 
