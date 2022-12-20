@@ -1,34 +1,25 @@
 import { gql } from 'graphql-request';
+import { PaginationDto } from 'src/graphql/dto/pagination.dto';
+import { validatePageFilter } from 'src/graphql/utils/pagination';
 
-const federationQuery = (orderIds: string): string => {
+const federationQuery = (
+  orderIds: string,
+  pagination: PaginationDto,
+): string => {
+  const filter = validatePageFilter(pagination);
   return gql`
     query {
-      orders(first:50, filter: { ids: [${orderIds}] } ) {
+      orders(${filter}, filter: { ids: [${orderIds}] } ) {
         edges {
           node {
             id
             number
             created
             status
-            shippingAddress{
-              firstName
-              lastName
-            }
-            shippingMethods{
-               maximumDeliveryDays,
-               name
-            }
             user {
               firstName
               lastName
               email
-            }
-            lines {
-              variant {
-                product {
-                  created
-                }
-              }
             }
             total {
               net {
@@ -43,6 +34,9 @@ const federationQuery = (orderIds: string): string => {
 };
 
 // returns shop order list query
-export const ordersListQuery = (orderIds: string): string => {
-  return federationQuery(orderIds);
+export const ordersListQuery = (
+  orderIds: string,
+  filter: PaginationDto,
+): string => {
+  return federationQuery(orderIds, filter);
 };
