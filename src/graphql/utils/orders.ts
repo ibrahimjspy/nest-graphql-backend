@@ -19,6 +19,7 @@ export const orderBundlesTransformer = (orders): any => {
     return JSON.stringify(order['bundle'])
       .replace(/"bundleId"/g, 'bundleId')
       .replace(/"quantity"/g, 'quantity')
+      .replace(/"orderlineIds"/g, 'orderlineIds')
       .replace(/"lineIds"/g, 'lineIds');
   });
 };

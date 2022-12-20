@@ -1,19 +1,21 @@
 import { gql } from 'graphql-request';
-import { importProductsDTO } from 'src/modules/importList/dto/products';
+import { addToProductStoreDTO } from 'src/modules/productStore/dto/products';
 
-export const importProductsMutation = (productData: importProductsDTO) => {
-  const { shopId, productId, productVariantIds } = productData;
+export const addToProductStoreMutation = (
+  productData: addToProductStoreDTO,
+) => {
+  const { shopId, productId, vendorId } = productData;
   return gql`
         mutation {
-        importProduct(
+        addToProductStore(
             Input: {
             shopId: "${shopId}"
             productId: "${productId}"
-            productVariantIds: ${JSON.stringify(productVariantIds)}
+            vendorId:"${vendorId}"
             }
         ) {
             __typename
-            ... on ImportProductType {
+            ... on StoredProductType {
             shopId
             product {
                 id
