@@ -1,9 +1,10 @@
-import { Controller, Get, Headers, Param, Res } from '@nestjs/common';
+import { Controller, Get, Headers, Param, Query, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { OrdersService } from './Orders.service';
 import { makeResponse } from '../../core/utils/response';
 import { OrderIdDto, ShopIdDto, UserIdDto } from './dto';
 import { OrderSummaryDto } from './dto/common.dto';
+import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 
 @ApiTags('orders')
 @Controller('orders')
@@ -98,6 +99,7 @@ export class OrdersController {
   async getOrdersList(
     @Res() res,
     @Param() shopDto: ShopIdDto,
+    @Query() filter: PaginationDto,
     @Headers() headers,
   ): Promise<object> {
     const Authorization: string = headers.authorization;
@@ -105,6 +107,7 @@ export class OrdersController {
       res,
       await this.appService.getOrdersListByShopId(
         shopDto.shopId,
+        filter,
         Authorization,
       ),
     );

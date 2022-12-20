@@ -16,6 +16,7 @@ import { ordersListQuery } from '../queries/orders/list';
 import { GQL_EDGES } from 'src/constants';
 import { orderBundlesTransformer, orderIdsTransformer } from '../utils/orders';
 import { addOrderToShopMutation } from '../mutations/order/addOrderToShop';
+import { PaginationDto } from '../dto/pagination.dto';
 
 export const dashboardByIdHandler = async (
   id: string,
@@ -101,10 +102,11 @@ export const orderActivityHandler = async (token: string): Promise<object> => {
 
 export const ordersListByIdsHandler = async (
   ids: string[],
+  filter: PaginationDto,
   token: string,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(ordersListQuery(orderIdsTransformer(ids)), token),
+    await graphqlCall(ordersListQuery(orderIdsTransformer(ids), filter), token),
   );
   if (!response['orders']) {
     throw new RecordNotFound('order details');
