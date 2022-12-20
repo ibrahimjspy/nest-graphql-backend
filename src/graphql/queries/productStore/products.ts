@@ -2,14 +2,14 @@ import { gql } from 'graphql-request';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
 import { ProductFilterDto } from 'src/modules/product/dto';
 
-export const getImportedProductsQuery = (
+export const getStoredProductsQuery = (
   shopId: string,
   filter: ProductFilterDto,
 ) => {
   const pageFilter = validatePageFilter(filter);
   return gql`
       query {
-        importProducts(
+        storedProducts(
             Filter: {
               shopId: "${shopId}"
             }
@@ -22,7 +22,7 @@ export const getImportedProductsQuery = (
             }
         ) {
             __typename
-            ... on ImportProductConnectionType {
+            ... on StoredProductConnectionType {
             totalCount
             edges {
                 node {

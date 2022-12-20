@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 
-export class importProductsDTO {
+export class addToProductStoreDTO {
   @ApiProperty()
   @IsNotEmpty()
   shopId: string;
@@ -12,10 +12,10 @@ export class importProductsDTO {
 
   @ApiProperty()
   @IsNotEmpty()
-  productVariantIds: string[];
+  vendorId: string;
 }
 
-export class deleteImportedProductsDTO {
+export class deleteFromProductStoreDTO {
   @ApiProperty()
   @IsNotEmpty()
   shopId: string;

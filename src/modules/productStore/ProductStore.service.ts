@@ -4,53 +4,58 @@ import {
   prepareGQLPaginatedResponse,
   prepareSuccessResponse,
 } from 'src/core/utils/response';
-import {
-  deleteImportedProductsHandler,
-  getImportedProductsHandler,
-  importProductsHandler,
-} from 'src/graphql/handlers/importList';
 import { ProductFilterDto } from 'src/modules/product/dto';
-import { deleteImportedProductsDTO, importProductsDTO } from './dto/products';
+import {
+  addToProductStoreHandler,
+  deleteFromProductStoreHandler,
+  getStoredProductsHandler,
+} from 'src/graphql/handlers/productStore';
+import {
+  addToProductStoreDTO,
+  deleteFromProductStoreDTO,
+} from './dto/products';
 
 @Injectable()
-export class ImportListService {
+export class ProductStoreService {
   /**
    * Get products list from PIM
    */
-  public async getImportedProduct(
+  public async getStoredProducts(
     shopId: string,
     filter: ProductFilterDto,
   ): Promise<object> {
     try {
       return prepareGQLPaginatedResponse(
-        await getImportedProductsHandler(shopId, filter),
+        await getStoredProductsHandler(shopId, filter),
       );
     } catch (error) {
       return graphqlExceptionHandler(error);
     }
   }
   /**
-   * add product and variants against shop in importList
+   * add product and variants against shop in store
    */
-  public async importProducts(
-    productsData: importProductsDTO,
+  public async addToProductStore(
+    productsData: addToProductStoreDTO,
   ): Promise<object> {
     try {
-      return prepareSuccessResponse(await importProductsHandler(productsData));
+      return prepareSuccessResponse(
+        await addToProductStoreHandler(productsData),
+      );
     } catch (error) {
       return graphqlExceptionHandler(error);
     }
   }
 
   /**
-   * deletes product and variants against shop in importList
+   * deletes product and variants against shop in store
    */
-  public async deleteImportedProducts(
-    productsData: deleteImportedProductsDTO,
+  public async deleteFromProductStore(
+    productsData: deleteFromProductStoreDTO,
   ): Promise<object> {
     try {
       return prepareSuccessResponse(
-        await deleteImportedProductsHandler(productsData),
+        await deleteFromProductStoreHandler(productsData),
       );
     } catch (error) {
       return graphqlExceptionHandler(error);

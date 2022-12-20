@@ -12,13 +12,16 @@ import { ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
 import { ShopIdDto } from 'src/modules/orders/dto';
 import { ProductFilterDto } from 'src/modules/product/dto';
-import { ImportListService } from './ImportList.service';
-import { deleteImportedProductsDTO, importProductsDTO } from './dto/products';
+import { ProductStoreService } from './ProductStore.service';
+import {
+  addToProductStoreDTO,
+  deleteFromProductStoreDTO,
+} from './dto/products';
 
-@ApiTags('import')
+@ApiTags('productStore')
 @Controller()
-export class ImportListController {
-  constructor(private readonly appService: ImportListService) {
+export class ProductStoreController {
+  constructor(private readonly appService: ProductStoreService) {
     return;
   }
 
@@ -28,32 +31,38 @@ export class ImportListController {
    * @param filter {ProductFilterDto} for filtring products
    * @returns list of products
    */
-  @Get('api/v1/import/products/:shopId')
-  public async findImportedProducts(
+  @Get('api/v1/storedProducts/:shopId')
+  public async findStoredProducts(
     @Res() res,
     @Query() filter: ProductFilterDto,
     @Param() shopDto: ShopIdDto,
   ): Promise<object> {
-    const data = await this.appService.getImportedProduct(
+    const data = await this.appService.getStoredProducts(
       shopDto.shopId,
       filter,
     );
     return makeResponse(res, data);
   }
 
-  @Post('api/v1/import/products')
-  public async importProducts(@Res() res, @Body() body: importProductsDTO) {
-    return await makeResponse(res, await this.appService.importProducts(body));
-  }
-
-  @Delete('api/v1/import/products')
-  public async deleteImportedProducts(
+  @Post('api/v1/addToProductStore')
+  public async addProductsToStore(
     @Res() res,
-    @Body() body: deleteImportedProductsDTO,
+    @Body() body: addToProductStoreDTO,
   ) {
     return await makeResponse(
       res,
-      await this.appService.deleteImportedProducts(body),
+      await this.appService.addToProductStore(body),
+    );
+  }
+
+  @Delete('api/v1/deleteFromProductStore')
+  public async deleteImportedProducts(
+    @Res() res,
+    @Body() body: deleteFromProductStoreDTO,
+  ) {
+    return await makeResponse(
+      res,
+      await this.appService.deleteFromProductStore(body),
     );
   }
 }
