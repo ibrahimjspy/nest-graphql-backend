@@ -270,6 +270,7 @@ export const paymentGatewayHandler = async (
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
       CheckoutQueries.availablePaymentGatewaysQuery(checkoutId),
+      token,
     ),
   );
   return response['checkout']['availablePaymentGateways'];
