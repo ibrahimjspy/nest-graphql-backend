@@ -10,6 +10,12 @@ const federationQuery = (
   return gql`
     query {
       orders(${filter}, filter: { ids: [${orderIds}] } ) {
+        pageInfo{
+          hasNextPage
+          endCursor
+          startCursor
+          hasPreviousPage
+        }
         edges {
           node {
             id
