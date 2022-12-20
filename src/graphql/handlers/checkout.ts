@@ -287,7 +287,7 @@ export const completeCheckoutHandler = async (
 
 export const getShippingZonesHandler = async (token: string) => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(CheckoutQueries.shippingZonesQuery()),
+    await graphqlCall(CheckoutQueries.shippingZonesQuery(), token),
   );
   return response['shippingZones'][GQL_EDGES];
 };
