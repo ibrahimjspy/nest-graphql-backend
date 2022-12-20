@@ -8,7 +8,7 @@ import {
   Query,
   Res,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
 import { ShopIdDto } from 'src/modules/orders/dto';
 import { ProductFilterDto } from 'src/modules/product/dto';
@@ -31,7 +31,7 @@ export class ProductStoreController {
    * @param filter {ProductFilterDto} for filtring products
    * @returns list of products
    */
-  @Get('api/v1/storedProducts/:shopId')
+  @Get('api/v1/stored/products/:shopId')
   public async findStoredProducts(
     @Res() res,
     @Query() filter: ProductFilterDto,
@@ -44,7 +44,8 @@ export class ProductStoreController {
     return makeResponse(res, data);
   }
 
-  @Post('api/v1/addToProductStore')
+  @Post('api/v1/product/store')
+  @ApiOperation({ summary: 'adds product to store' })
   public async addProductsToStore(
     @Res() res,
     @Body() body: addToProductStoreDTO,
@@ -55,7 +56,8 @@ export class ProductStoreController {
     );
   }
 
-  @Delete('api/v1/deleteFromProductStore')
+  @Delete('api/v1/product/store')
+  @ApiOperation({ summary: 'removes product from store' })
   public async deleteImportedProducts(
     @Res() res,
     @Body() body: deleteFromProductStoreDTO,
