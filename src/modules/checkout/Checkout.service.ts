@@ -36,10 +36,11 @@ export class CheckoutService {
         await ProductHandlers.variantsIdsByProductIdsHandler(productIds),
       );
       const totalVariantIds = variantIds.length;
+      const stepSize = 10;
       let startIndex = 0;
-      let lastIndex = 9;
+      let lastIndex = stepSize - 1;
 
-      while (lastIndex <= totalVariantIds) {
+      while (startIndex <= totalVariantIds) {
         const slicedVariantIds = variantIds.slice(startIndex, lastIndex);
 
         const allBundles = await ProductHandlers.bundlesByVariantsIdsHandler(
@@ -52,7 +53,7 @@ export class CheckoutService {
           ),
         );
         startIndex = lastIndex + 1;
-        lastIndex = lastIndex + 10;
+        lastIndex = lastIndex + stepSize;
       }
 
       return prepareSuccessResponse(checkoutData);
