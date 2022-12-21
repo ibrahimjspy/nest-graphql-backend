@@ -24,29 +24,38 @@ export class CheckoutService {
 
   public async getShoppingCartData(id: string, token: string): Promise<object> {
     try {
-      const checkoutBundles = await CheckoutHandlers.marketplaceCheckoutHandler(
+      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
         id,
         true,
         token,
       );
       const productIds = CheckoutUtils.getProductIdsByCheckoutBundles(
-        checkoutBundles['bundles'],
+        checkoutData['bundles'],
       );
       const variantIds = CheckoutUtils.getVariantsIdsByProducts(
         await ProductHandlers.variantsIdsByProductIdsHandler(productIds),
       );
-      const allBundles = await ProductHandlers.bundlesByVariantsIdsHandler(
-        variantIds,
-      );
+      const totalVariantIds = variantIds.length;
+      let startIndex = 0;
+      let lastIndex = 9;
 
-      checkoutBundles['bundles'] = checkoutBundles['bundles']?.concat(
-        CheckoutUtils.getBundlesNotInCheckout(
-          checkoutBundles['bundles'],
-          allBundles,
-        ),
-      );
+      while (lastIndex <= totalVariantIds) {
+        const slicedVariantIds = variantIds.slice(startIndex, lastIndex);
 
-      return prepareSuccessResponse(checkoutBundles);
+        const allBundles = await ProductHandlers.bundlesByVariantsIdsHandler(
+          slicedVariantIds,
+        );
+        checkoutData['bundles'] = checkoutData['bundles']?.concat(
+          CheckoutUtils.getBundlesNotInCheckout(
+            checkoutData['bundles'],
+            allBundles,
+          ),
+        );
+        startIndex = lastIndex + 1;
+        lastIndex = lastIndex + 10;
+      }
+
+      return prepareSuccessResponse(checkoutData);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
