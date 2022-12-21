@@ -16,7 +16,9 @@ export const addToProductStoreMutation = (
         ) {
             __typename
             ... on StoredProductType {
-            shopId
+            shop {
+                id
+            }
             product {
                 id
                 name
