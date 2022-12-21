@@ -26,7 +26,9 @@ export const getStoredProductsQuery = (
             totalCount
             edges {
                 node {
-                shopId
+                shop {
+                  id
+                }
                 productVariantIds
                 product {
                     id

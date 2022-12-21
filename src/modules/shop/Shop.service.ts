@@ -28,13 +28,17 @@ export class ShopService {
   }
 
   public async getShopIdByVariants(productVariantIds) {
-    let response = [];
-    await Promise.all(
-      productVariantIds.map(async (variantId) => {
-        const shopId = await shopIdByVariantIdHandler(variantId);
-        response = [...response, shopId];
-      }),
-    );
-    return prepareSuccessResponse(response, '', 200);
+    try {
+      let response = [];
+      await Promise.all(
+        productVariantIds.map(async (variantId) => {
+          const shopId = await shopIdByVariantIdHandler(variantId);
+          response = [...response, shopId];
+        }),
+      );
+      return prepareSuccessResponse(response, '', 200);
+    } catch (error) {
+      this.logger.error(error);
+    }
   }
 }
