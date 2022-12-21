@@ -29,6 +29,13 @@ export class ShopController {
     @Res() res,
     @Query() filter: shopIdByVariantsDTO,
   ): Promise<object> {
-    return makeResponse(res, await this.appService.getShopIdByVariants(filter));
+    return makeResponse(
+      res,
+      filter.productVariantIds.map
+        ? await this.appService.getShopIdByVariants(filter.productVariantIds)
+        : await this.appService.getShopIdByVariants(
+            Array(filter.productVariantIds),
+          ),
+    );
   }
 }
