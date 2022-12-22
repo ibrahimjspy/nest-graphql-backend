@@ -3,108 +3,102 @@ import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
 const federationQuery = (id: string): string => {
   return gql`
-    query {
-      order(id: "${id}") {
-        number
-        shippingPrice {
-          gross {
-            amount
-          }
-        }
-        status
-        shippingMethods {
-          name
-          id
-          description
-        }
-        userEmail
-        billingAddress {
-          postalCode
-          firstName
-          lastName
-          streetAddress1
-          streetAddress2
-        }
-        shippingAddress {
-          postalCode
-          firstName
-          lastName
-          streetAddress1
-          streetAddress2
-        }
-        created
-        id
-        user {
-          firstName
-          lastName
-          email
-          defaultShippingAddress {
-            firstName
-            lastName
-            city
-            phone
-            streetAddress1
-            streetAddress2
-          }
-          defaultBillingAddress {
-            firstName
-            lastName
-            city
-            phone
-            streetAddress1
-            streetAddress2
-          }
-        }
-        lines {
-          productName
-          quantity
-          productSku
-
-          totalPrice {
-            net {
-              amount
-            }
-            gross {
-              amount
-            }
-          }
-          unitPrice {
-            net {
-              amount
-            }
-            gross {
-              amount
-            }
-          }
-          variant {
-            media {
-              url
-            }
-            quantityOrdered
-            quantityAvailable
-            pricing {
-              price {
+          query {
+            order(id: "${id}") {
+              number
+              shippingPrice {
                 gross {
                   amount
                 }
-                net {
-                  amount
+              }
+              status
+              shippingMethods {
+                name
+                id
+                description
+              }
+              userEmail
+              billingAddress {
+                postalCode
+                firstName
+                lastName
+                streetAddress1
+                streetAddress2
+              }
+              shippingAddress {
+                postalCode
+                firstName
+                lastName
+                streetAddress1
+                streetAddress2
+              }
+              created
+              id
+              user {
+                firstName
+                lastName
+                email
+              }
+              lines {
+                productName
+                quantity
+                productSku
+                totalPrice {
+                  net {
+                    amount
+                  }
+                  gross {
+                    amount
+                  }
+                }
+                unitPrice {
+                  net {
+                    amount
+                  }
+                  gross {
+                    amount
+                  }
+                }
+                variant {
+                  stocks {
+                    quantity
+                  }
+                  attributes {
+                    attribute {
+                      name
+                    }
+                    values {
+                      name
+                    }
+                  }
+                  media {
+                    url
+                  }
+                  quantityOrdered
+                  quantityAvailable
+                  pricing {
+                    price {
+                      gross {
+                        amount
+                      }
+                      net {
+                        amount
+                      }
+                    }
+                  }
+                  product {
+                    id
+                    media {
+                      url
+                    }
+                    thumbnail {
+                      url
+                    }
+                  }
                 }
               }
             }
-            product {
-              id
-              media {
-                url
-              }
-              thumbnail {
-                url
-              }
-            }
           }
-        }
-      }
-    }
   `;
 };
 
