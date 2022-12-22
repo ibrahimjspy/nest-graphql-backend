@@ -231,17 +231,19 @@ export const updateDeliveryMethodHandler = async (
   selectedMethods,
   token: string,
 ) => {
-  const deliveryMethodId = selectedMethods[0]['method']['shippingMethodId'];
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(
-      CheckoutMutations.checkoutDeliveryMethodUpdateMutation(
-        checkoutId,
-        deliveryMethodId,
+  if (selectedMethods && selectedMethods.length) {
+    const deliveryMethodId = selectedMethods[0]['method']?.['shippingMethodId'];
+    const response = await graphqlResultErrorHandler(
+      await graphqlCall(
+        CheckoutMutations.checkoutDeliveryMethodUpdateMutation(
+          checkoutId,
+          deliveryMethodId,
+        ),
+        token,
       ),
-      token,
-    ),
-  );
-  return response['checkoutDeliveryMethodUpdate'];
+    );
+    return response['checkoutDeliveryMethodUpdate'];
+  }
 };
 
 export const createPaymentHandler = async (
