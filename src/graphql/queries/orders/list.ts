@@ -22,6 +22,11 @@ const federationQuery = (
             number
             created
             status
+            lines {
+              variant {
+                id
+              }
+            }
             user {
               firstName
               lastName
