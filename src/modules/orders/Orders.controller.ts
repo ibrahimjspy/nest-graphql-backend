@@ -1,13 +1,14 @@
 import { Controller, Get, Headers, Param, Query, Res } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OrdersService } from './Orders.service';
 import { makeResponse } from '../../core/utils/response';
 import { OrderIdDto, ShopIdDto, UserIdDto } from './dto';
 import { OrderSummaryDto } from './dto/common.dto';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
+import { OrdersListDTO } from './dto/list';
 
 @ApiTags('orders')
-@Controller('orders')
+@Controller('')
 export class OrdersController {
   constructor(private readonly appService: OrdersService) {}
   // Returns orders dashboard data for landing page
@@ -27,7 +28,7 @@ export class OrdersController {
     );
   }
   // Returns all shop orders for orders page
-  @Get('/marketplace/all')
+  @Get('orders/marketplace/all')
   async findAllShopOrders(@Res() res, @Headers() headers): Promise<object> {
     const Authorization: string = headers.authorization;
     return makeResponse(
@@ -36,7 +37,7 @@ export class OrdersController {
     );
   }
   // Returns shop orders for orders page
-  @Get('/marketplace/shop/:shopId')
+  @Get('orders/marketplace/shop/:shopId')
   async findShopOrders(
     @Res() res,
     @Param() shopDto: ShopIdDto,
@@ -52,7 +53,7 @@ export class OrdersController {
     );
   }
   // Returns shop order fulfillments for order page
-  @Get('/marketplace/shop/fulfillment/:orderId')
+  @Get('orders/marketplace/shop/fulfillment/:orderId')
   async findShopOrderFulfillments(
     @Res() res,
     @Param() orderDto: OrderIdDto,
@@ -68,7 +69,7 @@ export class OrdersController {
     );
   }
   // Returns shop order activities
-  @Get('/activity')
+  @Get('orders/activity')
   async getOrderActivity(@Res() res, @Headers() headers): Promise<object> {
     const Authorization: string = headers.authorization;
     return makeResponse(
@@ -78,7 +79,7 @@ export class OrdersController {
   }
 
   // Returns shop order details
-  @Get('/detail/:orderId')
+  @Get('orders/detail/:orderId')
   async getOrderDetails(
     @Res() res,
     @Param() orderDto: OrderIdDto,
@@ -95,8 +96,9 @@ export class OrdersController {
   }
 
   // Returns shop orders list
-  @Get('/list/:shopId')
-  async getOrdersList(
+  @Get('api/v1/orders/list/shop/:shopId')
+  @ApiOperation({ summary: 'returns orders list against given shop id' })
+  async getOrdersListByShopId(
     @Res() res,
     @Param() shopDto: ShopIdDto,
     @Query() filter: PaginationDto,
@@ -137,6 +139,20 @@ export class OrdersController {
         orderSummaryDto.reportingPeriod,
         Authorization,
       ),
+    );
+  }
+
+  // Returns all orders list
+  @Get('api/v1/orders/list')
+  async findAllOrders(
+    @Res() res,
+    @Headers() headers,
+    @Query() filter: OrdersListDTO,
+  ): Promise<object> {
+    const Authorization: string = headers.authorization;
+    return makeResponse(
+      res,
+      await this.appService.getOrdersList(filter, Authorization),
     );
   }
 }

@@ -14,9 +14,9 @@ import {
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import { ordersListQuery } from '../queries/orders/list';
 import { GQL_EDGES } from 'src/constants';
-import { orderBundlesTransformer, orderIdsTransformer } from '../utils/orders';
+import { orderBundlesTransformer } from '../utils/orders';
 import { addOrderToShopMutation } from '../mutations/order/addOrderToShop';
-import { PaginationDto } from '../dto/pagination.dto';
+import { OrdersListDTO } from 'src/modules/orders/dto/list';
 
 export const dashboardByIdHandler = async (
   id: string,
@@ -100,13 +100,12 @@ export const orderActivityHandler = async (token: string): Promise<object> => {
   return response['homepageEvents'][GQL_EDGES];
 };
 
-export const ordersListByIdsHandler = async (
-  ids: string[],
-  filter: PaginationDto,
+export const ordersListHandler = async (
+  filter: OrdersListDTO,
   token: string,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(ordersListQuery(orderIdsTransformer(ids), filter), token),
+    await graphqlCall(ordersListQuery(filter), token),
   );
   if (!response['orders']) {
     throw new RecordNotFound('order details');

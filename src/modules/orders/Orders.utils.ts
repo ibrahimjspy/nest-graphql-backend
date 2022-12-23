@@ -1,4 +1,6 @@
 import { roundNumber } from 'src/core/utils/helpers';
+import { OrdersListDTO } from './dto/list';
+import { orderListInterface } from './orders.utils.type';
 
 /**
  * It takes a list of bundles and returns a total price of all the bundles
@@ -13,6 +15,36 @@ export const getTotalFromBundles = (bundles) => {
     total += getTotalFromVariants(variants, quantity);
   });
   return roundNumber(total);
+};
+
+/**
+ * it validates order list filters and returns string values which can be inserted in gql queries
+ * @param filter - ordersList filter such as statuses , paymentStatus, orderIds, customer name
+ * @returns object :: orderListInterface
+ */
+export const orderFilterValidation = (
+  filter: OrdersListDTO,
+): orderListInterface => {
+  const transformedObject: orderListInterface = {};
+  const arrayValidation = (filter: string[]) => {
+    if (filter) {
+      return filter.map ? `[${filter}]` : `[${filter}]`;
+    }
+    return `[]`;
+  };
+
+  transformedObject['paymentStatus'] = filter.paymentStatus
+    ? arrayValidation(filter.paymentStatus)
+    : `[]`;
+  transformedObject['status'] = filter.statuses
+    ? arrayValidation(filter.statuses)
+    : `[]`;
+  transformedObject['orderIds'] = filter.orderIds
+    ? JSON.stringify(filter.orderIds)
+    : `[]`;
+  transformedObject['customer'] = filter.customer ? `${filter.customer}` : '';
+
+  return transformedObject;
 };
 
 /**
