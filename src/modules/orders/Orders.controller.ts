@@ -12,7 +12,7 @@ import { OrdersListDTO } from './dto/list';
 export class OrdersController {
   constructor(private readonly appService: OrdersService) {}
   // Returns orders dashboard data for landing page
-  @Get('/history/:userId')
+  @Get('orders/history/:userId')
   async findDashboard(
     @Res() res,
     @Param() userDto: UserIdDto,
@@ -116,7 +116,7 @@ export class OrdersController {
   }
 
   // Returns all pending shop orders for orders list page
-  @Get('/marketplace/all/pending')
+  @Get('orders/marketplace/all/pending')
   async findAllPendingOrders(@Res() res, @Headers() headers): Promise<object> {
     const Authorization: string = headers.authorization;
     return makeResponse(
@@ -126,7 +126,7 @@ export class OrdersController {
   }
 
   // Returns orders summary ()
-  @Get('/summary/:reportingPeriod?')
+  @Get('orders/summary/:reportingPeriod?')
   async findOrdersSummary(
     @Res() res,
     @Param() orderSummaryDto: OrderSummaryDto,
