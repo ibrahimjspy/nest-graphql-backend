@@ -126,7 +126,7 @@ export class OrdersController {
   }
 
   // Returns orders summary ()
-  @Get('/summary/:reportingPeriod?')
+  @Get('orders/summary/:reportingPeriod?')
   async findOrdersSummary(
     @Res() res,
     @Param() orderSummaryDto: OrderSummaryDto,
