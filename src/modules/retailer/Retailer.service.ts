@@ -9,7 +9,7 @@ import * as RetailerHandlers from 'src/graphql/handlers/retailer';
 import {
   checkRetailerEmailHandler,
   retailerJobTitlesHandler,
-} from 'src/external/services/retailers_register';
+} from 'src/external/services/retailer_registration';
 
 @Injectable()
 export class RetailerService {

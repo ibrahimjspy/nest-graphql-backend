@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Post, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RetailerService } from './Retailer.service';
 import { makeResponse } from '../../core/utils/response';
-import { UserDto } from './dto';
+import { RetailerDto } from './dto';
 
 @ApiTags('retailer')
 @Controller('retailer')
@@ -23,7 +23,7 @@ export class RetailerController {
   }
 
   @Post('email-availability')
-  async getCheckRetailerEmail(@Body() body: UserDto): Promise<object> {
+  async getCheckRetailerEmail(@Body() body: RetailerDto): Promise<object> {
     return this.appService.getCheckRetailerEmail(body?.email);
   }
 }

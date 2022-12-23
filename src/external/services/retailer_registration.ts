@@ -1,7 +1,7 @@
 import {
   checkRetailerEmail,
   retailerJobTitles,
-} from 'src/external/endpoints/retailers_registration';
+} from 'src/external/endpoints/retailer_registration';
 import {
   prepareFailedResponse,
   prepareSuccessResponse,
