@@ -1,4 +1,7 @@
-import { retailerJobTitles } from 'src/external/endpoints/retailers_registration';
+import {
+  retailerJobTitles,
+  checkRetailerEmail,
+} from 'src/external/endpoints/retailers_registration';
 import {
   prepareFailedResponse,
   prepareSuccessResponse,
@@ -8,6 +11,16 @@ import { getHttpErrorMessage } from 'src/external/utils/httpHelper';
 export const retailerJobTitlesHandler = async () => {
   try {
     const resp = await retailerJobTitles();
+    return prepareSuccessResponse(resp?.data);
+  } catch (error) {
+    const error_obj = getHttpErrorMessage(error);
+    return prepareFailedResponse(error_obj?.message?.data);
+  }
+};
+
+export const checkRetailerEmailHandler = async (email: string) => {
+  try {
+    const resp = await checkRetailerEmail(email);
     return prepareSuccessResponse(resp?.data);
   } catch (error) {
     const error_obj = getHttpErrorMessage(error);

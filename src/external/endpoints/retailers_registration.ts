@@ -6,3 +6,10 @@ export const retailerJobTitles = async () => {
   const response = await http.get(URL, COMMON_HEADERS);
   return response;
 };
+
+export const checkRetailerEmail = async (email: string) => {
+  const payload = { email: email };
+  const URL = `${BASE_EXTERNAL_ENDPOINT}/api/v3/auth/email-availability`;
+  const response = await http.post(URL, payload);
+  return response;
+};

@@ -6,7 +6,10 @@ import {
   prepareSuccessResponse,
 } from 'src/core/utils/response';
 import * as RetailerHandlers from 'src/graphql/handlers/retailer';
-import { retailerJobTitlesHandler } from 'src/external/services/retailers_register';
+import {
+  retailerJobTitlesHandler,
+  checkRetailerEmailHandler,
+} from 'src/external/services/retailers_register';
 
 @Injectable()
 export class RetailerService {
@@ -32,5 +35,9 @@ export class RetailerService {
 
   public async getRetailerJobTitle(): Promise<object> {
     return await retailerJobTitlesHandler();
+  }
+
+  public async getCheckRetailerEmail(email: string): Promise<object> {
+    return await checkRetailerEmailHandler(email);
   }
 }

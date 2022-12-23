@@ -1,7 +1,8 @@
-import { Controller, Get, Param, Res } from '@nestjs/common';
+import { Controller, Get, Body, Param, Post, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RetailerService } from './Retailer.service';
 import { makeResponse } from '../../core/utils/response';
+import { UserDto } from './dto';
 
 @ApiTags('retailer')
 @Controller('retailer')
@@ -19,5 +20,10 @@ export class RetailerController {
   @Get('job/title')
   async getRetailerJobTitle(): Promise<object> {
     return this.appService.getRetailerJobTitle();
+  }
+
+  @Post('email-availability')
+  async getCheckRetailerEmail(@Body() body: UserDto): Promise<object> {
+    return this.appService.getCheckRetailerEmail(body?.email);
   }
 }
