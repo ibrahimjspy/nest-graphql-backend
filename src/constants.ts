@@ -15,6 +15,14 @@ export const GQL_PAGE_INFO = 'pageInfo';
 
 export const GQL_TOTAL_COUNT = 'totalCount';
 
+//
+export const COMMON_HEADERS = {
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept-Encoding': 'application/json',
+  },
+};
+
 // OrangeShine Variables
 export const SHAROVE_EMAIL = process.env.OS_EMAIL;
 export const SHAROVE_PASSWORD = process.env.OS_PASSWORD;

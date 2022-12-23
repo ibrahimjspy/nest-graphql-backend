@@ -15,4 +15,9 @@ export class RetailerController {
       await this.appService.getRecentOrdersData(params?.email),
     );
   }
+
+  @Get('job/title')
+  async getRetailerJobTitle(): Promise<object> {
+    return this.appService.getRetailerJobTitle();
+  }
 }
