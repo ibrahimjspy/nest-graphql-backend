@@ -7,7 +7,7 @@ import {
   dashboardByIdHandler,
   orderActivityHandler,
   orderDetailsHandler,
-  ordersListByIdsHandler,
+  ordersListHandler,
   shopOrderFulfillmentsByIdHandler,
   shopOrderFulfillmentsDetailsHandler,
   shopOrdersByIdHandler,
@@ -28,6 +28,7 @@ import { mockOrderReporting } from 'src/graphql/mocks/orderSummary.mock';
 import { OrderSummaryResponseDto } from './dto/order.summary.dto';
 import { dailySalesHandler } from 'src/graphql/handlers/orders.reporting';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
+import { OrdersListDTO } from './dto/list';
 
 @Injectable()
 export class OrdersService {
@@ -156,8 +157,11 @@ export class OrdersService {
   ): Promise<object> {
     try {
       const shopDetails = await shopOrdersByIdHandler(id, token);
-      const orderIds = shopDetails['orders'];
-      const ordersList = await ordersListByIdsHandler(orderIds, filter, token);
+      const orderIds: OrdersListDTO = {
+        ...filter,
+        orderIds: shopDetails['orders'],
+      };
+      const ordersList = await ordersListHandler(orderIds, token);
       const response = { ...shopDetails, ...ordersList };
 
       return prepareSuccessResponse(response, '', 201);
@@ -190,6 +194,19 @@ export class OrdersService {
         ...mock,
       };
 
+      return prepareSuccessResponse(response, '', 201);
+    } catch (err) {
+      this.logger.error(err);
+      return graphqlExceptionHandler(err);
+    }
+  }
+
+  public async getOrdersList(
+    filter: OrdersListDTO,
+    token: string,
+  ): Promise<object> {
+    try {
+      const response = await ordersListHandler(filter, token);
       return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
