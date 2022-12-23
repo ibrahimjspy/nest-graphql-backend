@@ -7,8 +7,8 @@ import {
 } from 'src/core/utils/response';
 import * as RetailerHandlers from 'src/graphql/handlers/retailer';
 import {
-  retailerJobTitlesHandler,
   checkRetailerEmailHandler,
+  retailerJobTitlesHandler,
 } from 'src/external/services/retailers_register';
 
 @Injectable()
