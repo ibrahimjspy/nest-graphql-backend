@@ -1,16 +1,22 @@
 import { gql } from 'graphql-request';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
-import { orderFilterValidation } from 'src/modules/orders/Orders.utils';
+import { orderListFilterValidation } from 'src/modules/orders/Orders.utils';
 import { OrdersListDTO } from 'src/modules/orders/dto/list';
 
 const federationQuery = (filter: OrdersListDTO): string => {
-  const filters = orderFilterValidation(filter);
+  const filters = orderListFilterValidation(filter);
   const pagination = validatePageFilter(filter);
   return gql`
     query {
       orders(
-       ${pagination}
-        filter: { ids: ${filters.orderIds}, paymentStatus: ${filters.paymentStatus}, status: ${filters.status}, customer: "${filters.customer}" }
+        ${pagination}
+        filter: {
+          ids: ${filters.orderIds}
+          paymentStatus: ${filters.paymentStatus}
+          status: ${filters.status}
+          customer: "${filters.customer}"
+          created: { gte: "${filters.startDate}", lte: "${filters.endDate}" }
+        }
       ) {
         pageInfo {
           hasNextPage

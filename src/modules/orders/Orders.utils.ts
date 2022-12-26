@@ -22,7 +22,7 @@ export const getTotalFromBundles = (bundles) => {
  * @param filter - ordersList filter such as statuses , paymentStatus, orderIds, customer name
  * @returns object :: orderListInterface
  */
-export const orderFilterValidation = (
+export const orderListFilterValidation = (
   filter: OrdersListDTO,
 ): orderListInterface => {
   const transformedObject: orderListInterface = {};
@@ -43,6 +43,8 @@ export const orderFilterValidation = (
     ? JSON.stringify(filter.orderIds)
     : `[]`;
   transformedObject['customer'] = filter.customer ? `${filter.customer}` : '';
+  transformedObject['startDate'] = filter.startDate;
+  transformedObject['endDate'] = filter.endDate;
 
   return transformedObject;
 };
