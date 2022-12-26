@@ -9,6 +9,7 @@ import * as RetailerHandlers from 'src/graphql/handlers/retailer';
 import {
   checkRetailerEmailHandler,
   retailerJobTitlesHandler,
+  uploadRetailerCertificateHandler,
 } from 'src/external/services/retailer_registration';
 
 @Injectable()
@@ -39,5 +40,9 @@ export class RetailerService {
 
   public async getCheckRetailerEmail(email: string): Promise<object> {
     return await checkRetailerEmailHandler(email);
+  }
+
+  public async getUploadRetailerCertificate(file: any): Promise<object> {
+    return await uploadRetailerCertificateHandler(file);
   }
 }

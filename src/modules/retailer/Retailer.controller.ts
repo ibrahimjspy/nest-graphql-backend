@@ -1,8 +1,18 @@
-import { Body, Controller, Get, Param, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Res,
+  UseInterceptors,
+  UploadedFile,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RetailerService } from './Retailer.service';
 import { makeResponse } from '../../core/utils/response';
 import { RetailerDto } from './dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('retailer')
 @Controller('retailer')
@@ -25,5 +35,11 @@ export class RetailerController {
   @Post('email-availability')
   async getCheckRetailerEmail(@Body() body: RetailerDto): Promise<object> {
     return this.appService.getCheckRetailerEmail(body?.email);
+  }
+
+  @Post('resale-certificate')
+  @UseInterceptors(FileInterceptor('permit_img1'))
+  getUploadRetailerCertificate(@UploadedFile() file: Express.Multer.File) {
+    return this.appService.getUploadRetailerCertificate(file);
   }
 }
