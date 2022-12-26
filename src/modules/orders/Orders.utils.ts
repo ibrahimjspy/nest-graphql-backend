@@ -25,6 +25,7 @@ export const getTotalFromBundles = (bundles) => {
 export const orderListFilterValidation = (
   filter: OrdersListDTO,
 ): orderListInterface => {
+  const DEFAULT_START_DATE = '1970-12-26';
   const transformedObject: orderListInterface = {};
   const arrayValidation = (filter: string[]) => {
     if (filter) {
@@ -43,8 +44,12 @@ export const orderListFilterValidation = (
     ? JSON.stringify(filter.orderIds)
     : `[]`;
   transformedObject['customer'] = filter.customer ? `${filter.customer}` : '';
-  transformedObject['startDate'] = filter.startDate;
-  transformedObject['endDate'] = filter.endDate;
+  transformedObject['startDate'] = filter.startDate
+    ? filter.startDate
+    : DEFAULT_START_DATE;
+  transformedObject['endDate'] = filter.endDate
+    ? filter.endDate
+    : `${new Date().toISOString().slice(0, 10)}`;
 
   return transformedObject;
 };

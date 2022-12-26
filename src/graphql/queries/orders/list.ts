@@ -41,6 +41,17 @@ const federationQuery = (filter: OrdersListDTO): string => {
               lastName
               email
             }
+            shippingAddress {
+              streetAddress1
+              streetAddress2
+            }
+            deliveryMethod {
+              ... on ShippingMethod {
+                minimumDeliveryDays
+                maximumDeliveryDays
+                name
+              }
+            }
             total {
               net {
                 amount
