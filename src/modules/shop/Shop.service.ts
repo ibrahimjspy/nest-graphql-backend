@@ -2,10 +2,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import {
   carouselHandler,
   shopDetailsHandler,
+  shopIdByOrderIdHandler,
   shopIdByVariantIdHandler,
 } from 'src/graphql/handlers/shop';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
+import { validateArray } from './Shop.utils';
 @Injectable()
 export class ShopService {
   private readonly logger = new Logger(ShopService.name);
@@ -29,10 +31,27 @@ export class ShopService {
 
   public async getShopIdByVariants(productVariantIds) {
     try {
+      const ids = validateArray(productVariantIds);
       let response = [];
       await Promise.all(
-        productVariantIds.map(async (variantId) => {
+        ids.map(async (variantId) => {
           const shopId = await shopIdByVariantIdHandler(variantId);
+          response = [...response, shopId];
+        }),
+      );
+      return prepareSuccessResponse(response, '', 200);
+    } catch (error) {
+      this.logger.error(error);
+    }
+  }
+
+  public async getShopIdByOrders(orderIds) {
+    try {
+      const ids = validateArray(orderIds);
+      let response = [];
+      await Promise.all(
+        ids.map(async (orderId) => {
+          const shopId = await shopIdByOrderIdHandler(orderId);
           response = [...response, shopId];
         }),
       );

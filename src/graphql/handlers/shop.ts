@@ -6,6 +6,7 @@ import {
 import { carouselQuery } from 'src/graphql/queries/shop/carousel';
 import { shopDetailsQuery } from 'src/graphql/queries/shop/shopDetails';
 import { shopIdByVariantIdQuery } from '../queries/shop/shopIdByVariants';
+import { shopIdByOrderIdQuery } from '../queries/shop/shopIdByOrderId';
 
 export const carouselHandler = async (token: string): Promise<object> => {
   try {
@@ -25,8 +26,33 @@ export const shopDetailsHandler = async (shopId: string): Promise<object> => {
 export const shopIdByVariantIdHandler = async (
   variantId: string,
 ): Promise<object> => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(shopIdByVariantIdQuery(variantId)),
-  );
-  return response['marketplaceShop'];
+  try {
+    const response = await graphqlResultErrorHandler(
+      await graphqlCall(shopIdByVariantIdQuery(variantId)),
+    );
+    return response['marketplaceShop'];
+  } catch (error) {
+    const errorMessage = await graphqlExceptionHandler(error);
+    return {
+      message: errorMessage.message,
+      variantId: variantId,
+    };
+  }
+};
+
+export const shopIdByOrderIdHandler = async (
+  orderId: string,
+): Promise<object> => {
+  try {
+    const response = await graphqlResultErrorHandler(
+      await graphqlCall(shopIdByOrderIdQuery(orderId)),
+    );
+    return response['marketplaceOrders'];
+  } catch (error) {
+    const errorMessage = await graphqlExceptionHandler(error);
+    return {
+      message: errorMessage.message,
+      orderId: orderId,
+    };
+  }
 };

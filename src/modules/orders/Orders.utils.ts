@@ -1,6 +1,6 @@
 import { roundNumber } from 'src/core/utils/helpers';
 import { OrdersListDTO } from './dto/list';
-import { orderListInterface } from './orders.utils.type';
+import { orderListInterface } from './Orders.utils.types';
 
 /**
  * It takes a list of bundles and returns a total price of all the bundles
@@ -26,7 +26,7 @@ export const orderListFilterValidation = (
   filter: OrdersListDTO,
 ): orderListInterface => {
   const DEFAULT_START_DATE = '1970-12-26';
-  const transformedObject: orderListInterface = {};
+  const ordersListFilters: orderListInterface = {};
   const arrayValidation = (filter: string[]) => {
     if (filter) {
       return filter.map ? `[${filter}]` : `[${filter}]`;
@@ -34,24 +34,24 @@ export const orderListFilterValidation = (
     return `[]`;
   };
 
-  transformedObject['paymentStatus'] = filter.paymentStatus
+  ordersListFilters['paymentStatus'] = filter.paymentStatus
     ? arrayValidation(filter.paymentStatus)
     : `[]`;
-  transformedObject['status'] = filter.statuses
+  ordersListFilters['status'] = filter.statuses
     ? arrayValidation(filter.statuses)
     : `[]`;
-  transformedObject['orderIds'] = filter.orderIds
+  ordersListFilters['orderIds'] = filter.orderIds
     ? JSON.stringify(filter.orderIds)
     : `[]`;
-  transformedObject['customer'] = filter.customer ? `${filter.customer}` : '';
-  transformedObject['startDate'] = filter.startDate
+  ordersListFilters['customer'] = filter.customer ? `${filter.customer}` : '';
+  ordersListFilters['startDate'] = filter.startDate
     ? filter.startDate
     : DEFAULT_START_DATE;
-  transformedObject['endDate'] = filter.endDate
+  ordersListFilters['endDate'] = filter.endDate
     ? filter.endDate
     : `${new Date().toISOString().slice(0, 10)}`;
 
-  return transformedObject;
+  return ordersListFilters;
 };
 
 /**
