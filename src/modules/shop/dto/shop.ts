@@ -1,8 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { IsOptional } from 'class-validator';
 
 export class shopIdByVariantsDTO {
-  @ApiProperty({ type: String, isArray: true })
-  @IsNotEmpty()
+  @ApiProperty({ type: String, isArray: true, required: false })
+  @IsOptional()
   productVariantIds: string[];
+
+  @ApiProperty({ type: String, isArray: true, required: false })
+  @IsOptional()
+  orderIds: string[];
 }

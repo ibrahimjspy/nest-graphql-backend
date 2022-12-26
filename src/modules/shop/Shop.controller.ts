@@ -24,18 +24,18 @@ export class ShopController {
   }
 
   @Get('/api/v1/shop/id')
-  @ApiOperation({ summary: 'returns shop id against given variant id' })
+  @ApiOperation({
+    summary: 'returns shop id against given variant id or order id',
+  })
   async getShopId(
     @Res() res,
     @Query() filter: shopIdByVariantsDTO,
   ): Promise<object> {
     return makeResponse(
       res,
-      filter.productVariantIds.map
+      filter.productVariantIds
         ? await this.appService.getShopIdByVariants(filter.productVariantIds)
-        : await this.appService.getShopIdByVariants(
-            Array(filter.productVariantIds),
-          ),
+        : await this.appService.getShopIdByOrders(filter.orderIds),
     );
   }
 }
