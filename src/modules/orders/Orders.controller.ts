@@ -4,7 +4,6 @@ import { OrdersService } from './Orders.service';
 import { makeResponse } from '../../core/utils/response';
 import { OrderIdDto, ShopIdDto, UserIdDto } from './dto';
 import { OrderSummaryDto } from './dto/common.dto';
-import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 import { OrdersListDTO } from './dto/list';
 
 @ApiTags('orders')
@@ -101,7 +100,7 @@ export class OrdersController {
   async getOrdersListByShopId(
     @Res() res,
     @Param() shopDto: ShopIdDto,
-    @Query() filter: PaginationDto,
+    @Query() filter: OrdersListDTO,
     @Headers() headers,
   ): Promise<object> {
     const Authorization: string = headers.authorization;
