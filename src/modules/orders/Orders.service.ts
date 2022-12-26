@@ -152,16 +152,14 @@ export class OrdersService {
 
   public async getOrdersListByShopId(
     id: string,
-    filter: PaginationDto,
+    filter: OrdersListDTO,
     token: string,
   ): Promise<object> {
     try {
       const shopDetails = await shopOrdersByIdHandler(id, token);
-      const orderIds: OrdersListDTO = {
-        ...filter,
-        orderIds: shopDetails['orders'],
-      };
-      const ordersList = await ordersListHandler(orderIds, token);
+      const orderFilter: OrdersListDTO = filter;
+      orderFilter.orderIds = shopDetails['orders'];
+      const ordersList = await ordersListHandler(orderFilter, token);
       const response = { ...shopDetails, ...ordersList };
 
       return prepareSuccessResponse(response, '', 201);
