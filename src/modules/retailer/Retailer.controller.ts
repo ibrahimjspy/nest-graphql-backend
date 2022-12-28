@@ -7,6 +7,8 @@ import {
   Res,
   UseInterceptors,
   UploadedFile,
+  ParseFilePipeBuilder,
+  HttpStatus,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RetailerService } from './Retailer.service';
@@ -39,7 +41,21 @@ export class RetailerController {
 
   @Post('resale-certificate')
   @UseInterceptors(FileInterceptor('permit_img1'))
-  getUploadRetailerCertificate(@UploadedFile() file: Express.Multer.File) {
+  getUploadRetailerCertificate(
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: /(jpg|jpeg|png|pdf)$/,
+        })
+        .addMaxSizeValidator({
+          maxSize: 2097152,
+        })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        }),
+    )
+    file: Express.Multer.File,
+  ) {
     return this.appService.getUploadRetailerCertificate(file);
   }
 }
