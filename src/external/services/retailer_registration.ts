@@ -1,6 +1,7 @@
 import {
   checkRetailerEmail,
   retailerJobTitles,
+  uploadRetailerCertificate,
 } from 'src/external/endpoints/retailer_registration';
 import {
   prepareFailedResponse,
@@ -21,6 +22,16 @@ export const retailerJobTitlesHandler = async () => {
 export const checkRetailerEmailHandler = async (email: string) => {
   try {
     const resp = await checkRetailerEmail(email);
+    return prepareSuccessResponse(resp?.data);
+  } catch (error) {
+    const error_obj = getHttpErrorMessage(error);
+    return prepareFailedResponse(error_obj?.message?.data);
+  }
+};
+
+export const uploadRetailerCertificateHandler = async (file: any) => {
+  try {
+    const resp = await uploadRetailerCertificate(file);
     return prepareSuccessResponse(resp?.data);
   } catch (error) {
     const error_obj = getHttpErrorMessage(error);
