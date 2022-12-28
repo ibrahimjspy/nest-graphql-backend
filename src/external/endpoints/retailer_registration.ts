@@ -1,6 +1,11 @@
 import axios from 'axios';
 import http from 'src/core/proxies/restHandler';
-import { BASE_EXTERNAL_ENDPOINT, COMMON_HEADERS } from 'src/constants';
+import {
+  BASE_EXTERNAL_ENDPOINT,
+  COMMON_HEADERS,
+  ACCEPT_ENCODING_HEADER,
+} from 'src/constants';
+import FormData from 'form-data';
 
 export const retailerJobTitles = async () => {
   const URL = `${BASE_EXTERNAL_ENDPOINT}/api/v3/app/job-title`;
@@ -16,12 +21,15 @@ export const checkRetailerEmail = async (email: string) => {
 };
 
 export const uploadRetailerCertificate = async (file: any) => {
-  const config: any = {
-    method: 'post',
-    url: `${BASE_EXTERNAL_ENDPOINT}/api/v3/user/buyer-resale-certificate`,
-    headers: { 'Content-Type': 'multipart/form-data' },
-    data: file,
+  let formData = new FormData();
+  formData.append('permit_img1', file.buffer, { filename: file.originalname });
+  const requestAPI = `${BASE_EXTERNAL_ENDPOINT}/api/v3/user/buyer-resale-certificate`;
+  const headers = {
+    ...formData.getHeaders(),
+    'Content-Length': formData.getLengthSync(),
+    ...ACCEPT_ENCODING_HEADER,
   };
-  const response = await axios.request(config);
+
+  const response = await axios.post(requestAPI, formData, { headers });
   return response;
 };
