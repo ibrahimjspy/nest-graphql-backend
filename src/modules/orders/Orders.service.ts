@@ -7,6 +7,7 @@ import {
   dashboardByIdHandler,
   orderActivityHandler,
   orderDetailsHandler,
+  orderReturnListHandler,
   ordersListHandler,
   shopOrderFulfillmentsByIdHandler,
   shopOrderFulfillmentsDetailsHandler,
@@ -25,11 +26,10 @@ import { FulfillmentStatusEnum } from 'src/graphql/enums/orders';
 import { GQL_EDGES } from 'src/constants';
 import { ShopOrdersFulfillmentsDto, ShopOrdersListDto } from './dto';
 import { mockOrderReporting } from 'src/graphql/mocks/orderSummary.mock';
-import { OrderSummaryResponseDto } from './dto/order.summary.dto';
+import { OrderSummaryResponseDto } from './dto/order-summary.dto';
 import { dailySalesHandler } from 'src/graphql/handlers/orders.reporting';
-import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 import { OrdersListDTO } from './dto/list';
-
+import { OrderReturnFilterDTO } from './dto/order-returns.dto';
 @Injectable()
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
@@ -227,5 +227,18 @@ export class OrdersService {
         await addOrderToShopHandler(shopOrder);
       }),
     );
+  }
+
+  public async getOrderReturns(
+    filters: OrderReturnFilterDTO,
+    token: string,
+  ): Promise<object> {
+    try {
+      const response = await orderReturnListHandler(filters, token);
+      return prepareSuccessResponse(response, '', 200);
+    } catch (err) {
+      this.logger.error(err);
+      return graphqlExceptionHandler(err);
+    }
   }
 }

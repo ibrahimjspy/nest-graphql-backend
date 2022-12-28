@@ -5,7 +5,7 @@ import { makeResponse } from '../../core/utils/response';
 import { OrderIdDto, ShopIdDto, UserIdDto } from './dto';
 import { OrderSummaryDto } from './dto/common.dto';
 import { OrdersListDTO } from './dto/list';
-
+import { OrderReturnFilterDTO } from './dto/order-returns.dto';
 @ApiTags('orders')
 @Controller('')
 export class OrdersController {
@@ -152,6 +152,20 @@ export class OrdersController {
     return makeResponse(
       res,
       await this.appService.getOrdersList(filter, Authorization),
+    );
+  }
+
+  // Return all orders(which are return by end customer)
+  @Get('api/v1/orders/returns')
+  async getOrderReturns(
+    @Res() res,
+    @Headers() headers,
+    @Query() filters: OrderReturnFilterDTO,
+  ) {
+    const Authorization: string = headers.authorization;
+    return makeResponse(
+      res,
+      await this.appService.getOrderReturns(filters, Authorization),
     );
   }
 }
