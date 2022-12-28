@@ -32,3 +32,10 @@ export const uploadRetailerCertificate = async (file: any) => {
   const response = await http.post(requestAPI, formData, { headers });
   return response;
 };
+
+export const retailerRegister = async (payload: any) => {
+  console.log(payload);
+  const URL = `${BASE_EXTERNAL_ENDPOINT}/api/v3/auth/sign-up`;
+  const response = await http.post(URL, payload);
+  return response;
+};

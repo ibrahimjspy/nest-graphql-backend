@@ -58,4 +58,10 @@ export class RetailerController {
   ) {
     return this.appService.getUploadRetailerCertificate(file);
   }
+
+  @Post('auth/sign-up')
+  async retailerRegister(@Body() body): Promise<object> {
+    console.log(body);
+    return this.appService.retailerRegister(body);
+  }
 }

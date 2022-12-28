@@ -2,6 +2,7 @@ import {
   checkRetailerEmail,
   retailerJobTitles,
   uploadRetailerCertificate,
+  retailerRegister,
 } from 'src/external/endpoints/retailer_registration';
 import {
   prepareFailedResponse,
@@ -32,6 +33,16 @@ export const checkRetailerEmailHandler = async (email: string) => {
 export const uploadRetailerCertificateHandler = async (file: any) => {
   try {
     const resp = await uploadRetailerCertificate(file);
+    return prepareSuccessResponse(resp?.data);
+  } catch (error) {
+    const error_obj = getHttpErrorMessage(error);
+    return prepareFailedResponse(error_obj?.message?.data);
+  }
+};
+
+export const retailerRegisterHandler = async (data: any) => {
+  try {
+    const resp = await retailerRegister(data);
     return prepareSuccessResponse(resp?.data);
   } catch (error) {
     const error_obj = getHttpErrorMessage(error);
