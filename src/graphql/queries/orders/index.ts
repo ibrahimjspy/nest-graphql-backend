@@ -5,6 +5,7 @@ import { allShopOrdersQuery } from './allShopOrders';
 import { shopOrderFulfillmentsQuery } from './shopOrderFulfillmentsById';
 import { shopOrderFulfillmentDetailsQuery } from './shopOrderFulfillmentDetails';
 import { orderActivityQuery } from './orderActivity';
+import { orderReturnsQuery } from './orderReturns';
 export {
   dashboardQuery,
   shopOrdersQuery,
@@ -13,4 +14,5 @@ export {
   allShopOrdersQuery,
   shopOrderFulfillmentsQuery,
   shopOrderFulfillmentDetailsQuery,
+  orderReturnsQuery,
 };

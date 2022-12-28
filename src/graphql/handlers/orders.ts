@@ -3,6 +3,7 @@ import {
   dashboardQuery,
   orderActivityQuery,
   orderDetailsQuery,
+  orderReturnsQuery,
   shopOrderFulfillmentDetailsQuery,
   shopOrderFulfillmentsQuery,
   shopOrdersQuery,
@@ -17,6 +18,7 @@ import { GQL_EDGES } from 'src/constants';
 import { orderBundlesTransformer } from '../utils/orders';
 import { addOrderToShopMutation } from '../mutations/order/addOrderToShop';
 import { OrdersListDTO } from 'src/modules/orders/dto/list';
+import { OrderReturnFilterDTO } from 'src/modules/orders/dto/order-returns.dto';
 
 export const dashboardByIdHandler = async (
   id: string,
@@ -123,4 +125,14 @@ export const addOrderToShopHandler = async (order) => {
     ),
   );
   return response['addOrderToShop'];
+};
+
+export const orderReturnListHandler = async (
+  filters: OrderReturnFilterDTO,
+  token: string,
+) => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(orderReturnsQuery(filters), token),
+  );
+  return response;
 };
