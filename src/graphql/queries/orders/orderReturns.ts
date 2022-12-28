@@ -12,11 +12,11 @@ const federationQuery = (filters: OrderReturnFilterDTO): string => {
     query {
       orders(
         first: ${filters.first || DEFAULT_PAGE_SIZE}
-        after: ${filters.after} 
-        channel: ${filters.channel || DEFAULT_CHANNEL} 
+        after: ${filters.after || JSON.stringify('')} 
+        channel: ${filters.channel || JSON.stringify(DEFAULT_CHANNEL)}  
         sortBy: { 
-          field: ${OrderReturnSortFieldEnum.CREATED_AT}
-          direction: ${OrderReturnDirectionEnum.DESC}
+          field: ${filters.sort_field || OrderReturnSortFieldEnum.CREATED_AT}
+          direction: ${filters.sort_order || OrderReturnDirectionEnum.DESC}
         }
       ) {
         pageInfo {
