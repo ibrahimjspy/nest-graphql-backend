@@ -1,4 +1,3 @@
-import axios from 'axios';
 import http from 'src/core/proxies/restHandler';
 import {
   BASE_EXTERNAL_ENDPOINT,
@@ -30,6 +29,6 @@ export const uploadRetailerCertificate = async (file: any) => {
     ...ACCEPT_ENCODING_HEADER,
   };
 
-  const response = await axios.post(requestAPI, formData, { headers });
+  const response = await http.post(requestAPI, formData, { headers });
   return response;
 };
