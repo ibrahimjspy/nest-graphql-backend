@@ -21,10 +21,10 @@ const federationQuery = (filters: OrderReturnFilterDTO): string => {
       ) {
         pageInfo {
           hasNextPage
+          endCursor
         }
         totalCount
         edges {
-          cursor
           node {
             id
             number
