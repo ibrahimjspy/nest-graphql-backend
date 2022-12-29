@@ -9,6 +9,7 @@ import {
   prepareSuccessResponse,
 } from 'src/core/utils/response';
 import { getHttpErrorMessage } from 'src/external/utils/httpHelper';
+import { RetailerRegisterDto } from '../../modules/retailer/dto';
 
 export const retailerJobTitlesHandler = async () => {
   try {
@@ -40,7 +41,7 @@ export const uploadRetailerCertificateHandler = async (file: any) => {
   }
 };
 
-export const retailerRegisterHandler = async (data: any) => {
+export const retailerRegisterHandler = async (data: RetailerRegisterDto) => {
   try {
     const resp = await retailerRegister(data);
     return prepareSuccessResponse(resp?.data);

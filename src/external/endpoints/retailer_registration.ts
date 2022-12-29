@@ -5,6 +5,7 @@ import {
   ACCEPT_ENCODING_HEADER,
 } from 'src/constants';
 import FormData from 'form-data';
+import { RetailerRegisterDto } from '../../modules/retailer/dto';
 
 export const retailerJobTitles = async () => {
   const URL = `${BASE_EXTERNAL_ENDPOINT}/api/v3/app/job-title`;
@@ -33,7 +34,7 @@ export const uploadRetailerCertificate = async (file: any) => {
   return response;
 };
 
-export const retailerRegister = async (payload: any) => {
+export const retailerRegister = async (payload: RetailerRegisterDto) => {
   const URL = `${BASE_EXTERNAL_ENDPOINT}/api/v3/auth/sign-up`;
   const response = await http.post(URL, payload);
   return response;

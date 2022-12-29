@@ -13,7 +13,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { RetailerService } from './Retailer.service';
 import { makeResponse } from '../../core/utils/response';
-import { RetailerDto } from './dto';
+import { RetailerEmailDto, RetailerRegisterDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('retailer')
@@ -35,7 +35,7 @@ export class RetailerController {
   }
 
   @Post('email-availability')
-  async getCheckRetailerEmail(@Body() body: RetailerDto): Promise<object> {
+  async getCheckRetailerEmail(@Body() body: RetailerEmailDto): Promise<object> {
     return this.appService.getCheckRetailerEmail(body?.email);
   }
 
@@ -60,7 +60,7 @@ export class RetailerController {
   }
 
   @Post('auth/sign-up')
-  async retailerRegister(@Body() body): Promise<object> {
+  async retailerRegister(@Body() body: RetailerRegisterDto): Promise<object> {
     return this.appService.retailerRegister(body);
   }
 }

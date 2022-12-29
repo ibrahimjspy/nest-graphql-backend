@@ -12,6 +12,7 @@ import {
   uploadRetailerCertificateHandler,
   retailerRegisterHandler,
 } from 'src/external/services/retailer_registration';
+import { RetailerRegisterDto } from './dto';
 
 @Injectable()
 export class RetailerService {
@@ -47,7 +48,7 @@ export class RetailerService {
     return await uploadRetailerCertificateHandler(file);
   }
 
-  public async retailerRegister(data: any): Promise<object> {
+  public async retailerRegister(data: RetailerRegisterDto): Promise<object> {
     return await retailerRegisterHandler(data);
   }
 }
