@@ -236,3 +236,11 @@ const getOrderShippingMethods = (selectedMethods, shopId: string) => {
     selectedMethods[0].method.shippingMethodTypeId
   );
 };
+
+export const filterReturnOrder = (ordersData) => {
+  const edges = ordersData?.['orders']?.['edges']?.filter((item) => {
+    return item['node']['status'] == 'RETURNED';
+  });
+  ordersData.orders.edges = edges;
+  return ordersData;
+};

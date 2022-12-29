@@ -16,6 +16,7 @@ import {
 } from 'src/graphql/handlers/orders';
 import {
   addStatusAndTotalToBundles,
+  filterReturnOrder,
   getCurrency,
   getFulFillmentsWithStatusAndBundlesTotal,
   getFulfillmentTotal,
@@ -236,7 +237,8 @@ export class OrdersService {
   ): Promise<object> {
     try {
       const response = await orderReturnListHandler(filters, token);
-      return prepareSuccessResponse(response, '', 200);
+      const filtered_orders = filterReturnOrder(response);
+      return prepareSuccessResponse(filtered_orders, '', 200);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
