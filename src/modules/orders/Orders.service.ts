@@ -188,9 +188,9 @@ export class OrdersService {
     try {
       const [totalOrders, totalReadyToFulfill, ordersReturns] =
         await Promise.all([
-          await getOrdersCountHandler(token),
-          await getReadyToFulfillOrdersCountHandler(token),
-          await getReturnOrderIdsHandler(token),
+          getOrdersCountHandler(token),
+          getReadyToFulfillOrdersCountHandler(token),
+          getReturnOrderIdsHandler(token),
         ]);
       const response: OrderSummaryResponseDto = {
         dailySales: mockOrderReporting().dailySales,
