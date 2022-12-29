@@ -3,7 +3,6 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OrdersService } from './Orders.service';
 import { makeResponse } from '../../core/utils/response';
 import { OrderIdDto, ShopIdDto, UserIdDto } from './dto';
-import { OrderSummaryDto } from './dto/common.dto';
 import { OrdersListDTO } from './dto/list';
 import { OrderReturnFilterDTO } from './dto/order-returns.dto';
 @ApiTags('orders')
@@ -124,20 +123,14 @@ export class OrdersController {
     );
   }
 
-  // Returns orders summary ()
-  @Get('orders/summary/:reportingPeriod?')
-  async findOrdersSummary(
-    @Res() res,
-    @Param() orderSummaryDto: OrderSummaryDto,
-    @Headers() headers,
-  ): Promise<object> {
+  // Returns orders summary
+  @Get('api/v1/orders/summary')
+  @ApiOperation({ summary: 'returns orders summary of all time' })
+  async findOrdersSummary(@Res() res, @Headers() headers): Promise<object> {
     const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.getOrdersSummary(
-        orderSummaryDto.reportingPeriod,
-        Authorization,
-      ),
+      await this.appService.getOrdersSummary(Authorization),
     );
   }
 

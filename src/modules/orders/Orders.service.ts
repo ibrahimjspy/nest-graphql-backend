@@ -5,6 +5,7 @@ import {
   addOrderToShopHandler,
   allShopOrdersHandler,
   dashboardByIdHandler,
+  getReturnOrderIdsHandler,
   orderActivityHandler,
   orderDetailsHandler,
   orderReturnListHandler,
@@ -27,9 +28,12 @@ import { GQL_EDGES } from 'src/constants';
 import { ShopOrdersFulfillmentsDto, ShopOrdersListDto } from './dto';
 import { mockOrderReporting } from 'src/graphql/mocks/orderSummary.mock';
 import { OrderSummaryResponseDto } from './dto/order-summary.dto';
-import { dailySalesHandler } from 'src/graphql/handlers/orders.reporting';
 import { OrdersListDTO } from './dto/list';
 import { OrderReturnFilterDTO } from './dto/order-returns.dto';
+import {
+  getOrdersCountHandler,
+  getReadyToFulfillOrdersCountHandler,
+} from 'src/graphql/handlers/orders.reporting';
 @Injectable()
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
@@ -180,16 +184,20 @@ export class OrdersService {
     }
   }
 
-  public async getOrdersSummary(
-    reportingPeriod,
-    token: string,
-  ): Promise<object> {
+  public async getOrdersSummary(token: string): Promise<object> {
     try {
-      const dailySales = await dailySalesHandler(reportingPeriod, token);
-      const mock = mockOrderReporting();
+      const [totalOrders, totalReadyToFulfill, ordersReturns] =
+        await Promise.all([
+          await getOrdersCountHandler(token),
+          await getReadyToFulfillOrdersCountHandler(token),
+          await getReturnOrderIdsHandler(token),
+        ]);
       const response: OrderSummaryResponseDto = {
-        dailySales: dailySales['gross'].amount,
-        ...mock,
+        dailySales: mockOrderReporting().dailySales,
+        totalOrders: totalOrders,
+        readyToFulfill: totalReadyToFulfill,
+        ordersReturned: ordersReturns.length,
+        ordersToPickup: mockOrderReporting().ordersToPickup,
       };
 
       return prepareSuccessResponse(response, '', 201);

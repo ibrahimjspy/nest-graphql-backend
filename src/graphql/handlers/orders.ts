@@ -15,10 +15,15 @@ import {
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import { ordersListQuery } from '../queries/orders/list';
 import { GQL_EDGES } from 'src/constants';
-import { orderBundlesTransformer } from '../utils/orders';
+import {
+  filterReturnedOrderIds,
+  hasNextPage,
+  orderBundlesTransformer,
+} from '../utils/orders';
 import { addOrderToShopMutation } from '../mutations/order/addOrderToShop';
 import { OrdersListDTO } from 'src/modules/orders/dto/list';
 import { OrderReturnFilterDTO } from 'src/modules/orders/dto/order-returns.dto';
+import { getOrderStatus } from '../queries/orders/getOrderStatuses';
 
 export const dashboardByIdHandler = async (
   id: string,
@@ -135,4 +140,28 @@ export const orderReturnListHandler = async (
     await graphqlCall(orderReturnsQuery(filters), token),
   );
   return response;
+};
+
+/**
+ * returns order ids of all the orders that have status of RETURNED
+ * @warn performance implication || this api parses all of the order ids which is not ideal
+ * @returns list of orderIds || string[]
+ */
+export const getReturnOrderIdsHandler = async (
+  token: string,
+  after = '',
+): Promise<string[]> => {
+  let returnedOrderIds = [];
+  const orderStatuses = await graphqlResultErrorHandler(
+    await graphqlCall(getOrderStatus(after), token),
+  );
+  const orderIds = filterReturnedOrderIds(orderStatuses['orders'].edges);
+  returnedOrderIds = returnedOrderIds.concat(orderIds);
+  // check if next page exists add its ids as well
+  const nextPage = hasNextPage(orderStatuses['orders'].pageInfo);
+  if (nextPage) {
+    const nextPageOrderIds = await getReturnOrderIdsHandler(token, nextPage);
+    returnedOrderIds = returnedOrderIds.concat(nextPageOrderIds);
+  }
+  return returnedOrderIds;
 };
