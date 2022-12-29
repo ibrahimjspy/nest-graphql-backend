@@ -48,7 +48,7 @@ export const hasNextPage = (pageInfo) => {
 export const filterReturnedOrderIds = (orderResponse) => {
   const ids = [];
   orderResponse.map((order) => {
-    if (order.node.status == 'RETURNED') {
+    if (order?.node?.status == 'RETURNED') {
       ids.push(order.node.id);
     }
   });
