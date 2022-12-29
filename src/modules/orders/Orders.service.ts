@@ -237,8 +237,7 @@ export class OrdersService {
   ): Promise<object> {
     try {
       const response = await orderReturnListHandler(filters, token);
-      const filtered_orders = filterReturnOrder(response);
-      return prepareSuccessResponse(filtered_orders, '', 200);
+      return prepareSuccessResponse(filterReturnOrder(response), '', 200);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
