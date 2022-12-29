@@ -6,6 +6,8 @@ import { OrderIdDto, ShopIdDto, UserIdDto } from './dto';
 import { OrderSummaryDto } from './dto/common.dto';
 import { OrdersListDTO } from './dto/list';
 import { OrderReturnFilterDTO } from './dto/order-returns.dto';
+import { IsAuthenticated } from 'src/core/utils/decorators';
+
 @ApiTags('orders')
 @Controller('')
 export class OrdersController {
@@ -159,13 +161,24 @@ export class OrdersController {
   @Get('api/v1/orders/returns')
   async getOrderReturns(
     @Res() res,
-    @Headers() headers,
+    @IsAuthenticated('authorization') token: string,
     @Query() filters: OrderReturnFilterDTO,
   ) {
-    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.getOrderReturns(filters, Authorization),
+      await this.appService.getOrderReturns(filters, token),
+    );
+  }
+
+  @Get('api/v1/orders/return/:orderId')
+  async getOrderReturnDetails(
+    @Res() res,
+    @Param() orderDto: OrderIdDto,
+    @IsAuthenticated('authorization') token: string,
+  ) {
+    return makeResponse(
+      res,
+      await this.appService.getOrderReturnById(orderDto.orderId, token),
     );
   }
 }

@@ -3,6 +3,7 @@ import {
   dashboardQuery,
   orderActivityQuery,
   orderDetailsQuery,
+  orderReturnDetailQuery,
   orderReturnsQuery,
   shopOrderFulfillmentDetailsQuery,
   shopOrderFulfillmentsQuery,
@@ -133,6 +134,16 @@ export const orderReturnListHandler = async (
 ) => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(orderReturnsQuery(filters), token),
+  );
+  return response;
+};
+
+export const orderReturnDetailHandler = async (
+  order_id: string,
+  token: string,
+) => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(orderReturnDetailQuery(order_id), token),
   );
   return response;
 };
