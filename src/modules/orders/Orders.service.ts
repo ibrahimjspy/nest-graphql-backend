@@ -4,6 +4,7 @@ import { prepareSuccessResponse } from 'src/core/utils/response';
 import {
   addOrderToShopHandler,
   allShopOrdersHandler,
+  createReturnFulfillmentHandler,
   dashboardByIdHandler,
   getReturnOrderIdsHandler,
   orderActivityHandler,
@@ -30,7 +31,7 @@ import { ShopOrdersFulfillmentsDto, ShopOrdersListDto } from './dto';
 import { mockOrderReporting } from 'src/graphql/mocks/orderSummary.mock';
 import { OrderSummaryResponseDto } from './dto/order-summary.dto';
 import { OrdersListDTO } from './dto/list';
-import { OrderReturnFilterDTO } from './dto/order-returns.dto';
+import { OrderReturnDTO, OrderReturnFilterDTO } from './dto/order-returns.dto';
 import {
   getOrdersCountHandler,
   getReadyToFulfillOrdersCountHandler,
@@ -276,6 +277,19 @@ export class OrdersService {
     try {
       const response = await orderReturnDetailHandler(order_id, token);
       return prepareSuccessResponse(response, '', 200);
+    } catch (err) {
+      this.logger.error(err);
+      return graphqlExceptionHandler(err);
+    }
+  }
+
+  public async placeOrderReturn(
+    payload: OrderReturnDTO,
+    token: string,
+  ): Promise<object> {
+    try {
+      const response = await createReturnFulfillmentHandler(payload, token);
+      return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);

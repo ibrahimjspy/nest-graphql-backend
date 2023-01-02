@@ -33,3 +33,11 @@ export class OrderReturnFilterDTO extends PaginationDto {
   @IsOptional()
   sort_order: OrderReturnDirectionEnum;
 }
+
+export class OrderReturnDTO {
+  @ApiProperty({ required: true })
+  order_id: string;
+
+  @ApiProperty({ required: true })
+  input: any;
+}

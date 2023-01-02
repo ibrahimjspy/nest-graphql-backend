@@ -4,6 +4,7 @@ import {
   orderActivityQuery,
   orderDetailsQuery,
   orderReturnDetailQuery,
+  orderReturnFulfillmentQuery,
   orderReturnsQuery,
   shopOrderFulfillmentDetailsQuery,
   shopOrderFulfillmentsQuery,
@@ -24,7 +25,10 @@ import {
 } from '../utils/orders';
 import { addOrderToShopMutation } from '../mutations/order/addOrderToShop';
 import { OrdersListDTO } from 'src/modules/orders/dto/list';
-import { OrderReturnFilterDTO } from 'src/modules/orders/dto/order-returns.dto';
+import {
+  OrderReturnDTO,
+  OrderReturnFilterDTO,
+} from 'src/modules/orders/dto/order-returns.dto';
 import { getOrderStatus } from '../queries/orders/getOrderStatuses';
 
 export const dashboardByIdHandler = async (
@@ -263,4 +267,20 @@ export const getReturnOrderIdsHandler = async (
     returnedOrderIds = returnedOrderIds.concat(nextPageOrderIds);
   }
   return returnedOrderIds;
+};
+
+/**
+ * It takes in a payload and a token, and returns a response
+ * @param {OrderReturnDTO} payload - OrderReturnDTO
+ * @param {string} token - The token of the user who is making the request.
+ * @returns The response from the graphqlCall function.
+ */
+export const createReturnFulfillmentHandler = async (
+  payload: OrderReturnDTO,
+  token: string,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(orderReturnFulfillmentQuery(payload), token),
+  );
+  return response;
 };

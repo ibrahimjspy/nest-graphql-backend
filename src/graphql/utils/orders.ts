@@ -70,3 +70,17 @@ export const filterReturnOrder = (ordersData): [any, any] => {
   });
   return edges;
 };
+
+/**
+ *   transforms orderLines from array to valid graphql strings
+ *   @params order_lines []
+ *   @returns graphql order lines in string format
+ */
+export const orderLinesTransformer = (orderLines): any => {
+  return orderLines.map((order) => {
+    return JSON.stringify(order)
+      .replace(/"orderLineId"/g, 'orderLineId')
+      .replace(/"quantity"/g, 'quantity')
+      .replace(/"replace"/g, 'replace');
+  });
+};
