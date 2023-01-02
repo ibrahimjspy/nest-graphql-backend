@@ -103,7 +103,7 @@ const federationQuery = (id: string): string => {
   `;
 };
 
-// returns shop order details query based on federation and mock check
+// return order detail which is return back by end customer
 export const orderReturnDetailQuery = (id: string) => {
   return graphqlQueryCheck(federationQuery(id), federationQuery(id));
 };

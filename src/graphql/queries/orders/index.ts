@@ -6,7 +6,7 @@ import { shopOrderFulfillmentsQuery } from './shopOrderFulfillmentsById';
 import { shopOrderFulfillmentDetailsQuery } from './shopOrderFulfillmentDetails';
 import { orderActivityQuery } from './orderActivity';
 import { orderReturnsQuery } from './orderReturns';
-import { orderReturnDetailQuery } from './orderReturnById';
+import { orderReturnDetailQuery } from './orderReturnDetailsById';
 export {
   dashboardQuery,
   shopOrdersQuery,

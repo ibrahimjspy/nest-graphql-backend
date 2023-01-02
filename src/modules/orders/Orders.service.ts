@@ -5,6 +5,7 @@ import {
   addOrderToShopHandler,
   allShopOrdersHandler,
   dashboardByIdHandler,
+  getReturnOrderIdsHandler,
   orderActivityHandler,
   orderDetailsHandler,
   orderReturnDetailHandler,
@@ -16,7 +17,6 @@ import {
 } from 'src/graphql/handlers/orders';
 import {
   addStatusAndTotalToBundles,
-  filterReturnOrder,
   getCurrency,
   getFulFillmentsWithStatusAndBundlesTotal,
   getFulfillmentTotal,
@@ -29,9 +29,12 @@ import { GQL_EDGES } from 'src/constants';
 import { ShopOrdersFulfillmentsDto, ShopOrdersListDto } from './dto';
 import { mockOrderReporting } from 'src/graphql/mocks/orderSummary.mock';
 import { OrderSummaryResponseDto } from './dto/order-summary.dto';
-import { dailySalesHandler } from 'src/graphql/handlers/orders.reporting';
 import { OrdersListDTO } from './dto/list';
 import { OrderReturnFilterDTO } from './dto/order-returns.dto';
+import {
+  getOrdersCountHandler,
+  getReadyToFulfillOrdersCountHandler,
+} from 'src/graphql/handlers/orders.reporting';
 @Injectable()
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
@@ -182,16 +185,20 @@ export class OrdersService {
     }
   }
 
-  public async getOrdersSummary(
-    reportingPeriod,
-    token: string,
-  ): Promise<object> {
+  public async getOrdersSummary(token: string): Promise<object> {
     try {
-      const dailySales = await dailySalesHandler(reportingPeriod, token);
-      const mock = mockOrderReporting();
+      const [totalOrders, totalReadyToFulfill, ordersReturns] =
+        await Promise.all([
+          getOrdersCountHandler(token),
+          getReadyToFulfillOrdersCountHandler(token),
+          getReturnOrderIdsHandler(token),
+        ]);
       const response: OrderSummaryResponseDto = {
-        dailySales: dailySales['gross'].amount,
-        ...mock,
+        dailySales: mockOrderReporting().dailySales,
+        totalOrders: totalOrders,
+        readyToFulfill: totalReadyToFulfill,
+        ordersReturned: ordersReturns.length,
+        ordersToPickup: mockOrderReporting().ordersToPickup,
       };
 
       return prepareSuccessResponse(response, '', 201);
@@ -231,19 +238,37 @@ export class OrdersService {
     );
   }
 
+  /**
+   * It fetches the order returns list from the database and returns it to the client
+   * @param {OrderReturnFilterDTO} filters - OrderReturnFilterDTO,
+   * @param {string} token - The token of the user who is making the request.
+   * @returns An array of order returns
+   */
   public async getOrderReturns(
     filters: OrderReturnFilterDTO,
     token: string,
   ): Promise<object> {
     try {
-      const response = await orderReturnListHandler(filters, token);
-      return prepareSuccessResponse(filterReturnOrder(response), '', 200);
+      // eslint-disable-next-line prefer-const
+      let orderReturnsList = [];
+      const response = await orderReturnListHandler(
+        filters,
+        token,
+        orderReturnsList,
+      );
+      return prepareSuccessResponse(response, '', 200);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
     }
   }
 
+  /**
+   * It fetches the order return details by order id
+   * @param {string} order_id - The order id of the order for which the return is being requested.
+   * @param {string} token - The token of the user who is making the request.
+   * @returns An object with the response and the status code.
+   */
   public async getOrderReturnById(
     order_id: string,
     token: string,
