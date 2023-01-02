@@ -6,6 +6,7 @@ import {
 } from 'src/core/utils/response';
 import { ProductFilterDto } from 'src/modules/product/dto';
 import {
+  updateStoreInfoHandler,
   getStoreInfoHandler,
   addToProductStoreHandler,
   deleteFromProductStoreHandler,
@@ -15,6 +16,7 @@ import {
   addToProductStoreDTO,
   deleteFromProductStoreDTO,
 } from './dto/products';
+import { shopInfoDto } from '../orders/dto';
 
 @Injectable()
 export class ProductStoreService {
@@ -69,6 +71,23 @@ export class ProductStoreService {
   public async getStoreInfo(shopId: string, token: string): Promise<object> {
     try {
       return prepareSuccessResponse(await getStoreInfoHandler(shopId, token));
+    } catch (error) {
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * updates store details of the retailer store against shopId
+   */
+  public async updateStoreInfo(
+    shopId: string,
+    storeDetails: shopInfoDto,
+    token: string,
+  ): Promise<object> {
+    try {
+      return prepareSuccessResponse(
+        await updateStoreInfoHandler(shopId, storeDetails, token),
+      );
     } catch (error) {
       return graphqlExceptionHandler(error);
     }
