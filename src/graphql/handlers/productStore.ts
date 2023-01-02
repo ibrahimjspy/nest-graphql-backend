@@ -6,6 +6,7 @@ import {
 import { deleteFromProductStoreMutation } from '../mutations/productStore/deleteProducts';
 import { addToProductStoreMutation } from '../mutations/productStore/addProducts';
 import { getStoredProductsQuery } from '../queries/productStore/products';
+import { getStoreInfoQuery } from '../queries/productStore/storeInfo';
 import {
   addToProductStoreDTO,
   deleteFromProductStoreDTO,
@@ -46,6 +47,20 @@ export const deleteFromProductStoreHandler = async (
       false,
     );
     return response['deleteFromProductStore'];
+  } catch (error) {
+    return graphqlExceptionHandler(error);
+  }
+};
+
+export const getStoreInfoHandler = async (
+  shopId: string,
+  token: string,
+): Promise<object> => {
+  try {
+    const response = await graphqlResultErrorHandler(
+      await graphqlCall(getStoreInfoQuery(shopId), token),
+    );
+    return response['marketplaceShop'];
   } catch (error) {
     return graphqlExceptionHandler(error);
   }

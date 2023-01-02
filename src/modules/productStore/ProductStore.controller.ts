@@ -1,4 +1,5 @@
 import {
+  Headers,
   Body,
   Controller,
   Delete,
@@ -65,6 +66,20 @@ export class ProductStoreController {
     return await makeResponse(
       res,
       await this.appService.deleteFromProductStore(body),
+    );
+  }
+
+  @Get('api/v1/store/info/:shopId')
+  @ApiOperation({ summary: 'returns retailer store details' })
+  public async getStoreInfo(
+    @Res() res,
+    @Param() shopDto: ShopIdDto,
+    @Headers() headers,
+  ): Promise<object> {
+    const Authorization: string = headers.authorization;
+    return await makeResponse(
+      res,
+      await this.appService.getStoreInfo(shopDto.shopId, Authorization),
     );
   }
 }
