@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
-import { ShopIdDto } from 'src/modules/orders/dto';
+import { ShopIdDto, shopInfoDto } from 'src/modules/orders/dto';
 import { ProductFilterDto } from 'src/modules/product/dto';
 import { ProductStoreService } from './ProductStore.service';
 import {
@@ -73,13 +73,28 @@ export class ProductStoreController {
   @ApiOperation({ summary: 'returns retailer store details' })
   public async getStoreInfo(
     @Res() res,
-    @Param() shopDto: ShopIdDto,
+    @Param() param: ShopIdDto,
     @Headers() headers,
   ): Promise<object> {
     const Authorization: string = headers.authorization;
     return await makeResponse(
       res,
-      await this.appService.getStoreInfo(shopDto.shopId, Authorization),
+      await this.appService.getStoreInfo(param.shopId, Authorization),
+    );
+  }
+
+  @Post('api/v1/store/info/:shopId')
+  @ApiOperation({ summary: 'updates retailer store details' })
+  public async updateStoreInfo(
+    @Res() res,
+    @Param() param: ShopIdDto,
+    @Body() body: shopInfoDto,
+    @Headers() headers,
+  ): Promise<object> {
+    const Authorization: string = headers.authorization;
+    return await makeResponse(
+      res,
+      await this.appService.updateStoreInfo(param.shopId, body, Authorization),
     );
   }
 }
