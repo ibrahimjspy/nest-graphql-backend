@@ -9,8 +9,8 @@ import * as RetailerHandlers from 'src/graphql/handlers/retailer';
 import {
   checkRetailerEmailHandler,
   retailerJobTitlesHandler,
-  uploadRetailerCertificateHandler,
   retailerRegisterHandler,
+  uploadRetailerCertificateHandler,
 } from 'src/external/services/retailer_registration';
 import { RetailerRegisterDto } from './dto';
 

@@ -6,17 +6,18 @@ import {
 } from 'src/core/utils/response';
 import { ProductFilterDto } from 'src/modules/product/dto';
 import {
-  updateStoreInfoHandler,
-  getStoreInfoHandler,
   addToProductStoreHandler,
   deleteFromProductStoreHandler,
+  getStoreInfoHandler,
   getStoredProductsHandler,
+  updateStoreInfoHandler,
 } from 'src/graphql/handlers/productStore';
 import {
   addToProductStoreDTO,
   deleteFromProductStoreDTO,
 } from './dto/products';
 import { shopInfoDto } from '../orders/dto';
+import { uploadImagesHandler } from 'src/external/services/uploadImages';
 
 @Injectable()
 export class ProductStoreService {
@@ -88,6 +89,17 @@ export class ProductStoreService {
       return prepareSuccessResponse(
         await updateStoreInfoHandler(shopId, storeDetails, token),
       );
+    } catch (error) {
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * Store images in s3 bucket and returns image url
+   */
+  public async uploadImages(file: any): Promise<object> {
+    try {
+      return prepareSuccessResponse(await uploadImagesHandler(file));
     } catch (error) {
       return graphqlExceptionHandler(error);
     }

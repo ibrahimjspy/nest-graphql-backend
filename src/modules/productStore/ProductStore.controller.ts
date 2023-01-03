@@ -1,13 +1,17 @@
 import {
-  Headers,
   Body,
   Controller,
   Delete,
   Get,
+  Headers,
+  HttpStatus,
   Param,
+  ParseFilePipeBuilder,
   Post,
   Query,
   Res,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
@@ -18,6 +22,7 @@ import {
   addToProductStoreDTO,
   deleteFromProductStoreDTO,
 } from './dto/products';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('productStore')
 @Controller()
@@ -96,5 +101,25 @@ export class ProductStoreController {
       res,
       await this.appService.updateStoreInfo(param.shopId, body, Authorization),
     );
+  }
+
+  @Post('api/v1/store/image/upload')
+  @UseInterceptors(FileInterceptor('store_img'))
+  getUploadRetailerCertificate(
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: /(jpg|jpeg|png|svg|jfif)$/,
+        })
+        .addMaxSizeValidator({
+          maxSize: 2097152,
+        })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        }),
+    )
+    file: Express.Multer.File,
+  ) {
+    return this.appService.uploadImages(file);
   }
 }
