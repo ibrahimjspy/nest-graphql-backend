@@ -20,7 +20,7 @@ export class UserService {
       );
       const Userinfo: User = {
         ...UserDetails,
-        Shops: ShopDetails.data.edges,
+        Shop: ShopDetails.data.edges[0].node,
       };
       return prepareSuccessResponse(Userinfo);
     } catch (error) {
