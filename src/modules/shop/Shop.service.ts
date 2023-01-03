@@ -4,6 +4,7 @@ import {
   shopDetailsHandler,
   shopIdByOrderIdHandler,
   shopIdByVariantIdHandler,
+  GetShopDetailsbyEmailHandler,
 } from 'src/graphql/handlers/shop';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
@@ -56,6 +57,15 @@ export class ShopService {
         }),
       );
       return prepareSuccessResponse(response, '', 200);
+    } catch (error) {
+      this.logger.error(error);
+    }
+  }
+
+  public async GetShopDetailsbyEmail(Email: any) {
+    try {
+      const ShopDetails_Response = await GetShopDetailsbyEmailHandler(Email);
+      return prepareSuccessResponse(ShopDetails_Response, '', 200);
     } catch (error) {
       this.logger.error(error);
     }
