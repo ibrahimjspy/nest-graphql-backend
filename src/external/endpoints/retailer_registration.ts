@@ -1,8 +1,8 @@
 import http from 'src/core/proxies/restHandler';
 import {
+  ACCEPT_ENCODING_HEADER,
   BASE_EXTERNAL_ENDPOINT,
   COMMON_HEADERS,
-  ACCEPT_ENCODING_HEADER,
 } from 'src/constants';
 import FormData from 'form-data';
 import { RetailerRegisterDto } from '../../modules/retailer/dto';
@@ -21,7 +21,7 @@ export const checkRetailerEmail = async (email: string) => {
 };
 
 export const uploadRetailerCertificate = async (file: any) => {
-  let formData = new FormData();
+  const formData = new FormData();
   formData.append('permit_img1', file.buffer, { filename: file.originalname });
   const requestAPI = `${BASE_EXTERNAL_ENDPOINT}/api/v3/user/buyer-resale-certificate`;
   const headers = {

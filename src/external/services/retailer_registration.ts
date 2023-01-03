@@ -1,8 +1,8 @@
 import {
   checkRetailerEmail,
   retailerJobTitles,
-  uploadRetailerCertificate,
   retailerRegister,
+  uploadRetailerCertificate,
 } from 'src/external/endpoints/retailer_registration';
 import {
   prepareFailedResponse,
