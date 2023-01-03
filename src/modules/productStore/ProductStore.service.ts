@@ -17,7 +17,7 @@ import {
   deleteFromProductStoreDTO,
 } from './dto/products';
 import { shopInfoDto } from '../orders/dto';
-import { uploadImagesHandler } from 'src/external/services/upload_images';
+import { uploadImagesHandler } from 'src/external/services/uploadImages';
 
 @Injectable()
 export class ProductStoreService {

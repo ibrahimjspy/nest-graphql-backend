@@ -1,4 +1,4 @@
-import { uploadImages } from 'src/external/endpoints/upload_images';
+import { uploadImages } from 'src/external/endpoints/uploadImages';
 import {
   prepareFailedResponse,
   prepareSuccessResponse,
