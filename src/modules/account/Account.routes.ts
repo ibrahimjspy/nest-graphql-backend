@@ -1,7 +1,7 @@
 import { Routes } from '@nestjs/core';
 import { AccountModule } from './Account.module';
 import { AddressModule } from './address/Address.module';
-import { UserModule } from './user/user.mudule';
+import { UserModule } from './user/User.module';
 
 export const ACCOUNT_ROUTES: Routes = [
   {
