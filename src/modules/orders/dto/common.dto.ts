@@ -17,6 +17,14 @@ export class OrderIdDto {
   orderId: string;
 }
 
+export class StoreField {
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  newValue: string;
+}
+
 export class OrderSummaryDto {
   @ApiProperty({
     required: false,
@@ -27,4 +35,33 @@ export class OrderSummaryDto {
   @IsString()
   @IsOptional()
   reportingPeriod?: string;
+}
+
+export class shopInfoDto {
+  @ApiProperty({ required: true, default: '' })
+  name?: string;
+
+  @ApiProperty({ required: true, default: '' })
+  url?: string;
+
+  @ApiProperty({ required: true, default: '' })
+  about?: string;
+
+  @ApiProperty({ required: true, default: '' })
+  description?: string;
+
+  @ApiProperty({ required: true, default: '' })
+  facebook?: string;
+
+  @ApiProperty({ required: true, default: '' })
+  instagram?: string;
+
+  @ApiProperty({ required: true, default: '' })
+  twitter?: string;
+
+  @ApiProperty({ required: true, default: '' })
+  pinterest?: string;
+
+  @ApiProperty({ required: true, default: '' })
+  fields?: StoreField[];
 }

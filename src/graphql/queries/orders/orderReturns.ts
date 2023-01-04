@@ -1,18 +1,26 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 import { OrderReturnFilterDTO } from 'src/modules/orders/dto/order-returns.dto';
-import { DEFAULT_CHANNEL, DEFAULT_PAGE_SIZE } from 'src/constants';
+import { DEFAULT_CHANNEL } from 'src/constants';
 import {
   OrderReturnDirectionEnum,
   OrderReturnSortFieldEnum,
 } from 'src/modules/orders/dto/order-returns.dto';
+import { getReturnPaginationFilters } from 'src/graphql/handlers/orders';
 
+/**
+ * @warn first: This filter is hard-coded for now. 
+  But after implementation of status mapping in DB this will be replaced 
+ */
 const federationQuery = (filters: OrderReturnFilterDTO): string => {
+  const filter = getReturnPaginationFilters(filters);
+  const paginationCountKey = filter['countKey'];
+  const cursorKey = filter['cursorKey'];
   return gql`
     query {
       orders(
-        first: ${filters.first || DEFAULT_PAGE_SIZE}
-        after: ${filters.after || JSON.stringify('')} 
+        ${paginationCountKey}: ${filter[paginationCountKey]}
+        ${cursorKey}: ${filter[cursorKey]}
         channel: ${filters.channel || JSON.stringify(DEFAULT_CHANNEL)}  
         sortBy: { 
           field: ${filters.sort_field || OrderReturnSortFieldEnum.CREATED_AT}
@@ -21,6 +29,9 @@ const federationQuery = (filters: OrderReturnFilterDTO): string => {
       ) {
         pageInfo {
           hasNextPage
+          endCursor
+          hasPreviousPage
+          startCursor
         }
         totalCount
         edges {

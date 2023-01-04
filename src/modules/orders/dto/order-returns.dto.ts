@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsOptional } from 'class-validator';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsBoolean,
+  IsEnum,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 
 export enum OrderReturnSortFieldEnum {
@@ -32,4 +39,35 @@ export class OrderReturnFilterDTO extends PaginationDto {
   @IsEnum(OrderReturnDirectionEnum)
   @IsOptional()
   sort_order: OrderReturnDirectionEnum;
+}
+
+export class OrderReturnProductsInput {
+  @ApiProperty({ required: true })
+  @IsArray()
+  fulfillmentLines: Array<any>;
+
+  @ApiProperty({ required: true })
+  @IsBoolean()
+  includeShippingCosts: boolean;
+
+  @ApiProperty({ required: true })
+  @IsBoolean()
+  refund: boolean;
+
+  @ApiProperty({ required: true })
+  @IsArray()
+  @ArrayMinSize(1)
+  orderLines: Array<{
+    orderLineId: string;
+    quantity: number;
+    replace: boolean;
+  }>;
+}
+export class OrderReturnDTO {
+  @ApiProperty({ required: true })
+  @IsString()
+  order_id: string;
+
+  @ApiProperty({ required: true })
+  input: OrderReturnProductsInput;
 }

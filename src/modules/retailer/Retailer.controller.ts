@@ -2,13 +2,13 @@ import {
   Body,
   Controller,
   Get,
+  HttpStatus,
   Param,
+  ParseFilePipeBuilder,
   Post,
   Res,
-  UseInterceptors,
   UploadedFile,
-  ParseFilePipeBuilder,
-  HttpStatus,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RetailerService } from './Retailer.service';
