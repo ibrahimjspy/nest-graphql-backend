@@ -5,57 +5,64 @@ const federationQuery = (id: string): string => {
   return gql`
     query {
       order(id: "${id}") {
+        id
         number
         created
+        status
         paymentStatus
         shippingPrice {
           gross {
             amount
           }
         }
-        lines {
-          productName
-          quantity
-          variant {
-            product {
-              name
-              description
-              channel
-              thumbnail {
-                url
-              }
-              media {
-                url
-              }
-              attributes {
-                attribute {
-                  name
-                }
-                values {
-                  name
-                }
-              }
-            }
-            attributes {
-              attribute {
-                name
-              }
-              values {
-                name
-              }
-            }
-          }
-          totalPrice {
-            net {
-              amount
-            }
-            gross {
-              amount
-            }
-          }
-        }
         fulfillments {
+          id
+          created
           status
+          lines {
+            quantity
+            orderLine {
+              productName
+              quantity
+              variant {
+                product {
+                  name
+                  description
+                  channel
+                  thumbnail {
+                    url
+                  }
+                  media {
+                    url
+                  }
+                  attributes {
+                    attribute {
+                      name
+                    }
+                    values {
+                      name
+                    }
+                  }
+                }
+                attributes {
+                  attribute {
+                    name
+                  }
+                  values {
+                    name
+                  }
+                }
+              }
+              totalPrice {
+                net {
+                  amount
+                }
+                gross {
+                  amount
+                }
+              }
+            }
+          }
         }
         user {
           firstName
