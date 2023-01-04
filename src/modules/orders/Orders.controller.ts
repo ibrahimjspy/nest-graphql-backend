@@ -1,10 +1,19 @@
-import { Controller, Get, Headers, Param, Query, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  Param,
+  Post,
+  Query,
+  Res,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OrdersService } from './Orders.service';
 import { makeResponse } from '../../core/utils/response';
 import { OrderIdDto, ShopIdDto, UserIdDto } from './dto';
 import { OrdersListDTO } from './dto/list';
-import { OrderReturnFilterDTO } from './dto/order-returns.dto';
+import { OrderReturnDTO, OrderReturnFilterDTO } from './dto/order-returns.dto';
 import { IsAuthenticated } from 'src/core/utils/decorators';
 
 @ApiTags('orders')
@@ -172,6 +181,18 @@ export class OrdersController {
     return makeResponse(
       res,
       await this.appService.getOrderReturnById(orderDto.orderId, token),
+    );
+  }
+
+  @Post('api/v1/order/return')
+  async returnOrder(
+    @Res() res,
+    @Body() orderDTO: OrderReturnDTO,
+    @IsAuthenticated('authorization') token: string,
+  ) {
+    return makeResponse(
+      res,
+      await this.appService.placeOrderReturn(orderDTO, token),
     );
   }
 }
