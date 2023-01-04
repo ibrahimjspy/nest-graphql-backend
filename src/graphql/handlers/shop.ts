@@ -7,6 +7,7 @@ import { carouselQuery } from 'src/graphql/queries/shop/carousel';
 import { shopDetailsQuery } from 'src/graphql/queries/shop/shopDetails';
 import { shopIdByVariantIdQuery } from '../queries/shop/shopIdByVariants';
 import { shopIdByOrderIdQuery } from '../queries/shop/shopIdByOrderId';
+import { ShopByEmailQuery } from '../queries/shop/shopbyEmail';
 
 export const carouselHandler = async (token: string): Promise<object> => {
   try {
@@ -54,5 +55,19 @@ export const shopIdByOrderIdHandler = async (
       message: errorMessage.message,
       orderId: orderId,
     };
+  }
+};
+
+export const GetShopDetailsbyEmailHandler = async (
+  Email: string,
+): Promise<object> => {
+  try {
+    const response = await graphqlResultErrorHandler(
+      await graphqlCall(ShopByEmailQuery(Email)),
+    );
+    return response['marketplaceShops'];
+  } catch (error) {
+    const errorMessage = await graphqlExceptionHandler(error);
+    return errorMessage;
   }
 };
