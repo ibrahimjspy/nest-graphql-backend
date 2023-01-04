@@ -68,9 +68,6 @@ export const GetShopDetailsbyEmailHandler = async (
     return response['marketplaceShops'];
   } catch (error) {
     const errorMessage = await graphqlExceptionHandler(error);
-    return {
-      message: errorMessage.message,
-      Email: Email,
-    };
+    return errorMessage;
   }
 };
