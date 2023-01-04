@@ -5,7 +5,7 @@ import {
   setDefaultAddressHandler,
   updateAddressHandler,
 } from './address';
-import { userEmailByIdHandler, GetUserDetailsHandler } from './user';
+import { getUserDetailsHandler, userEmailByIdHandler } from './user';
 
 export {
   addressesByUserIdHandler,
@@ -14,5 +14,5 @@ export {
   updateAddressHandler,
   setDefaultAddressHandler,
   userEmailByIdHandler,
-  GetUserDetailsHandler,
+  getUserDetailsHandler,
 };

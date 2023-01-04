@@ -1,7 +1,7 @@
 // User queries
 import { userEmailByIdQuery } from './userEmailById';
 import { userAddressesByIdQuery } from './userAddressesById';
-import { UserInformationQuery } from './userInfo';
+import { userInformationQuery } from './userInfo';
 // Others
 // ...
 
@@ -9,7 +9,7 @@ export {
   // User queries
   userEmailByIdQuery,
   userAddressesByIdQuery,
-  UserInformationQuery,
+  userInformationQuery,
   // Others
   // ...
 };

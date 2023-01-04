@@ -1,14 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
+  GetShopDetailsbyEmailHandler,
   carouselHandler,
   shopDetailsHandler,
   shopIdByOrderIdHandler,
   shopIdByVariantIdHandler,
-  GetShopDetailsbyEmailHandler,
 } from 'src/graphql/handlers/shop';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
 import { validateArray } from './Shop.utils';
+import RecordNotFound from 'src/core/exceptions/recordNotFound';
 @Injectable()
 export class ShopService {
   private readonly logger = new Logger(ShopService.name);
@@ -62,12 +63,10 @@ export class ShopService {
     }
   }
 
-  public async GetShopDetailsbyEmail(Email: any) {
-    try {
-      const ShopDetails_Response = await GetShopDetailsbyEmailHandler(Email);
-      return prepareSuccessResponse(ShopDetails_Response, '', 200);
-    } catch (error) {
-      this.logger.error(error);
-    }
+  public async getShopDetailsbyEmail(email: string) {
+    const response = await GetShopDetailsbyEmailHandler(email);
+    if (!response['edges']) throw new RecordNotFound('Shop');
+
+    return response['edges'];
   }
 }
