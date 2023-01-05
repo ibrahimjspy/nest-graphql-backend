@@ -2,18 +2,27 @@ import { gql } from 'graphql-request';
 
 export const getSalesReportQuery = (shopId: string) => {
   return gql`
-  query {
-    marketplaceShop (filter: {id: ${shopId}}) {
-      name
-      description
-      about
-      url
-      fields {
+    query {
+      salesReport(
+        shopId: "${shopId}"
+      ) {
         id
-        name
-        value
+        payout {
+          formated
+          price
+          currencyCode
+        }
+        totalPrice {
+          formated
+          price
+          currencyCode
+        }
+        pendingPayout {
+          formated
+          price
+          currencyCode
+        }
       }
     }
-  }
   `;
 };

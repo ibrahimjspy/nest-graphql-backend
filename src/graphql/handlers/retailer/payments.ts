@@ -19,7 +19,10 @@ export const getSalesReportHandler = async (
     const response = await graphqlResultErrorHandler(
       await graphqlCall(getSalesReportQuery(shopId), token),
     );
-    return response['marketplaceShop'];
+    if (!response['salesReport']) {
+      throw new RecordNotFound('Sales report');
+    }
+    return response['salesReport'];
   } catch (error) {
     return graphqlExceptionHandler(error);
   }
@@ -47,7 +50,10 @@ export const getTransactionHistoryHandler = async (
     const response = await graphqlResultErrorHandler(
       await graphqlCall(getTransactionHistoryQuery(shopId), token),
     );
-    return response['marketplaceShop'];
+    if (!response['transactionHistory']) {
+      throw new RecordNotFound('Transaction history');
+    }
+    return response['transactionHistory'];
   } catch (error) {
     return graphqlExceptionHandler(error);
   }
@@ -61,7 +67,10 @@ export const getPurchaseHistoryHandler = async (
     const response = await graphqlResultErrorHandler(
       await graphqlCall(getPurchaseHistoryQuery(shopId), token),
     );
-    return response['marketplaceShop'];
+    if (!response['pruchaseHistory']) {
+      throw new RecordNotFound('Purchase history');
+    }
+    return response['purchaseHistory'];
   } catch (error) {
     return graphqlExceptionHandler(error);
   }
