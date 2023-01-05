@@ -1,0 +1,54 @@
+import { Injectable } from '@nestjs/common';
+import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
+import { prepareSuccessResponse } from 'src/core/utils/response';
+import {
+  getAccountInfoHandler,
+  getPurchaseHistoryHandler,
+  getSalesReportHandler,
+  getTransactionHistoryHandler,
+} from 'src/graphql/handlers/retailer/payments';
+
+@Injectable()
+export class PaymentsService {
+  public async getSalesReport(shopId: string, token: string): Promise<object> {
+    try {
+      return prepareSuccessResponse(await getSalesReportHandler(shopId, token));
+    } catch (error) {
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async getAccountInfo(shopId: string, token: string): Promise<object> {
+    try {
+      return prepareSuccessResponse(await getAccountInfoHandler(shopId, token));
+    } catch (error) {
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async getTransactionHistory(
+    shopId: string,
+    token: string,
+  ): Promise<object> {
+    try {
+      return prepareSuccessResponse(
+        await getTransactionHistoryHandler(shopId, token),
+      );
+    } catch (error) {
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async getPurchaseHistory(
+    shopId: string,
+    token: string,
+  ): Promise<object> {
+    try {
+      return prepareSuccessResponse(
+        await getPurchaseHistoryHandler(shopId, token),
+      );
+    } catch (error) {
+      return graphqlExceptionHandler(error);
+    }
+  }
+}

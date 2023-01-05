@@ -5,7 +5,7 @@ import {
   prepareFailedResponse,
   prepareSuccessResponse,
 } from 'src/core/utils/response';
-import * as RetailerHandlers from 'src/graphql/handlers/retailer';
+import * as RetailerHandlers from 'src/graphql/handlers/retailer/retailer';
 import {
   checkRetailerEmailHandler,
   retailerJobTitlesHandler,
