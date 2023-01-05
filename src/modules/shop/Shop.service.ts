@@ -65,8 +65,6 @@ export class ShopService {
 
   public async getShopDetailsbyEmail(email: string) {
     const response = await GetShopDetailsbyEmailHandler(email);
-    if (!response['edges']) throw new RecordNotFound('Shop');
-
-    return response['edges'];
+    return response;
   }
 }

@@ -22,10 +22,19 @@ export class UserService {
       const ShopDetails = await this.shopService.getShopDetailsbyEmail(
         UserDetails['email'],
       );
-      const Userinfo: User = {
-        ...UserDetails,
-        Shop: ShopDetails.length < 0 ? 'null' : ShopDetails[0].node,
-      };
+      let Userinfo: User = {};
+      /* This is a way to check if the shop is present or not. */
+      if (ShopDetails['message']) {
+        Userinfo = {
+          ...UserDetails,
+          Shop: null,
+        };
+      } else {
+        Userinfo = {
+          ...UserDetails,
+          Shop: ShopDetails['edges'][0].node,
+        };
+      }
       return prepareSuccessResponse(Userinfo);
     } catch (error) {
       this.logger.error(error);
