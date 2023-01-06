@@ -3,9 +3,7 @@ import { gql } from 'graphql-request';
 export const getSalesReportQuery = (shopId: string) => {
   return gql`
     query {
-      salesReport(
-        shopId: "${shopId}"
-      ) {
+      salesReport(shopId: "${shopId}") {
         id
         payout {
           formated

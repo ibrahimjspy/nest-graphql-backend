@@ -9,7 +9,7 @@ import { ShopIdDto } from 'src/modules/orders/dto';
 export class PaymentsController {
   constructor(private readonly appService: PaymentsService) {}
 
-  @Get('sales/report')
+  @Get('api/v1/payments/sales')
   @ApiOperation({ summary: 'adds product to store' })
   async getSalesReport(
     @Res() res,
@@ -23,7 +23,7 @@ export class PaymentsController {
     );
   }
 
-  @Get('account/info')
+  @Get('api/v1/payments/account')
   @ApiOperation({ summary: 'adds product to store' })
   async getAccountInfo(
     @Res() res,
@@ -37,7 +37,7 @@ export class PaymentsController {
     );
   }
 
-  @Get('transaction/history')
+  @Get('api/v1/payments/transactions')
   @ApiOperation({ summary: 'adds product to store' })
   async getTransactionHistory(
     @Res() res,
@@ -51,7 +51,7 @@ export class PaymentsController {
     );
   }
 
-  @Get('purchase/history')
+  @Get('api/v1/payments/purchases')
   @ApiOperation({ summary: 'adds product to store' })
   async getPurchaseHistory(
     @Res() res,
