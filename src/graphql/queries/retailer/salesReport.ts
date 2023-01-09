@@ -1,9 +1,16 @@
 import { gql } from 'graphql-request';
 
-export const getSalesReportQuery = (shopId: string) => {
+export const getSalesReportQuery = (
+  shopId: string,
+  fromDate: string,
+  toDate: string,
+) => {
   return gql`
     query {
-      salesReport(shopId: "${shopId}") {
+      salesReport(shopId: "${shopId}"
+        fromDate: "${fromDate}"
+        toDate: "${toDate}"
+      ) {
         id
         payout {
           formated

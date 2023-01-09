@@ -10,9 +10,16 @@ import {
 
 @Injectable()
 export class PaymentsService {
-  public async getSalesReport(shopId: string, token: string): Promise<object> {
+  public async getSalesReport(
+    shopId: string,
+    fromDate: string,
+    toDate: string,
+    token: string,
+  ): Promise<object> {
     try {
-      return prepareSuccessResponse(await getSalesReportHandler(shopId, token));
+      return prepareSuccessResponse(
+        await getSalesReportHandler(shopId, fromDate, toDate, token),
+      );
     } catch (error) {
       return graphqlExceptionHandler(error);
     }
@@ -28,11 +35,13 @@ export class PaymentsService {
 
   public async getTransactionHistory(
     shopId: string,
+    fromDate: string,
+    toDate: string,
     token: string,
   ): Promise<object> {
     try {
       return prepareSuccessResponse(
-        await getTransactionHistoryHandler(shopId, token),
+        await getTransactionHistoryHandler(shopId, fromDate, toDate, token),
       );
     } catch (error) {
       return graphqlExceptionHandler(error);
