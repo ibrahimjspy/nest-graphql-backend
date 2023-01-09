@@ -22,6 +22,7 @@ const federationQuery = (id: string): string => {
           lines {
             quantity
             orderLine {
+              id
               productName
               quantity
               variant {
