@@ -23,7 +23,6 @@ const federationQuery = (id, pagination: PaginationDto): string => {
             id
             slug
             defaultVariant {
-              sku
               pricing {
                 price {
                   gross {
@@ -35,14 +34,6 @@ const federationQuery = (id, pagination: PaginationDto): string => {
             }
             variants {
               id
-              attributes {
-                attribute {
-                  name
-                }
-                values {
-                  name
-                }
-              }
             }
             thumbnail {
               url
