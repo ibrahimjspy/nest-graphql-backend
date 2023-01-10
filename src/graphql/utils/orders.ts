@@ -45,10 +45,11 @@ export const hasNextPage = (pageInfo) => {
  *   @params ordersArray containing all orders with order status and ids
  *   @returns array of returned order ids
  */
-export const filterReturnedOrderIds = (orderResponse) => {
+export const filterReturnedOrderIds = (orderResponse): string[] => {
   const ids = [];
   orderResponse.map((order) => {
-    if (order?.node?.status == 'RETURNED') {
+    const orderStatus = order?.node?.status;
+    if (orderStatus == 'RETURNED' || orderStatus == 'PARTIALLY_RETURNED') {
       ids.push(order.node.id);
     }
   });
