@@ -5,11 +5,11 @@ import { ShopService } from './Shop.service';
 import { shopIdByVariantsDTO } from './dto/shop';
 
 @ApiTags('shop')
-@Controller('shop')
+@Controller('')
 export class ShopController {
   constructor(private readonly appService: ShopService) {}
   // Returns landing page banner data
-  @Get('/carousel')
+  @Get('shop/carousel')
   findBanner(@Headers() headers): Promise<object> {
     const Authorization: string = headers.authorization;
     return this.appService.getCarouselData(Authorization);
