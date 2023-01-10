@@ -72,10 +72,10 @@ export const bundlesByVariantsIdsHandler = async (
       ProductQueries.productBundlesByVariantIdQuery(variantIds),
     ),
   );
-  if (!response['bundles']['length']) {
+  if (!response['bundles']['edges']['length']) {
     throw new RecordNotFound('Bundles');
   }
-  return response['bundles'];
+  return response['bundles']['edges'];
 };
 
 export const variantsIdsByProductIdsHandler = async (
