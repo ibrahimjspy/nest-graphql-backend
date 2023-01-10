@@ -8,13 +8,16 @@ import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import { getBundleIds } from 'src/modules/product/Product.utils';
 import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
 import { BundleType } from 'src/graphql/types/bundle.type';
+import { PaginationDto } from '../dto/pagination.dto';
 
-export const productListPageHandler = async (id: string): Promise<object> => {
-  try {
-    return await graphqlCall(ProductQueries.productListPageQuery(id));
-  } catch (error) {
-    return graphqlExceptionHandler(error);
-  }
+export const productListPageHandler = async (
+  id: string,
+  pagination: PaginationDto,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(ProductQueries.productListPageQuery(id, pagination)),
+  );
+  return response;
 };
 
 export const singleProductDetailsHandler = async (

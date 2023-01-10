@@ -1,21 +1,28 @@
 import { gql } from 'graphql-request';
-import { DEFAULT_CHANNEL, LIST_PAGE_SIZE } from 'src/constants';
+import { DEFAULT_CHANNEL } from 'src/constants';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
+import { PaginationDto } from 'src/graphql/dto/pagination.dto';
+import { validatePageFilter } from 'src/graphql/utils/pagination';
 
-const federationQuery = (id): string => {
+const federationQuery = (id, pagination: PaginationDto): string => {
   return gql`
     query {
       products(
-        first: ${LIST_PAGE_SIZE}
+        ${validatePageFilter(pagination)}
         channel: "${DEFAULT_CHANNEL}"
         filter: { categories: ["${id}"] }
       ) {
+        pageInfo{
+          hasPreviousPage
+          hasNextPage
+          endCursor
+          startCursor
+        }
         edges {
           node {
             id
             slug
             defaultVariant {
-              sku
               pricing {
                 price {
                   gross {
@@ -26,14 +33,7 @@ const federationQuery = (id): string => {
               }
             }
             variants {
-              attributes {
-                attribute {
-                  name
-                }
-                values {
-                  name
-                }
-              }
+              id
             }
             thumbnail {
               url
@@ -80,6 +80,6 @@ const mockQuery = () => {
   `;
 };
 
-export const productListPageQuery = (id: string) => {
-  return graphqlQueryCheck(federationQuery(id), mockQuery());
+export const productListPageQuery = (id: string, pagination) => {
+  return graphqlQueryCheck(federationQuery(id, pagination), mockQuery());
 };

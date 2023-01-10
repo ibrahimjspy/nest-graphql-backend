@@ -3,6 +3,8 @@ import { ApiTags } from '@nestjs/swagger';
 import { ProductService } from './Product.service';
 import { ProductFilterDto, ProductFilterTypeEnum } from './dto';
 import { makeResponse } from 'src/core/utils/response';
+import { PaginationDto } from 'src/graphql/dto/pagination.dto';
+import { ProductListDto } from './dto/product.dto';
 
 @ApiTags('product')
 @Controller()
@@ -53,9 +55,15 @@ export class ProductController {
   }
 
   // Returns product list page data relating to category <slug>
-  @Get('/product/list/:id')
-  findProductListById(@Param() params): Promise<object> {
-    return this.appService.getProductListPageById(params.id);
+  @Get('/product/list/:categoryId')
+  async findProductListById(
+    @Param() params: ProductListDto,
+    @Query() pagination: PaginationDto,
+  ) {
+    return await this.appService.getProductListPageById(
+      params.categoryId,
+      pagination,
+    );
   }
 
   // Returns bundles list w.r.t provided <variantIDs>

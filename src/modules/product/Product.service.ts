@@ -1,10 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
-import { prepareGQLPaginatedResponse } from 'src/core/utils/response';
+import {
+  prepareGQLPaginatedResponse,
+  prepareSuccessResponse,
+} from 'src/core/utils/response';
 import { ProductFilterDto } from './dto';
 import * as ProductsHandlers from 'src/graphql/handlers/product';
 import * as ProductUtils from './Product.utils';
 import { downloadProductImagesHandler } from 'src/external/services/download_images';
+import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 @Injectable()
 export class ProductService {
   private readonly logger = new Logger(ProductService.name);
@@ -70,8 +74,19 @@ export class ProductService {
   }
 
   // Product list page data relating to category <slug>
-  public getProductListPageById(id: string): Promise<object> {
-    return ProductsHandlers.productListPageHandler(id);
+  public async getProductListPageById(
+    id: string,
+    pagination: PaginationDto,
+  ): Promise<object> {
+    try {
+      const response = await ProductsHandlers.productListPageHandler(
+        id,
+        pagination,
+      );
+      return prepareSuccessResponse(response, '', 201);
+    } catch (error) {
+      this.logger.error(error);
+    }
   }
 
   // Bundles list relating to variant ids

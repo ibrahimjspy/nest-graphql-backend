@@ -18,3 +18,8 @@ export class ProductFilterDto extends PaginationDto {
   type: ProductFilterTypeEnum;
   category: string;
 }
+
+export class ProductListDto {
+  @ApiProperty()
+  categoryId: string;
+}
