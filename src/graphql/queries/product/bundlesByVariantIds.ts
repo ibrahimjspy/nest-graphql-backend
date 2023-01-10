@@ -5,63 +5,68 @@ const federationQuery = (variantIds: Array<string>) => {
   return gql`
     query {
       bundles(
+        Paginate: { first: 100 }
         Filter: {
-          variantIds: ${JSON.stringify(variantIds)}
+          productVariantIds: ${JSON.stringify(variantIds)}
         }
       ) {
-        ... on BundleViewType {
-          __typename
-          id
-          name
-          description
-          slug
-          shop {
-            id
-            name
-            email
-            url
-            madeIn
-            minOrder
-            description
-            about
-            returnPolicy
-            storePolicy
-          }
-          variants {
-            quantity
-            variant {
+        ... on BundleConnectionType {
+          edges {
+            node {
+              __typename
               id
               name
-              attributes {
-                attribute {
-                  name
-                }
-                values {
-                  name
-                }
-              }
-              product {
-                name
+              description
+              slug
+              shop {
                 id
-                thumbnail {
-                  url
-                }
-                media { 
-                  url
-                }
+                name
+                email
+                url
+                madeIn
+                minOrder
+                description
+                about
+                returnPolicy
+                storePolicy
               }
-              pricing {
-                price {
-                  net {
-                    amount
-                    currency
+              productVariants {
+                quantity
+                productVariant {
+                  id
+                  name
+                  attributes {
+                    attribute {
+                      name
+                    }
+                    values {
+                      name
+                    }
                   }
-                }
-                onSale
-                discount{
-                  gross{
-                    amount
-                    currency
+                  product {
+                    name
+                    id
+                    thumbnail {
+                      url
+                    }
+                    media {
+                      url
+                    }
+                  }
+                  pricing {
+                    price {
+                      net {
+                        amount
+                        currency
+                      }
+                    }
+                    onSale
+                    discount {
+                      gross {
+                        amount
+                        currency
+                      }
+                    }
                   }
                 }
               }
