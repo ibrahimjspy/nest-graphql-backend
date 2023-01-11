@@ -8,6 +8,7 @@ import { checkoutWithShippingInfoQuery } from './checkourtWithShippingInfo';
 import { validatebundelIsExist } from './validateBundleisExist';
 import { addCheckoutBundleQuery } from './addcheckoutbundle';
 import { updateCheckoutBundleQuery } from './updateCheckoutBundle';
+import { getCheckoutBundleQuery } from './getCheckoutBundle';
 export {
   checkoutQuery,
   shippingZonesQuery,
@@ -19,4 +20,5 @@ export {
   validatebundelIsExist,
   addCheckoutBundleQuery,
   updateCheckoutBundleQuery,
+  getCheckoutBundleQuery,
 };

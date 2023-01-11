@@ -21,16 +21,15 @@ export class CheckoutController {
     return;
   }
 
-  @Get('/:userId')
+  @Get('/:userEmail')
   async getShoppingCartData(
     @Res() res,
     @Param() userDto: UserIdDto,
-    @Headers() headers,
+    @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
-    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.getShoppingCartData(userDto.userId, Authorization),
+      await this.appService.getShoppingCartData(userDto.userEmail, token),
     );
   }
 

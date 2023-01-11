@@ -26,6 +26,18 @@ export const marketplaceCheckoutHandler = async (
   return response['marketplaceCheckout'];
 };
 
+export const getCheckoutbundlesHandler = async (
+  userEmail: string,
+  throwException = false,
+  token: string,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(CheckoutQueries.getCheckoutBundleQuery(userEmail), token),
+    throwException,
+  );
+  return response['checkoutBundles'];
+};
+
 export const validateBundleIsExist = async (
   userEmail: string,
   bundlesIds,
