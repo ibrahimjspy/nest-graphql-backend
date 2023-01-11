@@ -9,7 +9,7 @@ import * as AccountHandlers from 'src/graphql/handlers/account/user';
 import { ShopService } from '../../shop/Shop.service';
 import { User } from './dto/userinfo';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
-import { createLoginLinkFromStripe } from 'src/external/services/accountLinkFromStripe';
+import { createLoginLinkFromStripe } from 'src/external/methods/accountLinkFromStripe';
 @Injectable()
 export class UserService {
   constructor(private shopService: ShopService) {

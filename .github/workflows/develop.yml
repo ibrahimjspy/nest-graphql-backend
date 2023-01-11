@@ -56,6 +56,7 @@ jobs:
           (echo "OS_PAYMENT_TYPE=${{ secrets.OS_PAYMENT_TYPE }}") >> .env
           (echo "OS_AWS_API_GATEWAY_ENDPOINT=${{ secrets.OS_AWS_API_GATEWAY_ENDPOINT }}") >> .env
           (echo "AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}") >> .env
+          (echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}") >> .env
 
         # Docker login
       - name: Login to DockerHub
