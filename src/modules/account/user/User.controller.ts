@@ -1,4 +1,4 @@
-import { Controller, Get, Headers, Res } from '@nestjs/common';
+import { Controller, Get, Res, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
 import { UserService } from './User.service';
@@ -14,5 +14,13 @@ export class UserController {
     @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
     return makeResponse(res, await this.appService.getUserinfo(token));
+  }
+
+  @Get('/api/v1/user/account/:accountId')
+  async getAccountInfo(@Res() res, @Param() param): Promise<object> {
+    return await makeResponse(
+      res,
+      await this.appService.getAccountInfo(param.accountId),
+    );
   }
 }
