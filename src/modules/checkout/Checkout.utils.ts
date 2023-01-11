@@ -108,12 +108,12 @@ export const getIsExtingBundle = async (
   bundlesForCart: CheckoutBundleInputType[],
   validateBundleList: [],
 ) => {
-  const Updatebundles = [];
+  const updatebundles = [];
   if (Array.isArray(bundlesForCart)) {
     bundlesForCart.forEach((item) => {
       validateBundleList['bundleIdsExist'].find((isExistingBundle: object) => {
         if (item['bundleId'] === isExistingBundle['bundleId']) {
-          Updatebundles.push({
+          updatebundles.push({
             checkoutBundleId: isExistingBundle['checkoutBundleId'],
             quantity: makeQuantity(item['quantity']),
           });
@@ -121,20 +121,20 @@ export const getIsExtingBundle = async (
       });
     });
   }
-  return Updatebundles;
+  return updatebundles;
 };
 
 export const getIsNotExtingBundle = async (
   bundlesForCart: CheckoutBundleInputType[],
   validateBundleList: [],
 ) => {
-  const Addnewbundles = [];
+  const addnewbundles = [];
   if (Array.isArray(bundlesForCart)) {
     bundlesForCart.forEach((item) => {
       validateBundleList['bundleIdsNotExist'].find(
         (isNotExistingBundle: object) => {
           if (item['bundleId'] === isNotExistingBundle['bundleId']) {
-            Addnewbundles.push({
+            addnewbundles.push({
               bundleId: item['bundleId'],
               quantity: makeQuantity(item['quantity']),
             });
@@ -143,7 +143,7 @@ export const getIsNotExtingBundle = async (
       );
     });
   }
-  return Addnewbundles;
+  return addnewbundles;
 };
 
 /**
