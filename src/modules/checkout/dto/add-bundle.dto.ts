@@ -15,7 +15,7 @@ class BundleDto {
 export class AddBundleDto {
   @ApiProperty()
   @IsNotEmpty()
-  userId: string;
+  userEmail: string;
 
   @ApiProperty({ type: [BundleDto] })
   @Type(() => BundleDto)

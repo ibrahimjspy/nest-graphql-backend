@@ -13,7 +13,7 @@ import { CheckoutService } from './Checkout.service';
 import { makeResponse } from '../../core/utils/response';
 import { AddBundleDto, UserIdDto } from './dto';
 import { UnSelectBundlesType } from './Checkout.utils.type';
-
+import { IsAuthenticated } from 'src/core/utils/decorators';
 @ApiTags('checkout')
 @Controller('checkout')
 export class CheckoutController {
@@ -38,15 +38,14 @@ export class CheckoutController {
   async addBundlesToCart(
     @Res() res,
     @Body() addBundleDto: AddBundleDto,
-    @Headers() headers,
+    @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
-    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
       await this.appService.addToCart(
-        addBundleDto.userId,
+        addBundleDto.userEmail,
         addBundleDto.bundles,
-        Authorization,
+        token,
       ),
     );
   }

@@ -29,7 +29,7 @@ export function hash<Type>(list: Array<Type>, key: string | any) {
 export const makeQuantity = (quantity: number): number => {
   if (typeof quantity !== 'number')
     throw new Error('Quantity should be a number.');
-  return quantity > 0 ? quantity : 0;
+  return quantity;
 };
 
 /**

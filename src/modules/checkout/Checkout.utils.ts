@@ -99,6 +99,53 @@ export const getLineItems = async (bundles, targetBundles) => {
   return lines;
 };
 
+export const getBundleIds = async (
+  bundlesForCart: CheckoutBundleInputType[],
+) => {
+  return bundlesForCart.map((res) => res['bundleId']);
+};
+export const getIsExtingBundle = async (
+  bundlesForCart: CheckoutBundleInputType[],
+  validateBundleList: [],
+) => {
+  const updatebundles = [];
+  if (Array.isArray(bundlesForCart)) {
+    bundlesForCart.forEach((item) => {
+      validateBundleList['bundleIdsExist'].find((isExistingBundle: object) => {
+        if (item['bundleId'] === isExistingBundle['bundleId']) {
+          updatebundles.push({
+            checkoutBundleId: isExistingBundle['checkoutBundleId'],
+            quantity: makeQuantity(item['quantity']),
+          });
+        }
+      });
+    });
+  }
+  return updatebundles;
+};
+
+export const getIsNotExtingBundle = async (
+  bundlesForCart: CheckoutBundleInputType[],
+  validateBundleList: [],
+) => {
+  const addnewbundles = [];
+  if (Array.isArray(bundlesForCart)) {
+    bundlesForCart.forEach((item) => {
+      validateBundleList['bundleIdsNotExist'].find(
+        (isNotExistingBundle: object) => {
+          if (item['bundleId'] === isNotExistingBundle['bundleId']) {
+            addnewbundles.push({
+              bundleId: item['bundleId'],
+              quantity: makeQuantity(item['quantity']),
+            });
+          }
+        },
+      );
+    });
+  }
+  return addnewbundles;
+};
+
 /**
  * returns line items with updated quantity
  * @params lines: checkout lines from saleor checkout
