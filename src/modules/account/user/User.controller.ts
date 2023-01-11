@@ -16,11 +16,11 @@ export class UserController {
     return makeResponse(res, await this.appService.getUserinfo(token));
   }
 
-  @Get('/api/v1/user/account/:accountId')
-  async getAccountInfo(@Res() res, @Param() param): Promise<object> {
+  @Get('/api/v1/user/account/link/:accountId')
+  async getAccountLinkFromStripe(@Res() res, @Param() param): Promise<object> {
     return await makeResponse(
       res,
-      await this.appService.getAccountInfo(param.accountId),
+      await this.appService.getAccountLinkFromStripe(param.accountId),
     );
   }
 }

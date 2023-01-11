@@ -9,7 +9,7 @@ import * as AccountHandlers from 'src/graphql/handlers/account/user';
 import { ShopService } from '../../shop/Shop.service';
 import { User } from './dto/userinfo';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
-import { getAccountInfoHandler } from 'src/external/services/accountDetails';
+import { createLoginLinkFromStripe } from 'src/external/services/accountLinkFromStripe';
 @Injectable()
 export class UserService {
   constructor(private shopService: ShopService) {
@@ -46,7 +46,7 @@ export class UserService {
     }
   }
 
-  public async getAccountInfo(accountId: string): Promise<object> {
-    return await getAccountInfoHandler(accountId);
+  public async getAccountLinkFromStripe(accountId: string): Promise<object> {
+    return await createLoginLinkFromStripe(accountId);
   }
 }
