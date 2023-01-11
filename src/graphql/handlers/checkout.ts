@@ -28,7 +28,7 @@ export const marketplaceCheckoutHandler = async (
 
 export const validateBundleIsExist = async (
   userEmail: string,
-  bundlesIds: string[],
+  bundlesIds,
   token: string,
 ) => {
   const response = await graphqlResultErrorHandler(

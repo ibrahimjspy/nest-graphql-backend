@@ -99,41 +99,50 @@ export const getLineItems = async (bundles, targetBundles) => {
   return lines;
 };
 
+export const getBundleIds = async (
+  bundlesForCart: CheckoutBundleInputType[],
+) => {
+  return bundlesForCart.map((res) => res['bundleId']);
+};
 export const getIsExtingBundle = async (
   bundlesForCart: CheckoutBundleInputType[],
-  ValidateBundleList: [],
+  validateBundleList: [],
 ) => {
   const Updatebundles = [];
-  bundlesForCart.forEach((item) => {
-    ValidateBundleList['bundleIdsExist'].find((isExistingBundle: object) => {
-      if (item['bundleId'] === isExistingBundle['bundleId']) {
-        Updatebundles.push({
-          checkoutBundleId: isExistingBundle['checkoutBundleId'],
-          quantity: makeQuantity(item['quantity']),
-        });
-      }
+  if (Array.isArray(bundlesForCart)) {
+    bundlesForCart.forEach((item) => {
+      validateBundleList['bundleIdsExist'].find((isExistingBundle: object) => {
+        if (item['bundleId'] === isExistingBundle['bundleId']) {
+          Updatebundles.push({
+            checkoutBundleId: isExistingBundle['checkoutBundleId'],
+            quantity: makeQuantity(item['quantity']),
+          });
+        }
+      });
     });
-  });
+  }
   return Updatebundles;
 };
 
 export const getIsNotExtingBundle = async (
   bundlesForCart: CheckoutBundleInputType[],
-  ValidateBundleList: [],
+  validateBundleList: [],
 ) => {
   const Addnewbundles = [];
-  bundlesForCart.forEach((item) => {
-    ValidateBundleList['bundleIdsNotExist'].find(
-      (isNotExistingBundle: object) => {
-        if (item['bundleId'] === isNotExistingBundle['bundleId']) {
-          Addnewbundles.push({
-            bundleId: item['bundleId'],
-            quantity: makeQuantity(item['quantity']),
-          });
-        }
-      },
-    );
-  });
+  if (Array.isArray(bundlesForCart)) {
+    bundlesForCart.forEach((item) => {
+      validateBundleList['bundleIdsNotExist'].find(
+        (isNotExistingBundle: object) => {
+          if (item['bundleId'] === isNotExistingBundle['bundleId']) {
+            Addnewbundles.push({
+              bundleId: item['bundleId'],
+              quantity: makeQuantity(item['quantity']),
+            });
+          }
+        },
+      );
+    });
+  }
   return Addnewbundles;
 };
 

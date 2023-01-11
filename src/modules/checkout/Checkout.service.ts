@@ -131,44 +131,43 @@ export class CheckoutService {
   ): Promise<object> {
     try {
       let response: object = {};
+      const getBundleIdsArray = await CheckoutUtils.getBundleIds(
+        bundlesForCart,
+      );
       /* Mapping the bundleIds from the bundlesForCart array. */
-      const ValidateBundleIdsArray: string[] = bundlesForCart.map((res) => {
-        return res.bundleId;
-      });
-
-      const ValidateBundleList = await CheckoutHandlers.validateBundleIsExist(
+      const validateBundleList = await CheckoutHandlers.validateBundleIsExist(
         userEmail,
-        ValidateBundleIdsArray,
+        getBundleIdsArray,
         token,
       );
       /* The above code is checking if the bundleIdsExist in the cart or not. If it exists then it will
      update the bundle in the cart. If it does not exist then it will add the bundle in the cart. */
-      if (ValidateBundleList['bundleIdsExist']['length'] > 0) {
-        const UpdateCheckoutbundleList = await CheckoutUtils.getIsExtingBundle(
+      if (validateBundleList['bundleIdsExist']['length'] > 0) {
+        const updateCheckoutbundleList = await CheckoutUtils.getIsExtingBundle(
           bundlesForCart,
-          ValidateBundleList,
+          validateBundleList,
         );
-        const UpdatedBundle =
+        const updatedBundle =
           await CheckoutHandlers.updateCheckoutBundlesHandler(
             userEmail,
-            UpdateCheckoutbundleList,
+            updateCheckoutbundleList,
             token,
           );
 
         response = {
           ...response,
-          UpdatedBundle,
+          updatedBundle,
         };
       }
-      if (ValidateBundleList['bundleIdsNotExist']['length'] > 0) {
-        const AddbundleList = await CheckoutUtils.getIsNotExtingBundle(
+      if (validateBundleList['bundleIdsNotExist']['length'] > 0) {
+        const addbundleList = await CheckoutUtils.getIsNotExtingBundle(
           bundlesForCart,
-          ValidateBundleList,
+          validateBundleList,
         );
         const addedBundleList =
           await CheckoutHandlers.addCheckoutBundlesHandler(
             userEmail,
-            AddbundleList,
+            addbundleList,
             token,
           );
         response = {
@@ -209,8 +208,6 @@ export class CheckoutService {
       //   );
       // }
     } catch (error) {
-      console.log('__Error', error);
-
       this.logger.error(error);
       if (error instanceof RecordNotFound) {
         return prepareFailedResponse(error.message);
