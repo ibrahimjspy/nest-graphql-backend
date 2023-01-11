@@ -8,16 +8,13 @@ import {
 
 import * as CheckoutHandlers from 'src/graphql/handlers/checkout';
 import * as ProductHandlers from 'src/graphql/handlers/product';
-import * as AccountHandlers from 'src/graphql/handlers/account';
 import * as CheckoutUtils from './Checkout.utils';
 import {
   AddressDetailType,
   CheckoutBundleInputType,
 } from 'src/graphql/handlers/checkout.type';
 import { BundleType } from 'src/graphql/types/bundle.type';
-import { LegacyService } from 'src/external/services/checkout';
 import { getHttpErrorMessage } from 'src/external/utils/httpHelper';
-import { addShippingAddressInfo } from '../../external/endpoints/checkout';
 @Injectable()
 export class CheckoutService {
   private readonly logger = new Logger(CheckoutService.name);
@@ -128,36 +125,92 @@ export class CheckoutService {
   }
 
   public async addToCart(
-    userId: string,
+    userEmail: string,
     bundlesForCart: CheckoutBundleInputType[],
     token: string,
   ): Promise<object> {
     try {
-      const [userData, bundlesList, checkoutData] = await Promise.all([
-        AccountHandlers.userEmailByIdHandler(userId, token),
-        ProductHandlers.bundlesByBundleIdsHandler(bundlesForCart, token),
-        CheckoutHandlers.marketplaceCheckoutHandler(userId, false, token),
-      ]);
+      let response: object = {};
+      /* Mapping the bundleIds from the bundlesForCart array. */
+      const ValidateBundleIdsArray: string[] = bundlesForCart.map((res) => {
+        return res.bundleId;
+      });
 
-      let response = {};
-      if (checkoutData['checkoutId']) {
-        response = await this.addToCartWhenCheckoutExists(
-          userId,
-          checkoutData,
-          bundlesList,
+      const ValidateBundleList = await CheckoutHandlers.validateBundleIsExist(
+        userEmail,
+        ValidateBundleIdsArray,
+        token,
+      );
+      /* The above code is checking if the bundleIdsExist in the cart or not. If it exists then it will
+     update the bundle in the cart. If it does not exist then it will add the bundle in the cart. */
+      if (ValidateBundleList['bundleIdsExist']['length'] > 0) {
+        const UpdateCheckoutbundleList = await CheckoutUtils.getIsExtingBundle(
           bundlesForCart,
-          token,
+          ValidateBundleList,
         );
-      } else {
-        response = await this.addToCartWhenCheckoutNotExists(
-          userData,
-          bundlesList,
+        const UpdatedBundle =
+          await CheckoutHandlers.updateCheckoutBundlesHandler(
+            userEmail,
+            UpdateCheckoutbundleList,
+            token,
+          );
+
+        response = {
+          ...response,
+          UpdatedBundle,
+        };
+      }
+      if (ValidateBundleList['bundleIdsNotExist']['length'] > 0) {
+        const AddbundleList = await CheckoutUtils.getIsNotExtingBundle(
           bundlesForCart,
-          token,
+          ValidateBundleList,
         );
+        const addedBundleList =
+          await CheckoutHandlers.addCheckoutBundlesHandler(
+            userEmail,
+            AddbundleList,
+            token,
+          );
+        response = {
+          ...response,
+          addedBundle: addedBundleList,
+        };
       }
       return prepareSuccessResponse(response, '', 201);
+      // If Bundle is not exist
+      // const responses = CheckoutHandlers.marketplaceCheckoutHandler(
+      //   userEmail,
+      //   false,
+      //   token,
+      // );
+      // console.log(responses);
+
+      // const [userData, bundlesList, checkoutData] = await Promise.all([
+      //   AccountHandlers.userEmailByIdHandler(userId, token),
+      // ProductHandlers.bundlesByBundleIdsHandler(bundlesForCart, token),
+      //   CheckoutHandlers.marketplaceCheckoutHandler(userId, false, token),
+      // ]);
+
+      // let response = {};
+      // if (checkoutData['checkoutId']) {
+      //   response = await this.addToCartWhenCheckoutExists(
+      //     userId,
+      //     checkoutData,
+      //     bundlesList,
+      //     bundlesForCart,
+      //     token,
+      //   );
+      // } else {
+      //   response = await this.addToCartWhenCheckoutNotExists(
+      //     userData,
+      //     bundlesList,
+      //     bundlesForCart,
+      //     token,
+      //   );
+      // }
     } catch (error) {
+      console.log('__Error', error);
+
       this.logger.error(error);
       if (error instanceof RecordNotFound) {
         return prepareFailedResponse(error.message);

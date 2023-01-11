@@ -26,6 +26,53 @@ export const marketplaceCheckoutHandler = async (
   return response['marketplaceCheckout'];
 };
 
+export const validateBundleIsExist = async (
+  userEmail: string,
+  bundlesIds: string[],
+  token: string,
+) => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutQueries.validatebundelIsExist(userEmail, bundlesIds),
+      token,
+    ),
+    false,
+  );
+
+  return response['bundleStatus'];
+};
+
+export const updateCheckoutBundlesHandler = async (
+  userEmail: string,
+  checkoutBundles: any[],
+  token: string,
+) => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutQueries.updateCheckoutBundleQuery(userEmail, checkoutBundles),
+      token,
+    ),
+    false,
+  );
+
+  return response['updateCheckoutBundles'];
+};
+
+export const addCheckoutBundlesHandler = async (
+  userEmail: string,
+  bundles: CheckoutBundleInputType[],
+  token: string,
+) => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutQueries.addCheckoutBundleQuery(userEmail, bundles),
+      token,
+    ),
+    false,
+  );
+  return response['addCheckoutBundles'];
+};
+
 export const marketplaceWithCategoriesCheckoutHandler = async (
   id: string,
   throwException = false,

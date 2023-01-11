@@ -99,6 +99,44 @@ export const getLineItems = async (bundles, targetBundles) => {
   return lines;
 };
 
+export const getIsExtingBundle = async (
+  bundlesForCart: CheckoutBundleInputType[],
+  ValidateBundleList: [],
+) => {
+  const Updatebundles = [];
+  bundlesForCart.forEach((item) => {
+    ValidateBundleList['bundleIdsExist'].find((isExistingBundle: object) => {
+      if (item['bundleId'] === isExistingBundle['bundleId']) {
+        Updatebundles.push({
+          checkoutBundleId: isExistingBundle['checkoutBundleId'],
+          quantity: makeQuantity(item['quantity']),
+        });
+      }
+    });
+  });
+  return Updatebundles;
+};
+
+export const getIsNotExtingBundle = async (
+  bundlesForCart: CheckoutBundleInputType[],
+  ValidateBundleList: [],
+) => {
+  const Addnewbundles = [];
+  bundlesForCart.forEach((item) => {
+    ValidateBundleList['bundleIdsNotExist'].find(
+      (isNotExistingBundle: object) => {
+        if (item['bundleId'] === isNotExistingBundle['bundleId']) {
+          Addnewbundles.push({
+            bundleId: item['bundleId'],
+            quantity: makeQuantity(item['quantity']),
+          });
+        }
+      },
+    );
+  });
+  return Addnewbundles;
+};
+
 /**
  * returns line items with updated quantity
  * @params lines: checkout lines from saleor checkout
