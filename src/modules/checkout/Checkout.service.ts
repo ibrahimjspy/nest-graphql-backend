@@ -19,39 +19,47 @@ import { getHttpErrorMessage } from 'src/external/utils/httpHelper';
 export class CheckoutService {
   private readonly logger = new Logger(CheckoutService.name);
 
-  public async getShoppingCartData(id: string, token: string): Promise<object> {
+  public async getShoppingCartData(
+    userEmail: string,
+    token: string,
+  ): Promise<object> {
     try {
-      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
-        id,
+      const checkoutData = await CheckoutHandlers.getCheckoutbundlesHandler(
+        userEmail,
         true,
         token,
       );
-      const productIds = CheckoutUtils.getProductIdsByCheckoutBundles(
-        checkoutData['bundles'],
-      );
-      const variantIds = CheckoutUtils.getVariantsIdsByProducts(
-        await ProductHandlers.variantsIdsByProductIdsHandler(productIds),
-      );
-      const totalVariantIds = variantIds.length;
-      const stepSize = 10;
-      let startIndex = 0;
-      let lastIndex = stepSize - 1;
+      // const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
+      //   id,
+      //   true,
+      //   token,
+      // );
+      // const productIds = CheckoutUtils.getProductIdsByCheckoutBundles(
+      //   checkoutData['bundles'],
+      // );
+      // const variantIds = CheckoutUtils.getVariantsIdsByProducts(
+      //   await ProductHandlers.variantsIdsByProductIdsHandler(productIds),
+      // );
+      // const totalVariantIds = variantIds.length;
+      // const stepSize = 10;
+      // let startIndex = 0;
+      // let lastIndex = stepSize - 1;
 
-      while (startIndex <= totalVariantIds) {
-        const slicedVariantIds = variantIds.slice(startIndex, lastIndex);
+      // while (startIndex <= totalVariantIds) {
+      //   const slicedVariantIds = variantIds.slice(startIndex, lastIndex);
 
-        const allBundles = await ProductHandlers.bundlesByVariantsIdsHandler(
-          slicedVariantIds,
-        );
-        checkoutData['bundles'] = checkoutData['bundles']?.concat(
-          CheckoutUtils.getBundlesNotInCheckout(
-            checkoutData['bundles'],
-            allBundles,
-          ),
-        );
-        startIndex = lastIndex + 1;
-        lastIndex = lastIndex + stepSize;
-      }
+      //   const allBundles = await ProductHandlers.bundlesByVariantsIdsHandler(
+      //     slicedVariantIds,
+      //   );
+      //   checkoutData['bundles'] = checkoutData['bundles']?.concat(
+      //     CheckoutUtils.getBundlesNotInCheckout(
+      //       checkoutData['bundles'],
+      //       allBundles,
+      //     ),
+      //   );
+      //   startIndex = lastIndex + 1;
+      //   lastIndex = lastIndex + stepSize;
+      // }
 
       return prepareSuccessResponse(checkoutData);
     } catch (error) {
