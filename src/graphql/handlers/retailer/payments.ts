@@ -13,11 +13,13 @@ import {
 
 export const getSalesReportHandler = async (
   shopId: string,
+  fromDate: string,
+  toDate: string,
   token: string,
 ): Promise<object> => {
   try {
     const response = await graphqlResultErrorHandler(
-      await graphqlCall(getSalesReportQuery(shopId), token),
+      await graphqlCall(getSalesReportQuery(shopId, fromDate, toDate), token),
     );
     if (!response['salesReport']) {
       throw new RecordNotFound('Sales report');
@@ -44,11 +46,16 @@ export const getAccountInfoHandler = async (
 
 export const getTransactionHistoryHandler = async (
   shopId: string,
+  fromDate: string,
+  toDate: string,
   token: string,
 ): Promise<object> => {
   try {
     const response = await graphqlResultErrorHandler(
-      await graphqlCall(getTransactionHistoryQuery(shopId), token),
+      await graphqlCall(
+        getTransactionHistoryQuery(shopId, fromDate, toDate),
+        token,
+      ),
     );
     if (!response['transactionHistory']) {
       throw new RecordNotFound('Transaction history');
@@ -67,7 +74,7 @@ export const getPurchaseHistoryHandler = async (
     const response = await graphqlResultErrorHandler(
       await graphqlCall(getPurchaseHistoryQuery(shopId), token),
     );
-    if (!response['pruchaseHistory']) {
+    if (!response['purchaseHistory']) {
       throw new RecordNotFound('Purchase history');
     }
     return response['purchaseHistory'];

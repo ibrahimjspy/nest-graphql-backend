@@ -1,1 +1,6 @@
-export { RetailerEmailDto, RetailerRegisterDto } from './retailer.dto';
+export {
+  RetailerEmailDto,
+  RetailerRegisterDto,
+  shopIdDto,
+  dateDto,
+} from './retailer.dto';
