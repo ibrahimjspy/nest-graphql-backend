@@ -38,7 +38,7 @@ jobs:
 
       # Create and Update .env file values
       - name: Create .env file
-        run: | 
+        run: |
           (echo "MOCK_GRAPHQL_ENDPOINT=${{ secrets.MOCK_GRAPHQL_ENDPOINT }}") >> .env
           (echo "GRAPHQL_ENDPOINT=${{ secrets.GRAPHQL_ENDPOINT }}") >> .env
           (echo "DOCKER=${{ secrets.DOCKER }}") >> .env
@@ -55,6 +55,7 @@ jobs:
           (echo "OS_SIGNATURE_REQUESTED=${{ secrets.OS_SIGNATURE_REQUESTED }}") >> .env
           (echo "OS_PAYMENT_TYPE=${{ secrets.OS_PAYMENT_TYPE }}") >> .env
           (echo "OS_AWS_API_GATEWAY_ENDPOINT=${{ secrets.OS_AWS_API_GATEWAY_ENDPOINT }}") >> .env
+          (echo "AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}") >> .env
 
         # Docker login
       - name: Login to DockerHub

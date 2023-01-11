@@ -13,5 +13,5 @@ export const uploadImages = async (file: any) => {
   };
 
   const uploadedImage = await s3.upload(params).promise();
-  return uploadedImage.Location;
+  return uploadedImage?.Location;
 };
