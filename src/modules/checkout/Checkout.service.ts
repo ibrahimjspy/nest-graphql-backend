@@ -225,36 +225,37 @@ export class CheckoutService {
   }
 
   public async deleteBundleFromCart(
-    userId: string,
+    userEmail: string,
     checkoutBundleIds: string[],
     token: string,
   ): Promise<object> {
     try {
-      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
-        userId,
-        true,
-        token,
-      );
+      // const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
+      //   userId,
+      //   true,
+      //   token,
+      // );
 
-      const saleorCheckout = await CheckoutHandlers.checkoutHandler(
-        checkoutData['checkoutId'],
-        token,
-      );
+      // const saleorCheckout = await CheckoutHandlers.checkoutHandler(
+      //   checkoutData['checkoutId'],
+      //   token,
+      // );
 
-      const checkoutLines = CheckoutUtils.getCheckoutLineItemsForDelete(
-        saleorCheckout['lines'],
-        checkoutData['bundles'],
-        checkoutBundleIds,
-      );
-      const checkoutLineIds = CheckoutUtils.getCheckoutLineIds(checkoutLines);
-      await CheckoutHandlers.deleteLinesHandler(
-        checkoutLineIds,
-        saleorCheckout['id'],
-        token,
-      );
+      // const checkoutLines = CheckoutUtils.getCheckoutLineItemsForDelete(
+      //   saleorCheckout['lines'],
+      //   checkoutData['bundles'],
+      //   checkoutBundleIds,
+      // );
+      // const checkoutLineIds = CheckoutUtils.getCheckoutLineIds(checkoutLines);
+      // await CheckoutHandlers.deleteLinesHandler(
+      //   checkoutLineIds,
+      //   saleorCheckout['id'],
+      //   token,
+      // );
+
       const response = await CheckoutHandlers.deleteBundlesHandler(
         checkoutBundleIds,
-        checkoutData['checkoutId'],
+        userEmail,
         false,
         token,
       );
@@ -266,41 +267,43 @@ export class CheckoutService {
   }
 
   public async updateBundleFromCart(
-    userId: string,
-    bundlesFromCart: CheckoutBundleInputType[],
+    userEmail: string,
+    bundlesFromCart: object,
     token: string,
   ): Promise<object> {
     try {
-      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
-        userId,
-        true,
-        token,
-      );
-
-      const saleorCheckout = await CheckoutHandlers.checkoutHandler(
-        checkoutData['checkoutId'],
-        token,
-      );
-
-      const updatedLinesWithQuantity =
-        CheckoutUtils.getUpdatedLinesWithQuantity(
-          saleorCheckout['lines'],
-          checkoutData['bundles'],
-          bundlesFromCart,
+      const UpdateBundle = [bundlesFromCart];
+      const UpdateBundleresponse =
+        await CheckoutHandlers.updateCheckoutBundlesHandler(
+          userEmail,
+          UpdateBundle,
+          token,
         );
 
-      await CheckoutHandlers.updateLinesHandler(
-        checkoutData['checkoutId'],
-        updatedLinesWithQuantity,
-        token,
-      );
-      const response = await CheckoutHandlers.addBundlesHandler(
-        checkoutData['checkoutId'],
-        userId,
-        bundlesFromCart,
-        token,
-      );
-      return prepareSuccessResponse(response, '', 201);
+      // const saleorCheckout = await CheckoutHandlers.checkoutHandler(
+      //   checkoutData['checkoutId'],
+      //   token,
+      // );
+
+      // const updatedLinesWithQuantity =
+      //   CheckoutUtils.getUpdatedLinesWithQuantity(
+      //     saleorCheckout['lines'],
+      //     checkoutData['bundles'],
+      //     bundlesFromCart,
+      //   );
+
+      // await CheckoutHandlers.updateLinesHandler(
+      //   checkoutData['checkoutId'],
+      //   updatedLinesWithQuantity,
+      //   token,
+      // );
+      // const response = await CheckoutHandlers.addBundlesHandler(
+      //   checkoutData['checkoutId'],
+      //   userId,
+      //   bundlesFromCart,
+      //   token,
+      // );
+      return prepareSuccessResponse(UpdateBundleresponse, '', 201);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

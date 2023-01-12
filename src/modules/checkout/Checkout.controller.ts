@@ -53,15 +53,14 @@ export class CheckoutController {
   async deleteBundleFromCart(
     @Res() res,
     @Body() body,
-    @Headers() headers,
+    @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
-    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
       await this.appService.deleteBundleFromCart(
-        body?.userId,
+        body?.userEmail,
         body?.checkoutBundleIds,
-        Authorization,
+        token,
       ),
     );
   }
@@ -70,15 +69,14 @@ export class CheckoutController {
   async updateCartBundle(
     @Res() res,
     @Body() body,
-    @Headers() headers,
+    @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
-    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
       await this.appService.updateBundleFromCart(
-        body?.userId,
-        body?.bundles,
-        Authorization,
+        body?.userEmail,
+        body?.bundle,
+        token,
       ),
     );
   }

@@ -3,35 +3,32 @@ import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
 const federationQuery = (
   checkoutBundleIds: Array<string>,
-  checkoutId: string,
+  userEmail: string,
 ) => {
   return gql`
-  mutation {
-    deleteCheckoutBundles(
-      Input: {
-        checkoutBundleIds: ${JSON.stringify(checkoutBundleIds)},
-        checkoutId: "${checkoutId}"
-      }
-    ) {
-      __typename
-      ... on ResultData {
-        message
-      }
-      ... on ResultError {
-        errors
-        message
+    mutation {
+      deleteCheckoutBundles(
+        Input: {
+          userEmail: "${userEmail}"
+          checkoutBundleIds: ${JSON.stringify(checkoutBundleIds)}
+        }
+      ) {
+        __typename
+        ... on ResultData {
+          message
+          data
+        }
       }
     }
-  }
   `;
 };
 
 export const deleteCheckoutBundlesMutation = (
   checkoutBundleIds: Array<string>,
-  checkoutId: string,
+  userEmail: string,
 ) => {
   return graphqlQueryCheck(
-    federationQuery(checkoutBundleIds, checkoutId),
-    federationQuery(checkoutBundleIds, checkoutId),
+    federationQuery(checkoutBundleIds, userEmail),
+    federationQuery(checkoutBundleIds, userEmail),
   );
 };
