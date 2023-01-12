@@ -8,6 +8,8 @@ import { shopDetailsQuery } from 'src/graphql/queries/shop/shopDetails';
 import { shopIdByVariantIdQuery } from '../queries/shop/shopIdByVariants';
 import { shopIdByOrderIdQuery } from '../queries/shop/shopIdByOrderId';
 import { ShopByEmailQuery } from '../queries/shop/shopbyEmail';
+import { shopBankDetailsQuery } from '../queries/shop/shopBankDetailsQuery';
+import { shopBankDetailsMutation } from '../mutations/shop/shopBankDetails';
 
 export const carouselHandler = async (token: string): Promise<object> => {
   try {
@@ -66,6 +68,37 @@ export const GetShopDetailsbyEmailHandler = async (
       await graphqlCall(ShopByEmailQuery(Email)),
     );
     return response['marketplaceShops'];
+  } catch (error) {
+    const errorMessage = await graphqlExceptionHandler(error);
+    return errorMessage;
+  }
+};
+
+export const getShopBankDetailsHandler = async (
+  shopId: string,
+  token: string,
+): Promise<object> => {
+  try {
+    const response = await graphqlResultErrorHandler(
+      await graphqlCall(shopBankDetailsQuery(shopId), token),
+    );
+    return response['shopBankDetails'];
+  } catch (error) {
+    const errorMessage = await graphqlExceptionHandler(error);
+    return errorMessage;
+  }
+};
+
+export const saveShopBankDetailsHandler = async (
+  shopId: string,
+  accountId: string,
+  token: string,
+): Promise<object> => {
+  try {
+    const response = await graphqlResultErrorHandler(
+      await graphqlCall(shopBankDetailsMutation(shopId, accountId), token),
+    );
+    return response['createShopAccountDetails'];
   } catch (error) {
     const errorMessage = await graphqlExceptionHandler(error);
     return errorMessage;
