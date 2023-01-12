@@ -225,36 +225,37 @@ export class CheckoutService {
   }
 
   public async deleteBundleFromCart(
-    userId: string,
+    userEmail: string,
     checkoutBundleIds: string[],
     token: string,
   ): Promise<object> {
     try {
-      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
-        userId,
-        true,
-        token,
-      );
+      // const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
+      //   userId,
+      //   true,
+      //   token,
+      // );
 
-      const saleorCheckout = await CheckoutHandlers.checkoutHandler(
-        checkoutData['checkoutId'],
-        token,
-      );
+      // const saleorCheckout = await CheckoutHandlers.checkoutHandler(
+      //   checkoutData['checkoutId'],
+      //   token,
+      // );
 
-      const checkoutLines = CheckoutUtils.getCheckoutLineItemsForDelete(
-        saleorCheckout['lines'],
-        checkoutData['bundles'],
-        checkoutBundleIds,
-      );
-      const checkoutLineIds = CheckoutUtils.getCheckoutLineIds(checkoutLines);
-      await CheckoutHandlers.deleteLinesHandler(
-        checkoutLineIds,
-        saleorCheckout['id'],
-        token,
-      );
+      // const checkoutLines = CheckoutUtils.getCheckoutLineItemsForDelete(
+      //   saleorCheckout['lines'],
+      //   checkoutData['bundles'],
+      //   checkoutBundleIds,
+      // );
+      // const checkoutLineIds = CheckoutUtils.getCheckoutLineIds(checkoutLines);
+      // await CheckoutHandlers.deleteLinesHandler(
+      //   checkoutLineIds,
+      //   saleorCheckout['id'],
+      //   token,
+      // );
+
       const response = await CheckoutHandlers.deleteBundlesHandler(
         checkoutBundleIds,
-        checkoutData['checkoutId'],
+        userEmail,
         false,
         token,
       );

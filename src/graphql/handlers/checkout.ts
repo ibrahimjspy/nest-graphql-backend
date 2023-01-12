@@ -178,7 +178,7 @@ export const deleteLinesHandler = async (
 
 export const deleteBundlesHandler = async (
   checkoutBundleIds: Array<string>,
-  checkoutId: string,
+  userEmail: string,
   throwException = false,
   token: string,
 ): Promise<object> => {
@@ -186,7 +186,7 @@ export const deleteBundlesHandler = async (
     await graphqlCall(
       CheckoutMutations.deleteCheckoutBundlesMutation(
         checkoutBundleIds,
-        checkoutId,
+        userEmail,
       ),
       token,
     ),
