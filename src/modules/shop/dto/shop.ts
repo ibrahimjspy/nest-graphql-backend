@@ -10,3 +10,13 @@ export class shopIdByVariantsDTO {
   @IsOptional()
   orderIds: string[];
 }
+
+export class shopIdDTO {
+  @ApiProperty({ type: String, required: true })
+  shopId: string;
+}
+
+export class accountIdDTO {
+  @ApiProperty({ type: String, required: true })
+  accountId: string;
+}

@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import {
   GetShopDetailsbyEmailHandler,
   carouselHandler,
+  getShopBankDetailsHandler,
+  saveShopBankDetailsHandler,
   shopDetailsHandler,
   shopIdByOrderIdHandler,
   shopIdByVariantIdHandler,
@@ -66,5 +68,31 @@ export class ShopService {
   public async getShopDetailsbyEmail(email: string) {
     const response = await GetShopDetailsbyEmailHandler(email);
     return response;
+  }
+
+  public async getShopBankDetails(shopId: string, token: string) {
+    try {
+      const response = await getShopBankDetailsHandler(shopId, token);
+      return prepareSuccessResponse(response, '', 200);
+    } catch (error) {
+      this.logger.error(error);
+    }
+  }
+
+  public async saveShopBankDetails(
+    shopId: string,
+    accountId: string,
+    token: string,
+  ) {
+    try {
+      const response = await saveShopBankDetailsHandler(
+        shopId,
+        accountId,
+        token,
+      );
+      return prepareSuccessResponse(response, '', 200);
+    } catch (error) {
+      this.logger.error(error);
+    }
   }
 }
