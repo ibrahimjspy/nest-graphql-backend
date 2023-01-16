@@ -29,20 +29,6 @@ export class PaymentsController {
     );
   }
 
-  @Get('api/v1/payments/account')
-  @ApiOperation({ summary: 'adds product to store' })
-  async getAccountInfo(
-    @Res() res,
-    @Param() param: shopIdDto,
-    @Headers() headers,
-  ): Promise<object> {
-    const Authorization: string = headers.authorization;
-    return await makeResponse(
-      res,
-      await this.appService.getAccountInfo(param.shopId, Authorization),
-    );
-  }
-
   @Get('api/v1/payments/transactions/:shopId')
   @ApiOperation({ summary: 'adds product to store' })
   async getTransactionHistory(

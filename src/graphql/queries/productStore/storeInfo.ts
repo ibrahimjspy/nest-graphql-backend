@@ -11,7 +11,7 @@ export const getStoreInfoQuery = (shopId: string) => {
       fields {
         id
         name
-        value
+        values
       }
     }
   }

@@ -12,12 +12,12 @@ export const updateStoreInfoMutation = (
         id: "${shopId}"
         input: {
           name: "${name}"
-          about: "${about}"
+          about: "${about || ''}"
           description: "${description}"
           url: "${url}"
           fields: ${JSON.stringify(fields)
             .replace(/"name"/g, 'name')
-            .replace(/"newValue"/g, 'newValue')}
+            .replace(/"newValues"/g, 'newValues')}
         }
       ) {
         name
@@ -28,7 +28,7 @@ export const updateStoreInfoMutation = (
         fields {
           id
           name
-          value
+          values
         }
       }
     }
