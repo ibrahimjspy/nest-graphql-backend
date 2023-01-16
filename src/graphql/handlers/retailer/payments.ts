@@ -5,7 +5,6 @@ import {
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import {
-  getAccountInfoQuery,
   getPurchaseHistoryQuery,
   getSalesReportQuery,
   getTransactionHistoryQuery,
@@ -25,20 +24,6 @@ export const getSalesReportHandler = async (
       throw new RecordNotFound('Sales report');
     }
     return response['salesReport'];
-  } catch (error) {
-    return graphqlExceptionHandler(error);
-  }
-};
-
-export const getAccountInfoHandler = async (
-  shopId: string,
-  token: string,
-): Promise<object> => {
-  try {
-    const response = await graphqlResultErrorHandler(
-      await graphqlCall(getAccountInfoQuery(shopId), token),
-    );
-    return response['marketplaceShop'];
   } catch (error) {
     return graphqlExceptionHandler(error);
   }
