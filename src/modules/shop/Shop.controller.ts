@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Headers,
   Param,
@@ -11,7 +12,12 @@ import {
 import { makeResponse } from '../../core/utils/response';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ShopService } from './Shop.service';
-import { accountIdDTO, shopIdByVariantsDTO, shopIdDTO } from './dto/shop';
+import {
+  accountIdDTO,
+  removeProductDTO,
+  shopIdByVariantsDTO,
+  shopIdDTO,
+} from './dto/shop';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 
 @ApiTags('shop')
@@ -98,6 +104,25 @@ export class ShopController {
     return makeResponse(
       res,
       await this.appService.getMyProducts(params.shopId, filter),
+    );
+  }
+
+  @Delete('/api/v1/shop/my/products')
+  @ApiOperation({
+    summary: 'deletes product from my products ',
+  })
+  async deleteProductsFromMyProducts(
+    @Res() res,
+    @Body() body: removeProductDTO,
+    @Headers() headers,
+  ): Promise<object> {
+    const Authorization: string = headers.authorization;
+    return makeResponse(
+      res,
+      await this.appService.removeProductsFromMyProducts(
+        body.productIds,
+        Authorization,
+      ),
     );
   }
 }
