@@ -7,11 +7,14 @@ import {
   shopDetailsHandler,
   shopIdByOrderIdHandler,
   shopIdByVariantIdHandler,
+  createShopHandler,
 } from 'src/graphql/handlers/shop';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
-import { validateArray } from './Shop.utils';
-import RecordNotFound from 'src/core/exceptions/recordNotFound';
+import { validateShopInput, validateArray } from './Shop.utils';
+import { SuccessResponseType } from 'src/core/utils/response.type';
+import { ShopDto } from './dto/shop';
+
 @Injectable()
 export class ShopService {
   private readonly logger = new Logger(ShopService.name);
@@ -21,6 +24,23 @@ export class ShopService {
     // << -- >>
     // menuCategories is graphQl promise handler --->
     return carouselHandler(token);
+  }
+
+  public async createShop(
+    shop: ShopDto,
+    token: string,
+  ): Promise<SuccessResponseType> {
+    try {
+      const response = await createShopHandler(
+        validateShopInput(shop),
+        token
+      );
+
+      return prepareSuccessResponse(response, "", 201);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
   }
 
   public async getShopDetails(shopId: string): Promise<object> {
