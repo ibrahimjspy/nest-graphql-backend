@@ -13,6 +13,7 @@ import { getProductIdsByVariantIdsQuery } from '../queries/product/productIdsByV
 import { hasNextPage } from '../utils/orders';
 import { getUniqueProductIds } from '../utils/product';
 import { getMyProductsQuery } from '../queries/product/myProducts';
+import { deleteBulkProductsMutation } from '../mutations/product/bulkDelete';
 
 export const productListPageHandler = async (
   id: string,
@@ -164,4 +165,19 @@ export const getMyProductsHandler = async (
     ),
   );
   return response['products'];
+};
+
+export const deleteBulkProductHandler = async (
+  productIds: string[],
+  token: string,
+  isb2c = '',
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      deleteBulkProductsMutation(productIds, isb2c),
+      token,
+      isb2c,
+    ),
+  );
+  return response['productBulkDelete'];
 };

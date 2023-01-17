@@ -18,6 +18,7 @@ import {
   validateArray,
 } from './Shop.utils';
 import {
+  deleteBulkProductHandler,
   getMyProductsHandler,
   getProductIdsByVariantIdsHandler,
 } from 'src/graphql/handlers/product';
@@ -115,6 +116,19 @@ export class ShopService {
   public async getShopBankDetails(shopId: string, token: string) {
     try {
       const response = await getShopBankDetailsHandler(shopId, token);
+      return prepareSuccessResponse(response, '', 200);
+    } catch (error) {
+      this.logger.error(error);
+    }
+  }
+
+  public async removeProductsFromMyProducts(productIds: string[], token) {
+    try {
+      const response = await deleteBulkProductHandler(
+        productIds,
+        token,
+        'true',
+      );
       return prepareSuccessResponse(response, '', 200);
     } catch (error) {
       this.logger.error(error);
