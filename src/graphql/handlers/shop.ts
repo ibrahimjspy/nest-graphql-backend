@@ -104,3 +104,21 @@ export const saveShopBankDetailsHandler = async (
     return errorMessage;
   }
 };
+
+export const getStoreFrontIdHandler = async (
+  retailerId: string,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(shopDetailsQuery(retailerId)),
+  );
+  return response['marketplaceShop'];
+};
+
+export const getStoreProductVariantsHandler = async (
+  retailerId: string,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(shopDetailsQuery(retailerId, 'true'), '', 'true'),
+  );
+  return response['marketplaceShop'];
+};
