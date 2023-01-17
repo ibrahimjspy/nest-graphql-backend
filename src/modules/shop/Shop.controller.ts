@@ -12,6 +12,7 @@ import { makeResponse } from '../../core/utils/response';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ShopService } from './Shop.service';
 import { accountIdDTO, shopIdByVariantsDTO, shopIdDTO } from './dto/shop';
+import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 
 @ApiTags('shop')
 @Controller('')
@@ -82,6 +83,21 @@ export class ShopController {
         body?.accountId,
         Authorization,
       ),
+    );
+  }
+
+  @Get('/api/v1/shop/my/products/:shopId')
+  @ApiOperation({
+    summary: 'returns all products pushed to store by a retailer',
+  })
+  async getMyProducts(
+    @Res() res,
+    @Param() params: shopIdDTO,
+    @Query() filter: PaginationDto,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.getMyProducts(params.shopId, filter),
     );
   }
 }
