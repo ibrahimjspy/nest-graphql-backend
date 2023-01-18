@@ -8,6 +8,7 @@ import {
   shopIdByOrderIdHandler,
   shopIdByVariantIdHandler,
   createStoreHandler,
+  addStoreToShopHandler,
 } from 'src/graphql/handlers/shop';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
@@ -36,6 +37,8 @@ export class ShopService {
         validateStoreInput(storeInput),
         token
       );
+      // Adding created store in user shop
+      await addStoreToShopHandler(shopId, response.id, token)
       return prepareSuccessResponse(response, "", 201);
     } catch (error) {
       this.logger.error(error);

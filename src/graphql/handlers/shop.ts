@@ -13,6 +13,8 @@ import { shopBankDetailsMutation } from '../mutations/shop/shopBankDetails';
 import { ShopType } from '../types/shop.type';
 import { StoreDto } from 'src/modules/shop/dto/shop';
 import { createStoreMutation } from '../mutations/shop/createShop';
+import { addStoreToShopMutation } from '../mutations/shop/addStoreToShop';
+import { deactivateStoreMutation } from '../mutations/shop/deactivateStore';
 
 export const carouselHandler = async (token: string): Promise<object> => {
   try {
@@ -34,6 +36,36 @@ export const createStoreHandler = async (
     ),
   );
   return response['createMarketplaceShop'];
+};
+
+export const addStoreToShopHandler = async (
+  shopId: string,
+  storeId: string,
+  token: string
+): Promise<Object> => {
+  try {
+    const response = await graphqlResultErrorHandler(
+      await graphqlCall(
+        addStoreToShopMutation(shopId, storeId),
+        token
+      ),
+    );
+    return response['updateMarketplaceShop'];
+  } catch (error) {
+    console.log("error", error)
+    // If store adding in shop fails then we ne to deactivate that store
+    await graphqlResultErrorHandler(
+      await graphqlCall(
+        deactivateStoreMutation(storeId),
+        token,
+        "true"
+      ),
+    );
+    const errorMessage = await graphqlExceptionHandler(error);
+    return {
+      message: errorMessage.message
+    };
+  }
 };
 
 export const shopDetailsHandler = async (shopId: string): Promise<object> => {
