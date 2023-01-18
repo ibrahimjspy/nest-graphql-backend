@@ -11,7 +11,7 @@ import { createCheckoutMutation } from './createCheckout';
 import { checkoutLinesUpdateMutation } from './checkoutLinesUpdate';
 import { checkoutLinesDeleteMutation } from './checkoutLinesDelete';
 import { checkoutEmailUpdateMutation } from './checkoutEmailUpdate';
-
+import { updateCheckoutBundleState } from './updateCheckoutBundleState';
 export {
   checkoutShippingAddressUpdateMutation,
   checkoutBillingAddressUpdateMutation,
@@ -26,4 +26,5 @@ export {
   checkoutLinesDeleteMutation,
   checkoutLinesUpdateMutation,
   checkoutEmailUpdateMutation,
+  updateCheckoutBundleState,
 };
