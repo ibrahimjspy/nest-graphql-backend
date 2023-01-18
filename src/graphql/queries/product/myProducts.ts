@@ -21,6 +21,19 @@ const b2bQuery = (productIds, pagination: PaginationDto): string => {
         edges {
           node {
             name
+            id
+            category {
+              id
+              name
+              ancestors(first: 5) {
+                edges {
+                  node {
+                    id
+                    name
+                  }
+                }
+              }
+            }
             description
             slug
             id
@@ -34,25 +47,13 @@ const b2bQuery = (productIds, pagination: PaginationDto): string => {
                   name
                 }
                 values {
-                  value
+                  name
                 }
               }
               pricing {
                 price {
                   gross {
                     amount
-                  }
-                }
-              }
-            }
-            category {
-              name
-              id
-              ancestors(first:5){
-                edges{
-                  node{
-                  id
-                  name
                   }
                 }
               }
@@ -72,43 +73,49 @@ const b2cQuery = (productIds, pagination: PaginationDto): string => {
       )}, channel: "default-channel", filter: { ids: ${JSON.stringify(
     productIds,
   )} }) {
-         totalCount
-          pageInfo {
-            hasNextPage
-            endCursor
-            startCursor
-            hasPreviousPage
-          }
-          edges {
-            node {
+        totalCount
+        pageInfo {
+          hasNextPage
+          endCursor
+          startCursor
+          hasPreviousPage
+        }
+        edges {
+          node {
+            name
+            id
+            category {
+              id
               name
-              description
-              slug
+              ancestors(first: 5) {
+                edges {
+                  node {
+                    id
+                    name
+                  }
+                }
+              }
+            }
+            description
+            slug
+            id
+            media {
+              url
+            }
+            variants {
               id
               attributes {
                 attribute {
                   name
                 }
                 values {
-                  value
+                  name
                 }
               }
               pricing {
                 price {
                   gross {
                     amount
-                  }
-                }
-              }
-            }
-            category {
-              name
-              id
-              ancestors(first:5){
-                edges{
-                  node{
-                  id
-                  name
                   }
                 }
               }
