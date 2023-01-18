@@ -10,12 +10,64 @@ import { shopIdByOrderIdQuery } from '../queries/shop/shopIdByOrderId';
 import { ShopByEmailQuery } from '../queries/shop/shopbyEmail';
 import { shopBankDetailsQuery } from '../queries/shop/shopBankDetailsQuery';
 import { shopBankDetailsMutation } from '../mutations/shop/shopBankDetails';
+import { ShopType } from '../types/shop.type';
+import { StoreDto } from 'src/modules/shop/dto/shop';
+import { createStoreMutation } from '../mutations/shop/createShop';
+import { addStoreToShopMutation } from '../mutations/shop/addStoreToShop';
+import { deactivateStoreMutation } from '../mutations/shop/deactivateStore';
+import { getStoreFrontFieldValues } from 'src/modules/shop/Shop.utils';
 
 export const carouselHandler = async (token: string): Promise<object> => {
   try {
     return await graphqlCall(carouselQuery(), token);
   } catch (error) {
     return graphqlExceptionHandler(error);
+  }
+};
+
+export const createStoreHandler = async (
+  storeInput: StoreDto,
+  token: string,
+): Promise<ShopType> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      createStoreMutation(storeInput),
+      token,
+      "true"
+    ),
+  );
+  return response['createMarketplaceShop'];
+};
+
+export const addStoreToShopHandler = async (
+  shopId: string,
+  storeId: string,
+  shopDetail: Object,
+  token: string
+): Promise<Object> => {
+  try {
+    // concat previous storeIds and new storeId for shop
+    const shopStoreIds = [storeId, ...(getStoreFrontFieldValues(shopDetail["fields"]))]
+    const response = await graphqlResultErrorHandler(
+      await graphqlCall(
+        addStoreToShopMutation(shopId, shopStoreIds),
+        token
+      ),
+    );
+    return response['updateMarketplaceShop'];
+  } catch (error) {
+    // If store adding in shop fails then we need to deactivate that store
+    await graphqlResultErrorHandler(
+      await graphqlCall(
+        deactivateStoreMutation(storeId),
+        token,
+        "true"
+      ),
+    );
+    const errorMessage = await graphqlExceptionHandler(error);
+    return {
+      message: errorMessage.message
+    };
   }
 };
 

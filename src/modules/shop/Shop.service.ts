@@ -9,10 +9,16 @@ import {
   shopDetailsHandler,
   shopIdByOrderIdHandler,
   shopIdByVariantIdHandler,
+  createStoreHandler,
+  addStoreToShopHandler,
 } from 'src/graphql/handlers/shop';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
+import { SuccessResponseType } from 'src/core/utils/response.type';
+import { StoreDto } from './dto/shop';
+
 import {
+  validateStoreInput,
   getProductVariantIds,
   getStoreFrontFieldValues,
   validateArray,
@@ -32,6 +38,27 @@ export class ShopService {
     // << -- >>
     // menuCategories is graphQl promise handler --->
     return carouselHandler(token);
+  }
+
+  public async createStore(
+    shopId: string,
+    storeInput: StoreDto,
+    token: string,
+  ): Promise<SuccessResponseType> {
+    try {
+      const response = await createStoreHandler(
+        validateStoreInput(storeInput),
+        token
+      );
+      // getting shop details by given shop id
+      const shopDetail = await shopDetailsHandler(shopId)
+      // Adding created store in user shop
+      await addStoreToShopHandler(shopId, response.id, shopDetail, token)
+      return prepareSuccessResponse(response, "", 201);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
   }
 
   public async getShopDetails(shopId: string): Promise<object> {

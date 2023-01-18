@@ -30,3 +30,26 @@ export const getProductVariantIds = (variantsInput) => {
   });
   return variantIds;
 };
+
+/**
+* returns with fields array
+* @params shop: information for shop creation
+*/
+export const validateStoreInput = (storeInput) => {
+ return {
+   ...storeInput,
+   user: storeInput["email"],
+   description: storeInput["description"] || "",
+   about: storeInput["about"] || "",
+   madeIn: storeInput["madeIn"] || "",
+   minOrder: storeInput["minOrder"] || 0,
+   returnPolicy: storeInput["returnPolicy"] || "",
+   storePolicy: storeInput["storePolicy"] || "",
+   logo: storeInput["logo"] || "",
+   banner: storeInput["banner"] || "",
+   facebook: storeInput["facebook"] || "",
+   pinterest: storeInput["pinterest"] || "",
+   instagram: storeInput["instagram"] || "",
+   twitter: storeInput["twitter"] || ""
+ };
+};
