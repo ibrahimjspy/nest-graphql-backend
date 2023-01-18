@@ -13,6 +13,7 @@ import {
   LineType,
 } from 'src/graphql/handlers/checkout.type';
 import { GQL_EDGES } from 'src/constants';
+import { UpdateBundleStateDto } from 'src/modules/checkout/dto/add-bundle.dto';
 
 export const marketplaceCheckoutHandler = async (
   id: string,
@@ -352,4 +353,21 @@ export const getShippingZonesHandler = async (token: string) => {
     await graphqlCall(CheckoutQueries.shippingZonesQuery(), token),
   );
   return response['shippingZones'][GQL_EDGES];
+};
+
+export const updateCheckoutBundleState = async (
+  updateBundleState: UpdateBundleStateDto,
+  token,
+) => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutMutations.updateCheckoutBundleState(
+        updateBundleState.action,
+        updateBundleState.userEmail,
+        updateBundleState.checkoutBundleIds,
+      ),
+      token,
+    ),
+  );
+  return response;
 };
