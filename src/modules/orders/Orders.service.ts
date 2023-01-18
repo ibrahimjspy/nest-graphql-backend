@@ -10,6 +10,7 @@ import {
   orderActivityHandler,
   orderDetailsHandler,
   orderFulfillHandler,
+  orderFulfillmentRefundHandler,
   orderReturnDetailHandler,
   orderReturnListHandler,
   ordersListHandler,
@@ -38,6 +39,7 @@ import {
   getReadyToFulfillOrdersCountHandler,
 } from 'src/graphql/handlers/orders.reporting';
 import { orderLineDTO } from './dto/fulfill';
+import { OrderRefundDTO } from './dto/refund';
 @Injectable()
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
@@ -309,6 +311,19 @@ export class OrdersService {
   ): Promise<object> {
     try {
       const response = await orderFulfillHandler(orderId, orderLineIds, token);
+      return prepareSuccessResponse(response, '', 201);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async orderRefund(
+    refundObject: OrderRefundDTO,
+    token: string,
+  ): Promise<object> {
+    try {
+      const response = await orderFulfillmentRefundHandler(refundObject, token);
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
       this.logger.error(error);

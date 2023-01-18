@@ -23,6 +23,7 @@ import {
   hasNextPage,
   orderBundlesTransformer,
   orderLinesFulfillTransformer,
+  orderLinesTransformer,
 } from '../utils/orders';
 import { addOrderToShopMutation } from '../mutations/order/addOrderToShop';
 import { OrdersListDTO } from 'src/modules/orders/dto/list';
@@ -33,6 +34,8 @@ import {
 import { getOrderStatus } from '../queries/orders/getOrderStatuses';
 import { orderFulfillMutation } from '../mutations/order/fulfillOrder';
 import { orderLineDTO } from 'src/modules/orders/dto/fulfill';
+import { OrderRefundDTO } from 'src/modules/orders/dto/refund';
+import { orderRefundMutation } from '../mutations/order/refundOrder';
 
 export const dashboardByIdHandler = async (
   id: string,
@@ -300,4 +303,23 @@ export const orderFulfillHandler = async (
     ),
   );
   return response['orderFulfill'];
+};
+
+export const orderFulfillmentRefundHandler = async (
+  refundObject: OrderRefundDTO,
+  token,
+): Promise<object> => {
+  orderLinesTransformer;
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      orderRefundMutation({
+        orderId: refundObject.orderId,
+        amountToRefund: refundObject.amountToRefund,
+        orderLines: JSON.stringify(refundObject.orderLines),
+        fulfillmentLines: JSON.stringify(refundObject.fulfillmentLines),
+      }),
+      token,
+    ),
+  );
+  return response['orderFulfillmentRefundProducts'];
 };
