@@ -20,14 +20,15 @@ const federationMutation = (shop: ShopDto) => {
           fields: [
             { name: "logo", values: ["${shop["logo"]}"]}
             { name: "banner", values: ["${shop["banner"]}"]}
-            { name: "facebookUrl", values: ["${shop["facebookUrl"]}"]}
-            { name: "pinterestUrl", values: ["${shop["pinterestUrl"]}"]}
-            { name: "instagramUrl", values: ["${shop["instagramUrl"]}"]}
-            { name: "twitterUrl", values: ["${shop["twitterUrl"]}"]}
+            { name: "facebook", values: ["${shop["facebook"]}"]}
+            { name: "pinterest", values: ["${shop["pinterest"]}"]}
+            { name: "instagram", values: ["${shop["instagram"]}"]}
+            { name: "twitter", values: ["${shop["twitter"]}"]}
           ]
         }
       )
       {
+        id
         name
         url
         description

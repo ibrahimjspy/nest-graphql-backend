@@ -50,19 +50,19 @@ export class ShopDto {
 
   @ApiProperty({ required: false, default: "" })
   @IsOptional()
-  facebookUrl: string;
+  facebook: string;
 
   @ApiProperty({ required: false, default: "" })
   @IsOptional()
-  pinterestUrl: string;
+  pinterest: string;
 
   @ApiProperty({ required: false, default: "" })
   @IsOptional()
-  instagramUrl: string;
+  instagram: string;
 
   @ApiProperty({ required: false, default: "" })
   @IsOptional()
-  twitterUrl: string;
+  twitter: string;
 }
 
 

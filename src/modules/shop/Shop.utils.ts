@@ -21,9 +21,9 @@ export const validateShopInput = (shop) => {
     storePolicy: shop["storePolicy"] || "",
     logo: shop["logo"] || "",
     banner: shop["banner"] || "",
-    facebookUrl: shop["facebookUrl"] || "",
-    pinterestUrl: shop["pinterestUrl"] || "",
-    instagramUrl: shop["instagramUrl"] || "",
-    twitterUrl: shop["twitterUrl"] || ""
+    facebook: shop["facebook"] || "",
+    pinterest: shop["pinterest"] || "",
+    instagram: shop["instagram"] || "",
+    twitter: shop["twitter"] || ""
   };
 };
