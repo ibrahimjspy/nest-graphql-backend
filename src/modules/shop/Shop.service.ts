@@ -50,8 +50,10 @@ export class ShopService {
         validateStoreInput(storeInput),
         token
       );
+      // getting shop details by given shop id
+      const shopDetail = await shopDetailsHandler(shopId)
       // Adding created store in user shop
-      await addStoreToShopHandler(shopId, response.id, token)
+      await addStoreToShopHandler(shopId, response.id, shopDetail, token)
       return prepareSuccessResponse(response, "", 201);
     } catch (error) {
       this.logger.error(error);

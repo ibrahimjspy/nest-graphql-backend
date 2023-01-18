@@ -42,11 +42,10 @@ export const createStoreHandler = async (
 export const addStoreToShopHandler = async (
   shopId: string,
   storeId: string,
+  shopDetail: Object,
   token: string
 ): Promise<Object> => {
   try {
-    // getting shop details by given shop id
-    const shopDetail = await shopDetailsHandler(shopId)
     // concat previous storeIds and new storeId for shop
     const shopStoreIds = [storeId, ...(getStoreFrontFieldValues(shopDetail["fields"]))]
     const response = await graphqlResultErrorHandler(

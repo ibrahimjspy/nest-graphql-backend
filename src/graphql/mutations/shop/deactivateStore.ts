@@ -1,7 +1,7 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
-const federationMutation = (storeId: string) => {
+const b2cMutation = (storeId: string) => {
     return gql`
     mutation{
       deactivateMarketplaceShop(id:${storeId}){
@@ -15,8 +15,8 @@ export const deactivateStoreMutation = (
   storeId: string
 ) => {
   return graphqlQueryCheck(
-    federationMutation(storeId),
-    federationMutation(storeId),
+    b2cMutation(storeId),
+    b2cMutation(storeId),
     "true"
   );
 };
