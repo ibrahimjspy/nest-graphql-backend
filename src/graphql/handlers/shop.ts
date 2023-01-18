@@ -15,6 +15,7 @@ import { StoreDto } from 'src/modules/shop/dto/shop';
 import { createStoreMutation } from '../mutations/shop/createShop';
 import { addStoreToShopMutation } from '../mutations/shop/addStoreToShop';
 import { deactivateStoreMutation } from '../mutations/shop/deactivateStore';
+import { getStoreFrontFieldValues } from 'src/modules/shop/Shop.utils';
 
 export const carouselHandler = async (token: string): Promise<object> => {
   try {
@@ -44,15 +45,19 @@ export const addStoreToShopHandler = async (
   token: string
 ): Promise<Object> => {
   try {
+    // getting shop details by given shop id
+    const shopDetail = await shopDetailsHandler(shopId)
+    // concat previous storeIds and new storeId for shop
+    const shopStoreIds = [storeId, ...(getStoreFrontFieldValues(shopDetail["fields"]))]
     const response = await graphqlResultErrorHandler(
       await graphqlCall(
-        addStoreToShopMutation(shopId, storeId),
+        addStoreToShopMutation(shopId, shopStoreIds),
         token
       ),
     );
     return response['updateMarketplaceShop'];
   } catch (error) {
-    // If store adding in shop fails then we ne to deactivate that store
+    // If store adding in shop fails then we need to deactivate that store
     await graphqlResultErrorHandler(
       await graphqlCall(
         deactivateStoreMutation(storeId),

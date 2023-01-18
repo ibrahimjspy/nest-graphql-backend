@@ -1,13 +1,13 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
-const federationMutation = (shopId: string, storeId: string) => {
+const federationMutation = (shopId: string, storeIds: string[]) => {
     return gql`
     mutation {
       updateMarketplaceShop(
         id: ${shopId}
         input: {
-          fields: [{ name: "storefrontIds", newValues: ["${storeId}"] }]
+          fields: [{ name: "storefrontIds", newValues: ${JSON.stringify(storeIds)} }]
         }
       ) {
         id
@@ -18,10 +18,10 @@ const federationMutation = (shopId: string, storeId: string) => {
 
 export const addStoreToShopMutation = (
   shopId: string,
-  storeId: string
+  storeIds: string[]
 ) => {
   return graphqlQueryCheck(
-    federationMutation(shopId, storeId),
-    federationMutation(shopId, storeId)
+    federationMutation(shopId, storeIds),
+    federationMutation(shopId, storeIds)
   );
 };
