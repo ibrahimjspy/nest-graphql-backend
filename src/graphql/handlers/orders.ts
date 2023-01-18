@@ -22,6 +22,7 @@ import {
   filterReturnedOrderIds,
   hasNextPage,
   orderBundlesTransformer,
+  orderLinesFulfillTransformer,
 } from '../utils/orders';
 import { addOrderToShopMutation } from '../mutations/order/addOrderToShop';
 import { OrdersListDTO } from 'src/modules/orders/dto/list';
@@ -30,6 +31,8 @@ import {
   OrderReturnFilterDTO,
 } from 'src/modules/orders/dto/order-returns.dto';
 import { getOrderStatus } from '../queries/orders/getOrderStatuses';
+import { orderFulfillMutation } from '../mutations/order/fulfillOrder';
+import { orderLineDTO } from 'src/modules/orders/dto/fulfill';
 
 export const dashboardByIdHandler = async (
   id: string,
@@ -283,4 +286,18 @@ export const createReturnFulfillmentHandler = async (
     await graphqlCall(orderReturnFulfillmentQuery(payload), token),
   );
   return response;
+};
+
+export const orderFulfillHandler = async (
+  orderId: string,
+  orderLines: orderLineDTO[],
+  token,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      orderFulfillMutation(orderId, orderLinesFulfillTransformer(orderLines)),
+      token,
+    ),
+  );
+  return response['orderFulfill'];
 };

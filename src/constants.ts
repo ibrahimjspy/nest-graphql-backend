@@ -40,5 +40,6 @@ export const SMS_NUMBER = process.env.OS_SMS_NUMBER;
 export const IN_STOCK = 'in_stock';
 export const PRE_ORDER = 'pre_order';
 export const CATEGORY_SHOES = 'Shoes';
+export const DEFAULT_WAREHOUSE_ID = process.env.DEFAULT_WAREHOUSE_ID;
 export const OS_AWS_API_GATEWAY_ENDPOINT =
   process.env.OS_AWS_API_GATEWAY_ENDPOINT;

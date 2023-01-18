@@ -9,6 +9,7 @@ import {
   getReturnOrderIdsHandler,
   orderActivityHandler,
   orderDetailsHandler,
+  orderFulfillHandler,
   orderReturnDetailHandler,
   orderReturnListHandler,
   ordersListHandler,
@@ -36,6 +37,7 @@ import {
   getOrdersCountHandler,
   getReadyToFulfillOrdersCountHandler,
 } from 'src/graphql/handlers/orders.reporting';
+import { orderLineDTO } from './dto/fulfill';
 @Injectable()
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
@@ -293,6 +295,24 @@ export class OrdersService {
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
+    }
+  }
+
+  /**
+   * this method fulfills a order in Saleor and returns a fulfillment id
+   * @warn - currently it requires a separate method to be called to assign fulfillment to marketplace shop
+   */
+  public async orderFulfill(
+    orderId: string,
+    orderLineIds: orderLineDTO[],
+    token: string,
+  ): Promise<object> {
+    try {
+      const response = await orderFulfillHandler(orderId, orderLineIds, token);
+      return prepareSuccessResponse(response, '', 201);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 }

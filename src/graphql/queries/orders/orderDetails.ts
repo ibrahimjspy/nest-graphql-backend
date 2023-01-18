@@ -40,6 +40,7 @@ const federationQuery = (id: string): string => {
                 email
               }
               lines {
+                id
                 productName
                 quantity
                 productSku

@@ -15,6 +15,7 @@ import { OrderIdDto, ShopIdDto, UserIdDto } from './dto';
 import { OrdersListDTO } from './dto/list';
 import { OrderReturnDTO, OrderReturnFilterDTO } from './dto/order-returns.dto';
 import { IsAuthenticated } from 'src/core/utils/decorators';
+import { OrderFulfillDto } from './dto/fulfill';
 
 @ApiTags('orders')
 @Controller('')
@@ -193,6 +194,22 @@ export class OrdersController {
     return makeResponse(
       res,
       await this.appService.placeOrderReturn(orderDTO, token),
+    );
+  }
+
+  @Post('api/v1/order/fulfill')
+  async fulfillOrder(
+    @Res() res,
+    @Body() orderDto: OrderFulfillDto,
+    @IsAuthenticated('authorization') token: string,
+  ) {
+    return makeResponse(
+      res,
+      await this.appService.orderFulfill(
+        orderDto.orderId,
+        orderDto.orderLines,
+        token,
+      ),
     );
   }
 }
