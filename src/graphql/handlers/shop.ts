@@ -30,11 +30,7 @@ export const createStoreHandler = async (
   token: string,
 ): Promise<ShopType> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(
-      createStoreMutation(storeInput),
-      token,
-      "true"
-    ),
+    await graphqlCall(createStoreMutation(storeInput), token, 'true'),
   );
   return response['createMarketplaceShop'];
 };
@@ -42,31 +38,27 @@ export const createStoreHandler = async (
 export const addStoreToShopHandler = async (
   shopId: string,
   storeId: string,
-  shopDetail: Object,
-  token: string
-): Promise<Object> => {
+  shopDetail: object,
+  token: string,
+): Promise<object> => {
   try {
     // concat previous storeIds and new storeId for shop
-    const shopStoreIds = [storeId, ...(getStoreFrontFieldValues(shopDetail["fields"]))]
+    const shopStoreIds = [
+      storeId,
+      ...getStoreFrontFieldValues(shopDetail['fields']),
+    ];
     const response = await graphqlResultErrorHandler(
-      await graphqlCall(
-        addStoreToShopMutation(shopId, shopStoreIds),
-        token
-      ),
+      await graphqlCall(addStoreToShopMutation(shopId, shopStoreIds), token),
     );
     return response['updateMarketplaceShop'];
   } catch (error) {
     // If store adding in shop fails then we need to deactivate that store
     await graphqlResultErrorHandler(
-      await graphqlCall(
-        deactivateStoreMutation(storeId),
-        token,
-        "true"
-      ),
+      await graphqlCall(deactivateStoreMutation(storeId), token, 'true'),
     );
     const errorMessage = await graphqlExceptionHandler(error);
     return {
-      message: errorMessage.message
+      message: errorMessage.message,
     };
   }
 };

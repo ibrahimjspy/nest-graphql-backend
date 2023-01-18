@@ -16,15 +16,15 @@ export class StoreDto {
   @IsUrl()
   url: string;
 
-  @ApiProperty({ required: false, default: "" })
+  @ApiProperty({ required: false, default: '' })
   @IsOptional()
   description: string;
 
-  @ApiProperty({ required: false, default: "" })
+  @ApiProperty({ required: false, default: '' })
   @IsOptional()
   about: string;
 
-  @ApiProperty({ required: false, default: "" })
+  @ApiProperty({ required: false, default: '' })
   @IsOptional()
   madeIn: string;
 
@@ -32,39 +32,38 @@ export class StoreDto {
   @IsOptional()
   minOrder: number;
 
-  @ApiProperty({ required: false, default: "" })
+  @ApiProperty({ required: false, default: '' })
   @IsOptional()
   returnPolicy: string;
 
-  @ApiProperty({ required: false, default: "" })
+  @ApiProperty({ required: false, default: '' })
   @IsOptional()
   storePolicy: string;
 
-  @ApiProperty({ required: false, default: "" })
+  @ApiProperty({ required: false, default: '' })
   @IsOptional()
   logo: string;
 
-  @ApiProperty({ required: false, default: "" })
+  @ApiProperty({ required: false, default: '' })
   @IsOptional()
   banner: string;
 
-  @ApiProperty({ required: false, default: "" })
+  @ApiProperty({ required: false, default: '' })
   @IsOptional()
   facebook: string;
 
-  @ApiProperty({ required: false, default: "" })
+  @ApiProperty({ required: false, default: '' })
   @IsOptional()
   pinterest: string;
 
-  @ApiProperty({ required: false, default: "" })
+  @ApiProperty({ required: false, default: '' })
   @IsOptional()
   instagram: string;
 
-  @ApiProperty({ required: false, default: "" })
+  @ApiProperty({ required: false, default: '' })
   @IsOptional()
   twitter: string;
 }
-
 
 export class shopIdByVariantsDTO {
   @ApiProperty({ type: String, isArray: true, required: false })
