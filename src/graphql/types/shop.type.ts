@@ -1,4 +1,4 @@
-export interface FieldsType{
+export interface FieldsType {
   name: string;
   values: string[];
 }
@@ -15,7 +15,7 @@ export interface ShopType {
   returnPolicy: string;
   storePolicy: string;
   shippingMethods: ShopShippingMethodType[];
-  fields?: FieldsType[]
+  fields?: FieldsType[];
 }
 
 export interface ShopShippingMethodType {
