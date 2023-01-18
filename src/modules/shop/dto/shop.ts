@@ -85,3 +85,8 @@ export class accountIdDTO {
   @ApiProperty({ type: String, required: true })
   accountId: string;
 }
+
+export class removeProductDTO {
+  @ApiProperty({ required: true })
+  productIds: string[];
+}

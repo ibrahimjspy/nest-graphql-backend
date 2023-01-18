@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Headers,
   Param,
@@ -11,7 +12,14 @@ import {
 import { makeResponse } from '../../core/utils/response';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ShopService } from './Shop.service';
-import { accountIdDTO, StoreDto, shopIdByVariantsDTO, shopIdDTO } from './dto/shop';
+import {
+  StoreDto,
+  accountIdDTO,
+  removeProductDTO,
+  shopIdByVariantsDTO,
+  shopIdDTO,
+} from './dto/shop';
+import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 
 @ApiTags('shop')
 @Controller('')
@@ -101,6 +109,40 @@ export class ShopController {
       await this.appService.saveShopBankDetails(
         params.shopId,
         body?.accountId,
+        Authorization,
+      ),
+    );
+  }
+
+  @Get('/api/v1/shop/my/products/:shopId')
+  @ApiOperation({
+    summary: 'returns all products pushed to store by a retailer',
+  })
+  async getMyProducts(
+    @Res() res,
+    @Param() params: shopIdDTO,
+    @Query() filter: PaginationDto,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.getMyProducts(params.shopId, filter),
+    );
+  }
+
+  @Delete('/api/v1/shop/my/products')
+  @ApiOperation({
+    summary: 'deletes product from my products ',
+  })
+  async deleteProductsFromMyProducts(
+    @Res() res,
+    @Body() body: removeProductDTO,
+    @Headers() headers,
+  ): Promise<object> {
+    const Authorization: string = headers.authorization;
+    return makeResponse(
+      res,
+      await this.appService.removeProductsFromMyProducts(
+        body.productIds,
         Authorization,
       ),
     );

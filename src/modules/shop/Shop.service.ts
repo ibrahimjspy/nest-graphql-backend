@@ -3,6 +3,8 @@ import {
   GetShopDetailsbyEmailHandler,
   carouselHandler,
   getShopBankDetailsHandler,
+  getStoreFrontIdHandler,
+  getStoreProductVariantsHandler,
   saveShopBankDetailsHandler,
   shopDetailsHandler,
   shopIdByOrderIdHandler,
@@ -12,10 +14,21 @@ import {
 } from 'src/graphql/handlers/shop';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
-import { validateStoreInput, validateArray } from './Shop.utils';
 import { SuccessResponseType } from 'src/core/utils/response.type';
 import { StoreDto } from './dto/shop';
 
+import {
+  validateStoreInput,
+  getProductVariantIds,
+  getStoreFrontFieldValues,
+  validateArray,
+} from './Shop.utils';
+import {
+  deleteBulkProductHandler,
+  getMyProductsHandler,
+  getProductIdsByVariantIdsHandler,
+} from 'src/graphql/handlers/product';
+import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 @Injectable()
 export class ShopService {
   private readonly logger = new Logger(ShopService.name);
@@ -93,9 +106,54 @@ export class ShopService {
     return response;
   }
 
+  public async getMyProducts(retailerId: string, pagination: PaginationDto) {
+    try {
+      let productIds = [];
+      const retailer = await getStoreFrontIdHandler(retailerId);
+      const storefrontIds = getStoreFrontFieldValues(retailer['fields']);
+      await Promise.all(
+        (storefrontIds || []).map(async (id) => {
+          const productVariantIds = await getStoreProductVariantsHandler(id);
+          const ids = await getProductIdsByVariantIdsHandler(
+            getProductVariantIds(productVariantIds['productVariants']),
+          );
+          productIds = productIds.concat(ids);
+        }),
+      );
+
+      if (productIds.length > 0) {
+        return prepareSuccessResponse(
+          [retailer, await getMyProductsHandler(productIds, pagination)],
+          '',
+          200,
+        );
+      }
+      return prepareSuccessResponse(
+        [retailer, []],
+        'no products exists against given shop id',
+        200,
+      );
+    } catch (error) {
+      this.logger.error(error);
+    }
+  }
+
   public async getShopBankDetails(shopId: string, token: string) {
     try {
       const response = await getShopBankDetailsHandler(shopId, token);
+      return prepareSuccessResponse(response, '', 200);
+    } catch (error) {
+      this.logger.error(error);
+    }
+  }
+
+  public async removeProductsFromMyProducts(productIds: string[], token) {
+    try {
+      const response = await deleteBulkProductHandler(
+        productIds,
+        token,
+        'true',
+      );
       return prepareSuccessResponse(response, '', 200);
     } catch (error) {
       this.logger.error(error);

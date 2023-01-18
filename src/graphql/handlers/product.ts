@@ -9,6 +9,11 @@ import { getBundleIds } from 'src/modules/product/Product.utils';
 import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
 import { BundleType } from 'src/graphql/types/bundle.type';
 import { PaginationDto } from '../dto/pagination.dto';
+import { getProductIdsByVariantIdsQuery } from '../queries/product/productIdsByVariantIds';
+import { hasNextPage } from '../utils/orders';
+import { getUniqueProductIds } from '../utils/product';
+import { getMyProductsQuery } from '../queries/product/myProducts';
+import { deleteBulkProductsMutation } from '../mutations/product/bulkDelete';
 
 export const productListPageHandler = async (
   id: string,
@@ -119,4 +124,60 @@ export const getLegacyMappingHandler = async (productIds, shop_ids) => {
     await graphqlCall(ProductQueries.productMappingQuery(productIds, shop_ids)),
   );
   return response;
+};
+
+/**
+ * this handler takes variant ids and returns product ids which are unique
+ */
+export const getProductIdsByVariantIdsHandler = async (
+  variantIds: string[],
+  after = '',
+) => {
+  let productIds = [];
+  const getProductVariants = await graphqlResultErrorHandler(
+    await graphqlCall(getProductIdsByVariantIdsQuery(variantIds), after),
+  );
+  productIds = productIds.concat(
+    getProductVariants['productVariants']['edges'],
+  );
+  const nextPage = hasNextPage(getProductVariants['productVariants'].pageInfo);
+  if (nextPage) {
+    const getNextProductVariants = await getProductIdsByVariantIdsHandler(
+      variantIds,
+      nextPage,
+    );
+    productIds = productIds.concat(
+      getNextProductVariants['productVariants']['edges'],
+    );
+  }
+  return getUniqueProductIds(productIds);
+};
+
+export const getMyProductsHandler = async (
+  productIds: string[],
+  pagination: PaginationDto,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      getMyProductsQuery(productIds, pagination, 'true'),
+      '',
+      'true',
+    ),
+  );
+  return response['products'];
+};
+
+export const deleteBulkProductHandler = async (
+  productIds: string[],
+  token: string,
+  isb2c = '',
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      deleteBulkProductsMutation(productIds, isb2c),
+      token,
+      isb2c,
+    ),
+  );
+  return response['productBulkDelete'];
 };
