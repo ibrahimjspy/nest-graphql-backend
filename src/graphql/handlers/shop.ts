@@ -52,7 +52,6 @@ export const addStoreToShopHandler = async (
     );
     return response['updateMarketplaceShop'];
   } catch (error) {
-    console.log("error", error)
     // If store adding in shop fails then we ne to deactivate that store
     await graphqlResultErrorHandler(
       await graphqlCall(
