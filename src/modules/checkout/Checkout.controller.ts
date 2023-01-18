@@ -12,8 +12,10 @@ import { ApiTags } from '@nestjs/swagger';
 import { CheckoutService } from './Checkout.service';
 import { makeResponse } from '../../core/utils/response';
 import { AddBundleDto, UserIdDto } from './dto';
+import { UpdateBundleStateDto } from 'src/modules/checkout/dto/add-bundle.dto';
 import { UnSelectBundlesType } from './Checkout.utils.type';
 import { IsAuthenticated } from 'src/core/utils/decorators';
+
 @ApiTags('checkout')
 @Controller('checkout')
 export class CheckoutController {
@@ -78,6 +80,18 @@ export class CheckoutController {
         body?.bundle,
         token,
       ),
+    );
+  }
+
+  @Put('cart/bundle/state/update')
+  async updateCartState(
+    @Res() res,
+    @Body() updateBundleState: UpdateBundleStateDto,
+    @IsAuthenticated('authorization') token: string,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.updateCheckoutBundleState(updateBundleState, token),
     );
   }
 

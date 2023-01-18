@@ -23,3 +23,17 @@ export class AddBundleDto {
   @ValidateNested()
   bundles: BundleDto[];
 }
+
+export class UpdateBundleStateDto {
+  @ApiProperty({ isArray: true })
+  @IsNotEmpty()
+  checkoutBundleIds: Array<string>;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  userEmail: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  action: string;
+}

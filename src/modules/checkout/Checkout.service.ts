@@ -15,6 +15,8 @@ import {
 } from 'src/graphql/handlers/checkout.type';
 import { BundleType } from 'src/graphql/types/bundle.type';
 import { getHttpErrorMessage } from 'src/external/utils/httpHelper';
+import { UpdateBundleStateDto } from 'src/modules/checkout/dto/add-bundle.dto';
+
 @Injectable()
 export class CheckoutService {
   private readonly logger = new Logger(CheckoutService.name);
@@ -612,6 +614,22 @@ export class CheckoutService {
       } else {
         return graphqlExceptionHandler(error);
       }
+    }
+  }
+
+  public async updateCheckoutBundleState(
+    updateBundleState: UpdateBundleStateDto,
+    token: string,
+  ) {
+    try {
+      const response = await CheckoutHandlers.updateCheckoutBundleState(
+        updateBundleState,
+        token,
+      );
+      return prepareSuccessResponse(response, '', 200);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 }
