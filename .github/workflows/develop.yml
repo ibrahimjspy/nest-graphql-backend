@@ -57,6 +57,7 @@ jobs:
           (echo "OS_AWS_API_GATEWAY_ENDPOINT=${{ secrets.OS_AWS_API_GATEWAY_ENDPOINT }}") >> .env
           (echo "AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}") >> .env
           (echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}") >> .env
+          (echo "DEFAULT_WAREHOUSE_ID=${{ secrets.DEFAULT_WAREHOUSE_ID }}") >> .env
 
         # Docker login
       - name: Login to DockerHub
