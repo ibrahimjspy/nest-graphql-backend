@@ -47,6 +47,15 @@ const b2bQuery = (productIds, pagination: PaginationDto): string => {
             }
             category {
               name
+              id
+              ancestors(first:5){
+                edges{
+                  node{
+                  id
+                  name
+                  }
+                }
+              }
             }
           }
         }
@@ -57,10 +66,10 @@ const b2bQuery = (productIds, pagination: PaginationDto): string => {
 
 const b2cQuery = (productIds, pagination: PaginationDto): string => {
   return gql`
-      query {
-        products(${validatePageFilter(
-          pagination,
-        )}, channel: "default-channel", filter: { ids: ${JSON.stringify(
+    query {
+      products(${validatePageFilter(
+        pagination,
+      )}, channel: "default-channel", filter: { ids: ${JSON.stringify(
     productIds,
   )} }) {
          totalCount
@@ -76,35 +85,39 @@ const b2cQuery = (productIds, pagination: PaginationDto): string => {
               description
               slug
               id
-              media {
-                url
-              }
-              variants {
-                id
-                attributes {
-                  attribute {
-                    name
-                  }
-                  values {
-                    name
-                  }
+              attributes {
+                attribute {
+                  name
                 }
-                pricing {
-                  price {
-                    gross {
-                      amount
-                    }
+                values {
+                  value
+                }
+              }
+              pricing {
+                price {
+                  gross {
+                    amount
                   }
                 }
               }
-              category {
-                name
+            }
+            category {
+              name
+              id
+              ancestors(first:5){
+                edges{
+                  node{
+                  id
+                  name
+                  }
+                }
               }
             }
           }
         }
       }
-    `;
+    }
+  `;
 };
 
 export const getMyProductsQuery = (

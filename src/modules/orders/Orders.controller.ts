@@ -16,6 +16,7 @@ import { OrdersListDTO } from './dto/list';
 import { OrderReturnDTO, OrderReturnFilterDTO } from './dto/order-returns.dto';
 import { IsAuthenticated } from 'src/core/utils/decorators';
 import { OrderFulfillDto } from './dto/fulfill';
+import { OrderRefundDTO } from './dto/refund';
 
 @ApiTags('orders')
 @Controller('')
@@ -210,6 +211,21 @@ export class OrdersController {
         orderDto.orderLines,
         token,
       ),
+    );
+  }
+
+  @Post('api/v1/order/refund')
+  @ApiOperation({
+    summary: 'api to refund order lines both fulfilled and unfulfilled',
+  })
+  async refundOrder(
+    @Res() res,
+    @Body() orderDto: OrderRefundDTO,
+    @IsAuthenticated('authorization') token: string,
+  ) {
+    return makeResponse(
+      res,
+      await this.appService.orderRefund(orderDto, token),
     );
   }
 }

@@ -1,5 +1,6 @@
 import { DEFAULT_WAREHOUSE_ID } from 'src/constants';
 import { orderLineDTO } from 'src/modules/orders/dto/fulfill';
+import { orderFulfillmentLineDTO } from 'src/modules/orders/dto/refund';
 
 /**
  *   transforms orderIds array into a string which can be used in graphql query
@@ -91,16 +92,18 @@ export const orderLinesTransformer = (orderLines): any => {
 
 /**
  *   @author Muhammad Ibrahim
+ *  @links - this is used in order fulfillment
  *   @description transforms order lines input to a string to work with graphql
  */
 export const orderLinesFulfillTransformer = (
   orderLines: orderLineDTO[],
 ): string => {
+  console.log(orderLines);
   const linesArray = [];
   const warehouseId = DEFAULT_WAREHOUSE_ID;
   orderLines.map((order) => {
     linesArray.push({
-      orderLineId: order.lineId,
+      orderLineId: order.orderLineId,
       stocks: { warehouse: warehouseId, quantity: order.quantity },
     });
   });
