@@ -1,29 +1,29 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
-import { ShopDto } from 'src/modules/shop/dto/shop';
+import { StoreDto } from 'src/modules/shop/dto/shop';
 
-const federationMutation = (shop: ShopDto) => {
+const federationMutation = (storeInput: StoreDto) => {
     return gql`
     mutation{
       createMarketplaceShop(
         input: {
-          name: "${shop["name"]}"
-          url: "${shop["url"]}"
-          email: "${shop["email"]}"
-          user: "${shop["email"]}"
-          description: "${shop["description"]}"
-          about: "${shop["about"]}"
-          madeIn: "${shop["madeIn"]}"
-          minOrder: ${shop["minOrder"]}
-          returnPolicy: "${shop["returnPolicy"]}"
-          storePolicy: "${shop["storePolicy"]}"
+          name: "${storeInput["name"]}"
+          url: "${storeInput["url"]}"
+          email: "${storeInput["email"]}"
+          user: "${storeInput["email"]}"
+          description: "${storeInput["description"]}"
+          about: "${storeInput["about"]}"
+          madeIn: "${storeInput["madeIn"]}"
+          minOrder: ${storeInput["minOrder"]}
+          returnPolicy: "${storeInput["returnPolicy"]}"
+          storePolicy: "${storeInput["storePolicy"]}"
           fields: [
-            { name: "logo", values: ["${shop["logo"]}"]}
-            { name: "banner", values: ["${shop["banner"]}"]}
-            { name: "facebook", values: ["${shop["facebook"]}"]}
-            { name: "pinterest", values: ["${shop["pinterest"]}"]}
-            { name: "instagram", values: ["${shop["instagram"]}"]}
-            { name: "twitter", values: ["${shop["twitter"]}"]}
+            { name: "logo", values: ["${storeInput["logo"]}"]}
+            { name: "banner", values: ["${storeInput["banner"]}"]}
+            { name: "facebook", values: ["${storeInput["facebook"]}"]}
+            { name: "pinterest", values: ["${storeInput["pinterest"]}"]}
+            { name: "instagram", values: ["${storeInput["instagram"]}"]}
+            { name: "twitter", values: ["${storeInput["twitter"]}"]}
           ]
         }
       )
@@ -43,12 +43,12 @@ const federationMutation = (shop: ShopDto) => {
   `;
 };
 
-export const createShopMutation = (
-  shop: ShopDto
+export const createStoreMutation = (
+  storeInput: StoreDto
 ) => {
   return graphqlQueryCheck(
-    federationMutation(shop),
-    federationMutation(shop),
+    federationMutation(storeInput),
+    federationMutation(storeInput),
     "true"
   );
 };

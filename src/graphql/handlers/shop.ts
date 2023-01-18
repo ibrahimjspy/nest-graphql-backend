@@ -11,8 +11,8 @@ import { ShopByEmailQuery } from '../queries/shop/shopbyEmail';
 import { shopBankDetailsQuery } from '../queries/shop/shopBankDetailsQuery';
 import { shopBankDetailsMutation } from '../mutations/shop/shopBankDetails';
 import { ShopType } from '../types/shop.type';
-import { ShopDto } from 'src/modules/shop/dto/shop';
-import { createShopMutation } from '../mutations/shop/createShop';
+import { StoreDto } from 'src/modules/shop/dto/shop';
+import { createStoreMutation } from '../mutations/shop/createShop';
 
 export const carouselHandler = async (token: string): Promise<object> => {
   try {
@@ -22,13 +22,13 @@ export const carouselHandler = async (token: string): Promise<object> => {
   }
 };
 
-export const createShopHandler = async (
-  shop: ShopDto,
+export const createStoreHandler = async (
+  storeInput: StoreDto,
   token: string,
 ): Promise<ShopType> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
-      createShopMutation(shop),
+      createStoreMutation(storeInput),
       token,
       "true"
     ),

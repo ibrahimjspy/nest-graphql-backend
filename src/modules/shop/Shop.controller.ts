@@ -11,7 +11,7 @@ import {
 import { makeResponse } from '../../core/utils/response';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ShopService } from './Shop.service';
-import { accountIdDTO, ShopDto, shopIdByVariantsDTO, shopIdDTO } from './dto/shop';
+import { accountIdDTO, StoreDto, shopIdByVariantsDTO, shopIdDTO } from './dto/shop';
 
 @ApiTags('shop')
 @Controller('')
@@ -32,20 +32,22 @@ export class ShopController {
     );
   }
 
-  @Post('/api/v1/shop/create')
+  @Post('/api/v1/store/create/:shopId')
   @ApiOperation({
-    summary: 'create shop against given user',
+    summary: 'create store against given user shop id',
   })
-  async createShop(
+  async createStore(
     @Res() res,
-    @Body() shopDto: ShopDto,
+    @Param() params: shopIdDTO,
+    @Body() storeInput: StoreDto,
     @Headers() headers,
   ): Promise<object> {
     const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.createShop(
-        shopDto,
+      await this.appService.createStore(
+        params.shopId,
+        storeInput,
         Authorization,
       ),
     );

@@ -7,13 +7,13 @@ import {
   shopDetailsHandler,
   shopIdByOrderIdHandler,
   shopIdByVariantIdHandler,
-  createShopHandler,
+  createStoreHandler,
 } from 'src/graphql/handlers/shop';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
-import { validateShopInput, validateArray } from './Shop.utils';
+import { validateStoreInput, validateArray } from './Shop.utils';
 import { SuccessResponseType } from 'src/core/utils/response.type';
-import { ShopDto } from './dto/shop';
+import { StoreDto } from './dto/shop';
 
 @Injectable()
 export class ShopService {
@@ -26,16 +26,16 @@ export class ShopService {
     return carouselHandler(token);
   }
 
-  public async createShop(
-    shop: ShopDto,
+  public async createStore(
+    shopId: string,
+    storeInput: StoreDto,
     token: string,
   ): Promise<SuccessResponseType> {
     try {
-      const response = await createShopHandler(
-        validateShopInput(shop),
+      const response = await createStoreHandler(
+        validateStoreInput(storeInput),
         token
       );
-
       return prepareSuccessResponse(response, "", 201);
     } catch (error) {
       this.logger.error(error);

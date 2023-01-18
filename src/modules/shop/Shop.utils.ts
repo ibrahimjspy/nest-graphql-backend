@@ -9,7 +9,7 @@ export const validateArray = (input) => {
  * returns with fields array
  * @params shop: information for shop creation
  */
-export const validateShopInput = (shop) => {
+export const validateStoreInput = (shop) => {
   return {
     ...shop,
     user: shop["email"],
