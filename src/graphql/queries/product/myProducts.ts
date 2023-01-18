@@ -11,6 +11,13 @@ const b2bQuery = (productIds, pagination: PaginationDto): string => {
       )}, channel: "default-channel", filter: { ids: ${JSON.stringify(
     productIds,
   )} }) {
+        totalCount
+        pageInfo {
+          hasNextPage
+          endCursor
+          startCursor
+          hasPreviousPage
+        }
         edges {
           node {
             name
@@ -56,6 +63,7 @@ const b2cQuery = (productIds, pagination: PaginationDto): string => {
         )}, channel: "default-channel", filter: { ids: ${JSON.stringify(
     productIds,
   )} }) {
+         totalCount
           pageInfo {
             hasNextPage
             endCursor
