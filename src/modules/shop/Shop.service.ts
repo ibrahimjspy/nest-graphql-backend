@@ -194,6 +194,7 @@ export class ShopService {
       return prepareSuccessResponse(response, '', 200);
     } catch (error) {
       this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 }

@@ -1,6 +1,5 @@
 import { DEFAULT_WAREHOUSE_ID } from 'src/constants';
 import { orderLineDTO } from 'src/modules/orders/dto/fulfill';
-import { orderFulfillmentLineDTO } from 'src/modules/orders/dto/refund';
 
 /**
  *   transforms orderIds array into a string which can be used in graphql query
@@ -98,7 +97,6 @@ export const orderLinesTransformer = (orderLines): any => {
 export const orderLinesFulfillTransformer = (
   orderLines: orderLineDTO[],
 ): string => {
-  console.log(orderLines);
   const linesArray = [];
   const warehouseId = DEFAULT_WAREHOUSE_ID;
   orderLines.map((order) => {

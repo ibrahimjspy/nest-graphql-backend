@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ArrayMinSize, IsArray, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsNumber, IsString } from 'class-validator';
 import { orderLineDTO } from './fulfill';
 
 export class orderFulfillmentLineDTO {
