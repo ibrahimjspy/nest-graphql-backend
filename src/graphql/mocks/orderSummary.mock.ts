@@ -7,5 +7,6 @@ export const mockOrderReporting = () => {
     ordersToPickup: faker.datatype.number({ min: 3, max: 100 }),
     ordersReturned: faker.datatype.number({ min: 3, max: 100 }),
     totalOrders: faker.datatype.number({ min: 3, max: 100 }),
+    totalEarnings: faker.datatype.number({ min: 70, max: 90 }),
   };
 };

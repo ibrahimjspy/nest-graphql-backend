@@ -5,3 +5,11 @@ export class OrderSummaryResponseDto {
   ordersReturned?: number;
   totalOrders?: number;
 }
+
+export class ShopOrderReportResponseDto {
+  totalEarnings?: number;
+  ordersProcessing?: number;
+  ordersShipped?: number;
+  ordersCancelled?: number;
+  ordersReturnsRequested?: number;
+}
