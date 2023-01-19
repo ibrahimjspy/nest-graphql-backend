@@ -193,12 +193,12 @@ export class ShopService {
         'true',
       );
       return prepareSuccessResponse(response, '', 200);
- } catch (error) {
+    } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
     }
   }
-  
+
   public async addVendorsToShop(
     shopId: string,
     vendorIds: number[],
@@ -215,7 +215,6 @@ export class ShopService {
         token,
       );
       return prepareSuccessResponse(response, '', 201);
-
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

@@ -15,9 +15,9 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ShopService } from './Shop.service';
 import {
   accountIdDTO,
+  createStoreDTO,
   shopIdByVariantsDTO,
   shopIdDTO,
-  createStoreDTO,
   vendorIdsDTO,
 } from './dto/shop';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
@@ -165,7 +165,7 @@ export class ShopController {
       await this.appService.updateMyProduct(body, token),
     );
   }
-  
+
   @Post('/api/v1/shop/vendors/:shopId')
   @ApiOperation({
     summary: 'Add my vendors Ids against given user shop id',
