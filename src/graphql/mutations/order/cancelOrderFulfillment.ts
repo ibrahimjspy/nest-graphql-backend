@@ -1,10 +1,12 @@
 import { gql } from 'graphql-request';
+import { DEFAULT_WAREHOUSE_ID } from 'src/constants';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
 const b2bMutation = (fulfillmentId: string, warehouseId: string) => {
+  const validateWarehouseId = warehouseId || DEFAULT_WAREHOUSE_ID;
   return gql`
     mutation {
-      orderFulfillmentCancel(id: "${fulfillmentId}", input: { warehouseId: "${warehouseId}" }) {
+      orderFulfillmentCancel(id: "${fulfillmentId}", input: { warehouseId: "${validateWarehouseId}" }) {
         fulfillment {
           id
           status
@@ -22,9 +24,11 @@ const b2bMutation = (fulfillmentId: string, warehouseId: string) => {
 };
 
 const b2cMutation = (fulfillmentId: string, warehouseId: string) => {
+  const validateWarehouseId = warehouseId || DEFAULT_WAREHOUSE_ID;
+
   return gql`
     mutation {
-      orderFulfillmentCancel(id: "${fulfillmentId}", input: { warehouseId: "${warehouseId}" }) {
+      orderFulfillmentCancel(id: "${fulfillmentId}", input: { warehouseId: "${validateWarehouseId}" }) {
         fulfillment {
           id
           status

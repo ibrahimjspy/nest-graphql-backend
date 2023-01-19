@@ -14,6 +14,7 @@ import { hasNextPage } from '../utils/orders';
 import { getUniqueProductIds } from '../utils/product';
 import { getMyProductsQuery } from '../queries/product/myProducts';
 import { deleteBulkProductsMutation } from '../mutations/product/bulkDelete';
+import { productVariantStockUpdateMutation } from '../mutations/product/variantStockUpdate';
 
 export const productListPageHandler = async (
   id: string,
@@ -180,4 +181,20 @@ export const deleteBulkProductHandler = async (
     ),
   );
   return response['productBulkDelete'];
+};
+
+export const updateProductVariantStockHandler = async (
+  productVariantId: string,
+  quantity: number,
+  token: string,
+  isb2c = '',
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      productVariantStockUpdateMutation(productVariantId, quantity),
+      token,
+      isb2c,
+    ),
+  );
+  return response['productVariantStocksUpdate'];
 };

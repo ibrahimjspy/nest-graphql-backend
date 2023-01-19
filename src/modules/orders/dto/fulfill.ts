@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ArrayMinSize, IsArray, IsNumber, IsString } from 'class-validator';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class orderLineDTO {
   @ApiProperty({ required: true })
@@ -25,6 +31,6 @@ export class orderFulfillmentCancelDTO {
   @IsString()
   fulfillmentId: string;
   @ApiProperty({ required: false, default: '' })
-  @IsString()
+  @IsOptional()
   warehouseId: string;
 }

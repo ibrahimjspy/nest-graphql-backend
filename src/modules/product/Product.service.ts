@@ -98,4 +98,22 @@ export class ProductService {
   public getDownloadProductImages(urls: Array<string>): Promise<object> {
     return downloadProductImagesHandler(urls);
   }
+
+  public async updateProductVariantStock(
+    productVariantId: string,
+    quantity: number,
+    token: string,
+  ): Promise<object> {
+    try {
+      const response = await ProductsHandlers.updateProductVariantStockHandler(
+        productVariantId,
+        quantity,
+        token,
+      );
+      return prepareSuccessResponse(response, '', 201);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
 }

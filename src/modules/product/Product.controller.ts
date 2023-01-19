@@ -1,10 +1,12 @@
 import { Body, Controller, Get, Param, Post, Query, Res } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ProductService } from './Product.service';
 import { ProductFilterDto, ProductFilterTypeEnum } from './dto';
 import { makeResponse } from 'src/core/utils/response';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 import { ProductListDto } from './dto/product.dto';
+import { IsAuthenticated } from 'src/core/utils/decorators';
+import { ProductVariantStockUpdateDTO } from './dto/variant';
 
 @ApiTags('product')
 @Controller()
@@ -76,5 +78,24 @@ export class ProductController {
   @Post('/api/v1/product/images')
   downloadProductImages(@Body() body): Promise<object> {
     return this.appService.getDownloadProductImages(body?.urls);
+  }
+
+  @Post('api/v1/product/variant/stock/update')
+  @ApiOperation({
+    summary: 'updates stocks for product variant against its id',
+  })
+  async cancelOrderFulfillment(
+    @Res() res,
+    @Body() productVariantDTO: ProductVariantStockUpdateDTO,
+    @IsAuthenticated('authorization') token: string,
+  ) {
+    return makeResponse(
+      res,
+      await this.appService.updateProductVariantStock(
+        productVariantDTO.productVariantId,
+        productVariantDTO.quantity,
+        token,
+      ),
+    );
   }
 }
