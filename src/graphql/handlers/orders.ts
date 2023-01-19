@@ -37,6 +37,7 @@ import { orderLineDTO } from 'src/modules/orders/dto/fulfill';
 import { OrderRefundDTO } from 'src/modules/orders/dto/refund';
 import { orderRefundMutation } from '../mutations/order/refundOrder';
 import { orderCancelMutation } from '../mutations/order/cancelOrder';
+import { orderFulfillmentCancelMutation } from '../mutations/order/cancelOrderFulfillment';
 
 export const dashboardByIdHandler = async (
   id: string,
@@ -333,4 +334,18 @@ export const orderCancelHandler = async (
     await graphqlCall(orderCancelMutation(orderId), token),
   );
   return response['orderCancel'];
+};
+
+export const orderFulfillmentCancelHandler = async (
+  fulfillmentId: string,
+  warehouseId: string,
+  token,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      orderFulfillmentCancelMutation(fulfillmentId, warehouseId),
+      token,
+    ),
+  );
+  return response['orderFulfillmentCancel'];
 };

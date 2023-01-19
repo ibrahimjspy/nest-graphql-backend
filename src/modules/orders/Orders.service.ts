@@ -11,6 +11,7 @@ import {
   orderCancelHandler,
   orderDetailsHandler,
   orderFulfillHandler,
+  orderFulfillmentCancelHandler,
   orderFulfillmentRefundHandler,
   orderReturnDetailHandler,
   orderReturnListHandler,
@@ -335,6 +336,24 @@ export class OrdersService {
   public async orderCancel(orderId: string, token: string): Promise<object> {
     try {
       const response = await orderCancelHandler(orderId, token);
+      return prepareSuccessResponse(response, '', 201);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async orderFulfillmentCancel(
+    fulfillmentId: string,
+    warehouseId: string,
+    token: string,
+  ): Promise<object> {
+    try {
+      const response = await orderFulfillmentCancelHandler(
+        fulfillmentId,
+        warehouseId,
+        token,
+      );
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
       this.logger.error(error);

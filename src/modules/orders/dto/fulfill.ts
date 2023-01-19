@@ -19,3 +19,12 @@ export class OrderFulfillDto {
   @ArrayMinSize(1)
   orderLines: orderLineDTO[];
 }
+
+export class orderFulfillmentCancelDTO {
+  @ApiProperty({ required: true })
+  @IsString()
+  fulfillmentId: string;
+  @ApiProperty({ required: false, default: '' })
+  @IsString()
+  warehouseId: string;
+}

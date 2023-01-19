@@ -15,7 +15,7 @@ import { OrderIdDto, ShopIdDto, UserIdDto } from './dto';
 import { OrdersListDTO } from './dto/list';
 import { OrderReturnDTO, OrderReturnFilterDTO } from './dto/order-returns.dto';
 import { IsAuthenticated } from 'src/core/utils/decorators';
-import { OrderFulfillDto } from './dto/fulfill';
+import { OrderFulfillDto, orderFulfillmentCancelDTO } from './dto/fulfill';
 import { OrderRefundDTO } from './dto/refund';
 
 @ApiTags('orders')
@@ -241,6 +241,25 @@ export class OrdersController {
     return makeResponse(
       res,
       await this.appService.orderCancel(orderDto.orderId, token),
+    );
+  }
+
+  @Post('api/v1/order/fulfillment/cancel')
+  @ApiOperation({
+    summary: 'cancels an order fulfillment against its id',
+  })
+  async cancelOrderFulfillment(
+    @Res() res,
+    @Body() orderDto: orderFulfillmentCancelDTO,
+    @IsAuthenticated('authorization') token: string,
+  ) {
+    return makeResponse(
+      res,
+      await this.appService.orderFulfillmentCancel(
+        orderDto.fulfillmentId,
+        orderDto.warehouseId,
+        token,
+      ),
     );
   }
 }
