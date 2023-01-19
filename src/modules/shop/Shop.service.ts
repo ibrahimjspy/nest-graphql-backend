@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import {
   GetShopDetailsbyEmailHandler,
   addStoreToShopHandler,
+  addVendorsToShopHandler,
   carouselHandler,
   createStoreHandler,
   getShopBankDetailsHandler,
@@ -15,7 +16,7 @@ import {
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
 import { SuccessResponseType } from 'src/core/utils/response.type';
-import { StoreDto } from './dto/shop';
+import { createStoreDTO } from './dto/shop';
 
 import {
   getProductVariantIds,
@@ -44,7 +45,7 @@ export class ShopService {
 
   public async createStore(
     shopId: string,
-    storeInput: StoreDto,
+    storeInput: createStoreDTO,
     token: string,
   ): Promise<SuccessResponseType> {
     try {
@@ -192,6 +193,29 @@ export class ShopService {
         'true',
       );
       return prepareSuccessResponse(response, '', 200);
+ } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+  
+  public async addVendorsToShop(
+    shopId: string,
+    vendorIds: number[],
+    token: string,
+  ): Promise<SuccessResponseType> {
+    try {
+      // getting shop details by given shop id
+      const shopDetail = await shopDetailsHandler(shopId);
+      // Adding vendorIds against given shop
+      const response = await addVendorsToShopHandler(
+        shopId,
+        vendorIds,
+        shopDetail,
+        token,
+      );
+      return prepareSuccessResponse(response, '', 201);
+
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

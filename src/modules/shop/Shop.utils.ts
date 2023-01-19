@@ -21,6 +21,21 @@ export const getStoreFrontFieldValues = (fields) => {
 };
 
 /**
+ * take shop fields and returns vendor ids in an array
+ */
+export const getMyVendorsFieldValues = (fields) => {
+  let myVendorIds = [];
+  if (fields.map) {
+    fields.map((field) => {
+      if (field.name == 'myvendors') {
+        myVendorIds = field.values;
+      }
+    });
+  }
+  return myVendorIds;
+};
+
+/**
  * parses product variant array from shop and returns an array with variant ids
  */
 export const getProductVariantIds = (variantsInput) => {
