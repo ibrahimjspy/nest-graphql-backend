@@ -1,7 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsOptional, IsUrl } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsUrl,
+} from 'class-validator';
 
-export class StoreDto {
+export class storeDTO {
   @ApiProperty()
   @IsNotEmpty()
   name: string;
@@ -88,4 +94,11 @@ export class accountIdDTO {
 export class removeProductDTO {
   @ApiProperty({ required: true })
   productIds: string[];
+}
+
+export class vendorIdsDTO {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber({}, { each: true })
+  vendorIds: number[];
 }

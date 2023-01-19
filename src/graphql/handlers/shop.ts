@@ -11,11 +11,15 @@ import { ShopByEmailQuery } from '../queries/shop/shopbyEmail';
 import { shopBankDetailsQuery } from '../queries/shop/shopBankDetailsQuery';
 import { shopBankDetailsMutation } from '../mutations/shop/shopBankDetails';
 import { ShopType } from '../types/shop.type';
-import { StoreDto } from 'src/modules/shop/dto/shop';
+import { storeDTO } from 'src/modules/shop/dto/shop';
 import { createStoreMutation } from '../mutations/shop/createShop';
 import { addStoreToShopMutation } from '../mutations/shop/addStoreToShop';
 import { deactivateStoreMutation } from '../mutations/shop/deactivateStore';
-import { getStoreFrontFieldValues } from 'src/modules/shop/Shop.utils';
+import {
+  getMyVendorsFieldValues,
+  getStoreFrontFieldValues,
+} from 'src/modules/shop/Shop.utils';
+import { addVendorsToShopMutation } from '../mutations/shop/addVendorsToShop';
 
 export const carouselHandler = async (token: string): Promise<object> => {
   try {
@@ -26,7 +30,7 @@ export const carouselHandler = async (token: string): Promise<object> => {
 };
 
 export const createStoreHandler = async (
-  storeInput: StoreDto,
+  storeInput: storeDTO,
   token: string,
 ): Promise<ShopType> => {
   const response = await graphqlResultErrorHandler(
@@ -48,7 +52,10 @@ export const addStoreToShopHandler = async (
       ...getStoreFrontFieldValues(shopDetail['fields']),
     ];
     const response = await graphqlResultErrorHandler(
-      await graphqlCall(addStoreToShopMutation(shopId, shopStoreIds), token),
+      await graphqlCall(
+        addStoreToShopMutation(shopId, [...new Set(shopStoreIds)]),
+        token,
+      ),
     );
     return response['updateMarketplaceShop'];
   } catch (error) {
@@ -165,4 +172,31 @@ export const getStoreProductVariantsHandler = async (
     await graphqlCall(shopDetailsQuery(retailerId, 'true'), '', 'true'),
   );
   return response['marketplaceShop'];
+};
+
+export const addVendorsToShopHandler = async (
+  shopId: string,
+  vendorIds: number[],
+  shopDetail: object,
+  token: string,
+): Promise<object> => {
+  try {
+    // concat previous and new vendorIds for shop
+    const shopVendorIds = [
+      ...vendorIds,
+      ...getMyVendorsFieldValues(shopDetail['fields']),
+    ];
+    const response = await graphqlResultErrorHandler(
+      await graphqlCall(
+        addVendorsToShopMutation(shopId, [
+          ...new Set(shopVendorIds.map(String)),
+        ]),
+        token,
+      ),
+    );
+    return response['updateMarketplaceShop'];
+  } catch (error) {
+    const errorMessage = await graphqlExceptionHandler(error);
+    return errorMessage;
+  }
 };
