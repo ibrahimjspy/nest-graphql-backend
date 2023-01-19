@@ -15,6 +15,8 @@ import { getUniqueProductIds } from '../utils/product';
 import { getMyProductsQuery } from '../queries/product/myProducts';
 import { deleteBulkProductsMutation } from '../mutations/product/bulkDelete';
 import { productVariantStockUpdateMutation } from '../mutations/product/variantStockUpdate';
+import { updateMyProductDTO } from 'src/modules/shop/dto/myProducts';
+import { updateMyProductMutation } from '../mutations/product/updateMyProducts';
 
 export const productListPageHandler = async (
   id: string,
@@ -197,4 +199,19 @@ export const updateProductVariantStockHandler = async (
     ),
   );
   return response['productVariantStocksUpdate'];
+};
+
+export const updateMyProductHandler = async (
+  productUpdateInput: updateMyProductDTO,
+  token: string,
+  isb2c = '',
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      updateMyProductMutation(productUpdateInput, isb2c),
+      token,
+      isb2c,
+    ),
+  );
+  return response['productUpdate'];
 };

@@ -91,11 +91,6 @@ export class accountIdDTO {
   accountId: string;
 }
 
-export class removeProductDTO {
-  @ApiProperty({ required: true })
-  productIds: string[];
-}
-
 export class vendorIdsDTO {
   @ApiProperty()
   @IsNotEmpty()

@@ -28,8 +28,10 @@ import {
   deleteBulkProductHandler,
   getMyProductsHandler,
   getProductIdsByVariantIdsHandler,
+  updateMyProductHandler,
 } from 'src/graphql/handlers/product';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
+import { updateMyProductDTO } from './dto/myProducts';
 @Injectable()
 export class ShopService {
   private readonly logger = new Logger(ShopService.name);
@@ -177,6 +179,23 @@ export class ShopService {
       return prepareSuccessResponse(response, '', 200);
     } catch (error) {
       this.logger.error(error);
+    }
+  }
+
+  public async updateMyProduct(
+    updateMyProduct: updateMyProductDTO,
+    token: string,
+  ) {
+    try {
+      const response = await updateMyProductHandler(
+        updateMyProduct,
+        token,
+        'true',
+      );
+      return prepareSuccessResponse(response, '', 200);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
