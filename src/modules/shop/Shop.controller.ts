@@ -6,6 +6,7 @@ import {
   Headers,
   Param,
   Post,
+  Put,
   Query,
   Res,
 } from '@nestjs/common';
@@ -15,11 +16,12 @@ import { ShopService } from './Shop.service';
 import {
   StoreDto,
   accountIdDTO,
-  removeProductDTO,
   shopIdByVariantsDTO,
   shopIdDTO,
 } from './dto/shop';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
+import { IsAuthenticated } from 'src/core/utils/decorators';
+import { removeProductDTO, updateMyProductDTO } from './dto/myProducts';
 
 @ApiTags('shop')
 @Controller('')
@@ -145,6 +147,21 @@ export class ShopController {
         body.productIds,
         Authorization,
       ),
+    );
+  }
+
+  @Put('/api/v1/shop/my/products/update')
+  @ApiOperation({
+    summary: 'updates a single product in my products',
+  })
+  async updateMyProducts(
+    @Res() res,
+    @Body() body: updateMyProductDTO,
+    @IsAuthenticated('authorization') token: string,
+  ): Promise<any> {
+    return makeResponse(
+      res,
+      await this.appService.updateMyProduct(body, token),
     );
   }
 }
