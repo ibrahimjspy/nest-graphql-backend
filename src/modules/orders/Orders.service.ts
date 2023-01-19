@@ -8,6 +8,7 @@ import {
   dashboardByIdHandler,
   getReturnOrderIdsHandler,
   orderActivityHandler,
+  orderCancelHandler,
   orderDetailsHandler,
   orderFulfillHandler,
   orderFulfillmentRefundHandler,
@@ -324,6 +325,16 @@ export class OrdersService {
   ): Promise<object> {
     try {
       const response = await orderFulfillmentRefundHandler(refundObject, token);
+      return prepareSuccessResponse(response, '', 201);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async orderCancel(orderId: string, token: string): Promise<object> {
+    try {
+      const response = await orderCancelHandler(orderId, token);
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
       this.logger.error(error);

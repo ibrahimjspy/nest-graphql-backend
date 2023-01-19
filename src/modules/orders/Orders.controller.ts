@@ -228,4 +228,19 @@ export class OrdersController {
       await this.appService.orderRefund(orderDto, token),
     );
   }
+
+  @Post('api/v1/order/cancel')
+  @ApiOperation({
+    summary: 'cancels an order against its id',
+  })
+  async cancelOrder(
+    @Res() res,
+    @Body() orderDto: OrderIdDto,
+    @IsAuthenticated('authorization') token: string,
+  ) {
+    return makeResponse(
+      res,
+      await this.appService.orderCancel(orderDto.orderId, token),
+    );
+  }
 }
