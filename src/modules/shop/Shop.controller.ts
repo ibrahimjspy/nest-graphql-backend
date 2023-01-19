@@ -17,7 +17,7 @@ import {
   removeProductDTO,
   shopIdByVariantsDTO,
   shopIdDTO,
-  storeDTO,
+  createStoreDTO,
   vendorIdsDTO,
 } from './dto/shop';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
@@ -48,7 +48,7 @@ export class ShopController {
   async createStore(
     @Res() res,
     @Param() params: shopIdDTO,
-    @Body() storeInput: storeDTO,
+    @Body() storeInput: createStoreDTO,
     @Headers() headers,
   ): Promise<object> {
     const Authorization: string = headers.authorization;
@@ -151,7 +151,7 @@ export class ShopController {
 
   @Post('/api/v1/shop/vendors/:shopId')
   @ApiOperation({
-    summary: 'Add vendors Ids against given user shop id',
+    summary: 'Add my vendors Ids against given user shop id',
   })
   async addVendorsToShop(
     @Res() res,

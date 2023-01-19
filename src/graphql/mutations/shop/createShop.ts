@@ -1,8 +1,8 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
-import { storeDTO } from 'src/modules/shop/dto/shop';
+import { createStoreDTO } from 'src/modules/shop/dto/shop';
 
-const federationMutation = (storeInput: storeDTO) => {
+const federationMutation = (storeInput: createStoreDTO) => {
   return gql`
     mutation{
       createMarketplaceShop(
@@ -43,7 +43,7 @@ const federationMutation = (storeInput: storeDTO) => {
   `;
 };
 
-export const createStoreMutation = (storeInput: storeDTO) => {
+export const createStoreMutation = (storeInput: createStoreDTO) => {
   return graphqlQueryCheck(
     federationMutation(storeInput),
     federationMutation(storeInput),

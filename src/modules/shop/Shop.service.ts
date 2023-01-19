@@ -16,7 +16,7 @@ import {
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
 import { SuccessResponseType } from 'src/core/utils/response.type';
-import { storeDTO } from './dto/shop';
+import { createStoreDTO } from './dto/shop';
 
 import {
   getProductVariantIds,
@@ -43,7 +43,7 @@ export class ShopService {
 
   public async createStore(
     shopId: string,
-    storeInput: storeDTO,
+    storeInput: createStoreDTO,
     token: string,
   ): Promise<SuccessResponseType> {
     try {

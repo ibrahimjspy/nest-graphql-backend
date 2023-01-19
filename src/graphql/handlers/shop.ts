@@ -11,7 +11,7 @@ import { ShopByEmailQuery } from '../queries/shop/shopbyEmail';
 import { shopBankDetailsQuery } from '../queries/shop/shopBankDetailsQuery';
 import { shopBankDetailsMutation } from '../mutations/shop/shopBankDetails';
 import { ShopType } from '../types/shop.type';
-import { storeDTO } from 'src/modules/shop/dto/shop';
+import { createStoreDTO } from 'src/modules/shop/dto/shop';
 import { createStoreMutation } from '../mutations/shop/createShop';
 import { addStoreToShopMutation } from '../mutations/shop/addStoreToShop';
 import { deactivateStoreMutation } from '../mutations/shop/deactivateStore';
@@ -30,7 +30,7 @@ export const carouselHandler = async (token: string): Promise<object> => {
 };
 
 export const createStoreHandler = async (
-  storeInput: storeDTO,
+  storeInput: createStoreDTO,
   token: string,
 ): Promise<ShopType> => {
   const response = await graphqlResultErrorHandler(
@@ -183,8 +183,8 @@ export const addVendorsToShopHandler = async (
   try {
     // concat previous and new vendorIds for shop
     const shopVendorIds = [
-      ...vendorIds,
       ...getMyVendorsFieldValues(shopDetail['fields']),
+      ...vendorIds,
     ];
     const response = await graphqlResultErrorHandler(
       await graphqlCall(

@@ -7,7 +7,7 @@ import {
   IsUrl,
 } from 'class-validator';
 
-export class storeDTO {
+export class createStoreDTO {
   @ApiProperty()
   @IsNotEmpty()
   name: string;
