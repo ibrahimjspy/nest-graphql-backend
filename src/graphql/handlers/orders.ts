@@ -261,17 +261,28 @@ export const orderReturnDetailHandler = async (
 export const getReturnOrderIdsHandler = async (
   token: string,
   after = '',
+  storeOrderIds = [],
+  isb2c = '',
 ): Promise<string[]> => {
   let returnedOrderIds = [];
   const orderStatuses = await graphqlResultErrorHandler(
-    await graphqlCall(getOrderStatus(after), token),
+    await graphqlCall(
+      getOrderStatus(after, storeOrderIds, isb2c),
+      token,
+      isb2c,
+    ),
   );
   const orderIds = filterReturnedOrderIds(orderStatuses['orders'].edges);
   returnedOrderIds = returnedOrderIds.concat(orderIds);
   // check if next page exists add its ids as well
   const nextPage = hasNextPage(orderStatuses['orders'].pageInfo);
   if (nextPage) {
-    const nextPageOrderIds = await getReturnOrderIdsHandler(token, nextPage);
+    const nextPageOrderIds = await getReturnOrderIdsHandler(
+      token,
+      nextPage,
+      storeOrderIds,
+      isb2c,
+    );
     returnedOrderIds = returnedOrderIds.concat(nextPageOrderIds);
   }
   return returnedOrderIds;

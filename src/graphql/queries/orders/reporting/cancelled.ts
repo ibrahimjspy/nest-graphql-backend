@@ -1,11 +1,10 @@
 import { gql } from 'graphql-request';
-
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
 const b2bQuery = (): string => {
   return gql`
     query {
-      orders(last: 2, filter: { status: [FULFILLED] }) {
+      orders(filter: { ids: [], status: CANCELED }) {
         totalCount
       }
     }
@@ -15,19 +14,16 @@ const b2bQuery = (): string => {
 const b2cQuery = (storeOrderIds: string[]): string => {
   return gql`
     query {
-      orders(
-        filter: {
-          ids: ${JSON.stringify(storeOrderIds)}
-          status: FULFILLED
-        }
-      ) {
+      orders(filter: { ids: ${JSON.stringify(
+        storeOrderIds,
+      )}, status: CANCELED }) {
         totalCount
       }
     }
   `;
 };
 
-export const getFulfilledOrdersCountQuery = (
+export const getCancelledOrdersCountQuery = (
   storeOrderIds = [],
   isB2C = '',
 ) => {

@@ -33,11 +33,17 @@ import { FulfillmentStatusEnum } from 'src/graphql/enums/orders';
 import { GQL_EDGES } from 'src/constants';
 import { ShopOrdersFulfillmentsDto, ShopOrdersListDto } from './dto';
 import { mockOrderReporting } from 'src/graphql/mocks/orderSummary.mock';
-import { OrderSummaryResponseDto } from './dto/order-summary.dto';
+import {
+  OrderSummaryResponseDto,
+  ShopOrderReportResponseDto,
+} from './dto/order-summary.dto';
 import { OrdersListDTO } from './dto/list';
 import { OrderReturnDTO, OrderReturnFilterDTO } from './dto/order-returns.dto';
 import {
+  getCancelledOrdersCountHandler,
+  getFulfilledOrdersCountHandler,
   getOrdersCountHandler,
+  getProcessingOrdersCountHandler,
   getReadyToFulfillOrdersCountHandler,
 } from 'src/graphql/handlers/orders.reporting';
 import { orderLineDTO } from './dto/fulfill';
@@ -358,6 +364,34 @@ export class OrdersService {
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async getShopOrderReport(
+    shopId: string,
+    token: string,
+  ): Promise<object> {
+    try {
+      const shopDetails = await shopOrdersByIdHandler(shopId, token);
+      const orderIds: string[] = shopDetails['orders'];
+      const [processing, shipped, cancelled, returned] = await Promise.all([
+        getProcessingOrdersCountHandler(token, orderIds, 'true'),
+        getFulfilledOrdersCountHandler(token, orderIds, 'true'),
+        getCancelledOrdersCountHandler(token, orderIds, 'true'),
+        getReturnOrderIdsHandler(token, '', orderIds, 'true'),
+      ]);
+      const response: ShopOrderReportResponseDto = {
+        ordersProcessing: processing,
+        ordersShipped: shipped,
+        ordersCancelled: cancelled,
+        ordersReturnsRequested: returned.length,
+        totalEarnings: mockOrderReporting().totalEarnings,
+      };
+
+      return prepareSuccessResponse(response, '', 201);
+    } catch (err) {
+      this.logger.error(err);
+      return graphqlExceptionHandler(err);
     }
   }
 }
