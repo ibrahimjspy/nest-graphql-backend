@@ -13,11 +13,12 @@ import { makeResponse } from '../../core/utils/response';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ShopService } from './Shop.service';
 import {
-  StoreDto,
   accountIdDTO,
   removeProductDTO,
   shopIdByVariantsDTO,
   shopIdDTO,
+  createStoreDTO,
+  vendorIdsDTO,
 } from './dto/shop';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 
@@ -47,7 +48,7 @@ export class ShopController {
   async createStore(
     @Res() res,
     @Param() params: shopIdDTO,
-    @Body() storeInput: StoreDto,
+    @Body() storeInput: createStoreDTO,
     @Headers() headers,
   ): Promise<object> {
     const Authorization: string = headers.authorization;
@@ -143,6 +144,27 @@ export class ShopController {
       res,
       await this.appService.removeProductsFromMyProducts(
         body.productIds,
+        Authorization,
+      ),
+    );
+  }
+
+  @Post('/api/v1/shop/vendors/:shopId')
+  @ApiOperation({
+    summary: 'Add my vendors Ids against given user shop id',
+  })
+  async addVendorsToShop(
+    @Res() res,
+    @Param() params: shopIdDTO,
+    @Body() body: vendorIdsDTO,
+    @Headers() headers,
+  ): Promise<object> {
+    const Authorization: string = headers.authorization;
+    return makeResponse(
+      res,
+      await this.appService.addVendorsToShop(
+        params.shopId,
+        body.vendorIds,
         Authorization,
       ),
     );
