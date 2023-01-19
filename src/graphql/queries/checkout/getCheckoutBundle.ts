@@ -4,7 +4,7 @@ const federationQuery = (userEmail: string): string => {
   return gql`
     query {
       checkoutBundles(
-        Filter: { userEmail: "${userEmail}", isSelected: true }
+        Filter: { userEmail: "${userEmail}" }
       ) {
         ... on CheckoutBundlesType {
           __typename
