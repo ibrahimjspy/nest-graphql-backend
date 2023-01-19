@@ -39,6 +39,15 @@ const federationQuery = (filters: OrderReturnFilterDTO): string => {
           node {
             id
             number
+            user {
+              firstName
+              lastName
+              email
+              note
+              addresses {
+                phone
+              }
+            }
             statusDisplay
             status
             fulfillments {
