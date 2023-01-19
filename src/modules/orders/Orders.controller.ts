@@ -17,6 +17,7 @@ import { OrderReturnDTO, OrderReturnFilterDTO } from './dto/order-returns.dto';
 import { IsAuthenticated } from 'src/core/utils/decorators';
 import { OrderFulfillDto, orderFulfillmentCancelDTO } from './dto/fulfill';
 import { OrderRefundDTO } from './dto/refund';
+import { shopIdDTO } from '../shop/dto/shop';
 
 @ApiTags('orders')
 @Controller('')
@@ -260,6 +261,21 @@ export class OrdersController {
         orderDto.warehouseId,
         token,
       ),
+    );
+  }
+
+  @Get('api/v1/orders/report/:shopId')
+  @ApiOperation({
+    summary: 'returns order report against a particular shop',
+  })
+  async getRetailerOrderReport(
+    @Res() res,
+    @Param() orderDto: shopIdDTO,
+    @IsAuthenticated('authorization') token: string,
+  ) {
+    return makeResponse(
+      res,
+      await this.appService.getShopOrderReport(orderDto.shopId, token),
     );
   }
 }
