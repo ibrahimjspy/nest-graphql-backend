@@ -11,6 +11,7 @@ import { getFulfilledOrdersCountQuery } from '../queries/orders/reporting/fulfil
 import { getReadyToFulfillOrdersCountQuery } from '../queries/orders/reporting/readyToFulfill';
 import { getCancelledOrdersCountQuery } from '../queries/orders/reporting/cancelled';
 import { getProcessingOrdersCountQuery } from '../queries/orders/reporting/processing';
+import { getTotalEarningsQuery } from '../queries/orders/reporting/totalEarnings';
 
 export const dailySalesHandler = async (
   reportingTime = 'TODAY',
@@ -94,4 +95,15 @@ export const getProcessingOrdersCountHandler = async (
     ),
   );
   return response['orders']['totalCount'];
+};
+
+export const getTotalEarningsHandler = async (
+  storefrontId,
+  token: string,
+  isb2c = '',
+) => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(getTotalEarningsQuery(storefrontId, isb2c), token, isb2c),
+  );
+  return response['salesReport']['totalPrice'];
 };

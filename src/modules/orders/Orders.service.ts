@@ -45,6 +45,7 @@ import {
   getOrdersCountHandler,
   getProcessingOrdersCountHandler,
   getReadyToFulfillOrdersCountHandler,
+  getTotalEarningsHandler,
 } from 'src/graphql/handlers/orders.reporting';
 import { orderLineDTO } from './dto/fulfill';
 import { OrderRefundDTO } from './dto/refund';
@@ -374,18 +375,20 @@ export class OrdersService {
     try {
       const shopDetails = await shopOrdersByIdHandler(shopId, token);
       const orderIds: string[] = shopDetails['orders'];
-      const [processing, shipped, cancelled, returned] = await Promise.all([
-        getProcessingOrdersCountHandler(token, orderIds, 'true'),
-        getFulfilledOrdersCountHandler(token, orderIds, 'true'),
-        getCancelledOrdersCountHandler(token, orderIds, 'true'),
-        getReturnOrderIdsHandler(token, '', orderIds, 'true'),
-      ]);
+      const [processing, shipped, cancelled, returned, totalEarnings] =
+        await Promise.all([
+          getProcessingOrdersCountHandler(token, orderIds, 'true'),
+          getFulfilledOrdersCountHandler(token, orderIds, 'true'),
+          getCancelledOrdersCountHandler(token, orderIds, 'true'),
+          getReturnOrderIdsHandler(token, '', orderIds, 'true'),
+          getTotalEarningsHandler(shopId, token, 'true'),
+        ]);
       const response: ShopOrderReportResponseDto = {
         ordersProcessing: processing,
         ordersShipped: shipped,
         ordersCancelled: cancelled,
         ordersReturnsRequested: returned.length,
-        totalEarnings: mockOrderReporting().totalEarnings,
+        totalEarnings: Number(totalEarnings['price']),
       };
 
       return prepareSuccessResponse(response, '', 201);
