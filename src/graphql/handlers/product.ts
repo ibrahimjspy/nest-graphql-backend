@@ -15,7 +15,10 @@ import { getUniqueProductIds } from '../utils/product';
 import { getMyProductsQuery } from '../queries/product/myProducts';
 import { deleteBulkProductsMutation } from '../mutations/product/bulkDelete';
 import { productVariantStockUpdateMutation } from '../mutations/product/variantStockUpdate';
-import { updateMyProductDTO } from 'src/modules/shop/dto/myProducts';
+import {
+  myProductsDTO,
+  updateMyProductDTO,
+} from 'src/modules/shop/dto/myProducts';
 import { updateMyProductMutation } from '../mutations/product/updateMyProducts';
 
 export const productListPageHandler = async (
@@ -158,11 +161,11 @@ export const getProductIdsByVariantIdsHandler = async (
 
 export const getMyProductsHandler = async (
   productIds: string[],
-  pagination: PaginationDto,
+  filter: myProductsDTO,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
-      getMyProductsQuery(productIds, pagination, 'true'),
+      getMyProductsQuery(productIds, filter, 'true'),
       '',
       'true',
     ),

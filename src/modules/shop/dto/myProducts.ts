@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 
 export class removeProductDTO {
   @ApiProperty({ required: true })
@@ -25,4 +26,9 @@ export class updateMyProductDTO {
 
   @ApiProperty({ required: true, type: editProductDTO })
   input: editProductDTO;
+}
+
+export class myProductsDTO extends PaginationDto {
+  @ApiProperty({ required: false, default: '' })
+  search: string;
 }

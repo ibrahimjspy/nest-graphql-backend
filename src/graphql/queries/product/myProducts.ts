@@ -1,16 +1,16 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
-import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
+import { myProductsDTO } from 'src/modules/shop/dto/myProducts';
 
-const b2bQuery = (productIds, pagination: PaginationDto): string => {
+const b2bQuery = (productIds, filter: myProductsDTO): string => {
   return gql`
     query {
       products(${validatePageFilter(
-        pagination,
+        filter,
       )}, channel: "default-channel", filter: { ids: ${JSON.stringify(
     productIds,
-  )} }) {
+  )} search:"${filter.search || ''}" }) {
         totalCount
         pageInfo {
           hasNextPage
@@ -65,14 +65,14 @@ const b2bQuery = (productIds, pagination: PaginationDto): string => {
   `;
 };
 
-const b2cQuery = (productIds, pagination: PaginationDto): string => {
+const b2cQuery = (productIds, filter: myProductsDTO): string => {
   return gql`
     query {
       products(${validatePageFilter(
-        pagination,
+        filter,
       )}, channel: "default-channel", filter: { ids: ${JSON.stringify(
     productIds,
-  )} }) {
+  )} search:"${filter.search || ''}" }) {
         totalCount
         pageInfo {
           hasNextPage
@@ -129,12 +129,12 @@ const b2cQuery = (productIds, pagination: PaginationDto): string => {
 
 export const getMyProductsQuery = (
   variantsIds: string[],
-  pagination: PaginationDto,
+  filter: myProductsDTO,
   isB2C = '',
 ) => {
   return graphqlQueryCheck(
-    b2bQuery(variantsIds, pagination),
-    b2cQuery(variantsIds, pagination),
+    b2bQuery(variantsIds, filter),
+    b2cQuery(variantsIds, filter),
     isB2C,
   );
 };
