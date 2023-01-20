@@ -202,7 +202,7 @@ export class ShopController {
   @ApiOperation({
     summary: 'Delete my vendors Ids against given user shop id',
   })
-  async deleteVendorsToShop(
+  async removeMyVendorsToShop(
     @Res() res,
     @Param() params: shopIdDTO,
     @Body() body: vendorIdsDTO,
@@ -211,7 +211,7 @@ export class ShopController {
     const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.deleteVendorsToShop(
+      await this.appService.removeMyVendorsToShop(
         params.shopId,
         body.vendorIds,
         Authorization,

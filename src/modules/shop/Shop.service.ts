@@ -5,10 +5,10 @@ import {
   addVendorsToShopHandler,
   carouselHandler,
   createStoreHandler,
-  deleteVendorsToShopHandler,
   getShopBankDetailsHandler,
   getStoreFrontIdHandler,
   getStoreProductVariantsHandler,
+  removeMyVendorsHandler,
   saveShopBankDetailsHandler,
   shopDetailsHandler,
   shopIdByOrderIdHandler,
@@ -224,7 +224,7 @@ export class ShopService {
     }
   }
 
-  public async deleteVendorsToShop(
+  public async removeMyVendorsToShop(
     shopId: string,
     vendorIds: number[],
     token: string,
@@ -233,7 +233,7 @@ export class ShopService {
       // getting shop details by given shop id
       const shopDetail = await shopDetailsHandler(shopId);
       // Adding vendorIds against given shop
-      const response = await deleteVendorsToShopHandler(
+      const response = await removeMyVendorsHandler(
         shopId,
         vendorIds,
         shopDetail,
