@@ -20,6 +20,7 @@ import {
   getStoreFrontFieldValues,
 } from 'src/modules/shop/Shop.utils';
 import { addVendorsToShopMutation } from '../mutations/shop/addVendorsToShop';
+import { vendorDetailsQuery } from '../queries/shop/vendorDetails';
 
 export const carouselHandler = async (token: string): Promise<object> => {
   try {
@@ -199,4 +200,13 @@ export const addVendorsToShopHandler = async (
     const errorMessage = await graphqlExceptionHandler(error);
     return errorMessage;
   }
+};
+
+export const vendorDetailsHandler = async (
+  vendorId: string,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(vendorDetailsQuery(vendorId)),
+  );
+  return response['marketplaceShop'];
 };

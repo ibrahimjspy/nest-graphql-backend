@@ -166,7 +166,7 @@ export class ShopController {
     );
   }
 
-  @Post('/api/v1/shop/vendors/:shopId')
+  @Post('/api/v1/shop/my/vendors/:shopId')
   @ApiOperation({
     summary: 'Add my vendors Ids against given user shop id',
   })
@@ -185,5 +185,16 @@ export class ShopController {
         Authorization,
       ),
     );
+  }
+
+  @Get('/api/v1/shop/my/vendors/:shopId')
+  @ApiOperation({
+    summary: 'Gets my vendors details against given retailer id',
+  })
+  async getVendorsFromShop(
+    @Res() res,
+    @Param() params: shopIdDTO,
+  ): Promise<any> {
+    return makeResponse(res, await this.appService.getMyVendors(params.shopId));
   }
 }

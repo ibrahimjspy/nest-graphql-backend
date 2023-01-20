@@ -12,6 +12,7 @@ import {
   shopDetailsHandler,
   shopIdByOrderIdHandler,
   shopIdByVariantIdHandler,
+  vendorDetailsHandler,
 } from 'src/graphql/handlers/shop';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
@@ -19,6 +20,7 @@ import { SuccessResponseType } from 'src/core/utils/response.type';
 import { createStoreDTO } from './dto/shop';
 
 import {
+  getMyVendorsFieldValues,
   getProductVariantIds,
   getStoreFrontFieldValues,
   validateArray,
@@ -215,6 +217,36 @@ export class ShopService {
         token,
       );
       return prepareSuccessResponse(response, '', 201);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async getMyVendors(shopId: string): Promise<SuccessResponseType> {
+    try {
+      const response = [];
+      // getting shop details by given shop id
+      const shopDetail = await shopDetailsHandler(shopId);
+      const vendorIds = getMyVendorsFieldValues(shopDetail['fields']);
+      await Promise.all(
+        (vendorIds || []).map(async (vendorId) => {
+          let productIds = [];
+          const vendorDetail = await vendorDetailsHandler(vendorId);
+          // TODO once product id is added to shop, replace this.
+          const ids = await getProductIdsByVariantIdsHandler(
+            getProductVariantIds(vendorDetail['productVariants']),
+          );
+          delete vendorDetail['productVariants'];
+          productIds = productIds.concat(ids);
+          response.push({ vendorDetail, productIds: productIds });
+        }),
+      );
+      return prepareSuccessResponse(
+        response,
+        response.length > 0 ? '' : 'no vendors exist against this retailer',
+        201,
+      );
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
