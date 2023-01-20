@@ -11,12 +11,13 @@ import { getStoreInfoQuery } from '../queries/productStore/storeInfo';
 import {
   addToProductStoreDTO,
   deleteFromProductStoreDTO,
+  getStoredProductsDTO,
 } from 'src/modules/productStore/dto/products';
 import { shopInfoDto } from 'src/modules/orders/dto';
 
 export const getStoredProductsHandler = async (
   shopId: string,
-  productFilter,
+  productFilter: getStoredProductsDTO,
 ): Promise<object> => {
   try {
     const response = await graphqlCall(

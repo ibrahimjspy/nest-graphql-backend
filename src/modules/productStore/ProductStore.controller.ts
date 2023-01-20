@@ -16,11 +16,11 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
 import { ShopIdDto, shopInfoDto } from 'src/modules/orders/dto';
-import { ProductFilterDto } from 'src/modules/product/dto';
 import { ProductStoreService } from './ProductStore.service';
 import {
   addToProductStoreDTO,
   deleteFromProductStoreDTO,
+  getStoredProductsDTO,
 } from './dto/products';
 import { FileInterceptor } from '@nestjs/platform-express';
 
@@ -31,16 +31,10 @@ export class ProductStoreController {
     return;
   }
 
-  /**
-   * Get products list with and without filters.
-   * @param res response object
-   * @param filter {ProductFilterDto} for filtring products
-   * @returns list of products
-   */
   @Get('api/v1/stored/products/:shopId')
   public async findStoredProducts(
     @Res() res,
-    @Query() filter: ProductFilterDto,
+    @Query() filter: getStoredProductsDTO,
     @Param() shopDto: ShopIdDto,
   ): Promise<object> {
     const data = await this.appService.getStoredProducts(

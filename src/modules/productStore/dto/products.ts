@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
+import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 
 export class addToProductStoreDTO {
   @ApiProperty()
@@ -22,5 +23,11 @@ export class deleteFromProductStoreDTO {
 
   @ApiProperty()
   @IsNotEmpty()
+  productIds: string[];
+}
+
+export class getStoredProductsDTO extends PaginationDto {
+  @ApiProperty({ required: false, default: [] })
+  @IsOptional()
   productIds: string[];
 }
