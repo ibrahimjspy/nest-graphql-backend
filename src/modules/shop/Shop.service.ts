@@ -32,8 +32,7 @@ import {
   getProductIdsByVariantIdsHandler,
   updateMyProductHandler,
 } from 'src/graphql/handlers/product';
-import { PaginationDto } from 'src/graphql/dto/pagination.dto';
-import { updateMyProductDTO } from './dto/myProducts';
+import { myProductsDTO, updateMyProductDTO } from './dto/myProducts';
 @Injectable()
 export class ShopService {
   private readonly logger = new Logger(ShopService.name);
@@ -113,7 +112,7 @@ export class ShopService {
     return response;
   }
 
-  public async getMyProducts(retailerId: string, pagination: PaginationDto) {
+  public async getMyProducts(retailerId: string, filter: myProductsDTO) {
     try {
       let productIds = [];
       const retailer = await getStoreFrontIdHandler(retailerId);
@@ -130,7 +129,7 @@ export class ShopService {
 
       if (productIds.length > 0) {
         return prepareSuccessResponse(
-          [retailer, await getMyProductsHandler(productIds, pagination)],
+          [retailer, await getMyProductsHandler(productIds, filter)],
           '',
           200,
         );

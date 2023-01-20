@@ -20,9 +20,12 @@ import {
   shopIdDTO,
   vendorIdsDTO,
 } from './dto/shop';
-import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 import { IsAuthenticated } from 'src/core/utils/decorators';
-import { removeProductDTO, updateMyProductDTO } from './dto/myProducts';
+import {
+  myProductsDTO,
+  removeProductDTO,
+  updateMyProductDTO,
+} from './dto/myProducts';
 
 @ApiTags('shop')
 @Controller('')
@@ -124,7 +127,7 @@ export class ShopController {
   async getMyProducts(
     @Res() res,
     @Param() params: shopIdDTO,
-    @Query() filter: PaginationDto,
+    @Query() filter: myProductsDTO,
   ): Promise<object> {
     return makeResponse(
       res,
