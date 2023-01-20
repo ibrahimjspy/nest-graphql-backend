@@ -1,17 +1,19 @@
 import { gql } from 'graphql-request';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
-import { ProductFilterDto } from 'src/modules/product/dto';
+import { getStoredProductsDTO } from 'src/modules/productStore/dto/products';
 
 export const getStoredProductsQuery = (
   shopId: string,
-  filter: ProductFilterDto,
+  filter: getStoredProductsDTO,
 ) => {
+  const productIds = JSON.stringify(filter.productIds) || '[]';
   const pageFilter = validatePageFilter(filter);
   return gql`
       query {
         storedProducts(
             Filter: {
               shopId: "${shopId}"
+              productIds:${productIds}
             }
             Paginate: {
               ${pageFilter}

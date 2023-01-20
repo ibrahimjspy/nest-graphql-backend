@@ -4,7 +4,6 @@ import {
   prepareGQLPaginatedResponse,
   prepareSuccessResponse,
 } from 'src/core/utils/response';
-import { ProductFilterDto } from 'src/modules/product/dto';
 import {
   addToProductStoreHandler,
   deleteFromProductStoreHandler,
@@ -15,6 +14,7 @@ import {
 import {
   addToProductStoreDTO,
   deleteFromProductStoreDTO,
+  getStoredProductsDTO,
 } from './dto/products';
 import { shopInfoDto } from '../orders/dto';
 import { uploadImagesHandler } from 'src/external/services/uploadImages';
@@ -22,11 +22,11 @@ import { uploadImagesHandler } from 'src/external/services/uploadImages';
 @Injectable()
 export class ProductStoreService {
   /**
-   * Get products list from PIM
+   * Get stored products against a retailer
    */
   public async getStoredProducts(
     shopId: string,
-    filter: ProductFilterDto,
+    filter: getStoredProductsDTO,
   ): Promise<object> {
     try {
       return prepareGQLPaginatedResponse(
