@@ -5,6 +5,7 @@ import {
   addVendorsToShopHandler,
   carouselHandler,
   createStoreHandler,
+  deleteVendorsToShopHandler,
   getShopBankDetailsHandler,
   getStoreFrontIdHandler,
   getStoreProductVariantsHandler,
@@ -13,7 +14,6 @@ import {
   shopIdByOrderIdHandler,
   shopIdByVariantIdHandler,
   vendorDetailsHandler,
-  deleteVendorsToShopHandler,
 } from 'src/graphql/handlers/shop';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';

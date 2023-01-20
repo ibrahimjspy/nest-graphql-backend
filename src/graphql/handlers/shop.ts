@@ -209,14 +209,14 @@ export const deleteVendorsToShopHandler = async (
   token: string,
 ): Promise<object> => {
   try {
-    const allVendorIds = [...getMyVendorsFieldValues(shopDetail['fields'])]
+    const allVendorIds = [...getMyVendorsFieldValues(shopDetail['fields'])];
     // delete vendorIds from shop previous vendorIds for shop
-    const filteredVendorIds = allVendorIds.filter(vendorId => !vendorIds.includes(Number(vendorId)));
+    const filteredVendorIds = allVendorIds.filter(
+      (vendorId) => !vendorIds.includes(Number(vendorId)),
+    );
     const response = await graphqlResultErrorHandler(
       await graphqlCall(
-        updateVendorsToShopMutation(shopId, [
-          ...new Set(filteredVendorIds),
-        ]),
+        updateVendorsToShopMutation(shopId, [...new Set(filteredVendorIds)]),
         token,
       ),
     );
