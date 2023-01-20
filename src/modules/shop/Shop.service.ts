@@ -8,6 +8,7 @@ import {
   getShopBankDetailsHandler,
   getStoreFrontIdHandler,
   getStoreProductVariantsHandler,
+  removeMyVendorsHandler,
   saveShopBankDetailsHandler,
   shopDetailsHandler,
   shopIdByOrderIdHandler,
@@ -210,6 +211,28 @@ export class ShopService {
       const shopDetail = await shopDetailsHandler(shopId);
       // Adding vendorIds against given shop
       const response = await addVendorsToShopHandler(
+        shopId,
+        vendorIds,
+        shopDetail,
+        token,
+      );
+      return prepareSuccessResponse(response, '', 201);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async removeMyVendorsToShop(
+    shopId: string,
+    vendorIds: number[],
+    token: string,
+  ): Promise<SuccessResponseType> {
+    try {
+      // getting shop details by given shop id
+      const shopDetail = await shopDetailsHandler(shopId);
+      // Adding vendorIds against given shop
+      const response = await removeMyVendorsHandler(
         shopId,
         vendorIds,
         shopDetail,

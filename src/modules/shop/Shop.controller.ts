@@ -200,4 +200,25 @@ export class ShopController {
   ): Promise<any> {
     return makeResponse(res, await this.appService.getMyVendors(params.shopId));
   }
+
+  @Delete('/api/v1/shop/my/vendors/:shopId')
+  @ApiOperation({
+    summary: 'Delete my vendors Ids against given user shop id',
+  })
+  async removeMyVendorsToShop(
+    @Res() res,
+    @Param() params: shopIdDTO,
+    @Body() body: vendorIdsDTO,
+    @Headers() headers,
+  ): Promise<object> {
+    const Authorization: string = headers.authorization;
+    return makeResponse(
+      res,
+      await this.appService.removeMyVendorsToShop(
+        params.shopId,
+        body.vendorIds,
+        Authorization,
+      ),
+    );
+  }
 }
