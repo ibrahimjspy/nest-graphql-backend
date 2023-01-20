@@ -27,7 +27,7 @@ const b2bMutation = (shopId: string, vendorIds: string[]) => {
   `;
 };
 
-export const addVendorsToShopMutation = (
+export const updateVendorsToShopMutation = (
   shopId: string,
   vendorIds: string[],
 ) => {

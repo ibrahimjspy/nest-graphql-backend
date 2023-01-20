@@ -19,7 +19,7 @@ import {
   getMyVendorsFieldValues,
   getStoreFrontFieldValues,
 } from 'src/modules/shop/Shop.utils';
-import { addVendorsToShopMutation } from '../mutations/shop/addVendorsToShop';
+import { updateVendorsToShopMutation } from '../mutations/shop/updateVendorsToShop';
 import { vendorDetailsQuery } from '../queries/shop/vendorDetails';
 
 export const carouselHandler = async (token: string): Promise<object> => {
@@ -189,8 +189,33 @@ export const addVendorsToShopHandler = async (
     ];
     const response = await graphqlResultErrorHandler(
       await graphqlCall(
-        addVendorsToShopMutation(shopId, [
+        updateVendorsToShopMutation(shopId, [
           ...new Set(shopVendorIds.map(String)),
+        ]),
+        token,
+      ),
+    );
+    return response['updateMarketplaceShop'];
+  } catch (error) {
+    const errorMessage = await graphqlExceptionHandler(error);
+    return errorMessage;
+  }
+};
+
+export const deleteVendorsToShopHandler = async (
+  shopId: string,
+  vendorIds: number[],
+  shopDetail: object,
+  token: string,
+): Promise<object> => {
+  try {
+    const allVendorIds = [...getMyVendorsFieldValues(shopDetail['fields'])]
+    // delete vendorIds from shop previous vendorIds for shop
+    const filteredVendorIds = allVendorIds.filter(vendorId => !vendorIds.includes(Number(vendorId)));
+    const response = await graphqlResultErrorHandler(
+      await graphqlCall(
+        updateVendorsToShopMutation(shopId, [
+          ...new Set(filteredVendorIds),
         ]),
         token,
       ),

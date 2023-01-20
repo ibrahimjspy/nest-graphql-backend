@@ -13,6 +13,7 @@ import {
   shopIdByOrderIdHandler,
   shopIdByVariantIdHandler,
   vendorDetailsHandler,
+  deleteVendorsToShopHandler,
 } from 'src/graphql/handlers/shop';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
@@ -211,6 +212,28 @@ export class ShopService {
       const shopDetail = await shopDetailsHandler(shopId);
       // Adding vendorIds against given shop
       const response = await addVendorsToShopHandler(
+        shopId,
+        vendorIds,
+        shopDetail,
+        token,
+      );
+      return prepareSuccessResponse(response, '', 201);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async deleteVendorsToShop(
+    shopId: string,
+    vendorIds: number[],
+    token: string,
+  ): Promise<SuccessResponseType> {
+    try {
+      // getting shop details by given shop id
+      const shopDetail = await shopDetailsHandler(shopId);
+      // Adding vendorIds against given shop
+      const response = await deleteVendorsToShopHandler(
         shopId,
         vendorIds,
         shopDetail,
