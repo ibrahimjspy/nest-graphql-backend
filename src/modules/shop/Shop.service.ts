@@ -22,7 +22,7 @@ import { createStoreDTO } from './dto/shop';
 
 import {
   getMyVendorsFieldValues,
-  getProductVariantIds,
+  getProductIds,
   getStoreFrontFieldValues,
   validateArray,
   validateStoreInput,
@@ -31,7 +31,6 @@ import {
   deleteBulkMediaHandler,
   deleteBulkProductHandler,
   getMyProductsHandler,
-  getProductIdsByVariantIdsHandler,
   updateMyProductHandler,
 } from 'src/graphql/handlers/product';
 import { myProductsDTO, updateMyProductDTO } from './dto/myProducts';
@@ -121,14 +120,11 @@ export class ShopService {
       const storefrontIds = getStoreFrontFieldValues(retailer['fields']);
       await Promise.all(
         (storefrontIds || []).map(async (id) => {
-          const productVariantIds = await getStoreProductVariantsHandler(id);
-          const ids = await getProductIdsByVariantIdsHandler(
-            getProductVariantIds(productVariantIds['productVariants']),
-          );
+          const shopDetails = await getStoreProductVariantsHandler(id);
+          const ids = getProductIds(shopDetails['products']);
           productIds = productIds.concat(ids);
         }),
       );
-
       if (productIds.length > 0) {
         return prepareSuccessResponse(
           [retailer, await getMyProductsHandler(productIds, filter)],
@@ -259,15 +255,8 @@ export class ShopService {
       const vendorIds = getMyVendorsFieldValues(shopDetail['fields']);
       await Promise.all(
         (vendorIds || []).map(async (vendorId) => {
-          let productIds = [];
           const vendorDetail = await vendorDetailsHandler(vendorId);
-          // TODO once product id is added to shop, replace this.
-          const ids = await getProductIdsByVariantIdsHandler(
-            getProductVariantIds(vendorDetail['productVariants']),
-          );
-          delete vendorDetail['productVariants'];
-          productIds = productIds.concat(ids);
-          response.push({ vendorDetail, productIds: productIds });
+          response.push({ vendorDetail });
         }),
       );
       return prepareSuccessResponse(
