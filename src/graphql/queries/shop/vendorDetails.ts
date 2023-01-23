@@ -7,8 +7,8 @@ const b2bQuery = (vendorId: string): string => {
         marketplaceShop(filter: { id: "${vendorId}" }) {
             id
             name
-            productVariants {
-            id
+            products {
+             id
             }
             fields {
             name
@@ -25,8 +25,8 @@ const b2cQuery = (vendorId: string): string => {
         marketplaceShop(filter: { id: "${vendorId}" }) {
             id
             name
-            productVariants {
-            id
+            products {
+             id
             }
             fields {
             name
