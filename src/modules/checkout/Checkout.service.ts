@@ -632,9 +632,9 @@ export class CheckoutService {
       return graphqlExceptionHandler(error);
     }
   }
-  public async createcheckoutservice(userEmail: string, token: string) {
+  public async createCheckoutService(userEmail: string, token: string) {
     try {
-      const response = await CheckoutHandlers.createcheckouthandler(
+      const response = await CheckoutHandlers.createCheckoutHandlerv2(
         userEmail,
         token,
       );

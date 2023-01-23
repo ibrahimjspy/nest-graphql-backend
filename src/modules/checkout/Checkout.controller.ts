@@ -59,7 +59,7 @@ export class CheckoutController {
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.createcheckoutservice(body.userEmail, token),
+      await this.appService.createCheckoutService(body.userEmail, token),
     );
   }
 

@@ -371,7 +371,7 @@ export const updateCheckoutBundleState = async (
   );
   return response;
 };
-export const createcheckouthandler = async (userEmail, token) => {
+export const createCheckoutHandlerv2 = async (userEmail, token) => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
       CheckoutMutations.createCheckoutv2Mutation(userEmail),
