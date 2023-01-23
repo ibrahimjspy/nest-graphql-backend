@@ -28,6 +28,7 @@ import {
   validateStoreInput,
 } from './Shop.utils';
 import {
+  deleteBulkMediaHandler,
   deleteBulkProductHandler,
   getMyProductsHandler,
   getProductIdsByVariantIdsHandler,
@@ -189,12 +190,17 @@ export class ShopService {
     token: string,
   ) {
     try {
+      const mediaUpdate = await deleteBulkMediaHandler(
+        updateMyProduct.removeMediaIds,
+        token,
+        'true',
+      );
       const response = await updateMyProductHandler(
         updateMyProduct,
         token,
         'true',
       );
-      return prepareSuccessResponse(response, '', 200);
+      return prepareSuccessResponse({ response, mediaUpdate }, '', 200);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

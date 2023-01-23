@@ -38,6 +38,7 @@ const b2bQuery = (productIds, filter: myProductsDTO): string => {
             slug
             id
             media {
+              id
               url
             }
             variants {
@@ -100,6 +101,7 @@ const b2cQuery = (productIds, filter: myProductsDTO): string => {
             slug
             id
             media {
+              id
               url
             }
             variants {
