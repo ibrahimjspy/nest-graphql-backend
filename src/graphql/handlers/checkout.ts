@@ -371,3 +371,13 @@ export const updateCheckoutBundleState = async (
   );
   return response;
 };
+export const createCheckoutHandlerv2 = async (userEmail, token) => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutMutations.createCheckoutv2Mutation(userEmail),
+      token,
+    ),
+  );
+
+  return response;
+};

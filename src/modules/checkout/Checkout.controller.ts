@@ -51,6 +51,18 @@ export class CheckoutController {
     );
   }
 
+  @Post('create/checkout')
+  async createCheckout(
+    @Res() res,
+    @Body() body,
+    @IsAuthenticated('authorization') token: string,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.createCheckoutService(body.userEmail, token),
+    );
+  }
+
   @Put('cart/bundle/delete')
   async deleteBundleFromCart(
     @Res() res,
