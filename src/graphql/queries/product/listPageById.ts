@@ -12,6 +12,7 @@ const federationQuery = (id, pagination: PaginationDto): string => {
         channel: "${DEFAULT_CHANNEL}"
         filter: { categories: ["${id}"] }
       ) {
+        totalCount
         pageInfo{
           hasPreviousPage
           hasNextPage
