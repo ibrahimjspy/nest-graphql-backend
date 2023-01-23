@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsArray } from 'class-validator';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 
 export class removeProductDTO {
@@ -26,6 +27,10 @@ export class updateMyProductDTO {
 
   @ApiProperty({ required: true, type: editProductDTO })
   input: editProductDTO;
+
+  @ApiProperty({ type: String, isArray: true, required: true, default: [] })
+  @IsArray()
+  removeMediaIds: string[];
 }
 
 export class myProductsDTO extends PaginationDto {

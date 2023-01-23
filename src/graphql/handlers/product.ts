@@ -20,6 +20,7 @@ import {
   updateMyProductDTO,
 } from 'src/modules/shop/dto/myProducts';
 import { updateMyProductMutation } from '../mutations/product/updateMyProducts';
+import { deleteBulkMediaMutation } from '../mutations/product/mediaBulkDelete';
 
 export const productListPageHandler = async (
   id: string,
@@ -217,4 +218,15 @@ export const updateMyProductHandler = async (
     ),
   );
   return response['productUpdate'];
+};
+
+export const deleteBulkMediaHandler = async (
+  mediaIds: string[],
+  token: string,
+  isb2c = '',
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(deleteBulkMediaMutation(mediaIds, isb2c), token, isb2c),
+  );
+  return response['productMediaBulkDelete'];
 };

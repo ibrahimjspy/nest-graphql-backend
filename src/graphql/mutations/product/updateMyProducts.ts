@@ -15,6 +15,10 @@ const b2bMutation = (productUpdateInput: updateMyProductDTO) => {
             product {
             id
             description
+            media {
+              id
+              url
+            }
           }
         }
       }
@@ -35,6 +39,10 @@ const b2cMutation = (productUpdateInput: updateMyProductDTO) => {
               id
               name
               description
+              media {
+                id
+                url
+            }
           }
         }
       }
