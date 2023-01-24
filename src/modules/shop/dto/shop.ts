@@ -97,3 +97,9 @@ export class vendorIdsDTO {
   @IsNumber({}, { each: true })
   vendorIds: number[];
 }
+
+export class shopIdByProductsDTO {
+  @ApiProperty({ type: String, isArray: true, required: false })
+  @IsOptional()
+  productIds: string[];
+}

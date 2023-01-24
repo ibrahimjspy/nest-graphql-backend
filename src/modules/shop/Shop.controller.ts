@@ -16,6 +16,7 @@ import { ShopService } from './Shop.service';
 import {
   accountIdDTO,
   createStoreDTO,
+  shopIdByProductsDTO,
   shopIdByVariantsDTO,
   shopIdDTO,
   vendorIdsDTO,
@@ -80,6 +81,20 @@ export class ShopController {
       filter.productVariantIds
         ? await this.appService.getShopIdByVariants(filter.productVariantIds)
         : await this.appService.getShopIdByOrders(filter.orderIds),
+    );
+  }
+
+  @Get('/api/v2/shop/id')
+  @ApiOperation({
+    summary: 'returns shop id against given productId',
+  })
+  async getShopIdByProducts(
+    @Res() res,
+    @Query() filter: shopIdByProductsDTO,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.getShopIdByProductIds(filter.productIds),
     );
   }
 
