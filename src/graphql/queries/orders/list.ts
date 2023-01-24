@@ -18,6 +18,7 @@ const federationQuery = (filter: OrdersListDTO): string => {
           created: { gte: "${filters.startDate}", lte: "${filters.endDate}" }
         }
       ) {
+        totalCount
         pageInfo {
           hasNextPage
           endCursor

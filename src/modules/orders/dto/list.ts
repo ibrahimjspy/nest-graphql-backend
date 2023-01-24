@@ -23,6 +23,11 @@ enum PaymentChargeStatusEnum {
   'CANCELLED',
 }
 
+enum ReturnStatusEnum {
+  'RETURNED',
+  'PARTIALLY_RETURNED',
+}
+
 export class OrdersListDTO extends PaginationDto {
   @ApiProperty({ required: false, default: [] })
   @IsOptional()
@@ -58,4 +63,10 @@ export class OrdersListDTO extends PaginationDto {
   })
   @IsOptional()
   endDate?: string;
+
+  @ApiProperty({
+    required: false,
+    enum: ReturnStatusEnum,
+  })
+  returnStatus?: string;
 }

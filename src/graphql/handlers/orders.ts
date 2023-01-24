@@ -258,12 +258,13 @@ export const orderReturnDetailHandler = async (
  * @warn performance implication || this api parses all of the order ids which is not ideal
  * @returns list of orderIds || string[]
  */
-export const getReturnOrderIdsHandler = async (
-  token: string,
+export const getReturnOrderIdsHandler = async ({
+  token,
   after = '',
   storeOrderIds = [],
   isb2c = '',
-): Promise<string[]> => {
+  returnStatus = null,
+}): Promise<string[]> => {
   let returnedOrderIds = [];
   const orderStatuses = await graphqlResultErrorHandler(
     await graphqlCall(
@@ -272,17 +273,21 @@ export const getReturnOrderIdsHandler = async (
       isb2c,
     ),
   );
-  const orderIds = filterReturnedOrderIds(orderStatuses['orders'].edges);
+  const orderIds = filterReturnedOrderIds(
+    orderStatuses['orders'].edges,
+    returnStatus,
+  );
   returnedOrderIds = returnedOrderIds.concat(orderIds);
   // check if next page exists add its ids as well
   const nextPage = hasNextPage(orderStatuses['orders'].pageInfo);
   if (nextPage) {
-    const nextPageOrderIds = await getReturnOrderIdsHandler(
+    const nextPageOrderIds = await getReturnOrderIdsHandler({
       token,
-      nextPage,
+      after: nextPage,
       storeOrderIds,
       isb2c,
-    );
+      returnStatus,
+    });
     returnedOrderIds = returnedOrderIds.concat(nextPageOrderIds);
   }
   return returnedOrderIds;

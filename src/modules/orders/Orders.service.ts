@@ -205,7 +205,7 @@ export class OrdersService {
         await Promise.all([
           getOrdersCountHandler(token),
           getReadyToFulfillOrdersCountHandler(token),
-          getReturnOrderIdsHandler(token),
+          getReturnOrderIdsHandler({ token }),
         ]);
       const response: OrderSummaryResponseDto = {
         dailySales: mockOrderReporting().dailySales,
@@ -380,7 +380,12 @@ export class OrdersService {
           getProcessingOrdersCountHandler(token, orderIds, 'true'),
           getFulfilledOrdersCountHandler(token, orderIds, 'true'),
           getCancelledOrdersCountHandler(token, orderIds, 'true'),
-          getReturnOrderIdsHandler(token, '', orderIds, 'true'),
+          getReturnOrderIdsHandler({
+            token,
+            after: '',
+            storeOrderIds: orderIds,
+            isb2c: 'true',
+          }),
           getTotalEarningsHandler(shopId, token, 'true'),
         ]);
       const response: ShopOrderReportResponseDto = {
@@ -391,6 +396,24 @@ export class OrdersService {
         totalEarnings: Number(totalEarnings['price']),
       };
 
+      return prepareSuccessResponse(response, '', 201);
+    } catch (err) {
+      this.logger.error(err);
+      return graphqlExceptionHandler(err);
+    }
+  }
+
+  public async getReturnsListByFilters(
+    filter: OrdersListDTO,
+    token: string,
+  ): Promise<object> {
+    try {
+      const returnedOrderIds = await getReturnOrderIdsHandler({
+        token,
+        returnStatus: filter.returnStatus,
+      });
+      filter.orderIds = returnedOrderIds;
+      const response = await ordersListHandler(filter, token);
       return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);

@@ -48,12 +48,20 @@ export const hasNextPage = (pageInfo) => {
  *   @params ordersArray containing all orders with order status and ids
  *   @returns array of returned order ids
  */
-export const filterReturnedOrderIds = (orderResponse): string[] => {
+export const filterReturnedOrderIds = (
+  orderResponse,
+  returnStatus = null,
+): string[] => {
   const ids = [];
   orderResponse.map((order) => {
     const orderStatus = order?.node?.status;
-    if (orderStatus == 'RETURNED' || orderStatus == 'PARTIALLY_RETURNED') {
-      ids.push(order.node.id);
+    if (returnStatus) {
+      return orderStatus == returnStatus && ids.push(order.node.id);
+    }
+    if (!returnStatus) {
+      if (orderStatus == 'RETURNED' || orderStatus == 'PARTIALLY_RETURNED') {
+        return ids.push(order.node.id);
+      }
     }
   });
   return ids;
