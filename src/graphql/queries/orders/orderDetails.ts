@@ -106,6 +106,7 @@ const federationQuery = (id: string): string => {
           productName
           quantity
           quantityFulfilled
+          quantityToFulfill
           productSku
           totalPrice {
             net {

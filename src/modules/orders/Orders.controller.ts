@@ -278,4 +278,20 @@ export class OrdersController {
       await this.appService.getShopOrderReport(orderDto.shopId, token),
     );
   }
+
+  @Get('api/v1/orders/returns/filter')
+  @ApiOperation({
+    summary:
+      'Return all orders which are return by end customer extending list api filters',
+  })
+  async getOrderReturnsByFilters(
+    @Res() res,
+    @IsAuthenticated('authorization') token: string,
+    @Query() filters: OrdersListDTO,
+  ) {
+    return makeResponse(
+      res,
+      await this.appService.getReturnsListByFilters(filters, token),
+    );
+  }
 }
