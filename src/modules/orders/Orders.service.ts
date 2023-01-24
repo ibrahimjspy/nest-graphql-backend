@@ -162,7 +162,7 @@ export class OrdersService {
   public async getOrderDetailsById(id: string, token: string): Promise<object> {
     try {
       const response = await orderDetailsHandler(id, token);
-      return prepareSuccessResponse(response, '', 201);
+      return prepareSuccessResponse(response, '', 200);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
