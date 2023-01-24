@@ -36,11 +36,20 @@ const federationQuery = (id: string): string => {
           streetAddress2
         }
         shippingAddress {
-          postalCode
+          id
           firstName
           lastName
+          companyName
           streetAddress1
           streetAddress2
+          city
+          cityArea
+          postalCode
+          country{
+            code
+          }
+          countryArea
+          phone
         }
         created
         id
