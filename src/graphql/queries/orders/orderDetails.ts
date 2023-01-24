@@ -3,67 +3,91 @@ import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
 const federationQuery = (id: string): string => {
   return gql`
-          query {
-            order(id: "${id}") {
-              number
-              shippingPrice {
+    query {
+      order(id: "${id}") {
+        number
+        shippingPrice {
+          gross {
+            amount
+          }
+        }
+        totalCaptured {
+          amount
+        }
+        total {
+          gross {
+            amount
+          }
+        }
+        paymentStatus
+        payments {
+          id
+          total {
+            amount
+          }
+        }
+        status
+        userEmail
+        billingAddress {
+          postalCode
+          firstName
+          lastName
+          streetAddress1
+          streetAddress2
+        }
+        shippingAddress {
+          postalCode
+          firstName
+          lastName
+          streetAddress1
+          streetAddress2
+        }
+        created
+        id
+        user {
+          firstName
+          lastName
+          email
+        }
+        fulfillments {
+          status
+          lines {
+            id
+            quantity
+            orderLine {
+              quantity
+              totalPrice {
                 gross {
                   amount
                 }
               }
-              status
-              shippingMethods {
-                name
+              variant {
                 id
-                description
-              }
-              userEmail
-              billingAddress {
-                postalCode
-                firstName
-                lastName
-                streetAddress1
-                streetAddress2
-              }
-              shippingAddress {
-                postalCode
-                firstName
-                lastName
-                streetAddress1
-                streetAddress2
-              }
-              created
-              id
-              user {
-                firstName
-                lastName
-                email
-              }
-              lines {
-                id
-                productName
-                quantity
-                productSku
-                totalPrice {
-                  net {
-                    amount
-                  }
-                  gross {
-                    amount
+                sku
+                pricing {
+                  price {
+                    gross {
+                      amount
+                    }
                   }
                 }
-                unitPrice {
-                  net {
-                    amount
+                attributes {
+                  attribute {
+                    name
                   }
-                  gross {
-                    amount
+                  values {
+                    name
                   }
                 }
-                variant {
-                  stocks {
-                    quantity
-                  }
+                media {
+                  url
+                }
+                product {
+                  id
+                  name
+                  media {
+                      url
+                    }
                   attributes {
                     attribute {
                       name
@@ -72,34 +96,77 @@ const federationQuery = (id: string): string => {
                       name
                     }
                   }
-                  media {
-                    url
-                  }
-                  quantityOrdered
-                  quantityAvailable
-                  pricing {
-                    price {
-                      gross {
-                        amount
-                      }
-                      net {
-                        amount
-                      }
-                    }
-                  }
-                  product {
-                    id
-                    media {
-                      url
-                    }
-                    thumbnail {
-                      url
-                    }
-                  }
                 }
               }
             }
           }
+        }
+        lines {
+          id
+          productName
+          quantity
+          quantityFulfilled
+          productSku
+          totalPrice {
+            net {
+              amount
+            }
+            gross {
+              amount
+            }
+          }
+          unitPrice {
+            net {
+              amount
+            }
+            gross {
+              amount
+            }
+          }
+          variant {
+            stocks {
+              quantity
+            }
+            sku
+            attributes {
+              attribute {
+                name
+              }
+              values {
+                name
+              }
+            }
+            pricing {
+              price {
+                gross {
+                  amount
+                }
+                net {
+                  amount
+                }
+              }
+            }
+            media {
+              url
+            }
+            product {
+              id
+              media {
+                url
+              }
+              attributes {
+                attribute {
+                  name
+                }
+                values {
+                  name
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   `;
 };
 
