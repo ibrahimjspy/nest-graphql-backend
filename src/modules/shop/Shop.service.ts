@@ -12,6 +12,7 @@ import {
   saveShopBankDetailsHandler,
   shopDetailsHandler,
   shopIdByOrderIdHandler,
+  shopIdByProductIdHandler,
   shopIdByVariantIdHandler,
   vendorDetailsHandler,
 } from 'src/graphql/handlers/shop';
@@ -267,6 +268,22 @@ export class ShopService {
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async getShopIdByProductIds(productIds) {
+    try {
+      const ids = validateArray(productIds);
+      let response = [];
+      await Promise.all(
+        ids.map(async (productId) => {
+          const shopId = await shopIdByProductIdHandler(productId);
+          response = [...response, shopId];
+        }),
+      );
+      return prepareSuccessResponse(response, '', 200);
+    } catch (error) {
+      this.logger.error(error);
     }
   }
 }
