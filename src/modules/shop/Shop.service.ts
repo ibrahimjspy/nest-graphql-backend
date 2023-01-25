@@ -5,6 +5,7 @@ import {
   addVendorsToShopHandler,
   carouselHandler,
   createStoreHandler,
+  getAllShopsHandler,
   getShopBankDetailsHandler,
   getStoreFrontIdHandler,
   getStoreProductVariantsHandler,
@@ -281,6 +282,15 @@ export class ShopService {
           response = [...response, shopId];
         }),
       );
+      return prepareSuccessResponse(response, '', 200);
+    } catch (error) {
+      this.logger.error(error);
+    }
+  }
+
+  public async getAllShops(quantity: number) {
+    try {
+      const response = await getAllShopsHandler(quantity);
       return prepareSuccessResponse(response, '', 200);
     } catch (error) {
       this.logger.error(error);

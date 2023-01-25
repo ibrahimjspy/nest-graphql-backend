@@ -15,6 +15,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ShopService } from './Shop.service';
 import {
   accountIdDTO,
+  allShopIdsDTO,
   createStoreDTO,
   shopIdByProductsDTO,
   shopIdByVariantsDTO,
@@ -234,6 +235,17 @@ export class ShopController {
         body.vendorIds,
         Authorization,
       ),
+    );
+  }
+
+  @Get('/api/v1/shops/ids')
+  @ApiOperation({
+    summary: 'returns shop ids against given quantity',
+  })
+  async getAllShops(@Res() res, @Query() filter: allShopIdsDTO): Promise<any> {
+    return makeResponse(
+      res,
+      await this.appService.getAllShops(filter.quantity),
     );
   }
 }

@@ -103,3 +103,9 @@ export class shopIdByProductsDTO {
   @IsOptional()
   productIds: string[];
 }
+
+export class allShopIdsDTO {
+  @ApiProperty({ type: String, required: false, default: 1000 })
+  @IsOptional()
+  quantity: number;
+}
