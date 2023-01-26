@@ -58,6 +58,8 @@ jobs:
           (echo "AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}") >> .env
           (echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}") >> .env
           (echo "DEFAULT_WAREHOUSE_ID=${{ secrets.DEFAULT_WAREHOUSE_ID }}") >> .env
+          (echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}") >> .env
+          (echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}") >> .env
 
         # Docker login
       - name: Login to DockerHub
