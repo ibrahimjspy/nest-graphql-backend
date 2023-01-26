@@ -48,11 +48,11 @@ const b2cQuery = (variantsIds: string[], after = '') => {
 export const getProductIdsByVariantIdsQuery = (
   variantsIds: string[],
   after = '',
-  isB2C = '',
+  isb2c = false,
 ) => {
   return graphqlQueryCheck(
     b2bQuery(variantsIds, after),
     b2cQuery(variantsIds, after),
-    isB2C,
+    isb2c,
   );
 };

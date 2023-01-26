@@ -63,7 +63,7 @@ const b2cMutation = (productVariantId: string, quantity: number) => {
 export const productVariantStockUpdateMutation = (
   productVariantId: string,
   quantity: number,
-  isb2c = '',
+  isb2c = false,
 ) => {
   return graphqlQueryCheck(
     b2bMutation(productVariantId, quantity),

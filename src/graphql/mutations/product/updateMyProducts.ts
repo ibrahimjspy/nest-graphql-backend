@@ -51,7 +51,7 @@ const b2cMutation = (productUpdateInput: updateMyProductDTO) => {
 
 export const updateMyProductMutation = (
   productUpdateInput: updateMyProductDTO,
-  isb2c = '',
+  isb2c = false,
 ) => {
   return graphqlQueryCheck(
     b2bMutation(productUpdateInput),

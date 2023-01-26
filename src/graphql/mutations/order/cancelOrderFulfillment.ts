@@ -48,7 +48,7 @@ const b2cMutation = (fulfillmentId: string, warehouseId: string) => {
 export const orderFulfillmentCancelMutation = (
   fulfillmentId: string,
   warehouseId: string,
-  isb2c = '',
+  isb2c = false,
 ) => {
   return graphqlQueryCheck(
     b2bMutation(fulfillmentId, warehouseId),

@@ -132,11 +132,11 @@ const b2cQuery = (productIds, filter: myProductsDTO): string => {
 export const getMyProductsQuery = (
   variantsIds: string[],
   filter: myProductsDTO,
-  isB2C = '',
+  isb2c = false,
 ) => {
   return graphqlQueryCheck(
     b2bQuery(variantsIds, filter),
     b2cQuery(variantsIds, filter),
-    isB2C,
+    isb2c,
   );
 };

@@ -31,6 +31,6 @@ const b2cQuery = (quantity: number): string => {
   `;
 };
 
-export const getAllShopsQuery = (quantity: number, isB2C = '') => {
+export const getAllShopsQuery = (quantity: number, isB2C = false) => {
   return graphqlQueryCheck(b2bQuery(quantity), b2cQuery(quantity), isB2C);
 };

@@ -43,10 +43,13 @@ const federationMutation = (storeInput: createStoreDTO) => {
   `;
 };
 
-export const createStoreMutation = (storeInput: createStoreDTO) => {
+export const createStoreMutation = (
+  storeInput: createStoreDTO,
+  isb2c = false,
+) => {
   return graphqlQueryCheck(
     federationMutation(storeInput),
     federationMutation(storeInput),
-    'true',
+    isb2c,
   );
 };

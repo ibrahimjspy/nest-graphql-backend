@@ -39,7 +39,7 @@ export const getOrdersCountHandler = async (token: string) => {
 export const getFulfilledOrdersCountHandler = async (
   token: string,
   storeOrderIds = [],
-  isb2c = '',
+  isb2c = false,
 ) => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
@@ -70,7 +70,7 @@ export const getReadyToFulfillOrdersCountHandler = async (token: string) => {
 export const getCancelledOrdersCountHandler = async (
   token: string,
   storeOrderIds = [],
-  isb2c = '',
+  isb2c = false,
 ) => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
@@ -85,7 +85,7 @@ export const getCancelledOrdersCountHandler = async (
 export const getProcessingOrdersCountHandler = async (
   token: string,
   storeOrderIds = [],
-  isb2c = '',
+  isb2c = false,
 ) => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
@@ -100,7 +100,7 @@ export const getProcessingOrdersCountHandler = async (
 export const getTotalEarningsHandler = async (
   storefrontId,
   token: string,
-  isb2c = '',
+  isb2c = false,
 ) => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(getTotalEarningsQuery(storefrontId, isb2c), token, isb2c),
