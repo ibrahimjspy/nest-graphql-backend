@@ -43,3 +43,4 @@ export const CATEGORY_SHOES = 'Shoes';
 export const DEFAULT_WAREHOUSE_ID = process.env.DEFAULT_WAREHOUSE_ID;
 export const OS_AWS_API_GATEWAY_ENDPOINT =
   process.env.OS_AWS_API_GATEWAY_ENDPOINT;
+export const STAFF_TOKEN = process.env.STAFF_TOKEN;
