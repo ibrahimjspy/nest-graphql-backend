@@ -51,11 +51,12 @@ const b2bQuery = (productIds, filter: myProductsDTO): string => {
                   name
                 }
               }
-              pricing {
+              channelListings {
+                costPrice {
+                  amount
+                }
                 price {
-                  gross {
-                    amount
-                  }
+                  amount
                 }
               }
             }
