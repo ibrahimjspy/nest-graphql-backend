@@ -45,7 +45,11 @@ const b2cQuery = (after: string, storeOrderIds: string[]): string => {
   `;
 };
 
-export const getOrderStatus = (after = '', storeOrderIds = [], isB2C = '') => {
+export const getOrderStatus = (
+  after = '',
+  storeOrderIds = [],
+  isB2C = false,
+) => {
   return graphqlQueryCheck(
     b2bQuery(after, storeOrderIds),
     b2cQuery(after, storeOrderIds),

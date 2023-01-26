@@ -44,7 +44,7 @@ export const dashboardByIdHandler = async (
   token: string,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(dashboardQuery(id), token, 'true'),
+    await graphqlCall(dashboardQuery(id), token, true),
   );
   return response;
 };
@@ -262,7 +262,7 @@ export const getReturnOrderIdsHandler = async ({
   token,
   after = '',
   storeOrderIds = [],
-  isb2c = '',
+  isb2c = false,
   returnStatus = null,
 }): Promise<string[]> => {
   let returnedOrderIds = [];

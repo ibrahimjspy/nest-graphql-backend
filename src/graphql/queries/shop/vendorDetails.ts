@@ -37,6 +37,6 @@ const b2cQuery = (vendorId: string): string => {
   `;
 };
 
-export const vendorDetailsQuery = (vendorId: string, isB2C = '') => {
-  return graphqlQueryCheck(b2bQuery(vendorId), b2cQuery(vendorId), isB2C);
+export const vendorDetailsQuery = (vendorId: string, isb2c = false) => {
+  return graphqlQueryCheck(b2bQuery(vendorId), b2cQuery(vendorId), isb2c);
 };

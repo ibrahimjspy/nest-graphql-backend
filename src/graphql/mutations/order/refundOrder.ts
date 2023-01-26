@@ -66,7 +66,7 @@ const b2cMutation = (refundInput: OrderRefundInputInterface) => {
 
 export const orderRefundMutation = (
   refundInput: OrderRefundInputInterface,
-  isb2c = '',
+  isb2c = false,
 ) => {
   return graphqlQueryCheck(
     b2bMutation(refundInput),

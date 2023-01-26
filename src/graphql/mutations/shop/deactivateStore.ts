@@ -12,5 +12,5 @@ const b2cMutation = (storeId: string) => {
 };
 
 export const deactivateStoreMutation = (storeId: string) => {
-  return graphqlQueryCheck(b2cMutation(storeId), b2cMutation(storeId), 'true');
+  return graphqlQueryCheck(b2cMutation(storeId), b2cMutation(storeId), true);
 };

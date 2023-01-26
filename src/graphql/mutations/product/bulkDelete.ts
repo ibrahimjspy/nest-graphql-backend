@@ -29,7 +29,7 @@ const b2cMutation = (productIds: string[]) => {
 
 export const deleteBulkProductsMutation = (
   productIds: string[],
-  isb2c = '',
+  isb2c = false,
 ) => {
   return graphqlQueryCheck(
     b2bMutation(productIds),

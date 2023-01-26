@@ -56,6 +56,7 @@ export class ShopService {
       const response = await createStoreHandler(
         validateStoreInput(storeInput),
         token,
+        true,
       );
       // getting shop details by given shop id
       const shopDetail = await shopDetailsHandler(shopId);
@@ -68,9 +69,9 @@ export class ShopService {
     }
   }
 
-  public async getShopDetails(shopId: string): Promise<object> {
+  public async getShopDetails(shopId: string, isb2c = false): Promise<object> {
     try {
-      const response = await shopDetailsHandler(shopId);
+      const response = await shopDetailsHandler(shopId, isb2c);
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
       this.logger.error(error);
@@ -155,11 +156,7 @@ export class ShopService {
 
   public async removeProductsFromMyProducts(productIds: string[], token) {
     try {
-      const response = await deleteBulkProductHandler(
-        productIds,
-        token,
-        'true',
-      );
+      const response = await deleteBulkProductHandler(productIds, token, true);
       return prepareSuccessResponse(response, '', 200);
     } catch (error) {
       this.logger.error(error);
@@ -191,12 +188,12 @@ export class ShopService {
       const mediaUpdate = await deleteBulkMediaHandler(
         updateMyProduct.removeMediaIds,
         token,
-        'true',
+        true,
       );
       const response = await updateMyProductHandler(
         updateMyProduct,
         token,
-        'true',
+        true,
       );
       return prepareSuccessResponse({ response, mediaUpdate }, '', 200);
     } catch (error) {
@@ -294,6 +291,22 @@ export class ShopService {
       return prepareSuccessResponse(response, '', 200);
     } catch (error) {
       this.logger.error(error);
+    }
+  }
+
+  public async createMarketplaceShop(
+    shopInput: createStoreDTO,
+    token: string,
+  ): Promise<SuccessResponseType> {
+    try {
+      const response = await createStoreHandler(
+        validateStoreInput(shopInput),
+        token,
+      );
+      return prepareSuccessResponse(response, '', 201);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 }

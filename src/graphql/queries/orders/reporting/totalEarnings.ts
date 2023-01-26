@@ -42,7 +42,7 @@ const b2cQuery = (storefrontId: string): string => {
   `;
 };
 
-export const getTotalEarningsQuery = (storefrontId, isB2C = '') => {
+export const getTotalEarningsQuery = (storefrontId, isB2C = false) => {
   return graphqlQueryCheck(
     b2bQuery(storefrontId),
     b2cQuery(storefrontId),

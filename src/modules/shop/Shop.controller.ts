@@ -16,6 +16,7 @@ import { ShopService } from './Shop.service';
 import {
   accountIdDTO,
   allShopIdsDTO,
+  b2cDTO,
   createStoreDTO,
   shopIdByProductsDTO,
   shopIdByVariantsDTO,
@@ -41,10 +42,14 @@ export class ShopController {
   }
 
   @Get('/api/v1/details/:shopId')
-  async getShippingMethods(@Res() res, @Param() params): Promise<object> {
+  async getShopDetails(
+    @Res() res,
+    @Param() params,
+    @Query() filter: b2cDTO,
+  ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getShopDetails(params?.shopId),
+      await this.appService.getShopDetails(params?.shopId, filter.isb2c),
     );
   }
 
@@ -246,6 +251,22 @@ export class ShopController {
     return makeResponse(
       res,
       await this.appService.getAllShops(filter.quantity),
+    );
+  }
+
+  @Post('/api/v1/shop/create')
+  @ApiOperation({
+    summary: 'create a marketplace shop',
+  })
+  async createShop(
+    @Res() res,
+    @Body() shopInput: createStoreDTO,
+    @Headers() headers,
+  ): Promise<object> {
+    const Authorization: string = headers.authorization;
+    return makeResponse(
+      res,
+      await this.appService.createMarketplaceShop(shopInput, Authorization),
     );
   }
 }

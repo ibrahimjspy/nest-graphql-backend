@@ -50,5 +50,5 @@ const mockQuery = () => {
 };
 // returns order dashboard query based on federation and mock check
 export const dashboardQuery = (id: string) => {
-  return graphqlQueryCheck(federationQuery(id), mockQuery(), 'true');
+  return graphqlQueryCheck(federationQuery(id), mockQuery(), true);
 };

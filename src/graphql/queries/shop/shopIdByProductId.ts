@@ -23,6 +23,6 @@ const b2cQuery = (productId: string): string => {
   `;
 };
 
-export const shopIdByProductQuery = (productId: string, isB2C = '') => {
-  return graphqlQueryCheck(b2bQuery(productId), b2cQuery(productId), isB2C);
+export const shopIdByProductQuery = (productId: string, isb2c = false) => {
+  return graphqlQueryCheck(b2bQuery(productId), b2cQuery(productId), isb2c);
 };

@@ -377,16 +377,16 @@ export class OrdersService {
       const orderIds: string[] = shopDetails['orders'];
       const [processing, shipped, cancelled, returned, totalEarnings] =
         await Promise.all([
-          getProcessingOrdersCountHandler(token, orderIds, 'true'),
-          getFulfilledOrdersCountHandler(token, orderIds, 'true'),
-          getCancelledOrdersCountHandler(token, orderIds, 'true'),
+          getProcessingOrdersCountHandler(token, orderIds, true),
+          getFulfilledOrdersCountHandler(token, orderIds, true),
+          getCancelledOrdersCountHandler(token, orderIds, true),
           getReturnOrderIdsHandler({
             token,
             after: '',
             storeOrderIds: orderIds,
-            isb2c: 'true',
+            isb2c: true,
           }),
-          getTotalEarningsHandler(shopId, token, 'true'),
+          getTotalEarningsHandler(shopId, token, true),
         ]);
       const response: ShopOrderReportResponseDto = {
         ordersProcessing: processing,

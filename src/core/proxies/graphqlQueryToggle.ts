@@ -1,7 +1,7 @@
 type GraphqlQuery = (
   federationQuery: string,
   mockQuery: string,
-  partialMock?: string,
+  partialMock?: string | boolean,
 ) => string;
 /**
  * Returns graphql query depending on env file instructions

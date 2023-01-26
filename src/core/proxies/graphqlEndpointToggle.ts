@@ -1,4 +1,4 @@
-type GraphqlEndpoint = (specificMock?: string) => string;
+type GraphqlEndpoint = (specificMock?: string | boolean) => string;
 /**
  * returns graphql Endpoint depending on env file
  * @params specificMock is an optional parameter to mock a handler specifically

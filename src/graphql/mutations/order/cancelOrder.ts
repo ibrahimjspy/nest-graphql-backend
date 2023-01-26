@@ -41,6 +41,6 @@ const b2cMutation = (orderId: string) => {
   `;
 };
 
-export const orderCancelMutation = (orderId: string, isb2c = '') => {
+export const orderCancelMutation = (orderId: string, isb2c = false) => {
   return graphqlQueryCheck(b2bMutation(orderId), b2cMutation(orderId), isb2c);
 };

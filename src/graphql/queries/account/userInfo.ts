@@ -15,5 +15,5 @@ const federationQuery = () => {
 };
 
 export const userInformationQuery = () => {
-  return graphqlQueryCheck(federationQuery(), federationQuery(), 'false');
+  return graphqlQueryCheck(federationQuery(), federationQuery());
 };

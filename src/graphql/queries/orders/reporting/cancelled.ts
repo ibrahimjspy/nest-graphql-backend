@@ -25,7 +25,7 @@ const b2cQuery = (storeOrderIds: string[]): string => {
 
 export const getCancelledOrdersCountQuery = (
   storeOrderIds = [],
-  isB2C = '',
+  isB2C = false,
 ) => {
   return graphqlQueryCheck(b2bQuery(), b2cQuery(storeOrderIds), isB2C);
 };

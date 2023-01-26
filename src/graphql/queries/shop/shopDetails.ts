@@ -7,7 +7,6 @@ const b2bQuery = (shopId: string): string => {
     marketplaceShop(filter: {
       id: "${shopId}"
     }) {
-      __typename
         id
         name
         about
@@ -34,7 +33,6 @@ const b2cQuery = (shopId: string): string => {
     marketplaceShop(filter: {
       id: "${shopId}"
     }) {
-      __typename
         id
         name
         about
@@ -58,6 +56,6 @@ const b2cQuery = (shopId: string): string => {
   }`;
 };
 
-export const shopDetailsQuery = (shopId: string, isB2C = '') => {
-  return graphqlQueryCheck(b2bQuery(shopId), b2cQuery(shopId), isB2C);
+export const shopDetailsQuery = (shopId: string, isb2c = false) => {
+  return graphqlQueryCheck(b2bQuery(shopId), b2cQuery(shopId), isb2c);
 };

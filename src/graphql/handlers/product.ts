@@ -165,11 +165,7 @@ export const getMyProductsHandler = async (
   filter: myProductsDTO,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(
-      getMyProductsQuery(productIds, filter, 'true'),
-      '',
-      'true',
-    ),
+    await graphqlCall(getMyProductsQuery(productIds, filter, true), '', true),
   );
   return response['products'];
 };
@@ -177,7 +173,7 @@ export const getMyProductsHandler = async (
 export const deleteBulkProductHandler = async (
   productIds: string[],
   token: string,
-  isb2c = '',
+  isb2c = false,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
@@ -193,7 +189,7 @@ export const updateProductVariantStockHandler = async (
   productVariantId: string,
   quantity: number,
   token: string,
-  isb2c = '',
+  isb2c = false,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
@@ -208,7 +204,7 @@ export const updateProductVariantStockHandler = async (
 export const updateMyProductHandler = async (
   productUpdateInput: updateMyProductDTO,
   token: string,
-  isb2c = '',
+  isb2c = false,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
@@ -223,7 +219,7 @@ export const updateMyProductHandler = async (
 export const deleteBulkMediaHandler = async (
   mediaIds: string[],
   token: string,
-  isb2c = '',
+  isb2c = false,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(deleteBulkMediaMutation(mediaIds, isb2c), token, isb2c),

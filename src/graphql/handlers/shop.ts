@@ -35,9 +35,10 @@ export const carouselHandler = async (token: string): Promise<object> => {
 export const createStoreHandler = async (
   storeInput: createStoreDTO,
   token: string,
+  isb2c = false,
 ): Promise<ShopType> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(createStoreMutation(storeInput), token, 'true'),
+    await graphqlCall(createStoreMutation(storeInput, isb2c), token, isb2c),
   );
   return response['createMarketplaceShop'];
 };
@@ -64,7 +65,7 @@ export const addStoreToShopHandler = async (
   } catch (error) {
     // If store adding in shop fails then we need to deactivate that store
     await graphqlResultErrorHandler(
-      await graphqlCall(deactivateStoreMutation(storeId), token, 'true'),
+      await graphqlCall(deactivateStoreMutation(storeId), token, true),
     );
     const errorMessage = await graphqlExceptionHandler(error);
     return {
@@ -73,9 +74,12 @@ export const addStoreToShopHandler = async (
   }
 };
 
-export const shopDetailsHandler = async (shopId: string): Promise<object> => {
+export const shopDetailsHandler = async (
+  shopId: string,
+  isb2c = false,
+): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(shopDetailsQuery(shopId)),
+    await graphqlCall(shopDetailsQuery(shopId, isb2c), '', isb2c),
   );
   return response['marketplaceShop'];
 };
@@ -172,7 +176,7 @@ export const getStoreProductVariantsHandler = async (
   retailerId: string,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(shopDetailsQuery(retailerId, 'true'), '', 'true'),
+    await graphqlCall(shopDetailsQuery(retailerId, true), '', true),
   );
   return response['marketplaceShop'];
 };
@@ -257,7 +261,7 @@ export const shopIdByProductIdHandler = async (
 
 export const getAllShopsHandler = async (
   quantity: number,
-  isb2c = '',
+  isb2c = false,
 ): Promise<object> => {
   try {
     const response = await graphqlResultErrorHandler(

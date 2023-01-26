@@ -54,7 +54,7 @@ const b2cMutation = (orderId: string, orderLines: string) => {
 export const orderFulfillMutation = (
   orderId: string,
   orderLines: string,
-  isb2c = '',
+  isb2c = false,
 ) => {
   return graphqlQueryCheck(
     b2bMutation(orderId, orderLines),
