@@ -38,14 +38,22 @@ export const federationQuery = (filter: ProductFilterDto): string => {
             slug
             defaultVariant {
               sku
-              channelListings {
-                  costPrice {
-                    amount
-                  }
-                  price {
+              attributes {
+                attribute {
+                  name
+                }
+                values {
+                  name
+                }
+              }
+              pricing {
+                price {
+                  gross {
+                    currency
                     amount
                   }
                 }
+              }
             }
             variants {
               id

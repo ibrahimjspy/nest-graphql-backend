@@ -14,11 +14,7 @@ import {
   getStoredProductsDTO,
 } from 'src/modules/productStore/dto/products';
 import { shopInfoDto } from 'src/modules/orders/dto';
-import { STAFF_TOKEN } from 'src/constants';
 
-/**
- * @warn We are using staff token temporarily to fetch variant cost price
- */
 export const getStoredProductsHandler = async (
   shopId: string,
   productFilter: getStoredProductsDTO,
@@ -26,7 +22,6 @@ export const getStoredProductsHandler = async (
   try {
     const response = await graphqlCall(
       getStoredProductsQuery(shopId, productFilter),
-      STAFF_TOKEN,
     );
     return response['storedProducts'];
   } catch (error) {

@@ -45,12 +45,21 @@ export const getStoredProductsQuery = (
                     }
                     defaultVariant {
                       sku
-                      channelListings {
-                        costPrice {
-                          amount
+                      id
+                      attributes {
+                        attribute {
+                          name
                         }
+                        values {
+                          name
+                        }
+                      }
+                      pricing {
                         price {
-                          amount
+                          gross {
+                            currency
+                            amount
+                          }
                         }
                       }
                     }

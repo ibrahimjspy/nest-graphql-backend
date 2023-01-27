@@ -22,7 +22,16 @@ const federationQuery = (slug): string => {
         }
         description
         defaultVariant {
+          sku
           id
+          attributes {
+            attribute {
+              name
+            }
+            values {
+              name
+            }
+          }
           pricing {
             price {
               gross {

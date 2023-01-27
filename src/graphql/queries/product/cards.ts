@@ -16,6 +16,14 @@ export const federationQuery = (): string => {
             slug
             defaultVariant {
               sku
+              attributes {
+                attribute {
+                  name
+                }
+                values {
+                  name
+                }
+              }
               pricing {
                 price {
                   gross {
