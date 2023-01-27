@@ -24,6 +24,14 @@ const federationQuery = (id, pagination: PaginationDto): string => {
             id
             slug
             defaultVariant {
+              attributes {
+                attribute {
+                  name
+                }
+                values {
+                  name
+                }
+              }
               pricing {
                 price {
                   gross {

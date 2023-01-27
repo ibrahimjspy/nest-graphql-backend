@@ -37,6 +37,24 @@ const b2bQuery = (productIds, filter: myProductsDTO): string => {
             description
             slug
             id
+            defaultVariant {
+              attributes {
+                attribute {
+                  name
+                }
+                values {
+                  name
+                }
+              }
+              pricing {
+                price {
+                  gross {
+                    currency
+                    amount
+                  }
+                }
+              }
+            }
             media {
               id
               url
@@ -49,14 +67,6 @@ const b2bQuery = (productIds, filter: myProductsDTO): string => {
                 }
                 values {
                   name
-                }
-              }
-              channelListings {
-                costPrice {
-                  amount
-                }
-                price {
-                  amount
                 }
               }
             }

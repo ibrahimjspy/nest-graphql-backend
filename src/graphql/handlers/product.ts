@@ -21,7 +21,6 @@ import {
 } from 'src/modules/shop/dto/myProducts';
 import { updateMyProductMutation } from '../mutations/product/updateMyProducts';
 import { deleteBulkMediaMutation } from '../mutations/product/mediaBulkDelete';
-import { STAFF_TOKEN } from 'src/constants';
 
 export const productListPageHandler = async (
   id: string,
@@ -53,12 +52,9 @@ export const productCardsByCategoriesHandler = async (
   }
 };
 
-/**
- * @warn We are using staff token temporarily to fetch variant cost price
- */
 export const productsHandler = async (filter): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(ProductQueries.productsQuery(filter), STAFF_TOKEN),
+    await graphqlCall(ProductQueries.productsQuery(filter)),
   );
 
   return response?.products;
@@ -164,19 +160,12 @@ export const getProductIdsByVariantIdsHandler = async (
   return getUniqueProductIds(productIds);
 };
 
-/**
- * @warn We are using staff token temporarily to fetch variant cost price
- */
 export const getMyProductsHandler = async (
   productIds: string[],
   filter: myProductsDTO,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(
-      getMyProductsQuery(productIds, filter, true),
-      STAFF_TOKEN,
-      true,
-    ),
+    await graphqlCall(getMyProductsQuery(productIds, filter, true), '', true),
   );
   return response['products'];
 };
