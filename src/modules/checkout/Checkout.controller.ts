@@ -15,6 +15,7 @@ import { AddBundleDto, UserIdDto } from './dto';
 import { UpdateBundleStateDto } from 'src/modules/checkout/dto/add-bundle.dto';
 import { UnSelectBundlesType } from './Checkout.utils.type';
 import { IsAuthenticated } from 'src/core/utils/decorators';
+import { b2bClientintent } from './B2BClientsmapping';
 
 @ApiTags('checkout')
 @Controller('checkout')
@@ -57,10 +58,7 @@ export class CheckoutController {
     @Body() body,
     @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
-    return makeResponse(
-      res,
-      await this.appService.createCheckoutService(body.userEmail, token),
-    );
+    return makeResponse(res, await b2bClientintent(body.userEmail, token));
   }
 
   @Put('cart/bundle/delete')

@@ -1,6 +1,6 @@
 import { CheckoutService } from './Checkout.service';
 
-export async function b2bClientCheck(userEmail, token) {
+export async function b2bClientintent(userEmail, token) {
   const intent = new CheckoutService();
 
   const ClientMapping = {

@@ -1,5 +1,6 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
+import GeneralError from 'src/core/exceptions/generalError';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import {
   prepareFailedResponse,
@@ -20,7 +21,7 @@ import {
 import { BundleType } from 'src/graphql/types/bundle.type';
 import { getHttpErrorMessage } from 'src/external/utils/httpHelper';
 import { UpdateBundleStateDto } from 'src/modules/checkout/dto/add-bundle.dto';
-import { b2bClientCheck } from './B2BClientsmapping';
+
 @Injectable()
 export class CheckoutService {
   private readonly logger = new Logger(CheckoutService.name);
@@ -562,16 +563,6 @@ export class CheckoutService {
     }
   }
 
-  public async createCheckoutService(userEmail: string, token: string) {
-    try {
-      const response = b2bClientCheck(userEmail, token);
-      return response;
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
-  }
-
   protected async updateCartBundlesCheckoutIdService(
     userEmail: string,
     token: string,
@@ -626,7 +617,7 @@ export class CheckoutService {
           !saleorCheckoutResponse['checkout'] &&
           saleorCheckoutResponse['checkout']['id']
         )
-          throw new RecordNotFound('Saleor Checkout creation error');
+          throw new GeneralError('Saleor Checkout creation error');
 
         const updatedCheckoutResponse =
           await this.updateCartBundlesCheckoutIdService(
@@ -641,7 +632,7 @@ export class CheckoutService {
       }
     } catch (error) {
       this.logger.error(error);
-      if (error instanceof RecordNotFound) {
+      if (error instanceof RecordNotFound || error instanceof GeneralError) {
         return prepareFailedResponse(error.message);
       }
       return prepareFailedResponse(error);

@@ -104,10 +104,10 @@ export const CreateLineItemsForSaleor = async (bundles) => {
   bundles.forEach((bundle) => {
     // // Bundle quantity is multiplied with variant quantity for getting actual quantity ordered by user
     const bundleQty = bundle?.quantity;
-    bundle.bundle?.productVariants?.forEach((v) =>
+    bundle.bundle.productVariants?.forEach((value) =>
       lines.push({
-        quantity: bundleQty * v?.quantity,
-        variantId: v?.productVariant?.id,
+        quantity: bundleQty * value.quantity,
+        variantId: value.productVariant?.id,
       }),
     );
   });
