@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './core/exceptions/filters';
 import packageInfo from '../package.json';
+// import tracer from './tracer';
 
 // const corsOrigins = async () => process.env.CORS_ORIGINS.split(',');
 
@@ -13,6 +14,8 @@ import packageInfo from '../package.json';
 //     .map((method) => method.trim().toUpperCase());
 
 const bootstrap = async () => {
+  // TODO connect tracing to deployed signoz
+  // await tracer.start();
   const app = await NestFactory.create(AppModule);
 
   // cores configuration

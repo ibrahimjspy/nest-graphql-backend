@@ -41,5 +41,7 @@ export const IN_STOCK = 'in_stock';
 export const PRE_ORDER = 'pre_order';
 export const CATEGORY_SHOES = 'Shoes';
 export const DEFAULT_WAREHOUSE_ID = process.env.DEFAULT_WAREHOUSE_ID;
+export const OPEN_TELEMENTRY_TRACING_IP =
+  process.env.OPEN_TELEMENTRY_TRACING_IP;
 export const OS_AWS_API_GATEWAY_ENDPOINT =
   process.env.OS_AWS_API_GATEWAY_ENDPOINT;
