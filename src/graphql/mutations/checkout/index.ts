@@ -8,7 +8,7 @@ import { checkoutCompleteMutation } from './checkoutComplete';
 import { addCheckoutBundlesMutation } from './addCheckoutBundles';
 import { checkoutLinesAddMutation } from './checkoutLinesAdd';
 import { createCheckoutMutation } from './createCheckout';
-import { createCheckoutv2Mutation } from './createCheckoutv2';
+import { updateCartBundlesCheckoutIdMutation } from './updateCartBundlesCheckoutId';
 import { checkoutLinesUpdateMutation } from './checkoutLinesUpdate';
 import { checkoutLinesDeleteMutation } from './checkoutLinesDelete';
 import { checkoutEmailUpdateMutation } from './checkoutEmailUpdate';
@@ -28,5 +28,5 @@ export {
   checkoutLinesUpdateMutation,
   checkoutEmailUpdateMutation,
   updateCheckoutBundleState,
-  createCheckoutv2Mutation,
+  updateCartBundlesCheckoutIdMutation,
 };

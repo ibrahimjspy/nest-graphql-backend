@@ -7,8 +7,12 @@ import {
 } from 'src/core/utils/response';
 
 import * as CheckoutHandlers from 'src/graphql/handlers/checkout';
-import * as ProductHandlers from 'src/graphql/handlers/product';
+import {
+  createCheckoutHandler,
+  getCheckoutbundlesHandler,
+} from 'src/graphql/handlers/checkout';
 import * as CheckoutUtils from './Checkout.utils';
+import { CreateLineItemsForSaleor } from './Checkout.utils';
 import {
   AddressDetailType,
   CheckoutBundleInputType,
@@ -16,7 +20,7 @@ import {
 import { BundleType } from 'src/graphql/types/bundle.type';
 import { getHttpErrorMessage } from 'src/external/utils/httpHelper';
 import { UpdateBundleStateDto } from 'src/modules/checkout/dto/add-bundle.dto';
-
+import { b2bClientCheck } from './B2BClientsmapping';
 @Injectable()
 export class CheckoutService {
   private readonly logger = new Logger(CheckoutService.name);
@@ -26,42 +30,12 @@ export class CheckoutService {
     token: string,
   ): Promise<object> {
     try {
-      const checkoutData = await CheckoutHandlers.getCheckoutbundlesHandler(
+      const checkoutData = await getCheckoutbundlesHandler(
         userEmail,
         true,
         token,
+        null,
       );
-      // const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
-      //   id,
-      //   true,
-      //   token,
-      // );
-      // const productIds = CheckoutUtils.getProductIdsByCheckoutBundles(
-      //   checkoutData['bundles'],
-      // );
-      // const variantIds = CheckoutUtils.getVariantsIdsByProducts(
-      //   await ProductHandlers.variantsIdsByProductIdsHandler(productIds),
-      // );
-      // const totalVariantIds = variantIds.length;
-      // const stepSize = 10;
-      // let startIndex = 0;
-      // let lastIndex = stepSize - 1;
-
-      // while (startIndex <= totalVariantIds) {
-      //   const slicedVariantIds = variantIds.slice(startIndex, lastIndex);
-
-      //   const allBundles = await ProductHandlers.bundlesByVariantsIdsHandler(
-      //     slicedVariantIds,
-      //   );
-      //   checkoutData['bundles'] = checkoutData['bundles']?.concat(
-      //     CheckoutUtils.getBundlesNotInCheckout(
-      //       checkoutData['bundles'],
-      //       allBundles,
-      //     ),
-      //   );
-      //   startIndex = lastIndex + 1;
-      //   lastIndex = lastIndex + stepSize;
-      // }
 
       return prepareSuccessResponse(checkoutData);
     } catch (error) {
@@ -114,7 +88,7 @@ export class CheckoutService {
       bundlesForCart,
     );
 
-    const newCheckout: any = await CheckoutHandlers.createCheckoutHandler(
+    const newCheckout: any = await createCheckoutHandler(
       userData?.email,
       checkoutLines,
       token,
@@ -150,7 +124,7 @@ export class CheckoutService {
         getBundleIdsArray,
         token,
       );
-      /* The above code is checking if the bundleIdsExist in the cart or not. If it exists then it will
+      /* The below code is checking if the bundleIdsExist in the cart or not. If it exists then it will
      update the bundle in the cart. If it does not exist then it will add the bundle in the cart. */
       if (validateBundleList['bundleIdsExist']['length'] > 0) {
         const updateCheckoutbundleList = await CheckoutUtils.getIsExtingBundle(
@@ -185,6 +159,7 @@ export class CheckoutService {
           addedBundle: addedBundleList,
         };
       }
+
       return prepareSuccessResponse(response, '', 201);
       // If Bundle is not exist
       // const responses = CheckoutHandlers.marketplaceCheckoutHandler(
@@ -232,29 +207,6 @@ export class CheckoutService {
     token: string,
   ): Promise<object> {
     try {
-      // const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
-      //   userId,
-      //   true,
-      //   token,
-      // );
-
-      // const saleorCheckout = await CheckoutHandlers.checkoutHandler(
-      //   checkoutData['checkoutId'],
-      //   token,
-      // );
-
-      // const checkoutLines = CheckoutUtils.getCheckoutLineItemsForDelete(
-      //   saleorCheckout['lines'],
-      //   checkoutData['bundles'],
-      //   checkoutBundleIds,
-      // );
-      // const checkoutLineIds = CheckoutUtils.getCheckoutLineIds(checkoutLines);
-      // await CheckoutHandlers.deleteLinesHandler(
-      //   checkoutLineIds,
-      //   saleorCheckout['id'],
-      //   token,
-      // );
-
       const response = await CheckoutHandlers.deleteBundlesHandler(
         checkoutBundleIds,
         userEmail,
@@ -282,29 +234,6 @@ export class CheckoutService {
           token,
         );
 
-      // const saleorCheckout = await CheckoutHandlers.checkoutHandler(
-      //   checkoutData['checkoutId'],
-      //   token,
-      // );
-
-      // const updatedLinesWithQuantity =
-      //   CheckoutUtils.getUpdatedLinesWithQuantity(
-      //     saleorCheckout['lines'],
-      //     checkoutData['bundles'],
-      //     bundlesFromCart,
-      //   );
-
-      // await CheckoutHandlers.updateLinesHandler(
-      //   checkoutData['checkoutId'],
-      //   updatedLinesWithQuantity,
-      //   token,
-      // );
-      // const response = await CheckoutHandlers.addBundlesHandler(
-      //   checkoutData['checkoutId'],
-      //   userId,
-      //   bundlesFromCart,
-      //   token,
-      // );
       return prepareSuccessResponse(UpdateBundleresponse, '', 201);
     } catch (error) {
       this.logger.error(error);
@@ -632,16 +561,90 @@ export class CheckoutService {
       return graphqlExceptionHandler(error);
     }
   }
+
   public async createCheckoutService(userEmail: string, token: string) {
     try {
-      const response = await CheckoutHandlers.createCheckoutHandlerv2(
-        userEmail,
-        token,
-      );
+      const response = b2bClientCheck(userEmail, token);
       return response;
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
+    }
+  }
+
+  protected async updateCartBundlesCheckoutIdService(
+    userEmail: string,
+    token: string,
+    checkoutID: string,
+  ) {
+    try {
+      /* The below code is updating the cart bundles for a checkout ID. */
+      const response =
+        await CheckoutHandlers.updateCartBundlesCheckoutIdHandler(
+          userEmail,
+          token,
+          checkoutID,
+        );
+
+      return response;
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+  public async createCheckoutSharovePlatformService(
+    userEmail: string,
+    token: string,
+  ) {
+    return 'SharovePlatform';
+  }
+  public async CreateCheckoutendConsumerService(
+    userEmail: string,
+    token: string,
+    isSelectedBundle = true,
+    throwException = true,
+  ) {
+    /* The below code is creating a checkout in saleor and updating the checkout id in the cart. */
+    try {
+      const getCheckoutBundles = await getCheckoutbundlesHandler(
+        userEmail,
+        throwException,
+        token,
+        isSelectedBundle,
+      );
+      if (getCheckoutBundles['checkoutBundles'].length > 0) {
+        const getCheckoutLines = await CreateLineItemsForSaleor(
+          getCheckoutBundles['checkoutBundles'],
+        );
+        const saleorCheckoutResponse: any = await createCheckoutHandler(
+          userEmail,
+          getCheckoutLines,
+          token,
+        );
+        /* if the checkout id is null. */
+        if (
+          !saleorCheckoutResponse['checkout'] &&
+          saleorCheckoutResponse['checkout']['id']
+        )
+          throw new RecordNotFound('Saleor Checkout creation error');
+
+        const updatedCheckoutResponse =
+          await this.updateCartBundlesCheckoutIdService(
+            userEmail,
+            token,
+            saleorCheckoutResponse['checkout']['id'],
+          );
+
+        return updatedCheckoutResponse;
+      } else {
+        throw new RecordNotFound('Empty cart');
+      }
+    } catch (error) {
+      this.logger.error(error);
+      if (error instanceof RecordNotFound) {
+        return prepareFailedResponse(error.message);
+      }
+      return prepareFailedResponse(error);
     }
   }
 }
