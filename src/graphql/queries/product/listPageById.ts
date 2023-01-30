@@ -43,6 +43,14 @@ const federationQuery = (id, pagination: PaginationDto): string => {
             }
             variants {
               id
+              attributes {
+                attribute {
+                  name
+                }
+                values {
+                  name
+                }
+              }
             }
             thumbnail {
               url

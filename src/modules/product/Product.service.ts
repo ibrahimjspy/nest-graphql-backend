@@ -83,7 +83,7 @@ export class ProductService {
         id,
         pagination,
       );
-      return prepareSuccessResponse(response, '', 201);
+      return prepareSuccessResponse(response, '', 200);
     } catch (error) {
       this.logger.error(error);
     }
