@@ -589,7 +589,7 @@ export class CheckoutService {
   ) {
     return 'SharovePlatform';
   }
-  public async CreateCheckoutendConsumerService(
+  public async createCheckoutendConsumerService(
     userEmail: string,
     token: string,
     isSelectedBundle = true,

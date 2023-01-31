@@ -1,6 +1,6 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
-const federationQueryb2b = (userEmail: string, isSelected: any): string => {
+const b2bQuery = (userEmail: string, isSelected: any): string => {
   return gql`
     query {
       checkoutBundles(
@@ -96,7 +96,7 @@ const federationQueryb2b = (userEmail: string, isSelected: any): string => {
 
 export const getCheckoutBundleQuery = (userEmail: string, isSelected: any) => {
   return graphqlQueryCheck(
-    federationQueryb2b(userEmail, isSelected),
-    federationQueryb2b(userEmail, isSelected),
+    b2bQuery(userEmail, isSelected),
+    b2bQuery(userEmail, isSelected),
   );
 };

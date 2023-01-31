@@ -1,4 +1,4 @@
-export const checkoutBundle = [
+export const mockCheckoutBundle = [
   {
     checkoutBundleId: '0f98ba13-e3f1-4357-89a5-f3fffd579e27',
     isSelected: true,

@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CheckoutController } from './Checkout.controller';
 import { CheckoutService } from './Checkout.service';
 import { CreateLineItemsForSaleor } from './Checkout.utils';
-import { checkoutBundle } from '../../../test/mock/CheckoutBundle';
+import { mockCheckoutBundle } from '../../../test/mock/CheckoutBundle';
 // Shop unit tests using Jest
 
 describe('Shop controller unit tests', () => {
@@ -56,7 +56,7 @@ describe('Shop controller unit tests', () => {
     userId: 'VXNlcjo1',
     shippingIds: ['a783191f-6d0e-437c-8435-fa714c341d8f'],
   };
-  const CheckoutBundle = checkoutBundle;
+  const CheckoutBundle = mockCheckoutBundle;
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
