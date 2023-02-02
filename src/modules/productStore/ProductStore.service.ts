@@ -9,12 +9,14 @@ import {
   deleteFromProductStoreHandler,
   getStoreInfoHandler,
   getStoredProductsHandler,
+  pushToStoreHandler,
   updateStoreInfoHandler,
 } from 'src/graphql/handlers/productStore';
 import {
   addToProductStoreDTO,
   deleteFromProductStoreDTO,
   getStoredProductsDTO,
+  pushToStoreDTO,
 } from './dto/products';
 import { shopInfoDto } from '../orders/dto';
 import { uploadImagesHandler } from 'src/external/services/uploadImages';
@@ -100,6 +102,19 @@ export class ProductStoreService {
   public async uploadImages(file: any): Promise<object> {
     try {
       return prepareSuccessResponse(await uploadImagesHandler(file));
+    } catch (error) {
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async pushToStore(
+    pushToStoreInput: pushToStoreDTO,
+    token: string,
+  ): Promise<object> {
+    try {
+      return prepareSuccessResponse(
+        await pushToStoreHandler(pushToStoreInput, token),
+      );
     } catch (error) {
       return graphqlExceptionHandler(error);
     }

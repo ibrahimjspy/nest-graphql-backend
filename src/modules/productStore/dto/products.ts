@@ -31,3 +31,16 @@ export class getStoredProductsDTO extends PaginationDto {
   @IsOptional()
   productIds: string[];
 }
+
+export class pushToStoreDTO {
+  @ApiProperty({ required: true, default: [] })
+  productIds: string[];
+
+  @ApiProperty({ description: 'b2b shop id of a retailer', required: true })
+  @IsNotEmpty()
+  shopId: string;
+
+  @ApiProperty({ description: 'storefront id in b2c', required: true })
+  @IsNotEmpty()
+  storefrontId: string;
+}
