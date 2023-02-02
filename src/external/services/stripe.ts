@@ -25,16 +25,22 @@ export default class StripeService {
 
     let response = {};
     if (customerID) {
-      response = await this.createCustomer(customerID, paymentMethodId);
-    } else {
       response = await this.updateCustomer(customerID, paymentMethodId);
+    } else {
+      response = await this.createCustomer(name, email, paymentMethodId);
     }
     return response;
   }
 
-  protected async createCustomer(customerID: string, paymentMethodId: string) {
-    const response = await this.stripe.paymentMethods.attach(paymentMethodId, {
-      customer: customerID,
+  protected async createCustomer(
+    name: string,
+    email: string,
+    paymentMethodId: string,
+  ) {
+    const response = await this.stripe.customers.create({
+      payment_method: paymentMethodId,
+      name,
+      email,
     });
 
     return response;
