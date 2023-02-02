@@ -234,15 +234,29 @@ export class CheckoutController {
   async createPayment(
     @Res() res,
     @Body() body,
-    @Headers() headers,
+    @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
-    const Authorization: string = headers.authorization;
+    const { userEmail, userName, payment_methodID } = body;
     return makeResponse(
       res,
-      await this.appService.createPayment(body?.userId, Authorization),
+      await this.appService.createPayment(
+        userName,
+        userEmail,
+        payment_methodID,
+        token,
+      ),
     );
   }
 
+  @Get('cards/:userEmail')
+  async getCards(
+    @Res() res,
+    @Param() params,
+    @IsAuthenticated('authorization') token: string,
+  ): Promise<object> {
+    const { userEmail } = params;
+    return makeResponse(res, await this.appService.getCards(userEmail));
+  }
   @Post('complete')
   async checkoutComplete(
     @Res() res,

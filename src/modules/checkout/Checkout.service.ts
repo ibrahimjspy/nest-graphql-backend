@@ -21,11 +21,14 @@ import {
 import { BundleType } from 'src/graphql/types/bundle.type';
 import { getHttpErrorMessage } from 'src/external/utils/httpHelper';
 import { UpdateBundleStateDto } from 'src/modules/checkout/dto/add-bundle.dto';
+import StripeService from 'src/external/services/stripe';
 
 @Injectable()
 export class CheckoutService {
   private readonly logger = new Logger(CheckoutService.name);
-
+  constructor(private stripeService: StripeService) {
+    return;
+  }
   public async getShoppingCartData(
     userEmail: string,
     token: string,
@@ -162,37 +165,6 @@ export class CheckoutService {
       }
 
       return prepareSuccessResponse(response, '', 201);
-      // If Bundle is not exist
-      // const responses = CheckoutHandlers.marketplaceCheckoutHandler(
-      //   userEmail,
-      //   false,
-      //   token,
-      // );
-      // console.log(responses);
-
-      // const [userData, bundlesList, checkoutData] = await Promise.all([
-      //   AccountHandlers.userEmailByIdHandler(userId, token),
-      // ProductHandlers.bundlesByBundleIdsHandler(bundlesForCart, token),
-      //   CheckoutHandlers.marketplaceCheckoutHandler(userId, false, token),
-      // ]);
-
-      // let response = {};
-      // if (checkoutData['checkoutId']) {
-      //   response = await this.addToCartWhenCheckoutExists(
-      //     userId,
-      //     checkoutData,
-      //     bundlesList,
-      //     bundlesForCart,
-      //     token,
-      //   );
-      // } else {
-      //   response = await this.addToCartWhenCheckoutNotExists(
-      //     userData,
-      //     bundlesList,
-      //     bundlesForCart,
-      //     token,
-      //   );
-      // }
     } catch (error) {
       this.logger.error(error);
       if (error instanceof RecordNotFound) {
@@ -466,29 +438,22 @@ export class CheckoutService {
     }
   }
 
-  public async createPayment(userId: string, token: string): Promise<object> {
+  public async createPayment(
+    name: string,
+    email: string,
+    paymentMethodId: string,
+    token: string,
+  ): Promise<object> {
     try {
-      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
-        userId,
-        false,
-        token,
+      const customerResponse = await this.stripeService.customer(
+        name,
+        email,
+        paymentMethodId,
       );
-
-      const paymentGateways = await CheckoutHandlers.paymentGatewayHandler(
-        checkoutData['checkoutId'],
-        token,
-      );
-
-      const dummyGatewayId = CheckoutUtils.getDummyGateway(paymentGateways);
-      const response = await CheckoutHandlers.createPaymentHandler(
-        checkoutData['checkoutId'],
-        dummyGatewayId,
-        token,
-      );
-      return prepareSuccessResponse(response, '', 201);
+      return customerResponse;
     } catch (error) {
       this.logger.error(error);
-      return graphqlExceptionHandler(error);
+      return prepareFailedResponse(error.message);
     }
   }
 
@@ -636,6 +601,16 @@ export class CheckoutService {
         return prepareFailedResponse(error.message);
       }
       return prepareFailedResponse(error);
+    }
+  }
+  public async getCards(userEmail: string): Promise<object> {
+    try {
+      const cardList = await this.stripeService.paymentMethodsList(userEmail);
+
+      return cardList;
+    } catch (error) {
+      this.logger.error(error);
+      return prepareFailedResponse(error.message);
     }
   }
 }
