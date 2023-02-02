@@ -31,11 +31,16 @@ export const getCheckoutbundlesHandler = async (
   userEmail: string,
   throwException = false,
   token: string,
+  isSelected,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(CheckoutQueries.getCheckoutBundleQuery(userEmail), token),
+    await graphqlCall(
+      CheckoutQueries.getCheckoutBundleQuery(userEmail, isSelected),
+      token,
+    ),
     throwException,
   );
+
   return response['checkoutBundles'];
 };
 
@@ -104,9 +109,11 @@ export const createCheckoutHandler = async (
   checkoutLines: LineType[],
   token: string,
 ): Promise<object> => {
-  const response = await graphqlCall(
-    CheckoutMutations.createCheckoutMutation(email, checkoutLines),
-    token,
+  const response = await graphqlResultErrorHandler(
+    graphqlCall(
+      CheckoutMutations.createCheckoutMutation(email, checkoutLines),
+      token,
+    ),
   );
   return response['checkoutCreate'];
 };
@@ -371,10 +378,17 @@ export const updateCheckoutBundleState = async (
   );
   return response;
 };
-export const createCheckoutHandlerv2 = async (userEmail, token) => {
+export const updateCartBundlesCheckoutIdHandler = async (
+  userEmail: string,
+  token: string,
+  checkoutID: string,
+) => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
-      CheckoutMutations.createCheckoutv2Mutation(userEmail),
+      CheckoutMutations.updateCartBundlesCheckoutIdMutation(
+        userEmail,
+        checkoutID,
+      ),
       token,
     ),
   );

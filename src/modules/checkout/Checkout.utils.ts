@@ -99,6 +99,21 @@ export const getLineItems = async (bundles, targetBundles) => {
   return lines;
 };
 
+export const CreateLineItemsForSaleor = async (bundles) => {
+  const lines: Array<{ quantity: number; variantId: string }> = [];
+  bundles.forEach((bundle) => {
+    // // Bundle quantity is multiplied with variant quantity for getting actual quantity ordered by user
+    const bundleQty = bundle?.quantity;
+    bundle.bundle.productVariants?.forEach((value) =>
+      lines.push({
+        quantity: bundleQty * value.quantity,
+        variantId: value.productVariant?.id,
+      }),
+    );
+  });
+  return lines;
+};
+
 export const getBundleIds = async (
   bundlesForCart: CheckoutBundleInputType[],
 ) => {

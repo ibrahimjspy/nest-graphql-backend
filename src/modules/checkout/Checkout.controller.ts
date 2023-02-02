@@ -15,6 +15,8 @@ import { AddBundleDto, UserIdDto } from './dto';
 import { UpdateBundleStateDto } from 'src/modules/checkout/dto/add-bundle.dto';
 import { UnSelectBundlesType } from './Checkout.utils.type';
 import { IsAuthenticated } from 'src/core/utils/decorators';
+// import { b2bClientintent } from './B2BClientsmapping';
+import { B2BClientPlatform } from 'src/constants';
 
 @ApiTags('checkout')
 @Controller('checkout')
@@ -57,9 +59,14 @@ export class CheckoutController {
     @Body() body,
     @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
+    const typeMethod =
+      {
+        [B2BClientPlatform]:
+          this.appService.createCheckoutSharovePlatformService,
+      }[body.userEmail] || this.appService.createCheckoutendConsumerService;
     return makeResponse(
       res,
-      await this.appService.createCheckoutService(body.userEmail, token),
+      await typeMethod.call(this.appService, body.userEmail, token),
     );
   }
 

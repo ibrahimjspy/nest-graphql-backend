@@ -15,6 +15,7 @@ export const GQL_PAGE_INFO = 'pageInfo';
 
 export const GQL_TOTAL_COUNT = 'totalCount';
 
+export const B2BClientPlatform = 'sharove@sharove.com';
 //
 export const COMMON_HEADERS = {
   headers: {
