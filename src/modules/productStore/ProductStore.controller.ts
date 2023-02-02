@@ -21,8 +21,10 @@ import {
   addToProductStoreDTO,
   deleteFromProductStoreDTO,
   getStoredProductsDTO,
+  pushToStoreDTO,
 } from './dto/products';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { IsAuthenticated } from 'src/core/utils/decorators';
 
 @ApiTags('productStore')
 @Controller()
@@ -115,5 +117,18 @@ export class ProductStoreController {
     file: Express.Multer.File,
   ) {
     return this.appService.uploadImages(file);
+  }
+
+  @Post('api/v1/store/push')
+  @ApiOperation({ summary: 'imports products to storefront' })
+  public async pushToStore(
+    @Res() res,
+    @Body() body: pushToStoreDTO,
+    @IsAuthenticated('authorization') token: string,
+  ): Promise<any> {
+    return await makeResponse(
+      res,
+      await this.appService.pushToStore(body, token),
+    );
   }
 }

@@ -12,8 +12,10 @@ import {
   addToProductStoreDTO,
   deleteFromProductStoreDTO,
   getStoredProductsDTO,
+  pushToStoreDTO,
 } from 'src/modules/productStore/dto/products';
 import { shopInfoDto } from 'src/modules/orders/dto';
+import { pushToStoreMutation } from '../mutations/productStore/pushtToStore';
 
 export const getStoredProductsHandler = async (
   shopId: string,
@@ -79,6 +81,20 @@ export const updateStoreInfoHandler = async (
       await graphqlCall(updateStoreInfoMutation(shopId, storeDetails), token),
     );
     return response['updateMarketplaceShop'];
+  } catch (error) {
+    return graphqlExceptionHandler(error);
+  }
+};
+
+export const pushToStoreHandler = async (
+  pushToStoreInput: pushToStoreDTO,
+  token: string,
+): Promise<object> => {
+  try {
+    const response = await graphqlResultErrorHandler(
+      await graphqlCall(pushToStoreMutation(pushToStoreInput), token),
+    );
+    return response['createProducts'];
   } catch (error) {
     return graphqlExceptionHandler(error);
   }
