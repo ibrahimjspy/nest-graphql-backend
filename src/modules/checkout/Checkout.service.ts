@@ -441,14 +441,14 @@ export class CheckoutService {
   public async createPayment(
     name: string,
     email: string,
-    pmid: string,
+    paymentMethodId: string,
     token: string,
   ): Promise<object> {
     try {
-      const customerResponse = await this.stripeService.createCustomer(
+      const customerResponse = await this.stripeService.customer(
         name,
         email,
-        pmid,
+        paymentMethodId,
       );
       return customerResponse;
     } catch (error) {
@@ -610,9 +610,6 @@ export class CheckoutService {
       return cardList;
     } catch (error) {
       this.logger.error(error);
-      if (error instanceof GeneralError) {
-        return prepareFailedResponse(error.message);
-      }
       return prepareFailedResponse(error.message);
     }
   }

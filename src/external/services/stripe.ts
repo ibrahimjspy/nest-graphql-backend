@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
+
 import GeneralError from 'src/core/exceptions/generalError';
+
 import Stripe from 'stripe';
 
 @Injectable()
@@ -9,34 +11,45 @@ export default class StripeService {
   constructor() {
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
       apiVersion: '2022-11-15',
-      timeout: 30000,
+      timeout: 5000,
     });
   }
-  protected async searchStripeCustomerId(Email: string) {
+  protected async getCustomerByEmail(Email: string) {
     const customerID = await this.stripe.customers.list({
       email: Email,
     });
     return customerID['data'].length > 0 ? customerID['data'][0]['id'] : null;
   }
-  public async createCustomer(name: string, email: string, pmId: string) {
-    const customerID: any = await this.searchStripeCustomerId(email);
+  public async customer(name: string, email: string, paymentMethodId: string) {
+    const customerID: any = await this.getCustomerByEmail(email);
 
     let response = {};
     if (customerID) {
-      response = await this.stripe.paymentMethods.attach(pmId, {
-        customer: customerID,
-      });
+      response = await this.createCustomer(customerID, paymentMethodId);
     } else {
-      response = await this.stripe.customers.create({
-        payment_method: pmId,
-        name,
-        email,
-      });
+      response = await this.updateCustomer(customerID, paymentMethodId);
     }
     return response;
   }
+
+  protected async createCustomer(customerID: string, paymentMethodId: string) {
+    const response = await this.stripe.paymentMethods.attach(paymentMethodId, {
+      customer: customerID,
+    });
+
+    return response;
+  }
+
+  protected async updateCustomer(customerID: string, paymentMethodId: string) {
+    const response = await this.stripe.paymentMethods.attach(paymentMethodId, {
+      customer: customerID,
+    });
+
+    return response;
+  }
+
   public async paymentMethodsList(userEmail: string) {
-    const customerID: any = await this.searchStripeCustomerId(userEmail);
+    const customerID: any = await this.getCustomerByEmail(userEmail);
 
     let paymentMethods = {};
     if (customerID) {
