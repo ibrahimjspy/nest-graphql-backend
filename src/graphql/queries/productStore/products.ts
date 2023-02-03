@@ -18,10 +18,6 @@ export const getStoredProductsQuery = (
             Paginate: {
               ${pageFilter}
             }
-            SortBy: {
-              direction: ASC,
-              field: CREATED_AT
-            }
         ) {
             __typename
             ... on StoredProductConnectionType {
