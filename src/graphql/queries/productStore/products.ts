@@ -18,85 +18,27 @@ export const getStoredProductsQuery = (
             Paginate: {
               ${pageFilter}
             }
-            SortBy: {
-              direction: ASC,
-              field: CREATED_AT
-            }
         ) {
             __typename
             ... on StoredProductConnectionType {
-            totalCount
-            edges {
-                node {
-                shop {
-                  id
-                }
-                productVariantIds
-                product {
-                    id
-                    name
-                    description
-                    slug
-                    thumbnail {
-                      url
-                    }
-                    media {
-                      url
-                    }
-                    defaultVariant {
-                      sku
-                      id
-                      attributes {
-                        attribute {
-                          name
-                        }
-                        values {
-                          name
-                        }
-                      }
-                      pricing {
-                        price {
-                          gross {
-                            currency
-                            amount
-                          }
-                        }
-                      }
-                    }
-                category{
-                    name
-                    id
-                    ancestors(first:5){
-                    edges{
-                        node{
-                        id
-                        name
-                        }
-                    }
-                    }
-                    }
-                    variants{
-                        id
-                        attributes{
-                          attribute{
-                            name
-                          }
-                          values{
-                            name
-                          }
-                        }
-                    }
-                }
-                }
-            }
-            pageInfo {
-                hasNextPage
-                hasPreviousPage
+              pageInfo{
                 startCursor
                 endCursor
-            }
-            }
-        }
-        }
+                hasNextPage
+                hasPreviousPage
+              }
+                edges {
+                  node {
+                    productVariantIds
+                    product {
+                      id
+                    }
+                    shop {
+                      id
+                    }
+                  }
+                }
+              }
+        }}
   `;
 };

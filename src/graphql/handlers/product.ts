@@ -21,6 +21,7 @@ import {
 } from 'src/modules/shop/dto/myProducts';
 import { updateMyProductMutation } from '../mutations/product/updateMyProducts';
 import { deleteBulkMediaMutation } from '../mutations/product/mediaBulkDelete';
+import { getStoredProductsListQuery } from '../queries/product/storedProductsList';
 
 export const productListPageHandler = async (
   id: string,
@@ -225,4 +226,13 @@ export const deleteBulkMediaHandler = async (
     await graphqlCall(deleteBulkMediaMutation(mediaIds, isb2c), token, isb2c),
   );
   return response['productMediaBulkDelete'];
+};
+
+export const getStoredProductListHandler = async (
+  productIds: string[],
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(getStoredProductsListQuery(productIds)),
+  );
+  return response['products'];
 };
