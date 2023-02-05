@@ -21,6 +21,7 @@ export const getStoredProductsQuery = (
         ) {
             __typename
             ... on StoredProductConnectionType {
+              totalCount
               pageInfo{
                 startCursor
                 endCursor
