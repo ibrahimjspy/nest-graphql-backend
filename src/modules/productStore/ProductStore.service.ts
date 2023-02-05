@@ -20,6 +20,9 @@ import {
 } from './dto/products';
 import { shopInfoDto } from '../orders/dto';
 import { uploadImagesHandler } from 'src/external/services/uploadImages';
+import { getProductIdsByVariants } from '../product/Product.utils';
+import { getStoredProductListHandler } from 'src/graphql/handlers/product';
+import { addProductListToStoredProducts } from './ProductStore.utils';
 
 @Injectable()
 export class ProductStoreService {
@@ -31,8 +34,12 @@ export class ProductStoreService {
     filter: getStoredProductsDTO,
   ): Promise<object> {
     try {
+      const storedIds = await getStoredProductsHandler(shopId, filter);
+      const storedProductList = await getStoredProductListHandler(
+        getProductIdsByVariants(storedIds),
+      );
       return prepareGQLPaginatedResponse(
-        await getStoredProductsHandler(shopId, filter),
+        addProductListToStoredProducts(storedIds, storedProductList),
       );
     } catch (error) {
       return graphqlExceptionHandler(error);
