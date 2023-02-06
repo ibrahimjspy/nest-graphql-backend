@@ -36,6 +36,7 @@ import {
   updateMyProductHandler,
 } from 'src/graphql/handlers/product';
 import { myProductsDTO, updateMyProductDTO } from './dto/myProducts';
+import { provisionStoreFront } from 'src/external/endpoints/provisionStorefront';
 @Injectable()
 export class ShopService {
   private readonly logger = new Logger(ShopService.name);
@@ -62,6 +63,8 @@ export class ShopService {
       const shopDetail = await shopDetailsHandler(shopId);
       // Adding created store in user shop
       await addStoreToShopHandler(shopId, response.id, shopDetail, token);
+      // provision storefront against given unique domain
+      await provisionStoreFront(storeInput.url);
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
       this.logger.error(error);
