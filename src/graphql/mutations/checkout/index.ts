@@ -13,6 +13,7 @@ import { checkoutLinesUpdateMutation } from './checkoutLinesUpdate';
 import { checkoutLinesDeleteMutation } from './checkoutLinesDelete';
 import { checkoutEmailUpdateMutation } from './checkoutEmailUpdate';
 import { updateCheckoutBundleState } from './updateCheckoutBundleState';
+import { savePaymnetInfoMutation } from './savePaymentInfo';
 export {
   checkoutShippingAddressUpdateMutation,
   checkoutBillingAddressUpdateMutation,
@@ -29,4 +30,5 @@ export {
   checkoutEmailUpdateMutation,
   updateCheckoutBundleState,
   updateCartBundlesCheckoutIdMutation,
+  savePaymnetInfoMutation,
 };

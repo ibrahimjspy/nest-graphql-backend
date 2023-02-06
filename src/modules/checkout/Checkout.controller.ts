@@ -248,6 +248,25 @@ export class CheckoutController {
     );
   }
 
+  @Post('payment/preauth')
+  async preAuth(
+    @Res() res,
+    @Body() body,
+    @IsAuthenticated('authorization') token: string,
+  ): Promise<object> {
+    const { userEmail, paymentMethodId, checkoutID } = body;
+
+    return makeResponse(
+      res,
+      await this.appService.paymentPreAuth(
+        userEmail,
+        paymentMethodId,
+        checkoutID,
+        token,
+      ),
+    );
+  }
+
   @Get('cards/:userEmail')
   async getCards(
     @Res() res,
