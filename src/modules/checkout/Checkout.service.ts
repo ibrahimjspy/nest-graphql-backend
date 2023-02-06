@@ -11,6 +11,8 @@ import * as CheckoutHandlers from 'src/graphql/handlers/checkout';
 import {
   createCheckoutHandler,
   getCheckoutbundlesHandler,
+  getTotalAmountByCheckoutIdHandler,
+  savePaymentInfoHandler,
 } from 'src/graphql/handlers/checkout';
 import * as CheckoutUtils from './Checkout.utils';
 import { CreateLineItemsForSaleor } from './Checkout.utils';
@@ -457,6 +459,90 @@ export class CheckoutService {
     }
   }
 
+  protected async getTotalAmountByCheckoutID(
+    token: string,
+    checkoutID: string,
+  ): Promise<object> {
+    try {
+      const totalAmountResponse = await getTotalAmountByCheckoutIdHandler(
+        checkoutID,
+        token,
+      );
+
+      return totalAmountResponse;
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  protected async savePaymentInfo(
+    token: string,
+    checkoutId: string,
+    userEmail: string,
+    amount: number,
+    paymentStatus: number,
+    intentId: string,
+  ): Promise<object> {
+    try {
+      const paymentInfoResponse = await savePaymentInfoHandler(
+        token,
+        checkoutId,
+        userEmail,
+        amount,
+        paymentStatus,
+        intentId,
+      );
+
+      return paymentInfoResponse;
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async paymentPreAuth(
+    userEmail: string,
+    paymentMethodId: string,
+    checkoutID: string,
+    token: string,
+    paymentStatus = 1,
+  ): Promise<object> {
+    try {
+      /* 1. It is creating a payment intent with stripe.
+       2. It is saving the payment info in the database. */
+      const totalAmountResponse = await this.getTotalAmountByCheckoutID(
+        checkoutID,
+        token,
+      );
+
+      if (!totalAmountResponse['totalAmount'])
+        throw new GeneralError('Empty cart');
+      const paymentIntentResponse =
+        await this.stripeService.createPaymentintent(
+          userEmail,
+          paymentMethodId,
+          totalAmountResponse['totalAmount'],
+        );
+      if (!paymentIntentResponse)
+        throw new GeneralError('Paymnet Intent Creation Error');
+
+      const savePaymentInfoResponse = await this.savePaymentInfo(
+        token,
+        checkoutID,
+        userEmail,
+        paymentIntentResponse['amount'],
+        paymentStatus,
+        paymentIntentResponse['id'],
+      );
+
+      return savePaymentInfoResponse;
+    } catch (error) {
+      this.logger.error(error);
+      return prepareFailedResponse(error.message);
+    }
+  }
+
   public async checkoutComplete(
     userId: string,
     token: string,
@@ -568,6 +654,7 @@ export class CheckoutService {
         token,
         isSelectedBundle,
       );
+      console.log('__getCheckoutBundles', getCheckoutBundles);
       if (getCheckoutBundles['checkoutBundles'].length > 0) {
         const getCheckoutLines = await CreateLineItemsForSaleor(
           getCheckoutBundles['checkoutBundles'],
@@ -577,6 +664,7 @@ export class CheckoutService {
           getCheckoutLines,
           token,
         );
+
         /* if the checkout id is null. */
         if (
           !saleorCheckoutResponse['checkout'] &&
@@ -597,10 +685,8 @@ export class CheckoutService {
       }
     } catch (error) {
       this.logger.error(error);
-      if (error instanceof RecordNotFound || error instanceof GeneralError) {
-        return prepareFailedResponse(error.message);
-      }
-      return prepareFailedResponse(error);
+
+      return prepareFailedResponse(error.message);
     }
   }
   public async getCards(userEmail: string): Promise<object> {

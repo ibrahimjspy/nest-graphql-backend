@@ -115,6 +115,7 @@ export const createCheckoutHandler = async (
       token,
     ),
   );
+
   return response['checkoutCreate'];
 };
 
@@ -388,6 +389,44 @@ export const updateCartBundlesCheckoutIdHandler = async (
       CheckoutMutations.updateCartBundlesCheckoutIdMutation(
         userEmail,
         checkoutID,
+      ),
+      token,
+    ),
+  );
+
+  return response;
+};
+
+export const getTotalAmountByCheckoutIdHandler = async (
+  token: string,
+  checkoutID: string,
+) => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutQueries.getTotalamountByCheckoutIdQuery(checkoutID),
+      token,
+    ),
+  );
+
+  return response['getUserCartAmount'];
+};
+
+export const savePaymentInfoHandler = async (
+  token: string,
+  checkoutId: string,
+  userEmail: string,
+  amount: number,
+  paymentStatus: number,
+  intentId: string,
+) => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutMutations.savePaymnetInfoMutation(
+        checkoutId,
+        userEmail,
+        amount,
+        paymentStatus,
+        intentId,
       ),
       token,
     ),

@@ -9,6 +9,7 @@ import { validatebundelIsExist } from './validateBundleisExist';
 import { addCheckoutBundleQuery } from './addcheckoutbundle';
 import { updateCheckoutBundleQuery } from './updateCheckoutBundle';
 import { getCheckoutBundleQuery } from './getCheckoutBundle';
+import { getTotalamountByCheckoutIdQuery } from './getTotalAmountbyCheckoutID';
 export {
   checkoutQuery,
   shippingZonesQuery,
@@ -21,4 +22,5 @@ export {
   addCheckoutBundleQuery,
   updateCheckoutBundleQuery,
   getCheckoutBundleQuery,
+  getTotalamountByCheckoutIdQuery,
 };

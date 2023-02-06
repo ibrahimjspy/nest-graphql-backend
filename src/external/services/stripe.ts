@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { STRIPE_RETURN_URL } from 'src/constants';
 
 import GeneralError from 'src/core/exceptions/generalError';
 
@@ -68,6 +69,34 @@ export default class StripeService {
     }
 
     return paymentMethods;
+  }
+
+  public async createPaymentintent(
+    userEmail: string,
+    paymentMethodId: string,
+    totalAmount: number,
+    confirmIntent = true,
+  ) {
+    const customerID: any = await this.getCustomerByEmail(userEmail);
+
+    let createPaymentIntent = {};
+    if (customerID) {
+      createPaymentIntent = await this.stripe.paymentIntents.create({
+        customer: customerID,
+        amount: Math.round(totalAmount * 100), // TODO :Math.round() - rounds to the nearest integer (if the fraction is 0.5 or greater - rounds up
+        currency: process.env.STRIPE_CURRENCY,
+        payment_method: paymentMethodId,
+        automatic_payment_methods: {
+          enabled: true,
+        },
+        confirm: confirmIntent,
+        capture_method: 'manual',
+        return_url: STRIPE_RETURN_URL,
+      });
+    } else {
+      throw new GeneralError(`Cannot Find Any Customer`);
+    }
+    return createPaymentIntent;
   }
   public async createpaymentMethods() {
     const createpaymentMethod = await this.stripe.paymentMethods.create({
