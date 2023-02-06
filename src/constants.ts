@@ -23,6 +23,13 @@ export const COMMON_HEADERS = {
   },
 };
 
+export const PROVISION_STOREFRONT_HEADERS = {
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${process.env.GITHUB_AUTH_TOKEN}`,
+  },
+};
+
 export const ACCEPT_ENCODING_HEADER = {
   'Accept-Encoding': 'application/json',
 };
@@ -45,3 +52,5 @@ export const OPEN_TELEMENTRY_TRACING_IP =
   process.env.OPEN_TELEMENTRY_TRACING_IP;
 export const OS_AWS_API_GATEWAY_ENDPOINT =
   process.env.OS_AWS_API_GATEWAY_ENDPOINT;
+export const B2C_DEVELOPMENT_TOKEN = process.env.B2C_DEVElOPMENT_TOKEN;
+export const PROVISION_STOREFRONT_URL = process.env.PROVISION_STOREFRONT_URL;

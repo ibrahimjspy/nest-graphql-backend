@@ -36,6 +36,8 @@ import {
   updateMyProductHandler,
 } from 'src/graphql/handlers/product';
 import { myProductsDTO, updateMyProductDTO } from './dto/myProducts';
+import { provisionStoreFront } from 'src/external/endpoints/provisionStorefront';
+import { B2C_DEVELOPMENT_TOKEN } from 'src/constants';
 @Injectable()
 export class ShopService {
   private readonly logger = new Logger(ShopService.name);
@@ -55,13 +57,15 @@ export class ShopService {
     try {
       const response = await createStoreHandler(
         validateStoreInput(storeInput),
-        token,
+        B2C_DEVELOPMENT_TOKEN,
         true,
       );
       // getting shop details by given shop id
       const shopDetail = await shopDetailsHandler(shopId);
       // Adding created store in user shop
       await addStoreToShopHandler(shopId, response.id, shopDetail, token);
+      // provision storefront against given unique domain
+      await provisionStoreFront(storeInput.url);
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
       this.logger.error(error);
