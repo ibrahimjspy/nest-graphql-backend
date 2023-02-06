@@ -61,6 +61,7 @@ jobs:
           (echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}") >> .env
           (echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}") >> .env
           (echo "STAFF_TOKEN=${{ secrets.STAFF_TOKEN }}") >> .env
+          (echo "STRIPE_CURRENCY=${{ secrets.STRIPE_CURRENCY }}") >> .env
 
         # Docker login
       - name: Login to DockerHub
