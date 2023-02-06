@@ -18,6 +18,11 @@ export const getProductIdsByCheckoutBundles = (
   }, []);
 };
 
+export const to_cents = (amount: any) => {
+  // TODO :Math.round() - rounds to the nearest integer (if the fraction is 0.5 or greater - rounds up
+  return Math.round(amount * 100);
+};
+
 /**
  * It takes a list of products and returns a list of all the variants ids
  * @param products - The products object returned from the query.

@@ -2,7 +2,7 @@ import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 const b2bQuery = (checkoutID: string): string => {
   return gql`
-    query MyQuery {
+    query {
       getUserCartAmount(
         Filter: {
           checkoutId: "${checkoutID}"

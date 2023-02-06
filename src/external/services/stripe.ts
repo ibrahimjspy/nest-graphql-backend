@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { STRIPE_RETURN_URL } from 'src/constants';
 
 import GeneralError from 'src/core/exceptions/generalError';
+import { to_cents } from 'src/modules/checkout/Checkout.utils';
 
 import Stripe from 'stripe';
 
@@ -83,7 +84,7 @@ export default class StripeService {
     if (customerID) {
       createPaymentIntent = await this.stripe.paymentIntents.create({
         customer: customerID,
-        amount: Math.round(totalAmount * 100), // TODO :Math.round() - rounds to the nearest integer (if the fraction is 0.5 or greater - rounds up
+        amount: to_cents(totalAmount),
         currency: process.env.STRIPE_CURRENCY,
         payment_method: paymentMethodId,
         automatic_payment_methods: {

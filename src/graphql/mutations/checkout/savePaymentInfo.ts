@@ -9,7 +9,7 @@ const federationQuery = (
   intentId: string,
 ) => {
   return gql`
-    mutation MyMutation {
+    mutation {
       paymentInfoMutation(
         Input: {
           checkoutId: "${checkoutId}"
