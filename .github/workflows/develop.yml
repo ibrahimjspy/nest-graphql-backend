@@ -39,12 +39,12 @@ jobs:
       # Create and Update .env file values
       - name: Create .env file
         run: |
-          (echo "MOCK_GRAPHQL_ENDPOINT=${{ secrets.MOCK_GRAPHQL_ENDPOINT }}") >> .env
-          (echo "GRAPHQL_ENDPOINT=${{ secrets.GRAPHQL_ENDPOINT }}") >> .env
+          (echo "B2C_ENDPOINT=${{ secrets.B2C_ENDPOINT }}") >> .env
+          (echo "B2B_ENDPOINT=${{ secrets.B2B_ENDPOINT }}") >> .env
           (echo "DOCKER=${{ secrets.DOCKER }}") >> .env
           (echo "PORT=${{ secrets.PORT }}") >> .env
           (echo "CORS_ORIGINS=${{ secrets.CORS_ORIGINS }}") >> .env
-          (echo "MOCK=${{ secrets.MOCK }}") >> .env
+          (echo "B2C_ENABLED=${{ secrets.B2C_ENABLED }}") >> .env
           (echo "OS_ENDPOINT=${{ secrets.OS_ENDPOINT }}") >> .env
           (echo "OS_EMAIL=${{ secrets.OS_EMAIL }}") >> .env
           (echo "OS_PASSWORD=${{ secrets.OS_PASSWORD }}") >> .env
@@ -62,6 +62,8 @@ jobs:
           (echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}") >> .env
           (echo "STAFF_TOKEN=${{ secrets.STAFF_TOKEN }}") >> .env
           (echo "STRIPE_CURRENCY=${{ secrets.STRIPE_CURRENCY }}") >> .env
+          (echo "B2C_DEVELOPMENT_TOKEN=${{ secrets.B2C_DEVELOPMENT_TOKEN }}") >> .env
+          (echo "B2B_DEVELOPMENT_TOKEN=${{ secrets.B2C_DEVELOPMENT_TOKEN }}") >> .env
 
         # Docker login
       - name: Login to DockerHub
