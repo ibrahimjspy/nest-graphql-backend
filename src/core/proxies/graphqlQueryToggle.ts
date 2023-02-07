@@ -1,23 +1,23 @@
+import { B2C_ENABLED } from 'src/constants';
+
 type GraphqlQuery = (
-  federationQuery: string,
-  mockQuery: string,
-  partialMock?: string | boolean,
+  b2bQuery: string,
+  b2cQuery: string,
+  partialB2c?: string | boolean,
 ) => string;
 /**
  * Returns graphql query depending on env file instructions
- * @params federationQuery , linking with real backend services.
- * @params mockQuery , linking with mock server .
- * @params partialMock , it is an  optional parameter used to support specific mock calls
+ * @params b2bQuery , linking with b2b backend
+ * @params b2cQuery , linking with b2c backend
+ * @params partialB2c , it is an  optional parameter used to specifically instruct which query to use
  */
 export const graphqlQueryCheck: GraphqlQuery = (
-  federationQuery,
-  mockQuery,
-  partialMock?,
+  b2bQuery,
+  b2cQuery,
+  specificB2c?,
 ) => {
-  if (process.env.MOCK == 'true' || partialMock == 'true') {
-    return mockQuery;
+  if (B2C_ENABLED == 'true' || specificB2c == true) {
+    return b2cQuery;
   }
-  if (process.env.MOCK == 'false' || partialMock == 'false') {
-    return federationQuery;
-  }
+  return b2bQuery;
 };
