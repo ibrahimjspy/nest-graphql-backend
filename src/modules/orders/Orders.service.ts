@@ -228,7 +228,6 @@ export class OrdersService {
   ): Promise<object> {
     try {
       const response = await ordersListHandler(filter, token);
-      console.log(response);
       return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
