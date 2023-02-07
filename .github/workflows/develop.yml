@@ -63,7 +63,7 @@ jobs:
           (echo "STAFF_TOKEN=${{ secrets.STAFF_TOKEN }}") >> .env
           (echo "STRIPE_CURRENCY=${{ secrets.STRIPE_CURRENCY }}") >> .env
           (echo "B2C_DEVELOPMENT_TOKEN=${{ secrets.B2C_DEVELOPMENT_TOKEN }}") >> .env
-          (echo "B2B_DEVELOPMENT_TOKEN=${{ secrets.B2C_DEVELOPMENT_TOKEN }}") >> .env
+          (echo "B2B_DEVELOPMENT_TOKEN=${{ secrets.B2B_DEVELOPMENT_TOKEN }}") >> .env
 
         # Docker login
       - name: Login to DockerHub
