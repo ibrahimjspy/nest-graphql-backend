@@ -1,13 +1,15 @@
-type GraphqlEndpoint = (specificMock?: string | boolean) => string;
+import { B2B_ENDPOINT, B2C_ENABlED, B2C_ENDPOINT } from 'src/constants';
+
+type GraphqlEndpoint = (specificB2c?: string | boolean) => string;
 /**
  * returns graphql Endpoint depending on env file
- * @params specificMock is an optional parameter to mock a handler specifically
+ * @params specificB2c is an optional parameter to direct a handler specifically
  */
-export const graphqlEndpoint: GraphqlEndpoint = (specificMock?) => {
-  if (process.env.MOCK == 'true' || specificMock == true) {
-    return process.env.MOCK_GRAPHQL_ENDPOINT;
+export const graphqlEndpoint: GraphqlEndpoint = (specificB2c?) => {
+  if (B2C_ENABlED == 'true' || specificB2c == true) {
+    return B2C_ENDPOINT;
   }
-  if (process.env.MOCK == 'false' || specificMock == false) {
-    return process.env.GRAPHQL_ENDPOINT;
+  if (B2C_ENABlED == 'false' || specificB2c == false) {
+    return B2B_ENDPOINT;
   }
 };

@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 
 export class addToProductStoreDTO {
@@ -32,9 +38,33 @@ export class getStoredProductsDTO extends PaginationDto {
   productIds: string[];
 }
 
+class productCreateDTO {
+  @ApiProperty({ required: true })
+  @IsString()
+  id: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  description: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  category: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  name: string;
+
+  @ApiProperty({ required: false, default: [] })
+  @IsOptional()
+  media: string[];
+}
+
 export class pushToStoreDTO {
-  @ApiProperty({ required: true, default: [] })
-  productIds: string[];
+  @ApiProperty({ required: true, isArray: true, type: productCreateDTO })
+  @IsArray()
+  @ArrayMinSize(1)
+  products: productCreateDTO[];
 
   @ApiProperty({ description: 'b2b shop id of a retailer', required: true })
   @IsNotEmpty()

@@ -8,8 +8,8 @@ import { prepareFailedResponse } from 'src/core/utils/response';
  * This is top level function which handles graphql requests , exceptions and logic
  * @params Query ,  It must be in string format and no query based
  * logic should be transferred to graphqlHandler
- * @params Mock , it is an optional parameter to allow specific functions to call mock server while other
- * keep calling federation services
+ * @params isB2c , it is an optional parameter to allow specific functions to call b2c server while other
+ * keep calling b2b services
  * @note This function determines its endpoint logic through another public method graphqlHandler() which
  * is based on env files content .
  * @returns an object with data or graphql error
@@ -18,10 +18,10 @@ import { prepareFailedResponse } from 'src/core/utils/response';
 export const graphqlCall = async (
   Query: string,
   Token?: string,
-  Mock?: boolean,
+  isB2c?: boolean,
 ): Promise<any> => {
   const graphQLClient = new GraphQLClient(
-    graphqlEndpoint(Mock ? Mock : false),
+    graphqlEndpoint(isB2c ? isB2c : false),
     {
       headers: {
         authorization: `${Token}`,

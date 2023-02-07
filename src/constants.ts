@@ -57,3 +57,7 @@ export const OS_AWS_API_GATEWAY_ENDPOINT =
   process.env.OS_AWS_API_GATEWAY_ENDPOINT;
 export const B2C_DEVELOPMENT_TOKEN = process.env.B2C_DEVELOPMENT_TOKEN;
 export const PROVISION_STOREFRONT_URL = process.env.PROVISION_STOREFRONT_URL;
+export const B2C_ENDPOINT = process.env.B2C_ENDPOINT;
+export const B2B_ENDPOINT = process.env.B2B_ENDPOINT;
+export const B2C_ENABlED = process.env.B2C_ENABlED;
+export const B2B_DEVELOPMENT_TOKEN = process.env.B2B_DEVELOPMENT_TOKEN;

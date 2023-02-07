@@ -30,7 +30,7 @@ import {
   getTotalFromBundles,
 } from './Orders.utils';
 import { FulfillmentStatusEnum } from 'src/graphql/enums/orders';
-import { GQL_EDGES } from 'src/constants';
+import { B2B_DEVELOPMENT_TOKEN, GQL_EDGES } from 'src/constants';
 import { ShopOrdersFulfillmentsDto, ShopOrdersListDto } from './dto';
 import { mockOrderReporting } from 'src/graphql/mocks/orderSummary.mock';
 import {
@@ -228,6 +228,7 @@ export class OrdersService {
   ): Promise<object> {
     try {
       const response = await ordersListHandler(filter, token);
+      console.log(response);
       return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);
@@ -373,7 +374,7 @@ export class OrdersService {
     token: string,
   ): Promise<object> {
     try {
-      const shopDetails = await shopOrdersByIdHandler(shopId, token);
+      const shopDetails = await shopOrdersByIdHandler(shopId, token, true);
       const orderIds: string[] = shopDetails['orders'];
       const [processing, shipped, cancelled, returned, totalEarnings] =
         await Promise.all([
@@ -386,7 +387,8 @@ export class OrdersService {
             storeOrderIds: orderIds,
             isb2c: true,
           }),
-          getTotalEarningsHandler(shopId, token, true),
+          // TODO replace development token with AUTHO token
+          getTotalEarningsHandler(shopId, B2B_DEVELOPMENT_TOKEN, false),
         ]);
       const response: ShopOrderReportResponseDto = {
         ordersProcessing: processing,
