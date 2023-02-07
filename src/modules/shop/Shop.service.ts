@@ -37,6 +37,7 @@ import {
 } from 'src/graphql/handlers/product';
 import { myProductsDTO, updateMyProductDTO } from './dto/myProducts';
 import { provisionStoreFront } from 'src/external/endpoints/provisionStorefront';
+import { B2C_DEVELOPMENT_TOKEN } from 'src/constants';
 @Injectable()
 export class ShopService {
   private readonly logger = new Logger(ShopService.name);
@@ -56,7 +57,8 @@ export class ShopService {
     try {
       const response = await createStoreHandler(
         validateStoreInput(storeInput),
-        token,
+        // TODO replace development token with AUTHO token
+        B2C_DEVELOPMENT_TOKEN,
         true,
       );
       // getting shop details by given shop id

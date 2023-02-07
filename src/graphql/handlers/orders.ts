@@ -75,9 +75,10 @@ export const orderDetailsHandler = async (
 export const shopOrdersByIdHandler = async (
   id: string,
   token: string,
+  isB2c = false,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(shopOrdersQuery(id), token),
+    await graphqlCall(shopOrdersQuery(id), token, isB2c),
   );
   if (!response['marketplaceShop']) {
     throw new RecordNotFound('Shop details');
