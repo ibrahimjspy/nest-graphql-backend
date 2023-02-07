@@ -9,7 +9,5 @@ export const graphqlEndpoint: GraphqlEndpoint = (specificB2c?) => {
   if (B2C_ENABLED == 'true' || specificB2c == true) {
     return B2C_ENDPOINT;
   }
-  if (B2C_ENABLED == 'false') {
-    return B2B_ENDPOINT;
-  }
+  return B2B_ENDPOINT;
 };

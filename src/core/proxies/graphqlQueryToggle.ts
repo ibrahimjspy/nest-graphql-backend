@@ -19,7 +19,5 @@ export const graphqlQueryCheck: GraphqlQuery = (
   if (B2C_ENABLED == 'true' || specificB2c == true) {
     return b2cQuery;
   }
-  if (B2C_ENABLED == 'false') {
-    return b2bQuery;
-  }
+  return b2bQuery;
 };
