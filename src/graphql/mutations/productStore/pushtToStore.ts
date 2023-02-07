@@ -7,7 +7,7 @@ export const pushToStoreMutation = (pushToStoreInput: pushToStoreDTO) => {
     mutation {
       createProducts(
         Input: {
-          productIds: ${JSON.stringify(products)
+          products: ${JSON.stringify(products)
             .replace(/"id"/g, 'id')
             .replace(/"category"/g, 'category')
             .replace(/"name"/g, 'name')

@@ -74,9 +74,16 @@ export class ShopService {
     }
   }
 
-  public async getShopDetails(shopId: string, isb2c = false): Promise<object> {
+  public async getShopDetails(
+    shopId: string,
+    isb2c = 'false',
+  ): Promise<object> {
     try {
-      const response = await shopDetailsHandler(shopId, isb2c);
+      // FIX -- currently by default filters are converted to string
+      const response = await shopDetailsHandler(
+        shopId,
+        isb2c == 'false' ? false : true,
+      );
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
       this.logger.error(error);
