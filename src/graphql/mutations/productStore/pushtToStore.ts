@@ -9,9 +9,9 @@ export const pushToStoreMutation = (pushToStoreInput: pushToStoreDTO) => {
         Input: {
           productIds: ${JSON.stringify(products)
             .replace(/"id"/g, 'id')
-            .replace(/"category"/g, 'id')
-            .replace(/"name"/g, 'id')
-            .replace(/"media"/g, 'id')
+            .replace(/"category"/g, 'category')
+            .replace(/"name"/g, 'name')
+            .replace(/"media"/g, 'media')
             .replace(/"description"/g, 'description')}
           shopId: "${shopId}"
           productStoreId: "${storefrontId}"

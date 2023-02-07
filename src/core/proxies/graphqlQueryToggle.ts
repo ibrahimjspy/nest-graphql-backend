@@ -1,4 +1,4 @@
-import { B2C_ENABlED } from 'src/constants';
+import { B2C_ENABLED } from 'src/constants';
 
 type GraphqlQuery = (
   b2bQuery: string,
@@ -16,10 +16,10 @@ export const graphqlQueryCheck: GraphqlQuery = (
   b2cQuery,
   specificB2c?,
 ) => {
-  if (B2C_ENABlED == 'true' || specificB2c == true) {
+  if (B2C_ENABLED == 'true' || specificB2c == true) {
     return b2cQuery;
   }
-  if (B2C_ENABlED == 'false' || specificB2c == false) {
+  if (B2C_ENABLED == 'false') {
     return b2bQuery;
   }
 };
