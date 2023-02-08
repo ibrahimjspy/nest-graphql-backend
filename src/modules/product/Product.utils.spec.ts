@@ -2,7 +2,7 @@ import {
   mockElasticSearchResponse,
   mockProductData,
 } from '../../../test/mock/product';
-import { getProductIds, storeB2cMappingInHashMap } from './Product.utils';
+import { getProductIds, storeB2cMapping } from './Product.utils';
 
 describe('Product utility tests', () => {
   it('product data is parsing and product ids are returning', () => {
@@ -15,7 +15,7 @@ describe('Product utility tests', () => {
   });
 
   it('b2c mapping object is parsed and is stored in ids hashmap', () => {
-    const response = storeB2cMappingInHashMap(mockElasticSearchResponse);
+    const response = storeB2cMapping(mockElasticSearchResponse);
     const b2bId = 'UHJvZHVjdDo3OTQx';
     const b2cId = 'UHJvZHVjdDo3OTU3';
 

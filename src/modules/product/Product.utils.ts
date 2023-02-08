@@ -34,9 +34,7 @@ export const getProductIds = (productsData) => {
  * @warn please send data without parsing it
  * @return idsMapping - returns hasp map with b2b id as key and b2c id as value-- Map<string, string>
  */
-export const storeB2cMappingInHashMap = (
-  elasticSearchData,
-): Map<string, string> => {
+export const storeB2cMapping = (elasticSearchData): Map<string, string> => {
   const idsMapping: Map<string, string> = new Map();
   elasticSearchData?.map((mapping) => {
     const b2bId = mapping?.shr_b2b_product_id?.raw;

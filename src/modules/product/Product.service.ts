@@ -13,7 +13,7 @@ import {
   getProductIds,
   getProductIdsByVariants,
   makeProductListResponse,
-  storeB2cMappingInHashMap,
+  storeB2cMapping,
 } from './Product.utils';
 import { ProductListFilterDto } from './dto/product.dto';
 @Injectable()
@@ -164,7 +164,7 @@ export class ProductService {
         return productsData;
       }
       const b2bProductIds = getProductIds(productsData);
-      const productIdsMapping = storeB2cMappingInHashMap(
+      const productIdsMapping = storeB2cMapping(
         await getB2cProductMapping(b2bProductIds, retailerId),
       );
       return addB2cIdsToProductData(productIdsMapping, productsData);
