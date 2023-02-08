@@ -47,7 +47,9 @@ export const productCardsByCategoriesHandler = async (
   id: string,
 ): Promise<object> => {
   try {
-    const response = graphqlCall(ProductQueries.productCardsByListIdQuery(id));
+    const response = await graphqlCall(
+      ProductQueries.productCardsByListIdQuery(id),
+    );
     return response['products'];
   } catch (error) {
     return graphqlExceptionHandler(error);
