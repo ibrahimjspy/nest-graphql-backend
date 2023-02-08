@@ -60,10 +60,11 @@ export const deleteFromProductStoreHandler = async (
 export const getStoreInfoHandler = async (
   shopId: string,
   token: string,
+  isB2c = false,
 ): Promise<object> => {
   try {
     const response = await graphqlResultErrorHandler(
-      await graphqlCall(getStoreInfoQuery(shopId), token),
+      await graphqlCall(getStoreInfoQuery(shopId), token, isB2c),
     );
     return response['marketplaceShop'];
   } catch (error) {
@@ -75,10 +76,15 @@ export const updateStoreInfoHandler = async (
   shopId: string,
   storeDetails: shopInfoDto,
   token: string,
+  isB2c = false,
 ): Promise<object> => {
   try {
     const response = await graphqlResultErrorHandler(
-      await graphqlCall(updateStoreInfoMutation(shopId, storeDetails), token),
+      await graphqlCall(
+        updateStoreInfoMutation(shopId, storeDetails),
+        token,
+        isB2c,
+      ),
     );
     return response['updateMarketplaceShop'];
   } catch (error) {

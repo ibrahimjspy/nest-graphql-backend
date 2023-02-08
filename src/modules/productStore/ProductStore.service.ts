@@ -80,7 +80,10 @@ export class ProductStoreService {
    */
   public async getStoreInfo(shopId: string, token: string): Promise<object> {
     try {
-      return prepareSuccessResponse(await getStoreInfoHandler(shopId, token));
+      const B2C_ENABLED = true;
+      return prepareSuccessResponse(
+        await getStoreInfoHandler(shopId, token, B2C_ENABLED),
+      );
     } catch (error) {
       return graphqlExceptionHandler(error);
     }
@@ -95,8 +98,9 @@ export class ProductStoreService {
     token: string,
   ): Promise<object> {
     try {
+      const B2C_ENABLED = true;
       return prepareSuccessResponse(
-        await updateStoreInfoHandler(shopId, storeDetails, token),
+        await updateStoreInfoHandler(shopId, storeDetails, token, B2C_ENABLED),
       );
     } catch (error) {
       return graphqlExceptionHandler(error);
