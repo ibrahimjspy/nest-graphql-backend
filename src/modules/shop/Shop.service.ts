@@ -24,7 +24,7 @@ import { createStoreDTO } from './dto/shop';
 
 import {
   getMyVendorsFieldValues,
-  getProductIds,
+  getProductIdsFromShop,
   getStoreFrontFieldValues,
   validateArray,
   validateStoreInput,
@@ -136,7 +136,7 @@ export class ShopService {
       await Promise.all(
         (storefrontIds || []).map(async (id) => {
           const shopDetails = await getStoreProductVariantsHandler(id);
-          const ids = getProductIds(shopDetails['products']);
+          const ids = getProductIdsFromShop(shopDetails['products']);
           productIds = productIds.concat(ids);
         }),
       );

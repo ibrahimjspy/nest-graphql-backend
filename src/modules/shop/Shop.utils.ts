@@ -49,7 +49,7 @@ export const getProductVariantIds = (variantsInput) => {
 /**
  * parses product ids array from shop and returns an array with product ids
  */
-export const getProductIds = (productIdsInput) => {
+export const getProductIdsFromShop = (productIdsInput) => {
   const productIds = [];
   (productIdsInput || []).map((productId) => {
     productIds.push(productId.id);

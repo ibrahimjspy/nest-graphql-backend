@@ -30,7 +30,7 @@ export const productListPageHandler = async (
   const response = await graphqlResultErrorHandler(
     await graphqlCall(ProductQueries.productListPageQuery(id, pagination)),
   );
-  return response;
+  return response['products'];
 };
 
 export const singleProductDetailsHandler = async (
@@ -47,7 +47,8 @@ export const productCardsByCategoriesHandler = async (
   id: string,
 ): Promise<object> => {
   try {
-    return await graphqlCall(ProductQueries.productCardsByListIdQuery(id));
+    const response = graphqlCall(ProductQueries.productCardsByListIdQuery(id));
+    return response['products'];
   } catch (error) {
     return graphqlExceptionHandler(error);
   }
@@ -74,7 +75,10 @@ export const popularItemsHandler = async (): Promise<object> => {
  */
 export const productCardHandler = async (): Promise<object> => {
   try {
-    return await graphqlCall(ProductQueries.productCardsDefaultQuery());
+    const response = await graphqlCall(
+      ProductQueries.productCardsDefaultQuery(),
+    );
+    return response['products'];
   } catch (error) {
     return graphqlExceptionHandler(error);
   }

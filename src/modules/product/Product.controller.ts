@@ -3,8 +3,11 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ProductService } from './Product.service';
 import { ProductFilterDto, ProductFilterTypeEnum } from './dto';
 import { makeResponse } from 'src/core/utils/response';
-import { PaginationDto } from 'src/graphql/dto/pagination.dto';
-import { ProductListDto } from './dto/product.dto';
+import {
+  ProductListDto,
+  ProductListFilterDto,
+  RetailerIdDto,
+} from './dto/product.dto';
 import { IsAuthenticated } from 'src/core/utils/decorators';
 import { ProductVariantStockUpdateDTO } from './dto/variant';
 
@@ -40,14 +43,17 @@ export class ProductController {
    * @returns default cards data  <All>
    */
   @Get('/product/cards')
-  findDefaultCards(): Promise<object> {
-    return this.appService.getProductCards();
+  findDefaultCards(@Query() filter: RetailerIdDto): Promise<object> {
+    return this.appService.getProductCards(filter.retailerId);
   }
 
   // Returns cards data relating to category and collection by <id>
   @Get('/product/cardsByCategoryId/:id')
-  findProductCardsByCategoryId(@Param() params): Promise<object> {
-    return this.appService.getProductsByCategory(params.id);
+  findProductCardsByCategoryId(
+    @Param() params,
+    @Query() filter: RetailerIdDto,
+  ): Promise<object> {
+    return this.appService.getProductsByCategory(params.id, filter.retailerId);
   }
 
   // Returns single product details by <slug>
@@ -60,11 +66,11 @@ export class ProductController {
   @Get('/product/list/:categoryId')
   async findProductListById(
     @Param() params: ProductListDto,
-    @Query() pagination: PaginationDto,
+    @Query() filter: ProductListFilterDto,
   ) {
     return await this.appService.getProductListPageById(
       params.categoryId,
-      pagination,
+      filter,
     );
   }
 

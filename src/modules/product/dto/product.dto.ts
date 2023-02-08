@@ -7,6 +7,12 @@ export enum ProductFilterTypeEnum {
   NEW_ARRIVALS = 'new',
 }
 
+export class RetailerIdDto {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  retailerId: string;
+}
+
 export class ProductFilterDto extends PaginationDto {
   @ApiProperty({
     enum: ProductFilterTypeEnum,
@@ -17,9 +23,19 @@ export class ProductFilterDto extends PaginationDto {
   @IsOptional()
   type: ProductFilterTypeEnum;
   category: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  retailerId: string;
 }
 
 export class ProductListDto {
   @ApiProperty()
   categoryId: string;
+}
+
+export class ProductListFilterDto extends PaginationDto {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  retailerId: string;
 }
