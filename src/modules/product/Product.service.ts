@@ -6,9 +6,16 @@ import {
 } from 'src/core/utils/response';
 import { ProductFilterDto } from './dto';
 import * as ProductsHandlers from 'src/graphql/handlers/product';
-import * as ProductUtils from './Product.utils';
 import { downloadProductImagesHandler } from 'src/external/services/download_images';
-import { PaginationDto } from 'src/graphql/dto/pagination.dto';
+import { getB2cProductMapping } from 'src/external/endpoints/b2cMapping';
+import {
+  addB2cIdsToProductData,
+  getProductIds,
+  getProductIdsByVariants,
+  makeProductListResponse,
+  storeB2cMapping,
+} from './Product.utils';
+import { ProductListFilterDto } from './dto/product.dto';
 @Injectable()
 export class ProductService {
   private readonly logger = new Logger(ProductService.name);
@@ -19,8 +26,11 @@ export class ProductService {
    */
   public async getProducts(filter: ProductFilterDto): Promise<object> {
     try {
+      const retailerId = filter.retailerId;
+      const productsData = await ProductsHandlers.productsHandler(filter);
+
       return prepareGQLPaginatedResponse(
-        await ProductsHandlers.productsHandler(filter),
+        await this.addProductsMapping(productsData, retailerId),
       );
     } catch (error) {
       this.logger.error(error);
@@ -39,8 +49,7 @@ export class ProductService {
   public async getPopularItems(filter: ProductFilterDto): Promise<object> {
     try {
       const popularItems = await ProductsHandlers.popularItemsHandler();
-      const uniqueProductIds =
-        ProductUtils.getProductIdsByVariants(popularItems);
+      const uniqueProductIds = getProductIdsByVariants(popularItems);
 
       return prepareGQLPaginatedResponse(
         await ProductsHandlers.productsHandler({
@@ -59,13 +68,33 @@ export class ProductService {
    * DEPRECATED: use `getProducts` method instead
    * @returns
    */
-  public getProductCards(): Promise<object> {
-    return ProductsHandlers.productCardHandler();
+  public async getProductCards(retailerId): Promise<object> {
+    try {
+      const productsData = await ProductsHandlers.productCardHandler();
+      return makeProductListResponse(
+        await this.addProductsMapping(productsData, retailerId),
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
   }
 
   //Product cards by collection ~ category <id>
-  public getProductsByCategory(id: string): Promise<object> {
-    return ProductsHandlers.productCardsByCategoriesHandler(id);
+  public async getProductsByCategory(
+    id: string,
+    retailerId: string,
+  ): Promise<object> {
+    try {
+      const productsData =
+        await ProductsHandlers.productCardsByCategoriesHandler(id);
+      return makeProductListResponse(
+        await this.addProductsMapping(productsData, retailerId),
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
   }
 
   // Single product details by <slug> {Quick View , SingleProductDetailsPage}
@@ -75,15 +104,20 @@ export class ProductService {
 
   // Product list page data relating to category <slug>
   public async getProductListPageById(
-    id: string,
-    pagination: PaginationDto,
+    categoryId: string,
+    filter: ProductListFilterDto,
   ): Promise<object> {
     try {
-      const response = await ProductsHandlers.productListPageHandler(
-        id,
-        pagination,
+      const retailerId = filter.retailerId;
+      const productsData = await ProductsHandlers.productListPageHandler(
+        categoryId,
+        filter,
       );
-      return prepareSuccessResponse(response, '', 200);
+      return prepareSuccessResponse(
+        makeProductListResponse(
+          await this.addProductsMapping(productsData, retailerId),
+        ),
+      );
     } catch (error) {
       this.logger.error(error);
     }
@@ -114,6 +148,28 @@ export class ProductService {
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
+    }
+  }
+  /**
+   * @description this function adds b2c product ids against b2b products list
+   * @link - getB2cProductMapping -- to fetch b2c productIds against a retailer id from elastic search mapping service
+   */
+  public async addProductsMapping(
+    productsData,
+    retailerId: string,
+  ): Promise<object> {
+    try {
+      if (!retailerId) {
+        // returns products list as it is if retailer id is not valid
+        return productsData;
+      }
+      const b2bProductIds = getProductIds(productsData);
+      const productIdsMapping = storeB2cMapping(
+        await getB2cProductMapping(b2bProductIds, retailerId),
+      );
+      return addB2cIdsToProductData(productIdsMapping, productsData);
+    } catch (error) {
+      this.logger.error(error);
     }
   }
 }
