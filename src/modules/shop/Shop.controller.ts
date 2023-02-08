@@ -41,7 +41,7 @@ export class ShopController {
     return this.appService.getCarouselData(Authorization);
   }
 
-  @Get('/api/v1/details/:shopId')
+  @Get('/api/v1/shop/:shopId')
   async getShopDetails(
     @Res() res,
     @Param() params,
