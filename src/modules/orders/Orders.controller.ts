@@ -300,4 +300,21 @@ export class OrdersController {
       await this.appService.getReturnsListByFilters(filters, token),
     );
   }
+
+  // Returns shop order details
+  @Get('api/v1/orders/return/detail/:orderId')
+  async getReturnedOrderDetails(
+    @Res() res,
+    @Param() orderDto: OrderIdDto,
+    @Headers() headers,
+  ): Promise<object> {
+    const Authorization: string = headers.authorization;
+    return makeResponse(
+      res,
+      await this.appService.getReturnOrdersDetails(
+        orderDto.orderId,
+        Authorization,
+      ),
+    );
+  }
 }

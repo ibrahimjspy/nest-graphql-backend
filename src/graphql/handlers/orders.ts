@@ -42,6 +42,7 @@ import { orderFulfillmentCancelMutation } from '../mutations/order/cancelOrderFu
 import { updateOrderMetadataMutation } from '../mutations/order/orderMetadata';
 import { getReturnsListQuery } from '../queries/orders/returnsList';
 import { OrderMetadataDto } from 'src/modules/orders/dto/metadata';
+import { returnOrderDetailsQuery } from '../queries/orders/returnedOrderDetails';
 
 export const dashboardByIdHandler = async (
   id: string,
@@ -398,4 +399,17 @@ export const returnedOrdersListHandler = async (
     throw new RecordNotFound('order details');
   }
   return response['orders'];
+};
+
+export const returnOrderDetailsHandler = async (
+  id: string,
+  token: string,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(returnOrderDetailsQuery(id), token),
+  );
+  if (!response['order']) {
+    throw new RecordNotFound('Order details');
+  }
+  return response['order'];
 };
