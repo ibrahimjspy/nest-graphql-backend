@@ -8,6 +8,9 @@ import {
   IsString,
 } from 'class-validator';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
+import { OrdersListDTO } from './list';
+import { orderFulfillmentLineDTO } from './refund';
+import { orderLineDTO } from './fulfill';
 
 export enum OrderReturnSortFieldEnum {
   CREATED_AT = 'CREATED_AT',
@@ -42,9 +45,9 @@ export class OrderReturnFilterDTO extends PaginationDto {
 }
 
 export class OrderReturnProductsInput {
-  @ApiProperty({ required: true })
+  @ApiProperty({ required: true, isArray: true, type: orderFulfillmentLineDTO })
   @IsArray()
-  fulfillmentLines: Array<any>;
+  fulfillmentLines: orderFulfillmentLineDTO[];
 
   @ApiProperty({ required: true })
   @IsBoolean()
@@ -54,14 +57,10 @@ export class OrderReturnProductsInput {
   @IsBoolean()
   refund: boolean;
 
-  @ApiProperty({ required: true })
+  @ApiProperty({ required: true, isArray: true, type: orderLineDTO })
   @IsArray()
   @ArrayMinSize(1)
-  orderLines: Array<{
-    orderLineId: string;
-    quantity: number;
-    replace: boolean;
-  }>;
+  orderLines: orderLineDTO[];
 }
 export class OrderReturnDTO {
   @ApiProperty({ required: true })
@@ -70,4 +69,20 @@ export class OrderReturnDTO {
 
   @ApiProperty({ required: true })
   input: OrderReturnProductsInput;
+}
+
+export class ReturnsStaffDto {
+  @ApiProperty({
+    required: false,
+    default: 'false',
+    description: 'this specifies whether return is from end consumer or staff',
+  })
+  @IsOptional()
+  staff: string;
+}
+
+export class ReturnOrderListDto extends OrdersListDTO {
+  @ApiProperty({ required: false, default: 'false' })
+  @IsOptional()
+  isStaffReturn: string;
 }

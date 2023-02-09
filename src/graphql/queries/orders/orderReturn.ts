@@ -8,9 +8,9 @@ const federationQuery = (payload: OrderReturnDTO): string => {
       orderFulfillmentReturnProducts(
         order:  "${payload.order_id}",
         input: {
-            fulfillmentLines: ${JSON.stringify(
-              payload.input.fulfillmentLines,
-            ).replace(/"fulfillmentLines"/g, 'fulfillmentLines')}
+            fulfillmentLines: ${JSON.stringify(payload.input.fulfillmentLines)
+              .replace(/"fulfillmentLineId"/g, 'fulfillmentLineId')
+              .replace(/"quantity"/g, 'quantity')}
             includeShippingCosts: ${payload.input.includeShippingCosts}
             refund: ${payload.input.refund}
             orderLines: ${orderLinesTransformer(payload.input.orderLines)}

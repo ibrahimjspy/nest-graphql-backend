@@ -30,6 +30,7 @@ import { OrdersListDTO } from 'src/modules/orders/dto/list';
 import {
   OrderReturnDTO,
   OrderReturnFilterDTO,
+  ReturnOrderListDto,
 } from 'src/modules/orders/dto/order-returns.dto';
 import { getOrderStatus } from '../queries/orders/getOrderStatuses';
 import { orderFulfillMutation } from '../mutations/order/fulfillOrder';
@@ -38,6 +39,9 @@ import { OrderRefundDTO } from 'src/modules/orders/dto/refund';
 import { orderRefundMutation } from '../mutations/order/refundOrder';
 import { orderCancelMutation } from '../mutations/order/cancelOrder';
 import { orderFulfillmentCancelMutation } from '../mutations/order/cancelOrderFulfillment';
+import { updateOrderMetadataMutation } from '../mutations/order/orderMetadata';
+import { getReturnsListQuery } from '../queries/orders/returnsList';
+import { OrderMetadataDto } from 'src/modules/orders/dto/metadata';
 
 export const dashboardByIdHandler = async (
   id: string,
@@ -303,9 +307,10 @@ export const getReturnOrderIdsHandler = async ({
 export const createReturnFulfillmentHandler = async (
   payload: OrderReturnDTO,
   token: string,
+  isB2c = false,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(orderReturnFulfillmentQuery(payload), token),
+    await graphqlCall(orderReturnFulfillmentQuery(payload), token, isB2c),
   );
   return response;
 };
@@ -365,4 +370,32 @@ export const orderFulfillmentCancelHandler = async (
     ),
   );
   return response['orderFulfillmentCancel'];
+};
+
+export const updateOrderMetadataHandler = async (
+  orderId: string,
+  input: OrderMetadataDto,
+  isB2c = false,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      updateOrderMetadataMutation(orderId, input, isB2c),
+      '',
+      isB2c,
+    ),
+  );
+  return response['updateMetadata'];
+};
+
+export const returnedOrdersListHandler = async (
+  filter: ReturnOrderListDto,
+  token: string,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(getReturnsListQuery(filter), token),
+  );
+  if (!response['orders']) {
+    throw new RecordNotFound('order details');
+  }
+  return response['orders'];
 };

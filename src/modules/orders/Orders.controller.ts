@@ -13,7 +13,12 @@ import { OrdersService } from './Orders.service';
 import { makeResponse } from '../../core/utils/response';
 import { OrderIdDto, ShopIdDto, UserIdDto } from './dto';
 import { OrdersListDTO } from './dto/list';
-import { OrderReturnDTO, OrderReturnFilterDTO } from './dto/order-returns.dto';
+import {
+  OrderReturnDTO,
+  OrderReturnFilterDTO,
+  ReturnOrderListDto,
+  ReturnsStaffDto,
+} from './dto/order-returns.dto';
 import { IsAuthenticated } from 'src/core/utils/decorators';
 import { OrderFulfillDto, orderFulfillmentCancelDTO } from './dto/fulfill';
 import { OrderRefundDTO } from './dto/refund';
@@ -190,12 +195,13 @@ export class OrdersController {
   @Post('api/v1/order/return')
   async returnOrder(
     @Res() res,
+    @Query() filters: ReturnsStaffDto,
     @Body() orderDTO: OrderReturnDTO,
     @IsAuthenticated('authorization') token: string,
   ) {
     return makeResponse(
       res,
-      await this.appService.placeOrderReturn(orderDTO, token),
+      await this.appService.placeOrderReturn(orderDTO, filters, token),
     );
   }
 
@@ -287,7 +293,7 @@ export class OrdersController {
   async getOrderReturnsByFilters(
     @Res() res,
     @IsAuthenticated('authorization') token: string,
-    @Query() filters: OrdersListDTO,
+    @Query() filters: ReturnOrderListDto,
   ) {
     return makeResponse(
       res,
