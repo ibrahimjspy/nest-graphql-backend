@@ -14,18 +14,7 @@ const b2bMutation = (productIds: string[]) => {
   `;
 };
 
-const b2cMutation = (productIds: string[]) => {
-  return gql`
-      mutation {
-        productBulkDelete(ids: ${JSON.stringify(productIds)}) {
-          count
-          errors {
-            message
-          }
-        }
-      }
-    `;
-};
+const b2cMutation = b2bMutation;
 
 export const deleteBulkProductsMutation = (
   productIds: string[],

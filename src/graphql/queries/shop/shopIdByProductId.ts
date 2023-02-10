@@ -12,16 +12,7 @@ const b2bQuery = (productId: string): string => {
   `;
 };
 
-const b2cQuery = (productId: string): string => {
-  return gql`
-    query {
-      marketplaceShop(filter: { productId: "${productId}" }) {
-        id
-        name
-      }
-    }
-  `;
-};
+const b2cQuery = b2bQuery;
 
 export const shopIdByProductQuery = (productId: string, isb2c = false) => {
   return graphqlQueryCheck(b2bQuery(productId), b2cQuery(productId), isb2c);

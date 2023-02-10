@@ -26,30 +26,7 @@ const b2bMutation = (orderId: string, orderLines: string) => {
   `;
 };
 
-const b2cMutation = (orderId: string, orderLines: string) => {
-  return gql`
-    mutation {
-      orderFulfill(
-        order: "${orderId}"
-        input: {
-          lines: ${orderLines}
-        }
-      ) {
-        order {
-          id
-        }
-        fulfillments {
-          id
-        }
-        errors {
-          field
-          message
-          code
-        }
-      }
-    }
-  `;
-};
+const b2cMutation = b2bMutation;
 
 export const orderFulfillMutation = (
   orderId: string,

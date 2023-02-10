@@ -33,36 +33,7 @@ const b2bMutation = (refundInput: OrderRefundInputInterface) => {
   `;
 };
 
-const b2cMutation = (refundInput: OrderRefundInputInterface) => {
-  return gql`
-    mutation {
-      orderFulfillmentRefundProducts(
-        order: "${refundInput.orderId}"
-        input: { orderLines: ${refundInput.orderLines
-          .replace(/"quantity"/g, 'quantity')
-          .replace(
-            /"orderLineId"/g,
-            'orderLineId',
-          )}, fulfillmentLines: ${refundInput.fulfillmentLines
-    .replace(/"quantity"/g, 'quantity')
-    .replace(/"fulfillmentLineId"/g, 'fulfillmentLineId')}, 
-        amountToRefund: ${refundInput.amountToRefund} }
-      ) {
-        order {
-          id
-        }
-        fulfillment {
-          id
-        }
-        errors {
-          field
-          message
-          orderLines
-        }
-      }
-    }
-  `;
-};
+const b2cMutation = b2bMutation;
 
 export const orderRefundMutation = (
   refundInput: OrderRefundInputInterface,
