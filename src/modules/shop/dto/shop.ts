@@ -109,7 +109,7 @@ export class allShopIdsDTO {
   @IsOptional()
   quantity: number;
 }
-export class b2cDTO {
+export class b2cDto {
   @ApiProperty({ required: false, default: 'false' })
   @IsOptional()
   isb2c: string;

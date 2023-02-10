@@ -16,9 +16,12 @@ import {
   orderReturnDetailHandler,
   orderReturnListHandler,
   ordersListHandler,
+  returnOrderDetailsHandler,
+  returnedOrdersListHandler,
   shopOrderFulfillmentsByIdHandler,
   shopOrderFulfillmentsDetailsHandler,
   shopOrdersByIdHandler,
+  updateOrderMetadataHandler,
 } from 'src/graphql/handlers/orders';
 import {
   addStatusAndTotalToBundles,
@@ -38,7 +41,12 @@ import {
   ShopOrderReportResponseDto,
 } from './dto/order-summary.dto';
 import { OrdersListDTO } from './dto/list';
-import { OrderReturnDTO, OrderReturnFilterDTO } from './dto/order-returns.dto';
+import {
+  OrderReturnDTO,
+  OrderReturnFilterDTO,
+  ReturnOrderListDto,
+  ReturnsStaffDto,
+} from './dto/order-returns.dto';
 import {
   getCancelledOrdersCountHandler,
   getFulfilledOrdersCountHandler,
@@ -162,6 +170,21 @@ export class OrdersService {
   public async getOrderDetailsById(id: string, token: string): Promise<object> {
     try {
       const response = await orderDetailsHandler(id, token);
+      return prepareSuccessResponse(response, '', 200);
+    } catch (err) {
+      this.logger.error(err);
+      return graphqlExceptionHandler(err);
+    }
+  }
+
+  public async getReturnOrdersDetails(
+    id: string,
+    token: string,
+    isB2c = 'false',
+  ): Promise<object> {
+    try {
+      const b2cEnabled = isB2c == 'false' ? false : true;
+      const response = await returnOrderDetailsHandler(id, token, b2cEnabled);
       return prepareSuccessResponse(response, '', 200);
     } catch (err) {
       this.logger.error(err);
@@ -298,11 +321,20 @@ export class OrdersService {
 
   public async placeOrderReturn(
     payload: OrderReturnDTO,
+    filter: ReturnsStaffDto,
     token: string,
   ): Promise<object> {
     try {
-      const response = await createReturnFulfillmentHandler(payload, token);
-      return prepareSuccessResponse(response, '', 201);
+      // TODO make b2c connection dynamic using  filters
+      const b2cEnabled = false;
+      const metadata = { key: 'isStaffReturn', value: filter.staff };
+      const response = await createReturnFulfillmentHandler(
+        payload,
+        token,
+        b2cEnabled,
+      );
+      await updateOrderMetadataHandler(payload.order_id, metadata, b2cEnabled);
+      return prepareSuccessResponse(response, '', 200);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
@@ -405,7 +437,7 @@ export class OrdersService {
   }
 
   public async getReturnsListByFilters(
-    filter: OrdersListDTO,
+    filter: ReturnOrderListDto,
     token: string,
   ): Promise<object> {
     try {
@@ -414,7 +446,7 @@ export class OrdersService {
         returnStatus: filter.returnStatus,
       });
       filter.orderIds = returnedOrderIds;
-      const response = await ordersListHandler(filter, token);
+      const response = await returnedOrdersListHandler(filter, token);
       return prepareSuccessResponse(response, '', 201);
     } catch (err) {
       this.logger.error(err);

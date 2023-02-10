@@ -13,11 +13,16 @@ import { OrdersService } from './Orders.service';
 import { makeResponse } from '../../core/utils/response';
 import { OrderIdDto, ShopIdDto, UserIdDto } from './dto';
 import { OrdersListDTO } from './dto/list';
-import { OrderReturnDTO, OrderReturnFilterDTO } from './dto/order-returns.dto';
+import {
+  OrderReturnDTO,
+  OrderReturnFilterDTO,
+  ReturnOrderListDto,
+  ReturnsStaffDto,
+} from './dto/order-returns.dto';
 import { IsAuthenticated } from 'src/core/utils/decorators';
 import { OrderFulfillDto, orderFulfillmentCancelDTO } from './dto/fulfill';
 import { OrderRefundDTO } from './dto/refund';
-import { shopIdDTO } from '../shop/dto/shop';
+import { b2cDto, shopIdDTO } from '../shop/dto/shop';
 
 @ApiTags('orders')
 @Controller('')
@@ -190,12 +195,13 @@ export class OrdersController {
   @Post('api/v1/order/return')
   async returnOrder(
     @Res() res,
+    @Query() filters: ReturnsStaffDto,
     @Body() orderDTO: OrderReturnDTO,
     @IsAuthenticated('authorization') token: string,
   ) {
     return makeResponse(
       res,
-      await this.appService.placeOrderReturn(orderDTO, token),
+      await this.appService.placeOrderReturn(orderDTO, filters, token),
     );
   }
 
@@ -279,7 +285,7 @@ export class OrdersController {
     );
   }
 
-  @Get('api/v1/orders/returns/filter')
+  @Get('api/v1/orders/return')
   @ApiOperation({
     summary:
       'Return all orders which are return by end customer extending list api filters',
@@ -287,11 +293,30 @@ export class OrdersController {
   async getOrderReturnsByFilters(
     @Res() res,
     @IsAuthenticated('authorization') token: string,
-    @Query() filters: OrdersListDTO,
+    @Query() filters: ReturnOrderListDto,
   ) {
     return makeResponse(
       res,
       await this.appService.getReturnsListByFilters(filters, token),
+    );
+  }
+
+  // Returns shop order details
+  @Get('api/v1/order/return/:orderId')
+  async getReturnedOrderDetails(
+    @Res() res,
+    @Param() orderDto: OrderIdDto,
+    @Query() filter: b2cDto,
+    @Headers() headers,
+  ): Promise<object> {
+    const Authorization: string = headers.authorization;
+    return makeResponse(
+      res,
+      await this.appService.getReturnOrdersDetails(
+        orderDto.orderId,
+        Authorization,
+        filter.isb2c,
+      ),
     );
   }
 }
