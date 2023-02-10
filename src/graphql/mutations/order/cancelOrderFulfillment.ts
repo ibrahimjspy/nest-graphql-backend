@@ -23,27 +23,7 @@ const b2bMutation = (fulfillmentId: string, warehouseId: string) => {
   `;
 };
 
-const b2cMutation = (fulfillmentId: string, warehouseId: string) => {
-  const validateWarehouseId = warehouseId || DEFAULT_WAREHOUSE_ID;
-
-  return gql`
-    mutation {
-      orderFulfillmentCancel(id: "${fulfillmentId}", input: { warehouseId: "${validateWarehouseId}" }) {
-        fulfillment {
-          id
-          status
-        }
-        order {
-          status
-        }
-        errors {
-          message
-          field
-        }
-      }
-    }
-  `;
-};
+const b2cMutation = b2bMutation;
 
 export const orderFulfillmentCancelMutation = (
   fulfillmentId: string,

@@ -23,27 +23,7 @@ const b2bQuery = (after: string, storeOrderIds: string[]): string => {
   `;
 };
 
-const b2cQuery = (after: string, storeOrderIds: string[]): string => {
-  return gql`
-    query {
-      orders(first: 100, after: "${after}", filter: { ids: ${JSON.stringify(
-    storeOrderIds,
-  )} status: [] }) {
-        totalCount
-        pageInfo {
-          hasNextPage
-          endCursor
-        }
-        edges {
-          node {
-            id
-            status
-          }
-        }
-      }
-    }
-  `;
-};
+const b2cQuery = b2bQuery;
 
 export const getOrderStatus = (
   after = '',

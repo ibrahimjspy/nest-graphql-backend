@@ -25,29 +25,7 @@ const b2bMutation = (productUpdateInput: updateMyProductDTO) => {
   `;
 };
 
-const b2cMutation = (productUpdateInput: updateMyProductDTO) => {
-  return gql`
-      mutation {
-        productUpdate(
-            id: "${productUpdateInput.productId}"
-            input: ${JSON.stringify(productUpdateInput.input)
-              .replace(/"name"/g, 'name')
-              .replace(/"description"/g, 'description')
-              .replace(/"category"/g, 'category')}
-        ) {
-            product {
-              id
-              name
-              description
-              media {
-                id
-                url
-            }
-          }
-        }
-      }
-    `;
-};
+const b2cMutation = b2bMutation;
 
 export const updateMyProductMutation = (
   productUpdateInput: updateMyProductDTO,

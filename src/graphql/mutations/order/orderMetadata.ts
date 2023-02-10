@@ -22,25 +22,7 @@ const b2bMutation = (orderId: string, input: OrderMetadataDto): string => {
   `;
 };
 
-const b2cMutation = (orderId: string, input: OrderMetadataDto): string => {
-  return gql`
-    mutation {
-      updateMetadata(
-        id: "${orderId}"
-        input: ${JSON.stringify(input)
-          .replace(/"key"/g, 'key')
-          .replace(/"value"/g, 'value')}
-      ) {
-        item {
-          metadata {
-            key
-            value
-          }
-        }
-      }
-    }
-  `;
-};
+const b2cMutation = b2bMutation;
 
 export const updateOrderMetadataMutation = (
   orderId: string,

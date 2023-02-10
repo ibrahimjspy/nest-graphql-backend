@@ -31,34 +31,7 @@ const b2bMutation = (productVariantId: string, quantity: number) => {
   `;
 };
 
-const b2cMutation = (productVariantId: string, quantity: number) => {
-  return gql`
-      mutation {
-        productVariantStocksUpdate(
-          variantId: "${productVariantId}"
-          stocks: [
-            {
-              warehouse: "${DEFAULT_WAREHOUSE_ID}"
-              quantity: ${quantity}
-            }
-          ]
-        ) {
-          productVariant {
-            stocks {
-              quantity
-              warehouse {
-                id
-              }
-            }
-          }
-          errors {
-            code
-            message
-          }
-        }
-      }
-    `;
-};
+const b2cMutation = b2bMutation;
 
 export const productVariantStockUpdateMutation = (
   productVariantId: string,

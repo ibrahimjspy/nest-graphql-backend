@@ -67,68 +67,7 @@ const b2bQuery = (filter: ReturnOrderListDto): string => {
     `;
 };
 
-const b2cQuery = (filter: ReturnOrderListDto): string => {
-  const filters = orderListFilterValidation(filter);
-  const pagination = validatePageFilter(filter);
-  return gql`
-      query {
-        orders(
-          ${pagination}
-          filter: {
-            ids: ${filters.orderIds}
-            paymentStatus: ${filters.paymentStatus}
-            status: ${filters.status}
-            customer: "${filters.customer}"
-            created: { gte: "${filters.startDate}", lte: "${filters.endDate}" }
-          }
-        ) {
-          totalCount
-          pageInfo {
-            hasNextPage
-            endCursor
-            startCursor
-            hasPreviousPage
-          }
-          edges {
-            node {
-              id
-              number
-              created
-              status
-              lines {
-                variant {
-                  id
-                }
-              }
-              user {
-                id
-                firstName
-                lastName
-                email
-              }
-              shippingAddress {
-                streetAddress1
-                streetAddress2
-              }
-              deliveryMethod {
-                ... on ShippingMethod {
-                  minimumDeliveryDays
-                  maximumDeliveryDays
-                  name
-                }
-              }
-              total {
-                net {
-                  amount
-                }
-              }
-            }
-          }
-        }
-      }
-    `;
-};
-
+const b2cQuery = b2bQuery;
 export const getReturnsListQuery = (
   filter: ReturnOrderListDto,
   isB2C = false,
