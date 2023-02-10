@@ -22,7 +22,7 @@ import {
 import { IsAuthenticated } from 'src/core/utils/decorators';
 import { OrderFulfillDto, orderFulfillmentCancelDTO } from './dto/fulfill';
 import { OrderRefundDTO } from './dto/refund';
-import { shopIdDTO } from '../shop/dto/shop';
+import { b2cDto, shopIdDTO } from '../shop/dto/shop';
 
 @ApiTags('orders')
 @Controller('')
@@ -285,7 +285,7 @@ export class OrdersController {
     );
   }
 
-  @Get('api/v1/orders/returns/filter')
+  @Get('api/v1/orders/return')
   @ApiOperation({
     summary:
       'Return all orders which are return by end customer extending list api filters',
@@ -302,10 +302,11 @@ export class OrdersController {
   }
 
   // Returns shop order details
-  @Get('api/v1/orders/return/detail/:orderId')
+  @Get('api/v1/order/return/:orderId')
   async getReturnedOrderDetails(
     @Res() res,
     @Param() orderDto: OrderIdDto,
+    @Query() filter: b2cDto,
     @Headers() headers,
   ): Promise<object> {
     const Authorization: string = headers.authorization;
@@ -314,6 +315,7 @@ export class OrdersController {
       await this.appService.getReturnOrdersDetails(
         orderDto.orderId,
         Authorization,
+        filter.isb2c,
       ),
     );
   }

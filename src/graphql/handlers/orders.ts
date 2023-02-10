@@ -395,18 +395,16 @@ export const returnedOrdersListHandler = async (
   const response = await graphqlResultErrorHandler(
     await graphqlCall(getReturnsListQuery(filter), token),
   );
-  if (!response['orders']) {
-    throw new RecordNotFound('order details');
-  }
   return response['orders'];
 };
 
 export const returnOrderDetailsHandler = async (
   id: string,
   token: string,
+  isB2c = false,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(returnOrderDetailsQuery(id), token),
+    await graphqlCall(returnOrderDetailsQuery(id), token, isB2c),
   );
   if (!response['order']) {
     throw new RecordNotFound('Order details');

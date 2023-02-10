@@ -16,7 +16,7 @@ import { ShopService } from './Shop.service';
 import {
   accountIdDTO,
   allShopIdsDTO,
-  b2cDTO,
+  b2cDto,
   createStoreDTO,
   shopIdByProductsDTO,
   shopIdByVariantsDTO,
@@ -45,7 +45,7 @@ export class ShopController {
   async getShopDetails(
     @Res() res,
     @Param() params,
-    @Query() filter: b2cDTO,
+    @Query() filter: b2cDto,
   ): Promise<object> {
     return makeResponse(
       res,

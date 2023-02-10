@@ -180,9 +180,11 @@ export class OrdersService {
   public async getReturnOrdersDetails(
     id: string,
     token: string,
+    isB2c = 'false',
   ): Promise<object> {
     try {
-      const response = await returnOrderDetailsHandler(id, token);
+      const b2cEnabled = isB2c == 'false' ? false : true;
+      const response = await returnOrderDetailsHandler(id, token, b2cEnabled);
       return prepareSuccessResponse(response, '', 200);
     } catch (err) {
       this.logger.error(err);
