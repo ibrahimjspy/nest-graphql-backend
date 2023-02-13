@@ -17,14 +17,14 @@ export const orderIdsTransformer = (orders): string => {
  *   @params order bundles []
  *   @returns graphql order bundles in string format
  */
-export const orderBundlesTransformer = (orders): any => {
-  return orders.map((order) => {
-    return JSON.stringify(order['bundle'])
+export const orderBundlesTransformer = (order): any => {
+  return (
+    JSON.stringify(order['marketplaceOrderBundles'])
       .replace(/"bundleId"/g, 'bundleId')
       .replace(/"quantity"/g, 'quantity')
       .replace(/"orderlineIds"/g, 'orderlineIds')
-      .replace(/"lineIds"/g, 'lineIds');
-  });
+      .replace(/"lineIds"/g, 'lineIds') || null
+  );
 };
 
 /**

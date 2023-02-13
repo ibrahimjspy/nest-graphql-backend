@@ -38,8 +38,9 @@ describe('Orders controller unit tests', () => {
     });
 
     it('add order to shop utility is working', async () => {
+      const checkoutData = mockCheckoutBundles.data.marketplaceCheckout;
       const allOrdersByShopId = getOrdersByShopId(
-        mockCheckoutBundles.data.marketplaceCheckout,
+        checkoutData,
         mockOrderData.order,
       );
       expect(allOrdersByShopId).toBeDefined();

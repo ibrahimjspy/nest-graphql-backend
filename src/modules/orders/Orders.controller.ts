@@ -23,6 +23,7 @@ import { IsAuthenticated } from 'src/core/utils/decorators';
 import { OrderFulfillDto, orderFulfillmentCancelDTO } from './dto/fulfill';
 import { OrderRefundDTO } from './dto/refund';
 import { b2cDto, shopIdDTO } from '../shop/dto/shop';
+import { AddOrderToShopDto } from './dto/addOrderToShop';
 
 @ApiTags('orders')
 @Controller('')
@@ -318,5 +319,17 @@ export class OrdersController {
         filter.isb2c,
       ),
     );
+  }
+
+  @Post('api/v1/order/marketplace/add')
+  @ApiOperation({
+    summary: 'this api adds orders against marketplace shops',
+  })
+  async addOrdersToMarketplace(
+    @Res() res,
+    @Body() body: AddOrderToShopDto,
+    @IsAuthenticated('authorization') token: string,
+  ) {
+    return makeResponse(res, await this.appService.addOrderToShop(body));
   }
 }

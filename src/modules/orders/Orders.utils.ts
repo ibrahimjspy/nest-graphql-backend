@@ -1,6 +1,11 @@
 import { roundNumber } from 'src/core/utils/helpers';
 import { OrdersListDTO } from './dto/list';
-import { orderListInterface } from './Orders.utils.types';
+import {
+  checkoutBundleInterface,
+  orderListInterface,
+  orderSaleorInterface,
+} from './Orders.utils.types';
+import { ShopOrderDto } from './dto/addOrderToShop';
 
 /**
  * It takes a list of bundles and returns a total price of all the bundles
@@ -161,7 +166,10 @@ export const getPendingOrders = (orders) => {
  * @params checkoutData : marketplace checkout data containing bundles and shipping information
  * @params orderInfo : Saleor order information containing line ids of order
  */
-export const getOrdersByShopId = (checkoutData: object, orderInfo: object) => {
+export const getOrdersByShopId = (
+  checkoutData: checkoutBundleInterface,
+  orderInfo: orderSaleorInterface,
+): ShopOrderDto[] => {
   // utility functions
   // appends single shop order to all shop orders
   const addShopOrderToAllOrders = (
@@ -199,7 +207,7 @@ export const getOrdersByShopId = (checkoutData: object, orderInfo: object) => {
     shopOrder['bundle'] = bundle;
     addShopOrderToAllOrders(allOrders, shopOrder, shopId);
   });
-  return allOrders;
+  return filterOrdersByShop(allOrders);
 };
 
 /**
@@ -235,4 +243,28 @@ const getOrderShippingMethods = (selectedMethods, shopId: string) => {
       ?.method.shippingMethodTypeId ||
     selectedMethods[0].method.shippingMethodTypeId
   );
+};
+
+/**
+ * @description - this method filters marketplace orders and returns an array of objects with shop order details
+ * @links getOrdersByShop function = () => object
+ * @params marketplaceOrders : object containing shop ids as keys and shop order objects as values
+ */
+export const filterOrdersByShop = (marketplaceOrders): ShopOrderDto[] => {
+  const shopOrders: any = [];
+  Object.values(marketplaceOrders).map(async (order: any[]) => {
+    const shopOrderObject = {};
+    order.map((shopOrder) => {
+      shopOrderObject['shippingMethodId'] = shopOrder['shippingMethodId'];
+      shopOrderObject['shopId'] = shopOrder['shopId'];
+      shopOrderObject['orderId'] = shopOrder['orderId'];
+      shopOrderObject[`marketplaceOrderBundles`] = shopOrderObject[
+        `marketplaceOrderBundles`
+      ]?.length
+        ? [...shopOrderObject[`marketplaceOrderBundles`], shopOrder['bundle']]
+        : [shopOrder['bundle']];
+    });
+    shopOrders.push(shopOrderObject);
+  });
+  return shopOrders;
 };

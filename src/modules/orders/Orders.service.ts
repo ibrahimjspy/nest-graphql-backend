@@ -28,7 +28,6 @@ import {
   getCurrency,
   getFulFillmentsWithStatusAndBundlesTotal,
   getFulfillmentTotal,
-  getOrdersByShopId,
   getPendingOrders,
   getTotalFromBundles,
 } from './Orders.utils';
@@ -57,6 +56,7 @@ import {
 } from 'src/graphql/handlers/orders.reporting';
 import { orderLineDTO } from './dto/fulfill';
 import { OrderRefundDTO } from './dto/refund';
+import { AddOrderToShopDto } from './dto/addOrderToShop';
 @Injectable()
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
@@ -266,10 +266,9 @@ export class OrdersService {
    * @params orderInfo : Saleor order information containing line ids of order
    * @returns void || success response;
    */
-  public async addOrderToShop(checkoutBundles, orderData) {
-    const ordersByShop = getOrdersByShopId(checkoutBundles, orderData);
-    return Promise.all(
-      Object.values(ordersByShop).map(async (shopOrder) => {
+  public async addOrderToShop(orders: AddOrderToShopDto) {
+    return await Promise.all(
+      orders.marketplaceOrders.map(async (shopOrder) => {
         await addOrderToShopHandler(shopOrder);
       }),
     );
