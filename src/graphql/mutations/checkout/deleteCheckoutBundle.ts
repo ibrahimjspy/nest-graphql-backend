@@ -13,8 +13,20 @@ const federationQuery = (
           checkoutBundleIds: ${JSON.stringify(checkoutBundleIds)}
         }
       ) {
+        ... on CheckoutBundlesType {
+          totalAmount
+          subTotal
+          taxes
+          discounts
+          checkoutBundles {
+            bundle {
+              id
+            }
+            quantity
+          }
+        }
         __typename
-        ... on ResultData {
+        ... on ResultError {
           message
           data
         }
