@@ -316,7 +316,7 @@ export class OrdersController {
       await this.appService.getReturnOrdersDetails(
         orderDto.orderId,
         Authorization,
-        filter.isb2c,
+        filter.isB2c,
       ),
     );
   }
@@ -328,8 +328,12 @@ export class OrdersController {
   async addOrdersToMarketplace(
     @Res() res,
     @Body() body: AddOrderToShopDto,
+    @Query() filter: b2cDto,
     @IsAuthenticated('authorization') token: string,
   ) {
-    return makeResponse(res, await this.appService.addOrderToShop(body));
+    return makeResponse(
+      res,
+      await this.appService.addOrderToShop(body, token, filter.isB2c),
+    );
   }
 }

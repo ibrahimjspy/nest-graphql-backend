@@ -1,6 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
-import { prepareSuccessResponse } from 'src/core/utils/response';
+import {
+  prepareFailedResponse,
+  prepareSuccessResponse,
+} from 'src/core/utils/response';
 import {
   addOrderToShopHandler,
   allShopOrdersHandler,
@@ -180,11 +183,10 @@ export class OrdersService {
   public async getReturnOrdersDetails(
     id: string,
     token: string,
-    isB2c = 'false',
+    isB2c = false,
   ): Promise<object> {
     try {
-      const b2cEnabled = isB2c == 'false' ? false : true;
-      const response = await returnOrderDetailsHandler(id, token, b2cEnabled);
+      const response = await returnOrderDetailsHandler(id, token, isB2c);
       return prepareSuccessResponse(response, '', 200);
     } catch (err) {
       this.logger.error(err);
@@ -264,14 +266,25 @@ export class OrdersService {
    * <> -  add that order to marketplace shop
    * @params orders => list of marketplace orders with AddOrderToShopDto
    * @links getOrdersByShopId -> this method is used in b2c case where we need to transform checkout bundles and saleor order
-   * @returns void || success response;
+   * @returns list of orders against shops which you have added orders against
    */
-  public async addOrderToShop(orders: AddOrderToShopDto) {
-    return await Promise.all(
-      orders.marketplaceOrders.map(async (shopOrder) => {
-        await addOrderToShopHandler(shopOrder);
-      }),
-    );
+  public async addOrderToShop(
+    orders: AddOrderToShopDto,
+    token: string,
+    isB2c = false,
+  ) {
+    try {
+      const response = [];
+      await Promise.all(
+        orders?.marketplaceOrders.map(async (shopOrder) => {
+          response.push(await addOrderToShopHandler(shopOrder, token, isB2c));
+        }),
+      );
+      return prepareSuccessResponse(response);
+    } catch (error) {
+      this.logger.error(error);
+      return prepareFailedResponse(error);
+    }
   }
 
   /**

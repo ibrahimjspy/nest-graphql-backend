@@ -18,13 +18,13 @@ export const orderIdsTransformer = (orders): string => {
  *   @returns graphql order bundles in string format
  */
 export const orderBundlesTransformer = (order): any => {
-  return (
-    JSON.stringify(order['marketplaceOrderBundles'])
-      .replace(/"bundleId"/g, 'bundleId')
-      .replace(/"quantity"/g, 'quantity')
-      .replace(/"orderlineIds"/g, 'orderlineIds')
-      .replace(/"lineIds"/g, 'lineIds') || null
-  );
+  return order['marketplaceOrderBundles']
+    ? JSON.stringify(order['marketplaceOrderBundles'])
+        .replace(/"bundleId"/g, 'bundleId')
+        .replace(/"quantity"/g, 'quantity')
+        .replace(/"orderlineIds"/g, 'orderlineIds')
+        .replace(/"lineIds"/g, 'lineIds')
+    : null;
 };
 
 /**

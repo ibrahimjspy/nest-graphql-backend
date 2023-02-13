@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
+  IsBoolean,
   IsEmail,
   IsNotEmpty,
   IsNumber,
@@ -110,7 +112,8 @@ export class allShopIdsDTO {
   quantity: number;
 }
 export class b2cDto {
-  @ApiProperty({ required: false, default: 'false' })
-  @IsOptional()
-  isb2c: string;
+  @ApiProperty({ required: false, default: false })
+  @IsBoolean()
+  @Transform(({ obj, key }) => obj[key] === 'true')
+  public isB2c: boolean;
 }

@@ -41,7 +41,7 @@ const bootstrap = async () => {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   // enable auto validation
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   // app configuration
   await app.listen(process.env.PORT || 5000);

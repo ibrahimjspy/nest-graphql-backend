@@ -49,7 +49,7 @@ export class ShopController {
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getShopDetails(params?.shopId, filter.isb2c),
+      await this.appService.getShopDetails(params?.shopId, filter.isB2c),
     );
   }
 
