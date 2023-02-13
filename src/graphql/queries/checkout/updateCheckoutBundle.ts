@@ -12,6 +12,10 @@ const federationQuery = (userEmail: string, checkoutBundles: any[]): string => {
       ) {
         __typename
         ... on CheckoutBundlesType {
+          totalAmount
+          subTotal
+          taxes
+          discounts
           checkoutBundles {
             bundle {
               id

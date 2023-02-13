@@ -22,6 +22,10 @@ const federationQuery = (
         }
       ) {
         ... on CheckoutBundlesType {
+          totalAmount
+          subTotal
+          taxes
+          discounts
           checkoutId
           userId
           bundles {
