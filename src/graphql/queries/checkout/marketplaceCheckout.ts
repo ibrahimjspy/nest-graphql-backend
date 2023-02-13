@@ -9,6 +9,10 @@ const federationQuery = (userId: string): string => {
       ) {
         ... on CheckoutBundlesType {
           __typename
+          totalAmount
+          subTotal
+          taxes
+          discounts
           checkoutId
           userId
           bundles {

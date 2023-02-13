@@ -8,6 +8,10 @@ const b2bQuery = (userEmail: string, isSelected: any): string => {
       ) {
         ... on CheckoutBundlesType {
           __typename
+          totalAmount
+          subTotal
+          taxes
+          discounts
           checkoutId
           checkoutBundles {
             checkoutBundleId
