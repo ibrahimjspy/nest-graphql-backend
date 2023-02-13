@@ -321,7 +321,7 @@ export class OrdersController {
     );
   }
 
-  @Post('api/v1/order/marketplace/add')
+  @Post('api/v1/marketplace/order')
   @ApiOperation({
     summary: 'this api adds orders against marketplace shops',
   })
