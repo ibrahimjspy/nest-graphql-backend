@@ -259,11 +259,11 @@ export class OrdersService {
   }
 
   /**
-   * this method takes checkout bundles and Saleor order data;
-   * <> -  transforms single order against each shop
-   * <> -  add that order information through mutation in shop service
-   * @params checkoutData : marketplace checkout data containing bundles and shipping information
-   * @params orderInfo : Saleor order information containing line ids of order
+   * @description -- this method takes marketplace orders in an array and adds that order against shop
+   * <> -  maps over orders list
+   * <> -  add that order to marketplace shop
+   * @params orders => list of marketplace orders with AddOrderToShopDto
+   * @links getOrdersByShopId -> this method is used in b2c case where we need to transform checkout bundles and saleor order
    * @returns void || success response;
    */
   public async addOrderToShop(orders: AddOrderToShopDto) {
