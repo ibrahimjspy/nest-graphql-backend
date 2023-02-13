@@ -260,13 +260,18 @@ export class ShopController {
   })
   async createShop(
     @Res() res,
+    @Query() filter: b2cDto,
     @Body() shopInput: createStoreDTO,
     @Headers() headers,
   ): Promise<object> {
     const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.createMarketplaceShop(shopInput, Authorization),
+      await this.appService.createMarketplaceShop(
+        shopInput,
+        Authorization,
+        filter.isB2c,
+      ),
     );
   }
 }
