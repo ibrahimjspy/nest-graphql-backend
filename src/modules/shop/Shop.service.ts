@@ -302,11 +302,13 @@ export class ShopService {
   public async createMarketplaceShop(
     shopInput: createStoreDTO,
     token: string,
+    isB2c = false,
   ): Promise<SuccessResponseType> {
     try {
       const response = await createStoreHandler(
         validateStoreInput(shopInput),
         token,
+        isB2c,
       );
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
