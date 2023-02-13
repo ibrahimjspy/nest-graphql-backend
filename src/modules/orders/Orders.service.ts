@@ -1,6 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
-import { prepareSuccessResponse } from 'src/core/utils/response';
+import {
+  prepareFailedResponse,
+  prepareSuccessResponse,
+} from 'src/core/utils/response';
 import {
   addOrderToShopHandler,
   allShopOrdersHandler,
@@ -28,7 +31,6 @@ import {
   getCurrency,
   getFulFillmentsWithStatusAndBundlesTotal,
   getFulfillmentTotal,
-  getOrdersByShopId,
   getPendingOrders,
   getTotalFromBundles,
 } from './Orders.utils';
@@ -57,6 +59,7 @@ import {
 } from 'src/graphql/handlers/orders.reporting';
 import { orderLineDTO } from './dto/fulfill';
 import { OrderRefundDTO } from './dto/refund';
+import { AddOrderToShopDto } from './dto/addOrderToShop';
 @Injectable()
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
@@ -180,11 +183,10 @@ export class OrdersService {
   public async getReturnOrdersDetails(
     id: string,
     token: string,
-    isB2c = 'false',
+    isB2c = false,
   ): Promise<object> {
     try {
-      const b2cEnabled = isB2c == 'false' ? false : true;
-      const response = await returnOrderDetailsHandler(id, token, b2cEnabled);
+      const response = await returnOrderDetailsHandler(id, token, isB2c);
       return prepareSuccessResponse(response, '', 200);
     } catch (err) {
       this.logger.error(err);
@@ -259,20 +261,30 @@ export class OrdersService {
   }
 
   /**
-   * this method takes checkout bundles and Saleor order data;
-   * <> -  transforms single order against each shop
-   * <> -  add that order information through mutation in shop service
-   * @params checkoutData : marketplace checkout data containing bundles and shipping information
-   * @params orderInfo : Saleor order information containing line ids of order
-   * @returns void || success response;
+   * @description -- this method takes marketplace orders in an array and adds that order against shop
+   * <> -  maps over orders list
+   * <> -  add that order to marketplace shop
+   * @params orders => list of marketplace orders with AddOrderToShopDto
+   * @links getOrdersByShopId -> this method is used in b2c case where we need to transform checkout bundles and saleor order
+   * @returns list of orders against shops which you have added orders against
    */
-  public async addOrderToShop(checkoutBundles, orderData) {
-    const ordersByShop = getOrdersByShopId(checkoutBundles, orderData);
-    return Promise.all(
-      Object.values(ordersByShop).map(async (shopOrder) => {
-        await addOrderToShopHandler(shopOrder);
-      }),
-    );
+  public async addOrderToShop(
+    orders: AddOrderToShopDto,
+    token: string,
+    isB2c = false,
+  ) {
+    try {
+      const response = [];
+      await Promise.all(
+        orders?.marketplaceOrders.map(async (shopOrder) => {
+          response.push(await addOrderToShopHandler(shopOrder, token, isB2c));
+        }),
+      );
+      return prepareSuccessResponse(response);
+    } catch (error) {
+      this.logger.error(error);
+      return prepareFailedResponse(error);
+    }
   }
 
   /**
