@@ -33,7 +33,7 @@ export class CategoriesService {
       const categoryIdsResponse = await shopCategoryIdsHandler(shopId, filter.isB2c);
       // Get categories list against given shop category ids
       const response = await categoriesHandler((categoryIdsResponse?.categoryIds || []), filter, filter.isB2c);
-      return prepareSuccessResponse(response, '', 201);
+      return prepareSuccessResponse(response);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
