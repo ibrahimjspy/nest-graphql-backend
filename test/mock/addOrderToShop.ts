@@ -4,8 +4,8 @@ export const mockCheckoutBundles = {
       __typename: 'CheckoutBundlesType',
       checkoutId:
         'Q2hlY2tvdXQ6YjFiZjhkZTgtNDI4NC00YjBlLTljNGEtOTI1MzY0YmNhMTYy',
-      userId: 'VXNlcjo0',
-      bundles: [
+      userEmail: 'VXNlcjo0',
+      checkoutBundles: [
         {
           checkoutBundleId: 'c111ece1-b4a6-490b-a14e-732e94907c0b',
           isSelected: false,
@@ -15,10 +15,10 @@ export const mockCheckoutBundles = {
             name: 'product variant bundle',
             description: 'bundle description',
             slug: 'product-variant-bundle',
-            variants: [
+            productVariants: [
               {
                 quantity: 1,
-                variant: {
+                productVariant: {
                   id: 'UHJvZHVjdFZhcmlhbnQ6MzE0',
                   name: 'UHJvZHVjdFZhcmlhbnQ6MzE0',
                   sku: null,
@@ -26,7 +26,7 @@ export const mockCheckoutBundles = {
               },
               {
                 quantity: 1,
-                variant: {
+                productVariant: {
                   id: 'UHJvZHVjdFZhcmlhbnQ6MzEz',
                   name: 'UHJvZHVjdFZhcmlhbnQ6MzEz',
                   sku: null,
@@ -34,7 +34,7 @@ export const mockCheckoutBundles = {
               },
               {
                 quantity: 1,
-                variant: {
+                productVariant: {
                   id: 'UHJvZHVjdFZhcmlhbnQ6MzEy',
                   name: 'UHJvZHVjdFZhcmlhbnQ6MzEy',
                   sku: null,
@@ -58,10 +58,10 @@ export const mockCheckoutBundles = {
             name: 'product variant bundle',
             description: 'bundle description',
             slug: 'product-variant-bundle',
-            variants: [
+            productVariants: [
               {
                 quantity: 1,
-                variant: {
+                productVariant: {
                   id: 'UHJvZHVjdFZhcmlhbnQ6MzEx',
                   name: 'UHJvZHVjdFZhcmlhbnQ6MzEx',
                   sku: null,
@@ -69,7 +69,7 @@ export const mockCheckoutBundles = {
               },
               {
                 quantity: 1,
-                variant: {
+                productVariant: {
                   id: 'UHJvZHVjdFZhcmlhbnQ6MzEw',
                   name: 'UHJvZHVjdFZhcmlhbnQ6MzEw',
                   sku: null,
@@ -77,7 +77,7 @@ export const mockCheckoutBundles = {
               },
               {
                 quantity: 1,
-                variant: {
+                productVariant: {
                   id: 'UHJvZHVjdFZhcmlhbnQ6MzA5',
                   name: 'UHJvZHVjdFZhcmlhbnQ6MzA5',
                   sku: null,
@@ -101,10 +101,10 @@ export const mockCheckoutBundles = {
             name: 'product variant bundle',
             description: 'bundle description',
             slug: 'product-variant-bundle',
-            variants: [
+            productVariants: [
               {
                 quantity: 1,
-                variant: {
+                productVariant: {
                   id: 'UHJvZHVjdFZhcmlhbnQ6Njk4MzE=',
                   name: 'UHJvZHVjdFZhcmlhbnQ6Njk4MzE=',
                   sku: null,
@@ -112,7 +112,7 @@ export const mockCheckoutBundles = {
               },
               {
                 quantity: 1,
-                variant: {
+                productVariant: {
                   id: 'UHJvZHVjdFZhcmlhbnQ6Njk4MzA=',
                   name: 'UHJvZHVjdFZhcmlhbnQ6Njk4MzA=',
                   sku: null,
@@ -120,7 +120,7 @@ export const mockCheckoutBundles = {
               },
               {
                 quantity: 1,
-                variant: {
+                productVariant: {
                   id: 'UHJvZHVjdFZhcmlhbnQ6Njk4Mjk=',
                   name: 'UHJvZHVjdFZhcmlhbnQ6Njk4Mjk=',
                   sku: null,
@@ -128,7 +128,7 @@ export const mockCheckoutBundles = {
               },
               {
                 quantity: 1,
-                variant: {
+                productVariant: {
                   id: 'UHJvZHVjdFZhcmlhbnQ6Njk4Mjg=',
                   name: 'UHJvZHVjdFZhcmlhbnQ6Njk4Mjg=',
                   sku: null,
@@ -235,39 +235,34 @@ export const mockOrderData = {
   },
 };
 
-export const expectedOrdersByShop = {
-  '1': [
-    {
-      shippingMethodId: 'U2hpcHBpbmdNZXRob2RUeXBlOjE=',
-      shopId: '1',
-      orderId: 'orderId',
-      bundle: {
+export const expectedOrdersByShop = [
+  {
+    shippingMethodId: 'U2hpcHBpbmdNZXRob2RUeXBlOjE=',
+    shopId: '1',
+    orderId: 'orderId',
+    marketplaceOrderBundles: [
+      {
         bundleId: '85ed9a70-18bc-49e1-8a7b-2ce3bf6ba799',
         quantity: 1,
         orderlineIds: ['lineId1', 'lineId2', 'lineId3'],
       },
-    },
-    {
-      shippingMethodId: 'U2hpcHBpbmdNZXRob2RUeXBlOjE=',
-      shopId: '1',
-      orderId: 'orderId',
-      bundle: {
+      {
         bundleId: '242c73c2-6a4c-4a03-9475-e553ec4fce2f',
         quantity: 1,
         orderlineIds: ['lineId4', 'lineId5', 'lineId6'],
       },
-    },
-  ],
-  '285': [
-    {
-      shippingMethodId: 'U2hpcHBpbmdNZXRob2RUeXBlOjE=',
-      shopId: '285',
-      orderId: 'orderId',
-      bundle: {
+    ],
+  },
+  {
+    shippingMethodId: 'U2hpcHBpbmdNZXRob2RUeXBlOjE=',
+    shopId: '285',
+    orderId: 'orderId',
+    marketplaceOrderBundles: [
+      {
         bundleId: 'a4321dd8-5aa8-4ad0-b080-1d82289d9d2b',
         quantity: 3,
         orderlineIds: ['lineId10', 'lineId7', 'lineId8', 'lineId9'],
       },
-    },
-  ],
-};
+    ],
+  },
+];
