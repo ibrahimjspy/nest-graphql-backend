@@ -1,7 +1,7 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
-const b2bQuery = (categoryIds: string[]): string => {
+const b2cQuery = (categoryIds: string[]): string => {
   return gql`
   query {
     categories(
@@ -39,7 +39,7 @@ const b2bQuery = (categoryIds: string[]): string => {
   }`;
 };
 
-const b2cQuery = b2bQuery;
+const b2bQuery = b2cQuery;
 
 export const categoriesQuery = (categoryIds: string[], isb2c = false) => {
   return graphqlQueryCheck(b2bQuery(categoryIds), b2cQuery(categoryIds), isb2c);

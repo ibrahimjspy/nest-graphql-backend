@@ -29,9 +29,9 @@ export class CategoriesService {
   public async getShopCategories(shopId: string, isb2c = false): Promise<object> {
     try {
       // Get category ids against given shop id
-      const { categoryIds } = await shopCategoryIdsHandler(shopId, isb2c);
+      const categoryIdsResponse = await shopCategoryIdsHandler(shopId, isb2c);
       // Get categories list against given shop category ids
-      const response = await categoriesHandler((categoryIds || []), isb2c);
+      const response = await categoriesHandler((categoryIdsResponse?.categoryIds || []), isb2c);
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
       this.logger.error(error);
