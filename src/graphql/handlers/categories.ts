@@ -1,8 +1,12 @@
 import {
   graphqlCall,
   graphqlExceptionHandler,
+  graphqlResultErrorHandler,
 } from 'src/core/proxies/graphqlHandler';
 import { menuCategoriesQuery } from 'src/graphql/queries/categories/menu';
+import { shopCategoriesDTO } from 'src/modules/categories/dto/categories';
+import { categoriesQuery } from '../queries/categories/categories';
+import { shopCategoryIdsQuery } from '../queries/categories/shopCategoryIds';
 
 export const menuCategoriesHandler = async (): Promise<object> => {
   try {
@@ -19,4 +23,27 @@ export const productCardSectionHandler = async (): Promise<object> => {
   } catch (error) {
     return graphqlExceptionHandler(error);
   }
+};
+
+export const shopCategoryIdsHandler = async (
+  shopId: string,
+  isb2c = false,
+): Promise<{categoryIds: string[]}> => {
+  const userToken = "";
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(shopCategoryIdsQuery(shopId, isb2c), userToken, isb2c),
+  );
+  return response['getCategoriesByShop'];
+};
+
+export const categoriesHandler = async (
+  categoryIds: string[],
+  filter: shopCategoriesDTO,
+  isb2c = false,
+): Promise<object> => {
+  const userToken = "";
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(categoriesQuery(categoryIds, filter, isb2c), userToken, isb2c),
+  );
+  return response['categories'];
 };
