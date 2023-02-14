@@ -97,8 +97,9 @@ const federationQuery = (
         }
         __typename
         ... on ResultError {
+          __typename
+          errors
           message
-          data
         }
       }
     }
