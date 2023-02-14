@@ -29,8 +29,9 @@ export const shopCategoryIdsHandler = async (
   shopId: string,
   isb2c = false,
 ): Promise<{categoryIds: string[]}> => {
+  const userToken = "";
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(shopCategoryIdsQuery(shopId, isb2c), '', isb2c),
+    await graphqlCall(shopCategoryIdsQuery(shopId, isb2c), userToken, isb2c),
   );
   return response['getCategoriesByShop'];
 };
@@ -40,8 +41,9 @@ export const categoriesHandler = async (
   filter: shopCategoriesDTO,
   isb2c = false,
 ): Promise<object> => {
+  const userToken = "";
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(categoriesQuery(categoryIds, filter, isb2c), '', isb2c),
+    await graphqlCall(categoriesQuery(categoryIds, filter, isb2c), userToken, isb2c),
   );
   return response['categories'];
 };
