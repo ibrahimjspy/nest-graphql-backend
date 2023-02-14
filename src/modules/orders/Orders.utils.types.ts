@@ -19,8 +19,8 @@ export interface orderSaleorInterface {
 
 export interface checkoutBundleInterface {
   checkoutId: string;
-  userId: string;
-  bundles: {
+  userEmail: string;
+  checkoutBundles: {
     checkoutBundleId: string;
     isSelected: boolean;
     quantity: number;
@@ -29,9 +29,9 @@ export interface checkoutBundleInterface {
       name: string;
       description: string;
       slug: string;
-      variants: {
+      productVariants: {
         quantity: number;
-        variant: {
+        productVariant: {
           id: string;
           name: string;
           sku: string;

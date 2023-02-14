@@ -183,16 +183,16 @@ export const getOrdersByShopId = (
   };
 
   const allOrders: object = {};
-  checkoutData['bundles'].map((checkoutBundle) => {
+  (checkoutData.checkoutBundles || []).map((checkoutBundle) => {
     const shopOrder: object = {};
     const bundle: object = {};
     const shopId = checkoutBundle?.bundle?.shop?.id;
 
     //adds bundle to shop object
-    bundle['bundleId'] = checkoutBundle?.bundle.id;
+    bundle['bundleId'] = checkoutBundle?.bundle?.id;
     bundle['quantity'] = checkoutBundle?.quantity;
     bundle['orderlineIds'] = getOrdersLineIds(
-      checkoutBundle?.bundle.variants,
+      checkoutBundle?.bundle?.productVariants,
       orderInfo,
     );
 
@@ -219,9 +219,9 @@ export const getOrdersByShopId = (
  */
 const getOrdersLineIds = (bundleVariants, orderInfo: object) => {
   const lineIds = [];
-  bundleVariants.map((bundleVariant) => {
+  (bundleVariants || []).map((bundleVariant) => {
     orderInfo['lines'].map((line) => {
-      if (bundleVariant?.variant?.id === line?.variant?.id) {
+      if (bundleVariant?.productVariant?.id === line?.variant?.id) {
         lineIds.push(line.id);
       }
     });
@@ -252,9 +252,9 @@ const getOrderShippingMethods = (selectedMethods, shopId: string) => {
  */
 export const filterOrdersByShop = (marketplaceOrders): ShopOrderDto[] => {
   const shopOrders: any = [];
-  Object.values(marketplaceOrders).map(async (order: any[]) => {
+  Object.values(marketplaceOrders).map(async (marketplaceOrders: any[]) => {
     const shopOrderObject = {};
-    order.map((shopOrder) => {
+    (marketplaceOrders || []).map((shopOrder) => {
       shopOrderObject['shippingMethodId'] = shopOrder['shippingMethodId'];
       shopOrderObject['shopId'] = shopOrder['shopId'];
       shopOrderObject['orderId'] = shopOrder['orderId'];
