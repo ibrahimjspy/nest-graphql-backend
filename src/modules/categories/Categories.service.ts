@@ -7,7 +7,7 @@ import {
   categoriesHandler,
   shopCategoryIdsHandler,
 } from 'src/graphql/handlers/categories';
-import { categoriesDTO } from './dto/categories';
+import { shopCategoriesDTO } from './dto/categories';
 
 @Injectable()
 export class CategoriesService {
@@ -27,7 +27,7 @@ export class CategoriesService {
     return productCardSectionHandler();
   }
 
-  public async getShopCategories(shopId: string, filter: categoriesDTO): Promise<object> {
+  public async getShopCategories(shopId: string, filter: shopCategoriesDTO): Promise<object> {
     try {
       // Get category ids against given shop id
       const categoryIdsResponse = await shopCategoryIdsHandler(shopId, filter.isB2c);

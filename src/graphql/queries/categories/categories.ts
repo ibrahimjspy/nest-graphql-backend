@@ -1,9 +1,9 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
-import { categoriesDTO } from 'src/modules/categories/dto/categories';
+import { shopCategoriesDTO } from 'src/modules/categories/dto/categories';
 
-const b2cQuery = (categoryIds: string[], filter:categoriesDTO): string => {
+const b2cQuery = (categoryIds: string[], filter:shopCategoriesDTO): string => {
   return gql`
   query {
     categories(

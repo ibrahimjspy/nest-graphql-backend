@@ -4,7 +4,7 @@ import {
   graphqlResultErrorHandler,
 } from 'src/core/proxies/graphqlHandler';
 import { menuCategoriesQuery } from 'src/graphql/queries/categories/menu';
-import { categoriesDTO } from 'src/modules/categories/dto/categories';
+import { shopCategoriesDTO } from 'src/modules/categories/dto/categories';
 import { categoriesQuery } from '../queries/categories/categories';
 import { shopCategoryIdsQuery } from '../queries/categories/shopCategoryIds';
 
@@ -37,7 +37,7 @@ export const shopCategoryIdsHandler = async (
 
 export const categoriesHandler = async (
   categoryIds: string[],
-  filter: categoriesDTO,
+  filter: shopCategoriesDTO,
   isb2c = false,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(

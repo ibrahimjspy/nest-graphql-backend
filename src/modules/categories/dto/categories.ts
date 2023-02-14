@@ -15,7 +15,7 @@ export class b2cDTO {
   public isB2c: boolean;
 }
 
-export class categoriesDTO extends IntersectionType(
+export class shopCategoriesDTO extends IntersectionType(
   b2cDTO,
   PaginationDto,
 ) { }

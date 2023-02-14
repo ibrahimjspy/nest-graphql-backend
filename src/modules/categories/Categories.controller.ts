@@ -2,7 +2,7 @@ import { Controller, Get, Param, Query, Res } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
 import { CategoriesService } from './Categories.service';
-import { categoriesDTO, shopIdDTO } from './dto/categories';
+import { shopCategoriesDTO, shopIdDTO } from './dto/categories';
 
 @ApiTags('categories')
 @Controller('')
@@ -26,7 +26,7 @@ export class CategoriesController {
   async getShopCategories(
     @Res() res,
     @Param() params: shopIdDTO,
-    @Query() filter: categoriesDTO,
+    @Query() filter: shopCategoriesDTO,
   ): Promise<any> {
     return makeResponse(res, await this.appService.getShopCategories(params.shopId, filter));
   }
