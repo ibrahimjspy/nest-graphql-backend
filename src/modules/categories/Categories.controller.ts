@@ -28,6 +28,6 @@ export class CategoriesController {
     @Param() params: shopIdDTO,
     @Query() filter: categoriesDTO,
   ): Promise<any> {
-    return makeResponse(res, await this.appService.getShopCategories(params.shopId, filter.isB2c));
+    return makeResponse(res, await this.appService.getShopCategories(params.shopId, filter));
   }
 }

@@ -1,27 +1,31 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
+import { validatePageFilter } from 'src/graphql/utils/pagination';
+import { categoriesDTO } from 'src/modules/categories/dto/categories';
 
-const b2cQuery = (categoryIds: string[]): string => {
+const b2cQuery = (categoryIds: string[], filter:categoriesDTO): string => {
   return gql`
   query {
     categories(
-        first: 20, 
-        filter: {
-          ids: ${JSON.stringify(categoryIds)}
-        }
+      ${validatePageFilter(
+        filter,
+      )}
+      filter: {
+        ids: ${JSON.stringify(categoryIds)}
+      }
     ) {
       edges {
         node {
           name
           id
           slug
-          children(first: 20) {
+          children(${validatePageFilter(filter)}) {
             edges {
               node {
                 name
                 id
                 slug
-                children(first: 20) {
+                children(${validatePageFilter(filter)}) {
                   edges {
                     node {
                       name
@@ -41,6 +45,6 @@ const b2cQuery = (categoryIds: string[]): string => {
 
 const b2bQuery = b2cQuery;
 
-export const categoriesQuery = (categoryIds: string[], isb2c = false) => {
-  return graphqlQueryCheck(b2bQuery(categoryIds), b2cQuery(categoryIds), isb2c);
+export const categoriesQuery = (categoryIds: string[], filter, isb2c = false) => {
+  return graphqlQueryCheck(b2bQuery(categoryIds, filter), b2cQuery(categoryIds, filter), isb2c);
 };
