@@ -9,12 +9,21 @@ import {
 
 import * as CheckoutHandlers from 'src/graphql/handlers/checkout';
 import {
+  completeCheckoutHandler,
   createCheckoutHandler,
+  getCheckoutbundlesByCheckoutIdHandler,
   getCheckoutbundlesHandler,
+  getIntentIdByCheckoutId,
   getTotalAmountByCheckoutIdHandler,
   savePaymentInfoHandler,
 } from 'src/graphql/handlers/checkout';
 import * as CheckoutUtils from './Checkout.utils';
+import {
+  getBundleIds,
+  getExistBundleIdsInList,
+  getNotExistBundleIdsInList,
+} from './Checkout.utils';
+
 import { CreateLineItemsForSaleor } from './Checkout.utils';
 import {
   AddressDetailType,
@@ -24,11 +33,15 @@ import { BundleType } from 'src/graphql/types/bundle.type';
 import { getHttpErrorMessage } from 'src/external/utils/httpHelper';
 import { UpdateBundleStateDto } from 'src/modules/checkout/dto/add-bundle.dto';
 import StripeService from 'src/external/services/stripe';
+import SqsService from 'src/external/endpoints/sqsMessage';
 
 @Injectable()
 export class CheckoutService {
   private readonly logger = new Logger(CheckoutService.name);
-  constructor(private stripeService: StripeService) {
+  constructor(
+    private stripeService: StripeService,
+    private sqsService: SqsService,
+  ) {
     return;
   }
   public async getShoppingCartData(
@@ -36,12 +49,7 @@ export class CheckoutService {
     token: string,
   ): Promise<object> {
     try {
-      const checkoutData = await getCheckoutbundlesHandler(
-        userEmail,
-        true,
-        token,
-        null,
-      );
+      const checkoutData = await getCheckoutbundlesHandler(userEmail, token);
 
       return prepareSuccessResponse(checkoutData);
     } catch (error) {
@@ -50,68 +58,40 @@ export class CheckoutService {
     }
   }
 
-  private async addToCartWhenCheckoutExists(
-    userId,
-    checkoutData,
-    bundlesList: BundleType[],
-    bundlesForCart: CheckoutBundleInputType[],
+  private async updateCartBundle(
+    bundlesForCart: any,
+    validateBundleList: [],
+    userEmail: string,
     token: string,
   ) {
-    const { checkoutId, bundles } = checkoutData;
-    const [bundlesWithUpdatedQuantity, checkoutLines] = await Promise.all([
-      CheckoutUtils.updateBundlesQuantity(bundles, bundlesForCart),
-      CheckoutUtils.getLineItems(bundlesList, bundlesForCart),
-    ]);
-
-    const checkoutWithLines = await CheckoutHandlers.addLinesHandler(
-      checkoutId,
-      checkoutLines,
-      token,
-    );
-
-    bundlesForCart = CheckoutUtils.getBundlesWithLineIds(
-      bundlesList,
-      bundlesWithUpdatedQuantity,
-      checkoutWithLines,
-    );
-
-    return await CheckoutHandlers.addBundlesHandler(
-      checkoutId,
-      userId,
+    const bundleList = await getExistBundleIdsInList(
       bundlesForCart,
+      validateBundleList,
+    );
+    const updatedBundle = await CheckoutHandlers.updateCheckoutBundlesHandler(
+      userEmail,
+      bundleList,
       token,
     );
+    return updatedBundle;
   }
 
-  private async addToCartWhenCheckoutNotExists(
-    userData,
-    bundlesList: BundleType[],
-    bundlesForCart: CheckoutBundleInputType[],
+  private async addCartBundle(
+    bundlesForCart: any,
+    validateBundleList: [],
+    userEmail: string,
     token: string,
   ) {
-    const checkoutLines = await CheckoutUtils.getLineItems(
-      bundlesList,
+    const addbundleList = await getNotExistBundleIdsInList(
       bundlesForCart,
+      validateBundleList,
     );
-
-    const newCheckout: any = await createCheckoutHandler(
-      userData?.email,
-      checkoutLines,
+    const addedBundleList = await CheckoutHandlers.addCheckoutBundlesHandler(
+      userEmail,
+      addbundleList,
       token,
     );
-
-    bundlesForCart = CheckoutUtils.getBundlesWithLineIds(
-      bundlesList,
-      bundlesForCart,
-      newCheckout,
-    );
-
-    return await CheckoutHandlers.addBundlesHandler(
-      newCheckout?.checkout?.id,
-      userData?.id,
-      bundlesForCart,
-      token,
-    );
+    return addedBundleList;
   }
 
   public async addToCart(
@@ -121,11 +101,9 @@ export class CheckoutService {
   ): Promise<object> {
     try {
       let response: object = {};
-      const getBundleIdsArray = await CheckoutUtils.getBundleIds(
-        bundlesForCart,
-      );
+      const getBundleIdsArray = await getBundleIds(bundlesForCart);
       /* Mapping the bundleIds from the bundlesForCart array. */
-      const validateBundleList = await CheckoutHandlers.validateBundleIsExist(
+      const validateBundleList = await CheckoutHandlers.validateBundle(
         userEmail,
         getBundleIdsArray,
         token,
@@ -133,36 +111,28 @@ export class CheckoutService {
       /* The below code is checking if the bundleIdsExist in the cart or not. If it exists then it will
      update the bundle in the cart. If it does not exist then it will add the bundle in the cart. */
       if (validateBundleList['bundleIdsExist']['length'] > 0) {
-        const updateCheckoutbundleList = await CheckoutUtils.getIsExtingBundle(
+        const updateBundleList = await this.updateCartBundle(
           bundlesForCart,
           validateBundleList,
+          userEmail,
+          token,
         );
-        const updatedBundle =
-          await CheckoutHandlers.updateCheckoutBundlesHandler(
-            userEmail,
-            updateCheckoutbundleList,
-            token,
-          );
 
         response = {
           ...response,
-          updatedBundle,
+          updateBundleList,
         };
       }
       if (validateBundleList['bundleIdsNotExist']['length'] > 0) {
-        const addbundleList = await CheckoutUtils.getIsNotExtingBundle(
+        const addBundleList = await this.addCartBundle(
           bundlesForCart,
           validateBundleList,
+          userEmail,
+          token,
         );
-        const addedBundleList =
-          await CheckoutHandlers.addCheckoutBundlesHandler(
-            userEmail,
-            addbundleList,
-            token,
-          );
         response = {
           ...response,
-          addedBundle: addedBundleList,
+          addedBundle: addBundleList,
         };
       }
 
@@ -177,15 +147,12 @@ export class CheckoutService {
   }
 
   public async deleteBundleFromCart(
-    userEmail: string,
-    checkoutBundleIds: string[],
+    checkoutId: string,
     token: string,
   ): Promise<object> {
     try {
       const response = await CheckoutHandlers.deleteBundlesHandler(
-        checkoutBundleIds,
-        userEmail,
-        false,
+        checkoutId,
         token,
       );
       return prepareSuccessResponse(response, '', 201);
@@ -309,6 +276,7 @@ export class CheckoutService {
   public async addShippingAddress(
     checkoutId: string,
     addressDetails: AddressDetailType,
+    shippingMethodId: string,
     token: string,
   ): Promise<object> {
     try {
@@ -317,6 +285,13 @@ export class CheckoutService {
         addressDetails,
         token,
       );
+
+      await CheckoutHandlers.updateDeliveryMethodHandler(
+        checkoutId,
+        shippingMethodId,
+        token,
+      );
+
       // When address is added we also need to update on OrangeShine.
       // addShippingAddressInfo({
       //   address1: addressDetails.streetAddress1,
@@ -518,6 +493,7 @@ export class CheckoutService {
 
       if (!totalAmountResponse['totalAmount'])
         throw new GeneralError('Empty cart');
+
       const paymentIntentResponse =
         await this.stripeService.createPaymentintent(
           userEmail,
@@ -542,56 +518,67 @@ export class CheckoutService {
       return prepareFailedResponse(error.message);
     }
   }
-
-  public async checkoutComplete(
-    userId: string,
+  protected async triggerWebhookForOS(
+    checkoutID: string,
+    orderDetails: object,
     token: string,
+    isSelectedBundle = true,
   ): Promise<object> {
     try {
-      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
-        userId,
-        false,
-        token,
-      );
-      const selectedBundles = CheckoutUtils.getSelectedBundles(
-        checkoutData['bundles'],
-      );
-
-      const checkoutBundleIds =
-        CheckoutUtils.getCheckoutBundleIds(selectedBundles);
-
-      const [sharoveOrderPlaceResponse] = await Promise.all([
-        CheckoutHandlers.completeCheckoutHandler(
-          checkoutData['checkoutId'],
+      const getBundlesbyCheckoutId =
+        await getCheckoutbundlesByCheckoutIdHandler(
+          checkoutID,
           token,
-        ),
-      ]);
+          isSelectedBundle,
+        );
+      const osObject = {
+        checkoutBundles: getBundlesbyCheckoutId['checkoutBundles'],
+        shippingAddress: orderDetails['shippingAddress'],
+        orderId: orderDetails['id'],
+      };
+      /* Sending a message to the SQS queue. */
+      await this.sqsService.send(osObject);
 
-      // const instance = new LegacyService(selectedBundles, shippingAddressInfo);
-      // await instance.placeExternalOrder();
-      // this.logger.log('Order Placed to OrangeShine Successfully');
-
-      await CheckoutHandlers.deleteBundlesHandler(
-        checkoutBundleIds,
-        checkoutData['checkoutId'],
-        true,
-        token,
-      );
-
-      return prepareSuccessResponse(sharoveOrderPlaceResponse, '', 201);
+      return osObject;
     } catch (error) {
       this.logger.error(error);
-      if (error instanceof HttpException) {
-        const parsed_error = getHttpErrorMessage(error);
-        return {
-          error: JSON.stringify(parsed_error.message?.data),
-          status: parsed_error?.status,
-        };
-      } else if (error instanceof Error) {
-        return {
-          error: error.message,
-          status: 400,
-        };
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async checkoutComplete(
+    token: string,
+    checkoutID: string,
+  ): Promise<object> {
+    try {
+      /* The below code is used to complete the checkout process. */
+      let response = {};
+      const getintentInfo = await getIntentIdByCheckoutId(token, checkoutID);
+
+      /* Checking if the getintentInfo['intentId'] is not null. If it is null, it will throw an error. */
+      if (!getintentInfo['intentId'])
+        throw new GeneralError('Cannot get Payment intent Id');
+      /* The below code is checking the status of the payment intent. If the status is requires_capture, then
+it will call the completeCheckoutHandler function. */
+
+      const paymentInfo = await this.stripeService.verifyPaynmentByIntentId(
+        getintentInfo['intentId'],
+      );
+
+      if (paymentInfo['status'] == 'requires_capture') {
+        response = await completeCheckoutHandler(checkoutID, token);
+      } else throw new GeneralError(paymentInfo['status']);
+
+      await this.triggerWebhookForOS(checkoutID, response['order'], token);
+
+      /* Deleting the bundles from the checkout. */
+      await CheckoutHandlers.deleteBundlesHandler(checkoutID, token);
+
+      return prepareSuccessResponse(response, '', 201);
+    } catch (error) {
+      this.logger.error(error);
+      if (error instanceof GeneralError) {
+        return prepareFailedResponse(error.message);
       } else {
         return graphqlExceptionHandler(error);
       }
@@ -643,18 +630,14 @@ export class CheckoutService {
   public async createCheckoutendConsumerService(
     userEmail: string,
     token: string,
-    isSelectedBundle = true,
-    throwException = true,
   ) {
     /* The below code is creating a checkout in saleor and updating the checkout id in the cart. */
     try {
       const getCheckoutBundles = await getCheckoutbundlesHandler(
         userEmail,
-        throwException,
         token,
-        isSelectedBundle,
       );
-      console.log('__getCheckoutBundles', getCheckoutBundles);
+
       if (getCheckoutBundles['checkoutBundles'].length > 0) {
         const getCheckoutLines = await CreateLineItemsForSaleor(
           getCheckoutBundles['checkoutBundles'],

@@ -78,11 +78,7 @@ export class CheckoutController {
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.deleteBundleFromCart(
-        body?.userEmail,
-        body?.checkoutBundleIds,
-        token,
-      ),
+      await this.appService.deleteBundleFromCart(body?.checkoutId, token),
     );
   }
 
@@ -162,6 +158,7 @@ export class CheckoutController {
       await this.appService.addShippingAddress(
         body?.checkoutId,
         body?.addressDetails,
+        body?.shippingMethodId,
         Authorization,
       ),
     );
@@ -276,16 +273,17 @@ export class CheckoutController {
     const { userEmail } = params;
     return makeResponse(res, await this.appService.getCards(userEmail));
   }
+
   @Post('complete')
   async checkoutComplete(
     @Res() res,
     @Body() body,
-    @Headers() headers,
+    @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
-    const Authorization: string = headers.authorization;
+    const { checkoutID } = body;
     return makeResponse(
       res,
-      await this.appService.checkoutComplete(body?.userId, Authorization),
+      await this.appService.checkoutComplete(token, checkoutID),
     );
   }
 }

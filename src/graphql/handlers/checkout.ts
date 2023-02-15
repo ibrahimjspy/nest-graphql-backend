@@ -29,9 +29,9 @@ export const marketplaceCheckoutHandler = async (
 
 export const getCheckoutbundlesHandler = async (
   userEmail: string,
-  throwException = false,
   token: string,
-  isSelected,
+  throwException = true,
+  isSelected = true,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
@@ -44,7 +44,27 @@ export const getCheckoutbundlesHandler = async (
   return response['checkoutBundles'];
 };
 
-export const validateBundleIsExist = async (
+export const getCheckoutbundlesByCheckoutIdHandler = async (
+  checkoutId: string,
+  token: string,
+  isSelected,
+  throwException = false,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutQueries.getCheckoutbundlesbyCheckoutIdQuery(
+        checkoutId,
+        isSelected,
+      ),
+      token,
+    ),
+    throwException,
+  );
+
+  return response['checkoutBundles'];
+};
+
+export const validateBundle = async (
   userEmail: string,
   bundlesIds,
   token: string,
@@ -186,22 +206,17 @@ export const deleteLinesHandler = async (
 };
 
 export const deleteBundlesHandler = async (
-  checkoutBundleIds: Array<string>,
-  userEmail: string,
-  throwException = false,
+  checkoutID: string,
   token: string,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
-      CheckoutMutations.deleteCheckoutBundlesMutation(
-        checkoutBundleIds,
-        userEmail,
-      ),
+      CheckoutMutations.deleteCheckoutBundlesMutation(checkoutID),
       token,
     ),
-    throwException,
   );
-  return response['deleteCheckoutBundles'];
+
+  return response;
 };
 
 export const updateLinesHandler = async (
@@ -295,23 +310,20 @@ export const addShippingMethodHandler = async (
 };
 
 export const updateDeliveryMethodHandler = async (
-  checkoutId,
-  selectedMethods,
+  checkoutId: string,
+  selectedMethodId: string,
   token: string,
 ) => {
-  if (selectedMethods && selectedMethods.length) {
-    const deliveryMethodId = selectedMethods[0]['method']?.['shippingMethodId'];
-    const response = await graphqlResultErrorHandler(
-      await graphqlCall(
-        CheckoutMutations.checkoutDeliveryMethodUpdateMutation(
-          checkoutId,
-          deliveryMethodId,
-        ),
-        token,
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutMutations.checkoutDeliveryMethodUpdateMutation(
+        checkoutId,
+        selectedMethodId,
       ),
-    );
-    return response['checkoutDeliveryMethodUpdate'];
-  }
+      token,
+    ),
+  );
+  return response['checkoutDeliveryMethodUpdate'];
 };
 
 export const createPaymentHandler = async (
@@ -346,14 +358,31 @@ export const paymentGatewayHandler = async (
   return response['checkout']['availablePaymentGateways'];
 };
 
+export const getIntentIdByCheckoutId = async (
+  token: string,
+  checkoutId: string,
+) => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutQueries.getIntentIdByCheckoutIdQuery(checkoutId),
+      token,
+    ),
+  );
+  return response['getPaymentIntentAgainstUserCheckout'];
+};
+
 export const completeCheckoutHandler = async (
   checkoutId: string,
   token: string,
 ) => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(CheckoutMutations.checkoutCompleteMutation(checkoutId)),
+    await graphqlCall(
+      CheckoutMutations.checkoutCompleteMutation(checkoutId),
+      token,
+    ),
   );
-  return response['checkoutComplete'];
+
+  return response['orderCreateFromCheckout'];
 };
 
 export const getShippingZonesHandler = async (token: string) => {

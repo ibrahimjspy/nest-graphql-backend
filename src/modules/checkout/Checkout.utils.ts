@@ -124,7 +124,7 @@ export const getBundleIds = async (
 ) => {
   return bundlesForCart.map((res) => res['bundleId']);
 };
-export const getIsExtingBundle = async (
+export const getExistBundleIdsInList = async (
   bundlesForCart: CheckoutBundleInputType[],
   validateBundleList: [],
 ) => {
@@ -144,7 +144,7 @@ export const getIsExtingBundle = async (
   return updatebundles;
 };
 
-export const getIsNotExtingBundle = async (
+export const getNotExistBundleIdsInList = async (
   bundlesForCart: CheckoutBundleInputType[],
   validateBundleList: [],
 ) => {

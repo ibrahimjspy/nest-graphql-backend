@@ -26,6 +26,9 @@ export default class StripeService {
     const customerID: any = await this.getCustomerByEmail(email);
 
     let response = {};
+    /* This is checking if the customer exists in the stripe database. If it does, it will update the
+   customer with the new payment method. If it doesn't, it will create a new customer with the new
+   payment method. */
     if (customerID) {
       response = await this.updateCustomer(customerID, paymentMethodId);
     } else {
@@ -98,6 +101,13 @@ export default class StripeService {
       throw new GeneralError(`Cannot Find Any Customer`);
     }
     return createPaymentIntent;
+  }
+
+  public async verifyPaynmentByIntentId(paymentIntent: string) {
+    const paymentInfo = await this.stripe.paymentIntents.retrieve(
+      paymentIntent,
+    );
+    return paymentInfo;
   }
   public async createpaymentMethods() {
     const createpaymentMethod = await this.stripe.paymentMethods.create({

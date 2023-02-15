@@ -1,20 +1,16 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
-
-const federationQuery = (checkoutID: string) => {
+const b2bQuery = (checkoutId: string, isSelected: any): string => {
   return gql`
-    mutation {
-      disableUserCartSession(
-        Input: {
-          checkoutId: "${checkoutID}"
+    query {
+      checkoutBundles(
+        Filter: {
+          checkoutId: "${checkoutId}"
+          isSelected: ${isSelected}
         }
       ) {
         ... on CheckoutBundlesType {
           __typename
-          totalAmount
-          subTotal
-          taxes
-          discounts
           checkoutId
           checkoutBundles {
             checkoutBundleId
@@ -25,16 +21,16 @@ const federationQuery = (checkoutID: string) => {
               name
               description
               slug
-                 product {
-                    name
-                    id
-                    thumbnail {
-                      url
-                    }
-                    media {
-                      url
-                    }
-                  }
+              product {
+                name
+                id
+                thumbnail {
+                  url
+                }
+                media {
+                  url
+                }
+              }
               productVariants {
                 quantity
                 productVariant {
@@ -49,7 +45,7 @@ const federationQuery = (checkoutID: string) => {
                       name
                     }
                   }
-               
+
                   pricing {
                     price {
                       net {
@@ -91,20 +87,22 @@ const federationQuery = (checkoutID: string) => {
             }
           }
         }
-        __typename
         ... on ResultError {
           __typename
-          errors
           message
+          errors
         }
       }
     }
   `;
 };
 
-export const deleteCheckoutBundlesMutation = (checkoutID: string) => {
+export const getCheckoutbundlesbyCheckoutIdQuery = (
+  checkoutId: string,
+  isSelected: any,
+) => {
   return graphqlQueryCheck(
-    federationQuery(checkoutID),
-    federationQuery(checkoutID),
+    b2bQuery(checkoutId, isSelected),
+    b2bQuery(checkoutId, isSelected),
   );
 };

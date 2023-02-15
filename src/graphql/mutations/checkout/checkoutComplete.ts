@@ -4,19 +4,31 @@ import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 const federationQuery = (checkoutId: string) => {
   return gql`
     mutation {
-      checkoutComplete (
-      id: "${checkoutId}",
+      orderCreateFromCheckout(
+        id: "${checkoutId}"
+        removeCheckout: false
       ) {
-      order {
-        id
-        lines {
-        id,
-        quantity
+        order {
+          id
+          shippingAddress {
+            firstName
+            lastName
+            streetAddress1
+            streetAddress2
+            phone
+            companyName
+            city
+            postalCode
+            country {
+              code
+              country
+            }
+          }
         }
-      }
-      errors {
-        message
-      }
+        errors {
+          field
+          code
+        }
       }
     }
   `;
