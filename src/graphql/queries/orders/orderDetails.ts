@@ -6,6 +6,10 @@ const federationQuery = (id: string): string => {
     query {
       order(id: "${id}") {
         number
+        metadata {
+          key
+          value
+        }
         shippingPrice {
           gross {
             amount
