@@ -9,7 +9,7 @@ import { UserInputDTO } from './dto/user.dto';
 export class UserController {
   constructor(private readonly appService: UserService) {}
 
-  @Get('/whoami')
+  @Get('/account/user/whoami')
   async User(
     @Res() res,
     @IsAuthenticated('authorization') token: string,
@@ -17,7 +17,7 @@ export class UserController {
     return makeResponse(res, await this.appService.getUserinfo(token));
   }
 
-  @Put('/update')
+  @Put('/api/v1/user/update')
   async updateUserInfo(
     @Res() res,
     @Body() userInput: UserInputDTO,
