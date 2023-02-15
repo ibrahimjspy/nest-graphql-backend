@@ -5,15 +5,15 @@ import { UserModule } from './user/User.module';
 
 export const ACCOUNT_ROUTES: Routes = [
   {
-    path: 'account',
+    path: '',
     module: AccountModule,
     children: [
       {
-        path: 'address',
+        path: 'account/address',
         module: AddressModule,
       },
       {
-        path: 'user',
+        path: '',
         module: UserModule,
       },
     ],
