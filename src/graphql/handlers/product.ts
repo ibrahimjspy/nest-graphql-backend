@@ -22,13 +22,16 @@ import {
 import { updateMyProductMutation } from '../mutations/product/updateMyProducts';
 import { deleteBulkMediaMutation } from '../mutations/product/mediaBulkDelete';
 import { getStoredProductsListQuery } from '../queries/product/storedProductsList';
+import { shopProductIdsByCategoryIdQuery } from '../queries/product/shopProductIdsByCategoryId';
 
 export const productListPageHandler = async (
   id: string,
+  productIds: string[],
   pagination: PaginationDto,
+  isb2c = false,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(ProductQueries.productListPageQuery(id, pagination)),
+    await graphqlCall(ProductQueries.productListPageQuery(id, productIds, pagination, isb2c)),
   );
   return response['products'];
 };
@@ -241,4 +244,16 @@ export const getStoredProductListHandler = async (
     await graphqlCall(getStoredProductsListQuery(productIds)),
   );
   return response['products'];
+};
+
+export const shopProductIdsByCategoryIdHandler = async (
+  shopId: string,
+  categoryId: string,
+  isb2c = false,
+): Promise<{productIds: string[]}> => {
+  const userToken = "";
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(shopProductIdsByCategoryIdQuery(shopId, categoryId, isb2c), userToken, isb2c),
+  );
+  return response['getProductsByShop'];
 };

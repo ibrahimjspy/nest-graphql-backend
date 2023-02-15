@@ -31,8 +31,9 @@ export class CategoriesService {
     try {
       // Get category ids against given shop id
       const categoryIdsResponse = await shopCategoryIdsHandler(shopId, filter.isB2c);
+      const categoryIds = (categoryIdsResponse?.categoryIds || []);
       // Get categories list against given shop category ids
-      const response = await categoriesHandler((categoryIdsResponse?.categoryIds || []), filter, filter.isB2c);
+      const response = await categoriesHandler(categoryIds, filter, filter.isB2c);
       return prepareSuccessResponse(response);
     } catch (error) {
       this.logger.error(error);
