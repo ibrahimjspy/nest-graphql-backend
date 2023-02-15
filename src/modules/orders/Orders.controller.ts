@@ -342,7 +342,7 @@ export class OrdersController {
   @ApiOperation({
     summary: 'this api store assignee information in order metadata',
   })
-  async assignOrderToShop(
+  async assignStaffToOrder(
     @Res() res,
     @Body() body: StoreOrderAssigneeDto,
     @Query() filter: b2cDto,
@@ -350,7 +350,7 @@ export class OrdersController {
   ) {
     return makeResponse(
       res,
-      await this.appService.storeOrderAssignee(body, token, filter.isB2c),
+      await this.appService.addOrderAssignee(body, token, filter.isB2c),
     );
   }
 }

@@ -473,7 +473,7 @@ export class OrdersService {
     }
   }
 
-  public async storeOrderAssignee(
+  public async addOrderAssignee(
     orderData: StoreOrderAssigneeDto,
     token: string,
     isB2c = false,
@@ -496,8 +496,6 @@ export class OrdersService {
       ];
       return prepareSuccessResponse(
         await updateOrderMetadataHandler(orderId, metadata, token, isB2c),
-        '',
-        200,
       );
     } catch (err) {
       this.logger.error(err);
