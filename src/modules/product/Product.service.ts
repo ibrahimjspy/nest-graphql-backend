@@ -15,7 +15,7 @@ import {
   makeProductListResponse,
   storeB2cMapping,
 } from './Product.utils';
-import { ProductListFilterDto } from './dto/product.dto';
+import { ProductListFilterDto, shopProductsDTO } from './dto/product.dto';
 @Injectable()
 export class ProductService {
   private readonly logger = new Logger(ProductService.name);
@@ -109,8 +109,10 @@ export class ProductService {
   ): Promise<object> {
     try {
       const retailerId = filter.retailerId;
+      const productIds = [];
       const productsData = await ProductsHandlers.productListPageHandler(
         categoryId,
+        productIds,
         filter,
       );
       return prepareSuccessResponse(
@@ -172,4 +174,18 @@ export class ProductService {
       this.logger.error(error);
     }
   }
+
+  public async getShopProductsByCategoryId(shopId: string, filter: shopProductsDTO): Promise<object> {
+    try {
+      // Get product ids against given shopId and categoryId
+      const productIdsResponse = await ProductsHandlers.shopProductIdsByCategoryIdHandler(shopId, filter.categoryId, filter.isB2c);
+      // Get products list against given shop productIds
+      const response = await ProductsHandlers.productListPageHandler(filter.categoryId, (productIdsResponse?.productIds || []), filter, filter.isB2c);
+      return prepareSuccessResponse(response);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
 }

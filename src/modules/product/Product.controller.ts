@@ -7,6 +7,8 @@ import {
   ProductListDto,
   ProductListFilterDto,
   RetailerIdDto,
+  shopIdDTO,
+  shopProductsDTO,
 } from './dto/product.dto';
 import { IsAuthenticated } from 'src/core/utils/decorators';
 import { ProductVariantStockUpdateDTO } from './dto/variant';
@@ -104,4 +106,17 @@ export class ProductController {
       ),
     );
   }
+
+  @Get('/api/v1/products/:shopId')
+  @ApiOperation({
+    summary: 'Get products against given shopId and categoryId',
+  })
+  async getShopProductsByCategoryId(
+    @Res() res,
+    @Param() params: shopIdDTO,
+    @Query() filter: shopProductsDTO,
+  ): Promise<any> {
+    return makeResponse(res, await this.appService.getShopProductsByCategoryId(params.shopId, filter));
+  }
+
 }

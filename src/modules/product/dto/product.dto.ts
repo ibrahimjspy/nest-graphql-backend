@@ -1,5 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsOptional } from 'class-validator';
+import { ApiProperty, IntersectionType } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
+import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 
 export enum ProductFilterTypeEnum {
@@ -38,4 +39,24 @@ export class ProductListFilterDto extends PaginationDto {
   @ApiProperty({ required: false })
   @IsOptional()
   retailerId: string;
+}
+
+export class shopIdDTO {
+  @ApiProperty({ type: String, required: true })
+  shopId: string;
+}
+
+export class b2cDTO {
+  @ApiProperty({ required: false, default: false })
+  @IsBoolean()
+  @Transform(({ obj, key }) => obj[key] === 'true')
+  public isB2c: boolean;
+}
+
+export class shopProductsDTO extends IntersectionType(
+  b2cDTO,
+  PaginationDto,
+) {
+  @ApiProperty()
+  categoryId: string;
 }

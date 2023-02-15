@@ -4,13 +4,16 @@ import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
 
-const federationQuery = (id, pagination: PaginationDto): string => {
+const b2bQuery = (id, productIds: string[], pagination: PaginationDto): string => {
   return gql`
     query {
       products(
         ${validatePageFilter(pagination)}
         channel: "${DEFAULT_CHANNEL}"
-        filter: { categories: ["${id}"] }
+        filter: {
+          categories: ["${id}"],
+          ids: ${JSON.stringify(productIds)}
+        }
       ) {
         totalCount
         pageInfo{
@@ -67,36 +70,8 @@ const federationQuery = (id, pagination: PaginationDto): string => {
   `;
 };
 
-const mockQuery = () => {
-  return gql`
-    query {
-      category(slug: "accessories") {
-        products(first: 20, channel: "${DEFAULT_CHANNEL}") {
-          edges {
-            node {
-              name
-              id
-              slug
-            }
-          }
-        }
-        name
-        id
-        slug
-        children(first: 10) {
-          edges {
-            node {
-              name
-              id
-              slug
-            }
-          }
-        }
-      }
-    }
-  `;
-};
+const b2cQuery = b2bQuery;
 
-export const productListPageQuery = (id: string, pagination) => {
-  return graphqlQueryCheck(federationQuery(id, pagination), mockQuery());
+export const productListPageQuery = (id: string, productIds:string[], pagination, isb2c = false) => {
+  return graphqlQueryCheck(b2bQuery(id, productIds, pagination), b2cQuery(id, productIds, pagination), isb2c);
 };
