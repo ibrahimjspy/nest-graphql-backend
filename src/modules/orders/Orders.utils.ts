@@ -28,12 +28,8 @@ export const getTotalFromBundles = (bundles) => {
  * @returns orderIds = in array of strings[]
  */
 export const getOrderIdsFromShopData = (shopData): string[] => {
-  const orderIds = [];
   const shopOrders = shopData['orders'];
-  shopOrders.map((orderData) => {
-    orderIds.push(orderData.orderId);
-  });
-  return orderIds;
+  return shopOrders.map((orderData) => orderData.orderId);
 };
 
 /**
