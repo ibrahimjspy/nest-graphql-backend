@@ -179,8 +179,10 @@ export class ProductService {
     try {
       // Get product ids against given shopId and categoryId
       const productIdsResponse = await ProductsHandlers.shopProductIdsByCategoryIdHandler(shopId, filter.categoryId, filter.isB2c);
+      const productIds = (productIdsResponse?.productIds || []);
+      
       // Get products list against given shop productIds
-      const response = await ProductsHandlers.productListPageHandler(filter.categoryId, (productIdsResponse?.productIds || []), filter, filter.isB2c);
+      const response = await ProductsHandlers.productListPageHandler(filter.categoryId, productIds, filter, filter.isB2c);
       return prepareSuccessResponse(response);
     } catch (error) {
       this.logger.error(error);
