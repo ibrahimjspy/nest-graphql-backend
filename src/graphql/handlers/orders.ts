@@ -381,13 +381,14 @@ export const orderFulfillmentCancelHandler = async (
 
 export const updateOrderMetadataHandler = async (
   orderId: string,
-  input: OrderMetadataDto,
+  input: OrderMetadataDto[],
+  token: string,
   isB2c = false,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
       updateOrderMetadataMutation(orderId, input, isB2c),
-      '',
+      token,
       isB2c,
     ),
   );

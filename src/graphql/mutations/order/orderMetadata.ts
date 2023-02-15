@@ -2,7 +2,7 @@ import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 import { OrderMetadataDto } from 'src/modules/orders/dto/metadata';
 
-const b2bMutation = (orderId: string, input: OrderMetadataDto): string => {
+const b2bMutation = (orderId: string, input: OrderMetadataDto[]): string => {
   return gql`
     mutation {
       updateMetadata(
@@ -17,6 +17,11 @@ const b2bMutation = (orderId: string, input: OrderMetadataDto): string => {
             value
           }
         }
+        errors {
+          message
+          code
+          field
+       }
       }
     }
   `;
@@ -26,7 +31,7 @@ const b2cMutation = b2bMutation;
 
 export const updateOrderMetadataMutation = (
   orderId: string,
-  input: OrderMetadataDto,
+  input: OrderMetadataDto[],
   isB2c = false,
 ): string => {
   return graphqlQueryCheck(
