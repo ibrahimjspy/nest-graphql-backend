@@ -24,6 +24,7 @@ import { OrderFulfillDto, orderFulfillmentCancelDTO } from './dto/fulfill';
 import { OrderRefundDTO } from './dto/refund';
 import { b2cDto, shopIdDTO } from '../shop/dto/shop';
 import { AddOrderToShopDto } from './dto/addOrderToShop';
+import { StoreOrderAssigneeDto } from './dto/storeOrderAssignee';
 
 @ApiTags('orders')
 @Controller('')
@@ -334,6 +335,22 @@ export class OrdersController {
     return makeResponse(
       res,
       await this.appService.addOrderToShop(body, token, filter.isB2c),
+    );
+  }
+
+  @Post('api/v1/order/assign')
+  @ApiOperation({
+    summary: 'this api store assignee information in order metadata',
+  })
+  async assignStaffToOrder(
+    @Res() res,
+    @Body() body: StoreOrderAssigneeDto,
+    @Query() filter: b2cDto,
+    @IsAuthenticated('authorization') token: string,
+  ) {
+    return makeResponse(
+      res,
+      await this.appService.addOrderAssignee(body, token, filter.isB2c),
     );
   }
 }
