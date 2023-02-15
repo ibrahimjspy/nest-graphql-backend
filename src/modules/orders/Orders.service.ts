@@ -31,6 +31,7 @@ import {
   getCurrency,
   getFulFillmentsWithStatusAndBundlesTotal,
   getFulfillmentTotal,
+  getOrderIdsFromShopData,
   getPendingOrders,
   getTotalFromBundles,
 } from './Orders.utils';
@@ -204,7 +205,7 @@ export class OrdersService {
     try {
       const shopDetails = await shopOrdersByIdHandler(id, token);
       const orderFilter: OrdersListDTO = filter;
-      orderFilter.orderIds = shopDetails['orders'];
+      orderFilter.orderIds = getOrderIdsFromShopData(shopDetails);
       const ordersList = await ordersListHandler(orderFilter, token);
       const response = { ...shopDetails, ...ordersList };
 

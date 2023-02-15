@@ -2,7 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
 import { OrdersController } from './Orders.controller';
 import { OrdersService } from './Orders.service';
-import { getOrdersByShopId, getPendingOrders } from './Orders.utils';
+import {
+  getOrderIdsFromShopData,
+  getOrdersByShopId,
+  getPendingOrders,
+} from './Orders.utils';
 import {
   expectedOrdersByShop,
   mockCheckoutBundles,
@@ -52,6 +56,16 @@ describe('Orders controller unit tests', () => {
       const data = hasNextPage(pageInfo);
       expect(data).toBeDefined();
       expect(data).toStrictEqual('test');
+    });
+
+    it('order ids are parsed correctly from shop data', () => {
+      const shopData = {
+        orders: [{ id: 'abd75875-2996-49cf-81ee-719bcb393941', orderId: '4' }],
+      };
+      const expectedOrderIds = ['4'];
+      const orderIds = getOrderIdsFromShopData(shopData);
+      expect(orderIds).toBeDefined();
+      expect(orderIds).toStrictEqual(expectedOrderIds);
     });
 
     it('filterReturnedOrderIds is filtering order response fine', () => {
