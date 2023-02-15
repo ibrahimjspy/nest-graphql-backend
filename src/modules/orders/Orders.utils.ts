@@ -23,6 +23,20 @@ export const getTotalFromBundles = (bundles) => {
 };
 
 /**
+ * @description - this function returns saleor orders ids from shop object
+ * @param shopData - this is data fetched from shop service
+ * @returns orderIds = in array of strings[]
+ */
+export const getOrderIdsFromShopData = (shopData): string[] => {
+  const orderIds = [];
+  const shopOrders = shopData['orders'];
+  shopOrders.map((orderData) => {
+    orderIds.push(orderData.orderId);
+  });
+  return orderIds;
+};
+
+/**
  * it validates order list filters and returns string values which can be inserted in gql queries
  * @param filter - ordersList filter such as statuses , paymentStatus, orderIds, customer name
  * @returns object :: orderListInterface
