@@ -52,8 +52,7 @@ export class UserService {
   ): Promise<SuccessResponseType> {
     try {
       const response = await AccountHandlers.updateUserInfoHandler(userInput, token);
-      const userToken = "";
-      return prepareSuccessResponse(response, userToken, 200);
+      return prepareSuccessResponse(response);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
