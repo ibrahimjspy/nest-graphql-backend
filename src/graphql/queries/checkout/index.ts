@@ -11,7 +11,7 @@ import { updateCheckoutBundleQuery } from './updateCheckoutBundle';
 import { getCheckoutBundleQuery } from './getCheckoutBundle';
 import { getTotalamountByCheckoutIdQuery } from './getTotalAmountbyCheckoutID';
 import { getIntentIdByCheckoutIdQuery } from './getIntentIdByCheckoutID';
-import { getCheckoutbundlesbyCheckoutIdQuery } from './getCheckoutBundlesByCheckoutId';
+import { getCheckoutBundlesbyCheckoutIdQuery } from './getCheckoutBundlesByCheckoutId';
 export {
   checkoutQuery,
   shippingZonesQuery,
@@ -26,5 +26,5 @@ export {
   getCheckoutBundleQuery,
   getTotalamountByCheckoutIdQuery,
   getIntentIdByCheckoutIdQuery,
-  getCheckoutbundlesbyCheckoutIdQuery,
+  getCheckoutBundlesbyCheckoutIdQuery,
 };

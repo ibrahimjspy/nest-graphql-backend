@@ -1,12 +1,16 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
-const federationQuery = (checkoutID: string) => {
+const federationQuery = (
+  checkoutBundleIds: Array<string>,
+  userEmail: string,
+) => {
   return gql`
     mutation {
-      disableUserCartSession(
+      deleteCheckoutBundles(
         Input: {
-          checkoutId: "${checkoutID}"
+          userEmail: "${userEmail}"
+          checkoutBundleIds: ${JSON.stringify(checkoutBundleIds)}
         }
       ) {
         ... on CheckoutBundlesType {
@@ -102,9 +106,12 @@ const federationQuery = (checkoutID: string) => {
   `;
 };
 
-export const deleteCheckoutBundlesMutation = (checkoutID: string) => {
+export const deleteCheckoutBundlesMutation = (
+  checkoutBundleIds: Array<string>,
+  userEmail: string,
+) => {
   return graphqlQueryCheck(
-    federationQuery(checkoutID),
-    federationQuery(checkoutID),
+    federationQuery(checkoutBundleIds, userEmail),
+    federationQuery(checkoutBundleIds, userEmail),
   );
 };

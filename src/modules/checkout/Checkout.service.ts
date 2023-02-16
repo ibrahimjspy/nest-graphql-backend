@@ -9,12 +9,12 @@ import {
 
 import * as CheckoutHandlers from 'src/graphql/handlers/checkout';
 import {
-  completeCheckoutHandler,
   createCheckoutHandler,
-  getCheckoutbundlesByCheckoutIdHandler,
+  getCheckoutBundlesByCheckoutIdHandler,
   getCheckoutbundlesHandler,
   getIntentIdByCheckoutId,
   getTotalAmountByCheckoutIdHandler,
+  orderCreateFromCheckoutHandler,
   savePaymentInfoHandler,
 } from 'src/graphql/handlers/checkout';
 import * as CheckoutUtils from './Checkout.utils';
@@ -147,12 +147,15 @@ export class CheckoutService {
   }
 
   public async deleteBundleFromCart(
-    checkoutId: string,
+    userEmail: string,
+    checkoutBundleIds: string[],
     token: string,
   ): Promise<object> {
     try {
       const response = await CheckoutHandlers.deleteBundlesHandler(
-        checkoutId,
+        checkoutBundleIds,
+        userEmail,
+        false,
         token,
       );
       return prepareSuccessResponse(response, '', 201);
@@ -526,7 +529,7 @@ export class CheckoutService {
   ): Promise<object> {
     try {
       const getBundlesbyCheckoutId =
-        await getCheckoutbundlesByCheckoutIdHandler(
+        await getCheckoutBundlesByCheckoutIdHandler(
           checkoutID,
           token,
           isSelectedBundle,
@@ -537,7 +540,7 @@ export class CheckoutService {
         orderId: orderDetails['id'],
       };
       /* Sending a message to the SQS queue. */
-      await this.sqsService.send(osObject);
+      this.sqsService.send(osObject);
 
       return osObject;
     } catch (error) {
@@ -553,7 +556,7 @@ export class CheckoutService {
     try {
       /* The below code is used to complete the checkout process. */
       let response = {};
-      const getintentInfo = await getIntentIdByCheckoutId(token, checkoutID);
+      const getintentInfo = await getIntentIdByCheckoutId(checkoutID, token);
 
       /* Checking if the getintentInfo['intentId'] is not null. If it is null, it will throw an error. */
       if (!getintentInfo['intentId'])
@@ -561,18 +564,19 @@ export class CheckoutService {
       /* The below code is checking the status of the payment intent. If the status is requires_capture, then
 it will call the completeCheckoutHandler function. */
 
-      const paymentInfo = await this.stripeService.verifyPaynmentByIntentId(
+      const paymentInfo = await this.stripeService.verifyPaymentByIntentId(
         getintentInfo['intentId'],
       );
 
+      //shift this validation into /preauth API CALL
       if (paymentInfo['status'] == 'requires_capture') {
-        response = await completeCheckoutHandler(checkoutID, token);
+        response = await orderCreateFromCheckoutHandler(checkoutID, token);
       } else throw new GeneralError(paymentInfo['status']);
 
       await this.triggerWebhookForOS(checkoutID, response['order'], token);
 
       /* Deleting the bundles from the checkout. */
-      await CheckoutHandlers.deleteBundlesHandler(checkoutID, token);
+      await CheckoutHandlers.disableCheckoutSession(checkoutID, token);
 
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {

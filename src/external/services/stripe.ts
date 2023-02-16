@@ -103,7 +103,7 @@ export default class StripeService {
     return createPaymentIntent;
   }
 
-  public async verifyPaynmentByIntentId(paymentIntent: string) {
+  public async verifyPaymentByIntentId(paymentIntent: string) {
     const paymentInfo = await this.stripe.paymentIntents.retrieve(
       paymentIntent,
     );

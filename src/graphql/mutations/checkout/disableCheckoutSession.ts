@@ -3,15 +3,16 @@ import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
 const b2bQuery = (checkoutId: string) => {
   return gql`
-    query {
-      getPaymentIntentAgainstUserCheckout(
-        Filter: {
+    mutation {
+      disableUserCartSession(
+        Input: {
           checkoutId: "${checkoutId}"
         }
       ) {
-        ... on UserPaymentIntent {
+        ... on ResultData {
           __typename
-          intentId
+          data
+          message
         }
         ... on ResultError {
           __typename
@@ -23,6 +24,6 @@ const b2bQuery = (checkoutId: string) => {
   `;
 };
 
-export const getIntentIdByCheckoutIdQuery = (checkoutId: string) => {
+export const disableUserCartSessionMutation = (checkoutId: string) => {
   return graphqlQueryCheck(b2bQuery(checkoutId), b2bQuery(checkoutId));
 };

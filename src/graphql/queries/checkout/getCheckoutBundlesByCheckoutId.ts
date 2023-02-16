@@ -97,7 +97,7 @@ const b2bQuery = (checkoutId: string, isSelected: any): string => {
   `;
 };
 
-export const getCheckoutbundlesbyCheckoutIdQuery = (
+export const getCheckoutBundlesbyCheckoutIdQuery = (
   checkoutId: string,
   isSelected: any,
 ) => {

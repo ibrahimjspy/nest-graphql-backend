@@ -78,7 +78,11 @@ export class CheckoutController {
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.deleteBundleFromCart(body?.checkoutId, token),
+      await this.appService.deleteBundleFromCart(
+        body?.userEmail,
+        body?.checkoutBundleIds,
+        token,
+      ),
     );
   }
 
@@ -156,9 +160,9 @@ export class CheckoutController {
     return makeResponse(
       res,
       await this.appService.addShippingAddress(
-        body?.checkoutId,
-        body?.addressDetails,
-        body?.shippingMethodId,
+        body.checkoutId,
+        body.addressDetails,
+        body.shippingMethodId,
         Authorization,
       ),
     );
@@ -280,10 +284,10 @@ export class CheckoutController {
     @Body() body,
     @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
-    const { checkoutID } = body;
+    const { checkoutId } = body;
     return makeResponse(
       res,
-      await this.appService.checkoutComplete(token, checkoutID),
+      await this.appService.checkoutComplete(token, checkoutId),
     );
   }
 }

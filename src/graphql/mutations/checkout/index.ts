@@ -4,7 +4,7 @@ import { addCheckoutShippingMethodsMutation } from './addCheckoutShippingMethods
 import { checkoutDeliveryMethodUpdateMutation } from './checkoutDeliveryMethodUpdate';
 import { checkoutPaymentCreateMutation } from './checkoutPaymentCreate';
 import { deleteCheckoutBundlesMutation } from './deleteCheckoutBundle';
-import { checkoutCompleteMutation } from './checkoutComplete';
+import { orderCreateFromCheckoutMutation } from './checkoutComplete';
 import { addCheckoutBundlesMutation } from './addCheckoutBundles';
 import { checkoutLinesAddMutation } from './checkoutLinesAdd';
 import { createCheckoutMutation } from './createCheckout';
@@ -14,6 +14,7 @@ import { checkoutLinesDeleteMutation } from './checkoutLinesDelete';
 import { checkoutEmailUpdateMutation } from './checkoutEmailUpdate';
 import { updateCheckoutBundleState } from './updateCheckoutBundleState';
 import { savePaymnetInfoMutation } from './savePaymentInfo';
+import { disableUserCartSessionMutation } from './disableCheckoutSession';
 export {
   checkoutShippingAddressUpdateMutation,
   checkoutBillingAddressUpdateMutation,
@@ -21,7 +22,8 @@ export {
   checkoutDeliveryMethodUpdateMutation,
   checkoutPaymentCreateMutation,
   deleteCheckoutBundlesMutation,
-  checkoutCompleteMutation,
+  disableUserCartSessionMutation,
+  orderCreateFromCheckoutMutation,
   addCheckoutBundlesMutation,
   checkoutLinesAddMutation,
   createCheckoutMutation,

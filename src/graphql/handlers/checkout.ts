@@ -44,7 +44,7 @@ export const getCheckoutbundlesHandler = async (
   return response['checkoutBundles'];
 };
 
-export const getCheckoutbundlesByCheckoutIdHandler = async (
+export const getCheckoutBundlesByCheckoutIdHandler = async (
   checkoutId: string,
   token: string,
   isSelected,
@@ -52,7 +52,7 @@ export const getCheckoutbundlesByCheckoutIdHandler = async (
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
-      CheckoutQueries.getCheckoutbundlesbyCheckoutIdQuery(
+      CheckoutQueries.getCheckoutBundlesbyCheckoutIdQuery(
         checkoutId,
         isSelected,
       ),
@@ -206,17 +206,22 @@ export const deleteLinesHandler = async (
 };
 
 export const deleteBundlesHandler = async (
-  checkoutID: string,
+  checkoutBundleIds: Array<string>,
+  userEmail: string,
+  throwException = false,
   token: string,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
-      CheckoutMutations.deleteCheckoutBundlesMutation(checkoutID),
+      CheckoutMutations.deleteCheckoutBundlesMutation(
+        checkoutBundleIds,
+        userEmail,
+      ),
       token,
     ),
+    throwException,
   );
-
-  return response;
+  return response['deleteCheckoutBundles'];
 };
 
 export const updateLinesHandler = async (
@@ -359,8 +364,8 @@ export const paymentGatewayHandler = async (
 };
 
 export const getIntentIdByCheckoutId = async (
-  token: string,
   checkoutId: string,
+  token: string,
 ) => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
@@ -371,18 +376,32 @@ export const getIntentIdByCheckoutId = async (
   return response['getPaymentIntentAgainstUserCheckout'];
 };
 
-export const completeCheckoutHandler = async (
+export const orderCreateFromCheckoutHandler = async (
   checkoutId: string,
   token: string,
 ) => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
-      CheckoutMutations.checkoutCompleteMutation(checkoutId),
+      CheckoutMutations.orderCreateFromCheckoutMutation(checkoutId),
       token,
     ),
   );
 
   return response['orderCreateFromCheckout'];
+};
+
+export const disableCheckoutSession = async (
+  checkoutId: string,
+  token: string,
+) => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      CheckoutMutations.disableUserCartSessionMutation(checkoutId),
+      token,
+    ),
+  );
+
+  return response['disableUserCartSession'];
 };
 
 export const getShippingZonesHandler = async (token: string) => {
