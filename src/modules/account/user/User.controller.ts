@@ -26,10 +26,7 @@ export class UserController {
     const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.updateUserInfo(
-        userInput,
-        Authorization,
-      ),
+      await this.appService.updateUserInfo(userInput, Authorization),
     );
   }
 }

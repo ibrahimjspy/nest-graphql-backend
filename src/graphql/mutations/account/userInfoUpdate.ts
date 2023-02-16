@@ -38,7 +38,6 @@ const b2cMutation = (userInput: UserInputDTO) => {
   `;
 };
 
-
 export const updateUserInfoMutation = (
   userInput: UserInputDTO,
   isb2c = false,
@@ -46,6 +45,6 @@ export const updateUserInfoMutation = (
   return graphqlQueryCheck(
     b2bMutation(userInput),
     b2cMutation(userInput),
-    isb2c
+    isb2c,
   );
 };

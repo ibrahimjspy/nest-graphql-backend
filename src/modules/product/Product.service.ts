@@ -15,7 +15,11 @@ import {
   makeProductListResponse,
   storeB2cMapping,
 } from './Product.utils';
-import { ProductListFilterDto, shopProductsDTO } from './dto/product.dto';
+import {
+  GetBundlesDto,
+  ProductListFilterDto,
+  shopProductsDTO,
+} from './dto/product.dto';
 @Injectable()
 export class ProductService {
   private readonly logger = new Logger(ProductService.name);
@@ -127,7 +131,7 @@ export class ProductService {
 
   // Bundles list relating to variant ids
   public getBundlesByVariantIds(variantIds: Array<string>): Promise<object> {
-    return ProductsHandlers.bundlesByVariantsIdsHandler(variantIds);
+    return ProductsHandlers.getBundlesHandler({ productVariants: variantIds });
   }
 
   // Return product images downloadable URL.
@@ -174,20 +178,42 @@ export class ProductService {
       this.logger.error(error);
     }
   }
-
-  public async getShopProductsByCategoryId(shopId: string, filter: shopProductsDTO): Promise<object> {
+  public async getProductBundles(filter: GetBundlesDto): Promise<object> {
     try {
-      // Get product ids against given shopId and categoryId
-      const productIdsResponse = await ProductsHandlers.shopProductIdsByCategoryIdHandler(shopId, filter.categoryId, filter.isB2c);
-      const productIds = (productIdsResponse?.productIds || []);
-      
-      // Get products list against given shop productIds
-      const response = await ProductsHandlers.productListPageHandler(filter.categoryId, productIds, filter, filter.isB2c);
-      return prepareSuccessResponse(response);
+      return prepareSuccessResponse(
+        await ProductsHandlers.getBundlesHandler(filter),
+      );
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
     }
   }
 
+  public async getShopProductsByCategoryId(
+    shopId: string,
+    filter: shopProductsDTO,
+  ): Promise<object> {
+    try {
+      // Get product ids against given shopId and categoryId
+      const productIdsResponse =
+        await ProductsHandlers.shopProductIdsByCategoryIdHandler(
+          shopId,
+          filter.categoryId,
+          filter.isB2c,
+        );
+      const productIds = productIdsResponse?.productIds || [];
+
+      // Get products list against given shop productIds
+      const response = await ProductsHandlers.productListPageHandler(
+        filter.categoryId,
+        productIds,
+        filter,
+        filter.isB2c,
+      );
+      return prepareSuccessResponse(response);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
 }

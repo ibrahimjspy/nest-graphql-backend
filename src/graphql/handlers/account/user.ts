@@ -1,4 +1,7 @@
-import { graphqlCall, graphqlResultErrorHandler } from 'src/core/proxies/graphqlHandler';
+import {
+  graphqlCall,
+  graphqlResultErrorHandler,
+} from 'src/core/proxies/graphqlHandler';
 
 import {
   userEmailByIdQuery,
@@ -31,11 +34,7 @@ export const updateUserInfoHandler = async (
   isb2c = false,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(
-      updateUserInfoMutation(userInput, isb2c),
-      token,
-      isb2c
-    ),
+    await graphqlCall(updateUserInfoMutation(userInput, isb2c), token, isb2c),
   );
-  return response["accountUpdate"];
+  return response['accountUpdate'];
 };

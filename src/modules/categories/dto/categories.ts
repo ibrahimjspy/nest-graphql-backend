@@ -18,4 +18,4 @@ export class b2cDTO {
 export class shopCategoriesDTO extends IntersectionType(
   b2cDTO,
   PaginationDto,
-) { }
+) {}
