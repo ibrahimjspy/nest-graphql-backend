@@ -4,13 +4,13 @@ import {
   QUEUE_URL,
   SQS_ACCESSID,
   SQS_MESSAGE_GROUPID,
-  SQS_SECRETACCESS_KEY,
+  SQS_SECRET_ACCESS_KEY,
 } from 'src/constants';
 
 export const sqsService = new AWS.SQS({
   apiVersion: '2012-11-05',
   accessKeyId: SQS_ACCESSID,
-  secretAccessKey: SQS_SECRETACCESS_KEY,
+  secretAccessKey: SQS_SECRET_ACCESS_KEY,
   region: 'us-east-2',
 });
 

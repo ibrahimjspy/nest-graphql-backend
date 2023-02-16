@@ -64,6 +64,9 @@ jobs:
           (echo "STRIPE_CURRENCY=${{ secrets.STRIPE_CURRENCY }}") >> .env
           (echo "B2C_DEVELOPMENT_TOKEN=${{ secrets.B2C_DEVELOPMENT_TOKEN }}") >> .env
           (echo "B2B_DEVELOPMENT_TOKEN=${{ secrets.B2B_DEVELOPMENT_TOKEN }}") >> .env
+          (echo "SQS_QUEUE_URL=${{ secrets.SQS_QUEUE_URL }}") >> .env
+          (echo "SQS_ACCESS_ID=${{ secrets.SQS_ACCESS_ID }}") >> .env
+          (echo "SQS_SECRET_ACCESS_KEY=${{ secrets.SQS_SECRET_ACCESS_KEY }}") >> .env
 
         # Docker login
       - name: Login to DockerHub
