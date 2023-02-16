@@ -113,7 +113,7 @@ export class allShopIdsDTO {
 }
 export class b2cDto {
   @ApiProperty({ required: false, default: false })
-  @IsBoolean()
+  @IsOptional()
   @Transform(({ obj, key }) => obj[key] === 'true')
   public isB2c: boolean;
 }
