@@ -4,6 +4,7 @@ import { ProductService } from './Product.service';
 import { ProductFilterDto, ProductFilterTypeEnum } from './dto';
 import { makeResponse } from 'src/core/utils/response';
 import {
+  GetBundlesDto,
   ProductListDto,
   ProductListFilterDto,
   RetailerIdDto,
@@ -116,7 +117,20 @@ export class ProductController {
     @Param() params: shopIdDTO,
     @Query() filter: shopProductsDTO,
   ): Promise<any> {
-    return makeResponse(res, await this.appService.getShopProductsByCategoryId(params.shopId, filter));
+    return makeResponse(
+      res,
+      await this.appService.getShopProductsByCategoryId(params.shopId, filter),
+    );
   }
 
+  @Get('/api/v1/product/bundles')
+  @ApiOperation({
+    summary: 'returns bundles against productId or variantIds',
+  })
+  async getProductBundles(
+    @Res() res,
+    @Query() filter: GetBundlesDto,
+  ): Promise<any> {
+    return makeResponse(res, await this.appService.getProductBundles(filter));
+  }
 }

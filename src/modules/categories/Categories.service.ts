@@ -2,9 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
 import {
+  categoriesHandler,
   menuCategoriesHandler,
   productCardSectionHandler,
-  categoriesHandler,
   shopCategoryIdsHandler,
 } from 'src/graphql/handlers/categories';
 import { shopCategoriesDTO } from './dto/categories';
@@ -27,13 +27,23 @@ export class CategoriesService {
     return productCardSectionHandler();
   }
 
-  public async getShopCategories(shopId: string, filter: shopCategoriesDTO): Promise<object> {
+  public async getShopCategories(
+    shopId: string,
+    filter: shopCategoriesDTO,
+  ): Promise<object> {
     try {
       // Get category ids against given shop id
-      const categoryIdsResponse = await shopCategoryIdsHandler(shopId, filter.isB2c);
-      const categoryIds = (categoryIdsResponse?.categoryIds || []);
+      const categoryIdsResponse = await shopCategoryIdsHandler(
+        shopId,
+        filter.isB2c,
+      );
+      const categoryIds = categoryIdsResponse?.categoryIds || [];
       // Get categories list against given shop category ids
-      const response = await categoriesHandler(categoryIds, filter, filter.isB2c);
+      const response = await categoriesHandler(
+        categoryIds,
+        filter,
+        filter.isB2c,
+      );
       return prepareSuccessResponse(response);
     } catch (error) {
       this.logger.error(error);

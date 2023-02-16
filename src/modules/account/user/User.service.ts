@@ -51,7 +51,10 @@ export class UserService {
     token: string,
   ): Promise<SuccessResponseType> {
     try {
-      const response = await AccountHandlers.updateUserInfoHandler(userInput, token);
+      const response = await AccountHandlers.updateUserInfoHandler(
+        userInput,
+        token,
+      );
       return prepareSuccessResponse(response);
     } catch (error) {
       this.logger.error(error);

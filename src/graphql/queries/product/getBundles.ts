@@ -1,13 +1,21 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
+import { validatePageFilter } from 'src/graphql/utils/pagination';
+import { GetBundlesDto } from 'src/modules/product/dto/product.dto';
 
-const federationQuery = (variantIds: Array<string>) => {
-  return gql`
+export const getBundlesQuery = (filter: GetBundlesDto) => {
+  const getProductDetails = filter.getProductDetails || false;
+  const productVariantIds = filter.productVariants || null;
+  const productId = filter.productId ? `"${filter.productId}"` : null;
+  const pagination = validatePageFilter(filter);
+
+  if (getProductDetails) {
+    return gql`
     query {
       bundles(
-        Paginate: { first: 100 }
+        Paginate: {${pagination}}
         Filter: {
-          productVariantIds: ${JSON.stringify(variantIds)}
+          productVariantIds: ${JSON.stringify(productVariantIds)}
+          productId: ${productId}
         }
       ) {
         ... on BundleConnectionType {
@@ -81,11 +89,39 @@ const federationQuery = (variantIds: Array<string>) => {
       }
     }
   `;
-};
-
-export const productBundlesByVariantIdQuery = (variantIds: Array<string>) => {
-  return graphqlQueryCheck(
-    federationQuery(variantIds),
-    federationQuery(variantIds),
-  );
+  }
+  return gql`
+    query {
+      bundles(
+        Paginate: {${pagination}}
+        Filter: {
+            productVariantIds: ${JSON.stringify(productVariantIds)}
+            productId: ${productId}
+          }
+      ) {
+        ... on BundleConnectionType {
+          edges {
+            node {
+              id
+              productVariants {
+                quantity
+                productVariant{
+                  id
+                }
+                attributes {
+                  name
+                  value
+                }
+              }
+            }
+          }
+        }
+        ... on ResultError {
+          __typename
+          errors
+          message
+        }
+      }
+    }
+  `;
 };
