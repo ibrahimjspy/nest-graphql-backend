@@ -6,7 +6,7 @@ const federationQuery = (payload: OrderReturnDTO): string => {
   return gql`
     mutation {
       orderFulfillmentReturnProducts(
-        order:  "${payload.order_id}",
+        order:  "${payload.id}",
         input: {
             fulfillmentLines: ${JSON.stringify(payload.input.fulfillmentLines)
               .replace(/"fulfillmentLineId"/g, 'fulfillmentLineId')

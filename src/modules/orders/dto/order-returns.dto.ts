@@ -6,11 +6,14 @@ import {
   IsEnum,
   IsOptional,
   IsString,
+  ValidateNested,
 } from 'class-validator';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 import { OrdersListDTO } from './list';
 import { orderFulfillmentLineDTO } from './refund';
 import { orderLineDTO } from './fulfill';
+import { Transform, Type } from 'class-transformer';
+import { b2cDto } from 'src/modules/shop/dto/shop';
 
 export enum OrderReturnSortFieldEnum {
   CREATED_AT = 'CREATED_AT',
@@ -65,20 +68,23 @@ export class OrderReturnProductsInput {
 export class OrderReturnDTO {
   @ApiProperty({ required: true })
   @IsString()
-  order_id: string;
+  id: string;
 
-  @ApiProperty({ required: true })
+  @ApiProperty({
+    required: true,
+    isArray: true,
+    type: OrderReturnProductsInput,
+  })
+  @ValidateNested({ each: true })
+  @Type(() => OrderReturnProductsInput)
   input: OrderReturnProductsInput;
 }
 
-export class ReturnsStaffDto {
-  @ApiProperty({
-    required: false,
-    default: 'false',
-    description: 'this specifies whether return is from end consumer or staff',
-  })
+export class ReturnsStaffDto extends b2cDto {
+  @ApiProperty({ required: false, default: false })
   @IsOptional()
-  staff: string;
+  @Transform(({ obj, key }) => obj[key] === 'true')
+  public staff: boolean;
 }
 
 export class ReturnOrderListDto extends OrdersListDTO {

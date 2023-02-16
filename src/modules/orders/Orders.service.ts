@@ -340,20 +340,15 @@ export class OrdersService {
     token: string,
   ): Promise<object> {
     try {
-      // TODO make b2c connection dynamic using  filters
-      const b2cEnabled = false;
-      const metadata = [{ key: 'isStaffReturn', value: filter.staff }];
+      const b2cEnabled = filter.isB2c || false;
+      const isStaffReturn = filter.staff || false;
+      const metadata = [{ key: 'isStaffReturn', value: `${isStaffReturn}` }];
       const response = await createReturnFulfillmentHandler(
         payload,
         token,
         b2cEnabled,
       );
-      await updateOrderMetadataHandler(
-        payload.order_id,
-        metadata,
-        token,
-        b2cEnabled,
-      );
+      await updateOrderMetadataHandler(payload.id, metadata, token, b2cEnabled);
       return prepareSuccessResponse(response, '', 200);
     } catch (err) {
       this.logger.error(err);
