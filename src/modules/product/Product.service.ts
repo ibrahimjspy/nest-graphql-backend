@@ -131,7 +131,10 @@ export class ProductService {
 
   // Bundles list relating to variant ids
   public getBundlesByVariantIds(variantIds: Array<string>): Promise<object> {
-    return ProductsHandlers.getBundlesHandler({ productVariants: variantIds });
+    return ProductsHandlers.getBundlesHandler({
+      productVariants: variantIds,
+      getProductDetails: true,
+    });
   }
 
   // Return product images downloadable URL.
