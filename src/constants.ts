@@ -68,3 +68,11 @@ export const MAPPING_SERVICE_HEADERS = {
   },
 };
 export const MAPPING_SERVICE_URL = process.env.MAPPING_SERVICE_URL;
+
+export const UPS_URL = process.env.UPS_URL;
+export const UPS_CONFIGURATIONS = {
+  headers: {
+    Authorization: `Basic ${process.env.UPS_USER_TOKEN}`,
+    'Content-Type': 'application/x-www-form-urlencoded',
+  },
+};
