@@ -64,6 +64,8 @@ jobs:
           (echo "STRIPE_CURRENCY=${{ secrets.STRIPE_CURRENCY }}") >> .env
           (echo "B2C_DEVELOPMENT_TOKEN=${{ secrets.B2C_DEVELOPMENT_TOKEN }}") >> .env
           (echo "B2B_DEVELOPMENT_TOKEN=${{ secrets.B2B_DEVELOPMENT_TOKEN }}") >> .env
+          (echo "UPS_URL=${{ secrets.UPS_URL }}") >> .env
+          (echo "UPS_USER_TOKEN=${{ secrets.UPS_USER_TOKEN }}") >> .env
 
         # Docker login
       - name: Login to DockerHub
