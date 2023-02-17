@@ -25,11 +25,15 @@ import { OrderRefundDTO } from './dto/refund';
 import { b2cDto, shopIdDTO } from '../shop/dto/shop';
 import { AddOrderToShopDto } from './dto/addOrderToShop';
 import { StoreOrderAssigneeDto } from './dto/storeOrderAssignee';
+import UpsService from 'src/external/services/Ups.service';
 
 @ApiTags('orders')
 @Controller('')
 export class OrdersController {
-  constructor(private readonly appService: OrdersService) {}
+  constructor(
+    private readonly appService: OrdersService,
+    private readonly upsService: UpsService,
+  ) {}
   // Returns orders dashboard data for landing page
   @Get('orders/history/:userId')
   async findDashboard(
@@ -351,6 +355,18 @@ export class OrdersController {
     return makeResponse(
       res,
       await this.appService.addOrderAssignee(body, token, filter.isB2c),
+    );
+  }
+
+  @Post('api/v1/order/shipping/label')
+  @ApiOperation({
+    summary:
+      'this api generates a shipping label based on Shipping information such as address, charges and services',
+  })
+  async generateShippingLabel(@Res() res, @Body() shippingRequestBody) {
+    return makeResponse(
+      res,
+      await this.upsService.generateShippingLabel(shippingRequestBody),
     );
   }
 }
