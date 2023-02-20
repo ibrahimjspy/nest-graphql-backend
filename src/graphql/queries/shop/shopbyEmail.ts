@@ -12,6 +12,10 @@ export const ShopByEmailQuery = (Email: string): string => {
           description
           about
           returnPolicy
+          fields{
+            name
+            values
+          }
         }
       }
     }
