@@ -76,3 +76,5 @@ export const UPS_CONFIGURATIONS = {
     'Content-Type': 'application/x-www-form-urlencoded',
   },
 };
+
+export const B2C_STOREFRONT_TLD = '.sharove.co';
