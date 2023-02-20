@@ -37,7 +37,7 @@ import {
 } from 'src/graphql/handlers/product';
 import { myProductsDTO, updateMyProductDTO } from './dto/myProducts';
 import { provisionStoreFront } from 'src/external/endpoints/provisionStorefront';
-import { B2C_DEVELOPMENT_TOKEN } from 'src/constants';
+import { B2C_DEVELOPMENT_TOKEN, B2C_STOREFRONT_TLD } from 'src/constants';
 @Injectable()
 export class ShopService {
   private readonly logger = new Logger(ShopService.name);
@@ -53,8 +53,9 @@ export class ShopService {
     shopId: string,
     storeInput: createStoreDTO,
     token: string,
-  ): Promise<SuccessResponseType> {
+  ): Promise<any> {
     try {
+      storeInput.url = this.generateStorefrontUrl(storeInput.name);
       const response = await createStoreHandler(
         validateStoreInput(storeInput),
         // TODO replace development token with AUTHO token
@@ -314,6 +315,17 @@ export class ShopService {
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
+    }
+  }
+
+  public generateStorefrontUrl(storeName: string) {
+    try {
+      const uniqueString = (Math.random() + 1).toString(36).substring(7); //e.g ~~ jce4r
+      const subDomain = `${storeName}${uniqueString}`;
+      const url = `${subDomain}${B2C_STOREFRONT_TLD}`;
+      return url;
+    } catch (error) {
+      this.logger.error(error);
     }
   }
 }

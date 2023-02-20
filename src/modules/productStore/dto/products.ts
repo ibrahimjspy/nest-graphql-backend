@@ -57,7 +57,7 @@ class productCreateDTO {
 
   @ApiProperty({ required: false, default: [] })
   @IsOptional()
-  media: string[];
+  images: string[];
 }
 
 export class pushToStoreDTO {

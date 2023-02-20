@@ -5,9 +5,11 @@ import { ProductFilterDto, ProductFilterTypeEnum } from './dto';
 import { makeResponse } from 'src/core/utils/response';
 import {
   GetBundlesDto,
+  ProductIdDto,
   ProductListDto,
   ProductListFilterDto,
   RetailerIdDto,
+  b2cDTO,
   shopIdDTO,
   shopProductsDTO,
 } from './dto/product.dto';
@@ -132,5 +134,19 @@ export class ProductController {
     @Query() filter: GetBundlesDto,
   ): Promise<any> {
     return makeResponse(res, await this.appService.getProductBundles(filter));
+  }
+
+  //TODO move this api functionality to product details api
+  // Returns single product slug against its id
+  @Get('api/v1/product/slug/:productId')
+  async getProductSlugById(
+    @Res() res,
+    @Param() params: ProductIdDto,
+    @Query() filter: b2cDTO,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.getProductSlug(params.productId, filter.isB2c),
+    );
   }
 }

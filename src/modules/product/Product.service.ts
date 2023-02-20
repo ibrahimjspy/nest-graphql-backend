@@ -219,4 +219,18 @@ export class ProductService {
       return graphqlExceptionHandler(error);
     }
   }
+
+  public async getProductSlug(
+    productId: string,
+    isB2c = false,
+  ): Promise<object> {
+    try {
+      return prepareSuccessResponse(
+        await ProductsHandlers.getProductSlugHandler(productId, isB2c),
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
 }

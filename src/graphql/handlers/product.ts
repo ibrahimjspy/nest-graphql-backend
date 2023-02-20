@@ -23,6 +23,7 @@ import { getStoredProductsListQuery } from '../queries/product/storedProductsLis
 import { shopProductIdsByCategoryIdQuery } from '../queries/product/shopProductIdsByCategoryId';
 import { GetBundlesDto } from 'src/modules/product/dto/product.dto';
 import { getBundlesQuery } from '../queries/product/getBundles';
+import { getProductSlugQuery } from '../queries/product/productSlug';
 
 export const productListPageHandler = async (
   id: string,
@@ -242,4 +243,15 @@ export const shopProductIdsByCategoryIdHandler = async (
     ),
   );
   return response['getProductsByShop'];
+};
+
+export const getProductSlugHandler = async (
+  productId: string,
+  isb2c = false,
+): Promise<object> => {
+  const token = '';
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(getProductSlugQuery(productId), token, isb2c),
+  );
+  return response['product'];
 };
