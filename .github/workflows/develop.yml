@@ -66,6 +66,9 @@ jobs:
           (echo "B2B_DEVELOPMENT_TOKEN=${{ secrets.B2B_DEVELOPMENT_TOKEN }}") >> .env
           (echo "UPS_URL=${{ secrets.UPS_URL }}") >> .env
           (echo "UPS_USER_TOKEN=${{ secrets.UPS_USER_TOKEN }}") >> .env
+          (echo "MAPPING_SERVICE_TOKEN=${{ secrets.MAPPING_SERVICE_TOKEN }}") >> .env
+          (echo "MAPPING_SERVICE_URL=${{ secrets.MAPPING_SERVICE_URL }}") >> .env
+          
 
         # Docker login
       - name: Login to DockerHub
