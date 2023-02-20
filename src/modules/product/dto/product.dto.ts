@@ -93,3 +93,8 @@ export class GetBundlesDto extends PaginationDto {
   @Transform(({ obj, key }) => obj[key] === 'true')
   getProductDetails?: boolean;
 }
+
+export class ProductIdDto {
+  @ApiProperty({ type: String, required: true })
+  productId: string;
+}
