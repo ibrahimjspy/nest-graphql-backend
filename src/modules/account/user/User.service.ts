@@ -9,6 +9,7 @@ import * as AccountHandlers from 'src/graphql/handlers/account/user';
 import { ShopService } from '../../shop/Shop.service';
 import { User } from './dto/userinfo';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
+import { UserInputDTO } from './dto/user.dto';
 @Injectable()
 export class UserService {
   constructor(private shopService: ShopService) {
@@ -41,6 +42,22 @@ export class UserService {
       if (error instanceof RecordNotFound) {
         return prepareFailedResponse(error.message);
       }
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async updateUserInfo(
+    userInput: UserInputDTO,
+    token: string,
+  ): Promise<SuccessResponseType> {
+    try {
+      const response = await AccountHandlers.updateUserInfoHandler(
+        userInput,
+        token,
+      );
+      return prepareSuccessResponse(response);
+    } catch (error) {
+      this.logger.error(error);
       return graphqlExceptionHandler(error);
     }
   }

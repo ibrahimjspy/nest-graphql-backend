@@ -2,7 +2,7 @@ import { gql } from 'graphql-request';
 import { DEFAULT_CHANNEL } from 'src/constants';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
-const federationQuery = (slug): string => {
+const b2bQuery = (slug): string => {
   return gql`
     query {
       product(slug: "${slug}", channel: "${DEFAULT_CHANNEL}") {
@@ -75,58 +75,78 @@ const federationQuery = (slug): string => {
   `;
 };
 
-const mockQuery = () => {
+const b2cQuery = (slug): string => {
   return gql`
     query {
-      productBySlug {
-        main_image
-        images
-        description
-        product_name
+      product(slug: "${slug}", channel: "${DEFAULT_CHANNEL}") {
+        name
         id
-        slug
-        style_no
-        vendor_info {
-          name
+        category{
           id
-          shipping_city
-          shipping_state
-          min_order
-          vendor_products {
-            image
-            title
-            description
-            id
-            slug
-            color_variant
-            sku
-            resale_price
-            product_cost
+          name
+          slug
+        }
+        attributes{
+          attribute{
+            name
+          }
+          values{
+            name
           }
         }
-        available_sizes {
-          name
-          symbol
+        slug
+        media {
+          url
+        }
+        description
+        defaultVariant {
+          sku
           id
-          unit_price
+          attributes {
+            attribute {
+              name
+            }
+            values {
+              name
+            }
+          }
+          pricing {
+            price {
+              gross {
+                currency
+                amount
+              }
+            }
+          }
         }
-        resale_price
-        product_cost
-        commission
-        selling_price
-        is_added_to_store
-        is_favorite
-        is_favorite
-        is_cart
-        shipping_policy {
-          min_days
-          max_days
-          flat_rate
-          threshold
-        }
-        color_variant
-        return_policy {
-          returning_days
+        variants {
+          media{
+            url
+          }
+          id
+          attributes {
+            attribute {
+              name
+            }
+            values {
+              name
+            }
+          }
+          pricing{
+            price {
+              net {
+                amount
+                currency
+              }
+            }
+            onSale
+            discount{
+              gross{
+                amount
+                currency
+              }
+            }
+          }
         }
       }
     }
@@ -134,5 +154,5 @@ const mockQuery = () => {
 };
 
 export const productDetailsQuery = (slug: string) => {
-  return graphqlQueryCheck(federationQuery(slug), mockQuery());
+  return graphqlQueryCheck(b2bQuery(slug), b2cQuery(slug));
 };

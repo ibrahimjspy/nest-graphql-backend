@@ -31,6 +31,7 @@ import {
   getCurrency,
   getFulFillmentsWithStatusAndBundlesTotal,
   getFulfillmentTotal,
+  getOrderIdsFromShopData,
   getPendingOrders,
   getTotalFromBundles,
 } from './Orders.utils';
@@ -60,6 +61,8 @@ import {
 import { orderLineDTO } from './dto/fulfill';
 import { OrderRefundDTO } from './dto/refund';
 import { AddOrderToShopDto } from './dto/addOrderToShop';
+import { StoreOrderAssigneeDto } from './dto/storeOrderAssignee';
+import { OrderMetadataDto } from './dto/metadata';
 @Injectable()
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
@@ -202,7 +205,7 @@ export class OrdersService {
     try {
       const shopDetails = await shopOrdersByIdHandler(id, token);
       const orderFilter: OrdersListDTO = filter;
-      orderFilter.orderIds = shopDetails['orders'];
+      orderFilter.orderIds = getOrderIdsFromShopData(shopDetails);
       const ordersList = await ordersListHandler(orderFilter, token);
       const response = { ...shopDetails, ...ordersList };
 
@@ -337,15 +340,15 @@ export class OrdersService {
     token: string,
   ): Promise<object> {
     try {
-      // TODO make b2c connection dynamic using  filters
-      const b2cEnabled = false;
-      const metadata = { key: 'isStaffReturn', value: filter.staff };
+      const b2cEnabled = filter.isB2c || false;
+      const isStaffReturn = filter.staff || false;
+      const metadata = [{ key: 'isStaffReturn', value: `${isStaffReturn}` }];
       const response = await createReturnFulfillmentHandler(
         payload,
         token,
         b2cEnabled,
       );
-      await updateOrderMetadataHandler(payload.order_id, metadata, b2cEnabled);
+      await updateOrderMetadataHandler(payload.id, metadata, token, b2cEnabled);
       return prepareSuccessResponse(response, '', 200);
     } catch (err) {
       this.logger.error(err);
@@ -460,6 +463,36 @@ export class OrdersService {
       filter.orderIds = returnedOrderIds;
       const response = await returnedOrdersListHandler(filter, token);
       return prepareSuccessResponse(response, '', 201);
+    } catch (err) {
+      this.logger.error(err);
+      return graphqlExceptionHandler(err);
+    }
+  }
+
+  public async addOrderAssignee(
+    orderData: StoreOrderAssigneeDto,
+    token: string,
+    isB2c = false,
+  ): Promise<object> {
+    try {
+      const orderId: string = orderData.orderId;
+      const metadata: OrderMetadataDto[] = [
+        {
+          key: 'staffId',
+          value: orderData.staffId,
+        },
+        {
+          key: 'staffName',
+          value: orderData.staffName,
+        },
+        {
+          key: 'assignedAt',
+          value: new Date().toISOString(),
+        },
+      ];
+      return prepareSuccessResponse(
+        await updateOrderMetadataHandler(orderId, metadata, token, isB2c),
+      );
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);

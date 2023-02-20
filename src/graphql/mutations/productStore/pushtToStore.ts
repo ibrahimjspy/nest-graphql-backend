@@ -11,7 +11,7 @@ export const pushToStoreMutation = (pushToStoreInput: pushToStoreDTO) => {
             .replace(/"id"/g, 'id')
             .replace(/"category"/g, 'category')
             .replace(/"name"/g, 'name')
-            .replace(/"media"/g, 'media')
+            .replace(/"images"/g, 'images')
             .replace(/"description"/g, 'description')}
           shopId: "${shopId}"
           productStoreId: "${storefrontId}"

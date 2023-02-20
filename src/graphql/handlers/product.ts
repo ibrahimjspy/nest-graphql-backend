@@ -5,8 +5,6 @@ import {
   graphqlResultErrorHandler,
 } from 'src/core/proxies/graphqlHandler';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
-import { getBundleIds } from 'src/modules/product/Product.utils';
-import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
 import { BundleType } from 'src/graphql/types/bundle.type';
 import { PaginationDto } from '../dto/pagination.dto';
 import { getProductIdsByVariantIdsQuery } from '../queries/product/productIdsByVariantIds';
@@ -22,13 +20,21 @@ import {
 import { updateMyProductMutation } from '../mutations/product/updateMyProducts';
 import { deleteBulkMediaMutation } from '../mutations/product/mediaBulkDelete';
 import { getStoredProductsListQuery } from '../queries/product/storedProductsList';
+import { shopProductIdsByCategoryIdQuery } from '../queries/product/shopProductIdsByCategoryId';
+import { GetBundlesDto } from 'src/modules/product/dto/product.dto';
+import { getBundlesQuery } from '../queries/product/getBundles';
+import { getProductSlugQuery } from '../queries/product/productSlug';
 
 export const productListPageHandler = async (
   id: string,
+  productIds: string[],
   pagination: PaginationDto,
+  isb2c = false,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(ProductQueries.productListPageQuery(id, pagination)),
+    await graphqlCall(
+      ProductQueries.productListPageQuery(id, productIds, pagination, isb2c),
+    ),
   );
   return response['products'];
 };
@@ -86,20 +92,6 @@ export const productCardHandler = async (): Promise<object> => {
   }
 };
 
-export const bundlesByVariantsIdsHandler = async (
-  variantIds: Array<string>,
-): Promise<Array<object>> => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(
-      ProductQueries.productBundlesByVariantIdQuery(variantIds),
-    ),
-  );
-  if (!response['bundles']['edges']['length']) {
-    throw new RecordNotFound('Bundles');
-  }
-  return response['bundles']['edges'];
-};
-
 export const variantsIdsByProductIdsHandler = async (
   productIds: Array<string>,
 ): Promise<object> => {
@@ -114,19 +106,13 @@ export const variantsIdsByProductIdsHandler = async (
   return response['products'];
 };
 
-export const bundlesByBundleIdsHandler = async (
-  bundles: Array<CheckoutBundleInputType>,
-  token: string,
+export const getBundlesHandler = async (
+  filter: GetBundlesDto,
 ): Promise<BundleType[]> => {
-  const bundleIds = getBundleIds(bundles);
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(
-      ProductQueries.productBundlesByBundleIdQuery(bundleIds),
-      token,
-    ),
+    await graphqlCall(getBundlesQuery(filter)),
   );
-
-  if (!response['bundles']['length']) {
+  if (!response['bundles']['edges']['length']) {
     throw new RecordNotFound('Bundles');
   }
 
@@ -241,4 +227,31 @@ export const getStoredProductListHandler = async (
     await graphqlCall(getStoredProductsListQuery(productIds)),
   );
   return response['products'];
+};
+
+export const shopProductIdsByCategoryIdHandler = async (
+  shopId: string,
+  categoryId: string,
+  isb2c = false,
+): Promise<{ productIds: string[] }> => {
+  const userToken = '';
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      shopProductIdsByCategoryIdQuery(shopId, categoryId, isb2c),
+      userToken,
+      isb2c,
+    ),
+  );
+  return response['getProductsByShop'];
+};
+
+export const getProductSlugHandler = async (
+  productId: string,
+  isb2c = false,
+): Promise<object> => {
+  const token = '';
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(getProductSlugQuery(productId), token, isb2c),
+  );
+  return response['product'];
 };

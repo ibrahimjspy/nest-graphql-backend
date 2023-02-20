@@ -1,11 +1,15 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
-const federationQuery = (id: string): string => {
+const b2bQuery = (id: string): string => {
   return gql`
     query {
       order(id: "${id}") {
         number
+        metadata {
+          key
+          value
+        }
         shippingPrice {
           gross {
             amount
@@ -180,7 +184,101 @@ const federationQuery = (id: string): string => {
   `;
 };
 
+const b2cQuery = (id: string): string => {
+  return gql`
+    query {
+      order(id: "${id}") {
+        id
+        status
+        number
+        shippingAddress {
+          id
+          phone
+          firstName
+          lastName
+          streetAddress1
+          city
+          postalCode
+          isDefaultBillingAddress
+          isDefaultShippingAddress
+          country {
+            code
+            country
+          }
+        }
+        billingAddress {
+          id
+          phone
+          firstName
+          lastName
+          streetAddress1
+          city
+          postalCode
+          isDefaultBillingAddress
+          isDefaultShippingAddress
+          country {
+            code
+            country
+          }
+        }
+        subtotal {
+          net {
+            currency
+            amount
+          }
+          tax {
+            currency
+            amount
+          }
+        }
+        total {
+          gross {
+            currency
+            amount
+          }
+        }
+        lines {
+          id
+          productName
+          variantName
+          quantity
+          variant {
+            product {
+              media {
+                url
+                alt
+              }
+            }
+          }
+          thumbnail {
+            url
+            alt
+          }
+          unitPrice {
+            gross {
+              currency
+            amount
+            }
+          }
+          totalPrice {
+            gross {
+              currency
+            amount
+            }
+          }
+        }
+        shippingPrice {
+          gross {
+            currency
+            amount
+          }
+        }
+      }
+    }
+  `;
+};
+
 // returns shop order details query based on federation and mock check
 export const orderDetailsQuery = (id: string) => {
-  return graphqlQueryCheck(federationQuery(id), federationQuery(id));
+  return graphqlQueryCheck(b2bQuery(id), b2cQuery(id));
 };

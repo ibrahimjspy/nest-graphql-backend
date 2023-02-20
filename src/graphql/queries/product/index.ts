@@ -2,7 +2,6 @@ import { productCardsByListIdQuery } from './cardsByCategoryId';
 import { productDetailsQuery } from './detailsBySlug';
 import { productCardsDefaultQuery } from './cards';
 import { productListPageQuery } from './listPageById';
-import { productBundlesByVariantIdQuery } from './bundlesByVariantIds';
 import { variantsIdsByProductIdsQuery } from './variantsIdsByProductIds';
 import { productBundlesByBundleIdQuery } from './bundlesByBundleIds';
 import { productsQuery } from './products';
@@ -13,7 +12,6 @@ export {
   productDetailsQuery,
   productCardsByListIdQuery,
   productListPageQuery,
-  productBundlesByVariantIdQuery,
   variantsIdsByProductIdsQuery,
   productBundlesByBundleIdQuery,
   productsQuery,

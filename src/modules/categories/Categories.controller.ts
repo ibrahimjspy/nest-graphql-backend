@@ -28,6 +28,9 @@ export class CategoriesController {
     @Param() params: shopIdDTO,
     @Query() filter: shopCategoriesDTO,
   ): Promise<any> {
-    return makeResponse(res, await this.appService.getShopCategories(params.shopId, filter));
+    return makeResponse(
+      res,
+      await this.appService.getShopCategories(params.shopId, filter),
+    );
   }
 }

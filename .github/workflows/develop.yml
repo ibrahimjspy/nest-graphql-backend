@@ -67,6 +67,11 @@ jobs:
           (echo "SQS_QUEUE_URL=${{ secrets.SQS_QUEUE_URL }}") >> .env
           (echo "SQS_ACCESS_ID=${{ secrets.SQS_ACCESS_ID }}") >> .env
           (echo "SQS_SECRET_ACCESS_KEY=${{ secrets.SQS_SECRET_ACCESS_KEY }}") >> .env
+          (echo "UPS_URL=${{ secrets.UPS_URL }}") >> .env
+          (echo "UPS_USER_TOKEN=${{ secrets.UPS_USER_TOKEN }}") >> .env
+          (echo "MAPPING_SERVICE_TOKEN=${{ secrets.MAPPING_SERVICE_TOKEN }}") >> .env
+          (echo "MAPPING_SERVICE_URL=${{ secrets.MAPPING_SERVICE_URL }}") >> .env
+          
 
         # Docker login
       - name: Login to DockerHub

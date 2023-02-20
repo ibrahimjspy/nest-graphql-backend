@@ -1,10 +1,15 @@
-import { graphqlCall } from 'src/core/proxies/graphqlHandler';
+import {
+  graphqlCall,
+  graphqlResultErrorHandler,
+} from 'src/core/proxies/graphqlHandler';
 
 import {
   userEmailByIdQuery,
   userInformationQuery,
 } from 'src/graphql/queries/account';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
+import { UserInputDTO } from 'src/modules/account/user/dto/user.dto';
+import { updateUserInfoMutation } from 'src/graphql/mutations/account/userInfoUpdate';
 
 export const userEmailByIdHandler = async (
   userId: string,
@@ -21,4 +26,15 @@ export const getUserDetailsHandler = async (Token: string): Promise<object> => {
   if (!response['me']) throw new RecordNotFound('User');
 
   return response['me'];
+};
+
+export const updateUserInfoHandler = async (
+  userInput: UserInputDTO,
+  token: string,
+  isb2c = false,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(updateUserInfoMutation(userInput, isb2c), token, isb2c),
+  );
+  return response['accountUpdate'];
 };
