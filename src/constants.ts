@@ -29,7 +29,7 @@ export const COMMON_HEADERS = {
 export const PROVISION_STOREFRONT_HEADERS = {
   headers: {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${process.env.GITHUB_AUTH_TOKEN}`,
+    Authorization: `Bearer ${process.env.AUTH_TOKEN_GITHUB}`,
   },
 };
 
