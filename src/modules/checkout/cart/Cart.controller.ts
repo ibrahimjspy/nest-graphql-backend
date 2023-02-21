@@ -1,19 +1,9 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Headers,
-  Param,
-  Post,
-  Put,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Res } from '@nestjs/common';
 import { CartService } from './Cart.service';
 import { ApiTags } from '@nestjs/swagger';
 import { IsAuthenticated } from 'src/core/utils/decorators';
 import { makeResponse } from 'src/core/utils/response';
 import { AddBundleDto, UserIdDto } from '../dto';
-import { UnSelectBundlesType } from '../Checkout.utils.type';
 import { UpdateBundleStateDto } from '../dto/add-bundle.dto';
 
 @ApiTags('cart')
@@ -52,7 +42,7 @@ export class CartController {
   @Put('checkout/cart/bundle/delete')
   async deleteBundleFromCart(
     @Res() res,
-    @Body() body,
+    @Body() body, // TODO DTO missing
     @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
     return makeResponse(
@@ -68,7 +58,7 @@ export class CartController {
   @Put('checkout/cart/bundle/update')
   async updateCartBundle(
     @Res() res,
-    @Body() body,
+    @Body() body, // TODO DTO missing
     @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
     return makeResponse(
@@ -78,42 +68,6 @@ export class CartController {
         body?.bundle,
         token,
       ),
-    );
-  }
-
-  @Put('checkout/cart/bundle/select')
-  async selectThisShop(
-    @Res() res,
-    @Body() body,
-    @Headers() headers,
-  ): Promise<object> {
-    const Authorization: string = headers.authorization;
-    return makeResponse(
-      res,
-      await this.appService.setBundleAsSelected(
-        body?.userId,
-        body?.bundleIds,
-        Authorization,
-      ),
-    );
-  }
-
-  @Put('checkout/cart/bundle/unselect')
-  async unSelectThisShop(
-    @Res() res,
-    @Body() body,
-    @Headers() headers,
-  ): Promise<object> {
-    const Authorization: string = headers.authorization;
-    const unSelectBundle: UnSelectBundlesType = {
-      userId: body?.userId,
-      bundleIds: body?.bundleIds,
-      checkoutBundleIds: body?.checkoutBundleIds,
-      token: Authorization,
-    };
-    return makeResponse(
-      res,
-      await this.appService.setBundleAsUnselected(unSelectBundle),
     );
   }
 

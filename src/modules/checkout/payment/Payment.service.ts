@@ -14,7 +14,7 @@ export class PaymentService {
   constructor(private stripeService: StripeService) {
     return;
   }
-  public async getStripePayments(userEmail: string): Promise<object> {
+  public async getPaymentMethodsList(userEmail: string): Promise<object> {
     try {
       const cardList = await this.stripeService.paymentMethodsList(userEmail);
 
@@ -43,6 +43,7 @@ export class PaymentService {
     }
   }
 
+  // TODO make this an object
   protected async savePaymentInfo(
     token: string,
     checkoutId: string,
@@ -101,6 +102,7 @@ export class PaymentService {
       );
 
       if (!totalAmountResponse['totalAmount'])
+        // TODO create custom error
         throw new GeneralError('Empty cart');
 
       const paymentIntentResponse =

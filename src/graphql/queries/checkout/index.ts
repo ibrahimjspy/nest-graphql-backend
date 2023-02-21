@@ -5,13 +5,14 @@ import { availablePaymentGatewaysQuery } from './availablePaymentGateways';
 import { shippingZonesQuery } from './shippingZones';
 import { getMarketplaceCheckoutWithCategoriesQuery } from './marketplaceCheckoutWithCategories';
 import { checkoutWithShippingInfoQuery } from './checkourtWithShippingInfo';
-import { validatebundelIsExist } from './validateBundleisExist';
 import { addCheckoutBundleQuery } from './addcheckoutbundle';
 import { updateCheckoutBundleQuery } from './updateCheckoutBundle';
 import { getCheckoutBundleQuery } from './getCheckoutBundle';
-import { getTotalamountByCheckoutIdQuery } from './getTotalAmountbyCheckoutID';
-import { getIntentIdByCheckoutIdQuery } from './getIntentIdByCheckoutID';
-import { getCheckoutBundlesbyCheckoutIdQuery } from './getCheckoutBundlesByCheckoutId';
+import { cartAmountQuery } from './cartAmount';
+import { checkoutBundlesByIdQuery } from './checkoutBundlesById';
+import { getPaymentIntentQuery } from './paymentIntent';
+import { bundleStatusQuery } from './bundleStatus';
+
 export {
   checkoutQuery,
   shippingZonesQuery,
@@ -20,11 +21,11 @@ export {
   availablePaymentGatewaysQuery,
   getMarketplaceCheckoutWithCategoriesQuery,
   checkoutWithShippingInfoQuery,
-  validatebundelIsExist,
+  bundleStatusQuery,
   addCheckoutBundleQuery,
   updateCheckoutBundleQuery,
   getCheckoutBundleQuery,
-  getTotalamountByCheckoutIdQuery,
-  getIntentIdByCheckoutIdQuery,
-  getCheckoutBundlesbyCheckoutIdQuery,
+  cartAmountQuery,
+  getPaymentIntentQuery,
+  checkoutBundlesByIdQuery,
 };

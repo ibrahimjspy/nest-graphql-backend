@@ -6,28 +6,20 @@ import {
   prepareSuccessResponse,
 } from 'src/core/utils/response';
 import {
-  addBundlesHandler,
   addCheckoutBundlesHandler,
-  addLinesHandler,
-  checkoutHandler,
+  bundleStatusHandler,
   deleteBundlesHandler,
-  deleteLinesHandler,
-  getCheckoutbundlesHandler,
-  marketplaceCheckoutHandler,
+  getCheckoutBundlesHandler,
   updateCartBundlesCheckoutIdHandler,
   updateCheckoutBundleState,
   updateCheckoutBundlesHandler,
-  validateBundle,
 } from 'src/graphql/handlers/checkout';
 import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
 import {
   getBundleIds,
-  getCheckoutLineIds,
-  getCheckoutLineItems,
-  getCheckoutLineItemsForDelete,
-  getExistBundleIdsInList,
-  getNotExistBundleIdsInList,
-  selectOrUnselectBundle,
+  getNewBundlesList,
+  getUpdatedBundlesList,
+  validateBundlesLength,
 } from '../Checkout.utils';
 import { UpdateBundleStateDto } from '../dto/add-bundle.dto';
 
@@ -40,22 +32,39 @@ export class CartService {
     token: string,
   ): Promise<object> {
     try {
-      const checkoutData = await getCheckoutbundlesHandler(userEmail, token);
-
+      const checkoutData = await getCheckoutBundlesHandler(userEmail, token);
       return prepareSuccessResponse(checkoutData);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
     }
   }
-
-  private async updateCartBundle(
+  private async addBundles(
     bundlesForCart: any,
     validateBundleList: [],
     userEmail: string,
     token: string,
   ) {
-    const bundleList = await getExistBundleIdsInList(
+    const bundlesList = await getNewBundlesList(
+      bundlesForCart,
+      validateBundleList,
+    );
+    const addedBundleList = await addCheckoutBundlesHandler(
+      userEmail,
+      bundlesList,
+      token,
+    );
+    return addedBundleList;
+  }
+
+  // TODO make update bundles and update bundles from cart same
+  private async updateBundles(
+    bundlesForCart: any,
+    validateBundleList: [],
+    userEmail: string,
+    token: string,
+  ) {
+    const bundleList = getUpdatedBundlesList(
       bundlesForCart,
       validateBundleList,
     );
@@ -76,17 +85,17 @@ export class CartService {
       let response: object = {};
       const getBundleIdsArray = await getBundleIds(bundlesForCart);
       /* Mapping the bundleIds from the bundlesForCart array. */
-      const validateBundleList = await validateBundle(
+      const bundleStatus = await bundleStatusHandler(
         userEmail,
         getBundleIdsArray,
         token,
       );
       /* The below code is checking if the bundleIdsExist in the cart or not. If it exists then it will
      update the bundle in the cart. If it does not exist then it will add the bundle in the cart. */
-      if (validateBundleList['bundleIdsExist']['length'] > 0) {
-        const updateBundleList = await this.updateCartBundle(
+      if (validateBundlesLength(bundleStatus['bundleIdsExist'])) {
+        const updateBundleList = await this.updateBundles(
           bundlesForCart,
-          validateBundleList,
+          bundleStatus,
           userEmail,
           token,
         );
@@ -96,10 +105,10 @@ export class CartService {
           updateBundleList,
         };
       }
-      if (validateBundleList['bundleIdsNotExist']['length'] > 0) {
-        const addBundleList = await this.addCartBundle(
+      if (validateBundlesLength(bundleStatus['bundleIdsNotExist'])) {
+        const addBundleList = await this.addBundles(
           bundlesForCart,
-          validateBundleList,
+          bundleStatus,
           userEmail,
           token,
         );
@@ -117,24 +126,6 @@ export class CartService {
       }
       return graphqlExceptionHandler(error);
     }
-  }
-
-  private async addCartBundle(
-    bundlesForCart: any,
-    validateBundleList: [],
-    userEmail: string,
-    token: string,
-  ) {
-    const addbundleList = await getNotExistBundleIdsInList(
-      bundlesForCart,
-      validateBundleList,
-    );
-    const addedBundleList = await addCheckoutBundlesHandler(
-      userEmail,
-      addbundleList,
-      token,
-    );
-    return addedBundleList;
   }
 
   public async deleteBundleFromCart(
@@ -162,95 +153,13 @@ export class CartService {
     token: string,
   ): Promise<object> {
     try {
-      const UpdateBundle = [bundlesFromCart];
-      const UpdateBundleresponse = await updateCheckoutBundlesHandler(
+      const bundlesList = [bundlesFromCart];
+      const response = await updateCheckoutBundlesHandler(
         userEmail,
-        UpdateBundle,
+        bundlesList,
         token,
       );
 
-      return prepareSuccessResponse(UpdateBundleresponse, '', 201);
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
-  }
-
-  public async setBundleAsSelected(
-    userId: string,
-    bundleIds: string[],
-    token: string,
-  ): Promise<object> {
-    try {
-      const checkoutData = await marketplaceCheckoutHandler(
-        userId,
-        false,
-        token,
-      );
-      const saleorCheckout = await checkoutHandler(
-        checkoutData['checkoutId'],
-        token,
-      );
-      const checkoutLines = getCheckoutLineItems(
-        saleorCheckout['lines'],
-        checkoutData['bundles'],
-        bundleIds,
-      );
-      await addLinesHandler(checkoutData['checkoutId'], checkoutLines, token);
-      const selectedBundles = selectOrUnselectBundle(
-        checkoutData['bundles'],
-        bundleIds,
-        true,
-      );
-      const response = await addBundlesHandler(
-        checkoutData['checkoutId'],
-        userId,
-        selectedBundles,
-        token,
-      );
-      return prepareSuccessResponse(response, '', 201);
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
-  }
-
-  public async setBundleAsUnselected({
-    userId,
-    bundleIds,
-    checkoutBundleIds,
-    token,
-  }): Promise<object> {
-    try {
-      const checkoutData = await marketplaceCheckoutHandler(
-        userId,
-        false,
-        token,
-      );
-      const saleorCheckout = await checkoutHandler(
-        checkoutData['checkoutId'],
-        token,
-      );
-      const checkoutLines = getCheckoutLineItemsForDelete(
-        saleorCheckout['lines'],
-        checkoutData['bundles'],
-        checkoutBundleIds,
-      );
-
-      const checkoutLineIds = getCheckoutLineIds(checkoutLines);
-
-      await deleteLinesHandler(checkoutLineIds, saleorCheckout['id'], token);
-      const updatedBundle = selectOrUnselectBundle(
-        checkoutData['bundles'],
-        bundleIds,
-        false,
-      );
-      const response = await addBundlesHandler(
-        checkoutData['checkoutId'],
-        userId,
-        updatedBundle,
-        token,
-      );
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
       this.logger.error(error);

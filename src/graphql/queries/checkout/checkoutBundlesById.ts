@@ -1,6 +1,9 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
-const b2bQuery = (checkoutId: string, isSelected: any): string => {
+
+export const checkoutBundlesByIdQuery = (
+  checkoutId: string,
+  isSelected: any,
+): string => {
   return gql`
     query {
       checkoutBundles(
@@ -95,14 +98,4 @@ const b2bQuery = (checkoutId: string, isSelected: any): string => {
       }
     }
   `;
-};
-
-export const getCheckoutBundlesbyCheckoutIdQuery = (
-  checkoutId: string,
-  isSelected: any,
-) => {
-  return graphqlQueryCheck(
-    b2bQuery(checkoutId, isSelected),
-    b2bQuery(checkoutId, isSelected),
-  );
 };

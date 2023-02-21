@@ -15,14 +15,13 @@ export class CheckoutController {
   @Post('create/checkout')
   async createCheckout(
     @Res() res,
-    @Body() body,
+    @Body() body, //TODO dto missing
     @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
     const typeMethod =
       {
-        [B2BClientPlatform]:
-          this.appService.createCheckoutSharovePlatformService,
-      }[body.userEmail] || this.appService.createCheckoutendConsumerService;
+        [B2BClientPlatform]: this.appService.createAdminCheckout,
+      }[body.userEmail] || this.appService.createCheckout;
     return makeResponse(
       res,
       await typeMethod.call(this.appService, body.userEmail, token),
@@ -32,7 +31,7 @@ export class CheckoutController {
   @Post('complete')
   async checkoutComplete(
     @Res() res,
-    @Body() body,
+    @Body() body, // TODO DTO missing
     @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
     const { checkoutId } = body;

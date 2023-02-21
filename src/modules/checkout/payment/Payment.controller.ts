@@ -9,6 +9,7 @@ import { makeResponse } from 'src/core/utils/response';
 export class PaymentController {
   constructor(private readonly appService: PaymentService) {}
   @Post('checkout/payment/create')
+  // TODO DTO missing
   async createPayment(@Res() res, @Body() body): Promise<object> {
     const { userEmail, userName, payment_methodID } = body;
     return makeResponse(
@@ -24,7 +25,7 @@ export class PaymentController {
   @Post('checkout/payment/preauth')
   async preAuth(
     @Res() res,
-    @Body() body,
+    @Body() body, // TODO DTO missing
     @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
     const { userEmail, paymentMethodId, checkoutID } = body;
@@ -45,7 +46,7 @@ export class PaymentController {
     const { userEmail } = params;
     return makeResponse(
       res,
-      await this.appService.getStripePayments(userEmail),
+      await this.appService.getPaymentMethodsList(userEmail),
     );
   }
 }

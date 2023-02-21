@@ -1,7 +1,6 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
-const b2bQuery = (checkoutId: string) => {
+export const getPaymentIntentQuery = (checkoutId: string) => {
   return gql`
     query {
       getPaymentIntentAgainstUserCheckout(
@@ -21,8 +20,4 @@ const b2bQuery = (checkoutId: string) => {
       }
     }
   `;
-};
-
-export const getIntentIdByCheckoutIdQuery = (checkoutId: string) => {
-  return graphqlQueryCheck(b2bQuery(checkoutId), b2bQuery(checkoutId));
 };
