@@ -7,6 +7,7 @@ import {
   createStoreHandler,
   getAllShopsHandler,
   getShopBankDetailsHandler,
+  getShopDetailsV2Handler,
   getStoreFrontIdHandler,
   getStoreProductVariantsHandler,
   removeMyVendorsHandler,
@@ -16,7 +17,6 @@ import {
   shopIdByProductIdHandler,
   shopIdByVariantIdHandler,
   vendorDetailsHandler,
-  getShopDetailsV2Handler,
 } from 'src/graphql/handlers/shop';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
@@ -86,7 +86,10 @@ export class ShopService {
     }
   }
 
-  public async getShopDetailsV2(filter: shopDetailDTO, isb2c = false): Promise<object> {
+  public async getShopDetailsV2(
+    filter: shopDetailDTO,
+    isb2c = false,
+  ): Promise<object> {
     try {
       const response = await getShopDetailsV2Handler(filter, isb2c);
       return prepareSuccessResponse(response);

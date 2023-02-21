@@ -3,8 +3,8 @@ import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 import { shopDetailDTO } from 'src/modules/shop/dto/shop';
 
 const b2bQuery = (filter: shopDetailDTO): string => {
-  const shopId = filter.id ? `id: "${filter.id}"` : "";
-  const shopUrl = filter.url ? `url: "${filter.url}"` : "";
+  const shopId = filter.id ? `id: "${filter.id}"` : '';
+  const shopUrl = filter.url ? `url: "${filter.url}"` : '';
 
   return gql`
   query {
@@ -33,8 +33,8 @@ const b2bQuery = (filter: shopDetailDTO): string => {
 };
 
 const b2cQuery = (filter: shopDetailDTO): string => {
-  const shopId = filter.id ? `id: "${filter.id}"` : "";
-  const shopUrl = filter.url ? `url: "${filter.url}"` : "";
+  const shopId = filter.id ? `id: "${filter.id}"` : '';
+  const shopUrl = filter.url ? `url: "${filter.url}"` : '';
 
   return gql`
   query {
