@@ -1,5 +1,3 @@
-#This Pipeline will deploy the image to Amazon Elastic Container Registry
-
 on:
   push:
     branches: ["develop"]
@@ -38,3 +36,25 @@ jobs:
           echo "Pushing image to ECR..."
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+  provision:
+    name: provision
+    needs: deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy in EC2
+        env:
+          PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY_KUB  }}
+          HOSTNAME: ${{ secrets.HOSTNAME_KUB  }}
+          USER_NAME: ${{ secrets.USER_NAME_KUB  }}
+
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+            #Now we have got the access of EC2 and we will start the deploy .
+            cd /home/ubuntu/sharove-eks/sharove-b2b/middleware
+            ./deploy.sh
+            echo "Successfully deployed."
+          '
