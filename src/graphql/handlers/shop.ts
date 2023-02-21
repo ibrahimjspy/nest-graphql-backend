@@ -23,6 +23,7 @@ import { updateMyVendorsMutation } from '../mutations/shop/updateMyVendors';
 import { vendorDetailsQuery } from '../queries/shop/vendorDetails';
 import { shopIdByProductQuery } from '../queries/shop/shopIdByProductId';
 import { getAllShopsQuery } from '../queries/shop/getAllShops';
+import { shopDetailsByUrlQuery } from '../queries/shop/shopDetailsByUrl';
 
 export const carouselHandler = async (token: string): Promise<object> => {
   try {
@@ -80,6 +81,16 @@ export const shopDetailsHandler = async (
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(shopDetailsQuery(shopId, isb2c), '', isb2c),
+  );
+  return response['marketplaceShop'];
+};
+
+export const shopDetailByUrlHandler = async (
+  shopUrl: string,
+  isb2c = false,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(shopDetailsByUrlQuery(shopUrl, isb2c), '', isb2c),
   );
   return response['marketplaceShop'];
 };

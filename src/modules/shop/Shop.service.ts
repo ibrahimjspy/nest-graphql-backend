@@ -16,6 +16,7 @@ import {
   shopIdByProductIdHandler,
   shopIdByVariantIdHandler,
   vendorDetailsHandler,
+  shopDetailByUrlHandler,
 } from 'src/graphql/handlers/shop';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
@@ -78,6 +79,16 @@ export class ShopService {
   public async getShopDetails(shopId: string, isb2c = false): Promise<object> {
     try {
       const response = await shopDetailsHandler(shopId, isb2c);
+      return prepareSuccessResponse(response, '', 201);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async getShopDetailByUrl(shopUrl: string, isb2c = false): Promise<object> {
+    try {
+      const response = await shopDetailByUrlHandler(shopUrl, isb2c);
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
       this.logger.error(error);

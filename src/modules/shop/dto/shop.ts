@@ -117,3 +117,8 @@ export class b2cDto {
   @Transform(({ obj, key }) => obj[key] === 'true')
   public isB2c: boolean;
 }
+
+export class shopDetailDTO extends b2cDto {
+  @ApiProperty({ type: String, required: true })
+  shopUrl: string;
+}
