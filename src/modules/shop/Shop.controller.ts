@@ -54,7 +54,7 @@ export class ShopController {
     );
   }
 
-  @Get('/api/v1/shop/detail')
+  @Get('/api/v1/shop')
   async getShopDetailByUrl(
     @Res() res,
     @Query() filter: shopDetailDTO,

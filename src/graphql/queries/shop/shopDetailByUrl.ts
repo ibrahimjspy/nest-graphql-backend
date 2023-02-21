@@ -56,6 +56,6 @@ const b2cQuery = (shopUrl: string): string => {
   }`;
 };
 
-export const shopDetailsByUrlQuery = (shopUrl: string, isb2c = false) => {
+export const shopDetailByUrlQuery = (shopUrl: string, isb2c = false) => {
   return graphqlQueryCheck(b2bQuery(shopUrl), b2cQuery(shopUrl), isb2c);
 };
