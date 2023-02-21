@@ -55,6 +55,9 @@ export class ShopController {
   }
 
   @Get('/api/v2/shop')
+  @ApiOperation({
+    summary: 'Get shop details against shop id or shop url',
+  })
   async getShopDetailsV2(
     @Res() res,
     @Query() filter: shopDetailDTO,

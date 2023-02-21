@@ -89,7 +89,7 @@ export class ShopService {
   public async getShopDetailsV2(filter: shopDetailDTO, isb2c = false): Promise<object> {
     try {
       const response = await getShopDetailsV2Handler(filter, isb2c);
-      return prepareSuccessResponse(response, '', 201);
+      return prepareSuccessResponse(response);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
