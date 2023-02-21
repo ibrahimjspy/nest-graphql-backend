@@ -28,6 +28,7 @@ const federationQuery = (filter: OrdersListDTO): string => {
         edges {
           node {
             id
+            token
             number
             created
             status
@@ -54,6 +55,9 @@ const federationQuery = (filter: OrdersListDTO): string => {
               }
             }
             total {
+              gross {
+                amount
+              }
               net {
                 amount
               }

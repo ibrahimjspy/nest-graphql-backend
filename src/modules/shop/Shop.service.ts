@@ -7,6 +7,7 @@ import {
   createStoreHandler,
   getAllShopsHandler,
   getShopBankDetailsHandler,
+  getShopDetailsV2Handler,
   getStoreFrontIdHandler,
   getStoreProductVariantsHandler,
   removeMyVendorsHandler,
@@ -20,7 +21,7 @@ import {
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
 import { SuccessResponseType } from 'src/core/utils/response.type';
-import { createStoreDTO } from './dto/shop';
+import { createStoreDTO, shopDetailDTO } from './dto/shop';
 
 import {
   getMyVendorsFieldValues,
@@ -79,6 +80,19 @@ export class ShopService {
     try {
       const response = await shopDetailsHandler(shopId, isb2c);
       return prepareSuccessResponse(response, '', 201);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async getShopDetailsV2(
+    filter: shopDetailDTO,
+    isb2c = false,
+  ): Promise<object> {
+    try {
+      const response = await getShopDetailsV2Handler(filter, isb2c);
+      return prepareSuccessResponse(response);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

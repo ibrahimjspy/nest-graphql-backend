@@ -18,6 +18,7 @@ import {
   allShopIdsDTO,
   b2cDto,
   createStoreDTO,
+  shopDetailDTO,
   shopIdByProductsDTO,
   shopIdByVariantsDTO,
   shopIdDTO,
@@ -50,6 +51,20 @@ export class ShopController {
     return makeResponse(
       res,
       await this.appService.getShopDetails(params?.shopId, filter.isB2c),
+    );
+  }
+
+  @Get('/api/v2/shop')
+  @ApiOperation({
+    summary: 'Get shop details against shop id or shop url',
+  })
+  async getShopDetailsV2(
+    @Res() res,
+    @Query() filter: shopDetailDTO,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.getShopDetailsV2(filter, filter.isB2c),
     );
   }
 
