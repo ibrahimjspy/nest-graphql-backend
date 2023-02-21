@@ -54,14 +54,14 @@ export class ShopController {
     );
   }
 
-  @Get('/api/v1/shop')
-  async getShopDetailByUrl(
+  @Get('/api/v2/shop')
+  async getShopDetailsV2(
     @Res() res,
     @Query() filter: shopDetailDTO,
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getShopDetailByUrl(filter.shopUrl, filter.isB2c),
+      await this.appService.getShopDetailsV2(filter, filter.isB2c),
     );
   }
 

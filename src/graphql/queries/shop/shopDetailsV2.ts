@@ -1,11 +1,13 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
+import { shopDetailDTO } from 'src/modules/shop/dto/shop';
 
-const b2bQuery = (shopUrl: string): string => {
+const b2bQuery = (filter: shopDetailDTO): string => {
   return gql`
   query {
     marketplaceShop(filter: {
-      url: "${shopUrl}"
+      ${filter.id ? `id: "${filter.id}"` : ""}
+      ${filter.url ? `url: "${filter.url}"`: ""}
     }) {
         id
         name
@@ -27,11 +29,12 @@ const b2bQuery = (shopUrl: string): string => {
   }`;
 };
 
-const b2cQuery = (shopUrl: string): string => {
+const b2cQuery = (filter: shopDetailDTO): string => {
   return gql`
   query {
     marketplaceShop(filter: {
-      url: "${shopUrl}"
+      ${filter.id ? `id: "${filter.id}"` : ""}
+      ${filter.url ? `url: "${filter.url}"`: ""}
     }) {
         id
         name
@@ -56,6 +59,6 @@ const b2cQuery = (shopUrl: string): string => {
   }`;
 };
 
-export const shopDetailByUrlQuery = (shopUrl: string, isb2c = false) => {
-  return graphqlQueryCheck(b2bQuery(shopUrl), b2cQuery(shopUrl), isb2c);
+export const shopDetailsV2Query = (filter: shopDetailDTO, isb2c = false) => {
+  return graphqlQueryCheck(b2bQuery(filter), b2cQuery(filter), isb2c);
 };

@@ -11,7 +11,7 @@ import { ShopByEmailQuery } from '../queries/shop/shopbyEmail';
 import { shopBankDetailsQuery } from '../queries/shop/shopBankDetailsQuery';
 import { shopBankDetailsMutation } from '../mutations/shop/shopBankDetails';
 import { ShopType } from '../types/shop.type';
-import { createStoreDTO } from 'src/modules/shop/dto/shop';
+import { createStoreDTO, shopDetailDTO } from 'src/modules/shop/dto/shop';
 import { createStoreMutation } from '../mutations/shop/createShop';
 import { addStoreToShopMutation } from '../mutations/shop/addStoreToShop';
 import { deactivateStoreMutation } from '../mutations/shop/deactivateStore';
@@ -23,7 +23,7 @@ import { updateMyVendorsMutation } from '../mutations/shop/updateMyVendors';
 import { vendorDetailsQuery } from '../queries/shop/vendorDetails';
 import { shopIdByProductQuery } from '../queries/shop/shopIdByProductId';
 import { getAllShopsQuery } from '../queries/shop/getAllShops';
-import { shopDetailByUrlQuery } from '../queries/shop/shopDetailByUrl';
+import { shopDetailsV2Query } from '../queries/shop/shopDetailsV2';
 
 export const carouselHandler = async (token: string): Promise<object> => {
   try {
@@ -85,12 +85,12 @@ export const shopDetailsHandler = async (
   return response['marketplaceShop'];
 };
 
-export const shopDetailByUrlHandler = async (
-  shopUrl: string,
+export const getShopDetailsV2Handler = async (
+  filter: shopDetailDTO,
   isb2c = false,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(shopDetailByUrlQuery(shopUrl, isb2c), '', isb2c),
+    await graphqlCall(shopDetailsV2Query(filter, isb2c), '', isb2c),
   );
   return response['marketplaceShop'];
 };

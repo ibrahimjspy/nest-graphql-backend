@@ -119,6 +119,11 @@ export class b2cDto {
 }
 
 export class shopDetailDTO extends b2cDto {
-  @ApiProperty({ type: String, required: true })
-  shopUrl: string;
+  @ApiProperty({ type: String, required: false })
+  @IsOptional()
+  id?: string;
+
+  @ApiProperty({ type: String, required: false })
+  @IsOptional()
+  url?: string;
 }
