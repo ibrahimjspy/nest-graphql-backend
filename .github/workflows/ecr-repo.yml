@@ -55,6 +55,8 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
             #Now we have got the access of EC2 and we will start the deploy .
             cd /home/ubuntu/sharove-eks/sharove-b2b/middleware
-            ./deploy.sh
-            echo "Successfully deployed."
+            helm delete middleware-b2b-api
+            echo "successfully deleted old version."
+            helm install middleware-b2b-api ./helm-middleware
+            echo "Successfully deployed new version."
           '
