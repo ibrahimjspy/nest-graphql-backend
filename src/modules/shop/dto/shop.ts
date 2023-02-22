@@ -1,13 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import {
-  IsBoolean,
-  IsEmail,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsUrl,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 export class createStoreDTO {
   @ApiProperty()
@@ -19,9 +12,8 @@ export class createStoreDTO {
   @IsEmail()
   email: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsUrl()
+  @ApiProperty({ required: false })
+  @IsOptional()
   url: string;
 
   @ApiProperty({ required: false, default: '' })
