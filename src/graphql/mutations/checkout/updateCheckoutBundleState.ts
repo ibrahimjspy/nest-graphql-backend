@@ -108,7 +108,7 @@ const federationQuery = (
   `;
 };
 
-export const updateCheckoutBundleState = (
+export const updateCheckoutBundleStateMutation = (
   action: string,
   userEmail: string,
   checkoutBundles: Array<string>,
