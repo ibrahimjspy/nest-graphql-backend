@@ -1,22 +1,17 @@
 import { gql } from 'graphql-request';
 import { DEFAULT_CHANNEL } from 'src/constants';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
-import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
 
-const b2bQuery = (
-  id,
-  productIds: string[],
-  pagination: PaginationDto,
-): string => {
+const b2bQuery = (filter): string => {
   return gql`
     query {
       products(
-        ${validatePageFilter(pagination)}
+        ${validatePageFilter(filter.pagination)}
         channel: "${DEFAULT_CHANNEL}"
         filter: {
-          categories: ["${id}"],
-          ids: ${JSON.stringify(productIds)}
+          categories: ["${filter.categoryId}"],
+          ids: ${JSON.stringify(filter.productIds)}
         }
       ) {
         totalCount
@@ -76,15 +71,6 @@ const b2bQuery = (
 
 const b2cQuery = b2bQuery;
 
-export const productListPageQuery = (
-  id: string,
-  productIds: string[],
-  pagination,
-  isb2c = false,
-) => {
-  return graphqlQueryCheck(
-    b2bQuery(id, productIds, pagination),
-    b2cQuery(id, productIds, pagination),
-    isb2c,
-  );
+export const productListPageQuery = (filter, isb2c = false) => {
+  return graphqlQueryCheck(b2bQuery(filter), b2cQuery(filter), isb2c);
 };

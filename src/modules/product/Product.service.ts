@@ -115,11 +115,11 @@ export class ProductService {
     try {
       const retailerId = filter.retailerId;
       const productIds = [];
-      const productsData = await ProductsHandlers.productListPageHandler(
+      const productsData = await ProductsHandlers.productListPageHandler({
+        ...filter,
         categoryId,
         productIds,
-        filter,
-      );
+      });
       return prepareSuccessResponse(
         makeProductListResponse(
           await this.addProductsMapping(productsData, retailerId),
@@ -200,17 +200,14 @@ export class ProductService {
     try {
       const productIdsResponse =
         await ProductsHandlers.shopProductIdsByCategoryIdHandler(
-          shopId,
-          filter.categoryId,
+          { ...filter, shopId },
           filter.isB2c,
         );
       const productIds = productIdsResponse?.productIds || [];
 
       if (productIds.length) {
         const response = await ProductsHandlers.productListPageHandler(
-          filter.categoryId,
-          productIds,
-          filter,
+          { ...filter, productIds },
           filter.isB2c,
         );
         return prepareSuccessResponse(response);

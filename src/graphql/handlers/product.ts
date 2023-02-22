@@ -26,15 +26,11 @@ import { getBundlesQuery } from '../queries/product/getBundles';
 import { getProductSlugQuery } from '../queries/product/productSlug';
 
 export const productListPageHandler = async (
-  id: string,
-  productIds: string[],
-  pagination: PaginationDto,
+  filter,
   isb2c = false,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(
-      ProductQueries.productListPageQuery(id, productIds, pagination, isb2c),
-    ),
+    await graphqlCall(ProductQueries.productListPageQuery(filter, isb2c)),
   );
   return response['products'];
 };
@@ -230,14 +226,13 @@ export const getStoredProductListHandler = async (
 };
 
 export const shopProductIdsByCategoryIdHandler = async (
-  shopId: string,
-  categoryId: string,
+  filter,
   isb2c = false,
 ): Promise<{ productIds: string[] }> => {
   const userToken = '';
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
-      shopProductIdsByCategoryIdQuery(shopId, categoryId, isb2c),
+      shopProductIdsByCategoryIdQuery(filter, isb2c),
       userToken,
       isb2c,
     ),
