@@ -7,4 +7,4 @@ import { CartController } from './Cart.controller';
   providers: [CartService],
   exports: [CartService],
 })
-export class CheckoutModule {}
+export class CartModule {}

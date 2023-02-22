@@ -25,7 +25,7 @@ export class AddBundleDto {
 }
 
 export class UpdateBundleStateDto {
-  @ApiProperty({ isArray: true })
+  @ApiProperty({ isArray: true, type: String })
   @IsNotEmpty()
   checkoutBundleIds: Array<string>;
 

@@ -5,8 +5,9 @@ import { IsAuthenticated } from 'src/core/utils/decorators';
 import { makeResponse } from 'src/core/utils/response';
 import { AddBundleDto, UserIdDto } from '../dto';
 import { UpdateBundleStateDto } from '../dto/add-bundle.dto';
+import { DeleteBundlesDto } from './dto/cart';
 
-@ApiTags('cart')
+@ApiTags('checkout/cart')
 @Controller('')
 export class CartController {
   constructor(private readonly appService: CartService) {}
@@ -42,7 +43,7 @@ export class CartController {
   @Put('checkout/cart/bundle/delete')
   async deleteBundleFromCart(
     @Res() res,
-    @Body() body, // TODO DTO missing
+    @Body() body: DeleteBundlesDto,
     @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
     return makeResponse(
@@ -58,14 +59,14 @@ export class CartController {
   @Put('checkout/cart/bundle/update')
   async updateCartBundle(
     @Res() res,
-    @Body() body, // TODO DTO missing
+    @Body() body: AddBundleDto,
     @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
     return makeResponse(
       res,
       await this.appService.updateBundleFromCart(
         body?.userEmail,
-        body?.bundle,
+        body?.bundles,
         token,
       ),
     );

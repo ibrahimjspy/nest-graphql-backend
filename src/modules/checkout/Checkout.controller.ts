@@ -4,6 +4,8 @@ import { CheckoutService } from './Checkout.service';
 import { makeResponse } from '../../core/utils/response';
 import { IsAuthenticated } from 'src/core/utils/decorators';
 import { B2BClientPlatform } from 'src/constants';
+import { UserIdDto } from './dto';
+import { CheckoutIdDto } from './dto/checkoutId';
 
 @ApiTags('checkout')
 @Controller('checkout')
@@ -15,7 +17,7 @@ export class CheckoutController {
   @Post('create/checkout')
   async createCheckout(
     @Res() res,
-    @Body() body, //TODO dto missing
+    @Body() body: UserIdDto,
     @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
     const typeMethod =
@@ -31,7 +33,7 @@ export class CheckoutController {
   @Post('complete')
   async checkoutComplete(
     @Res() res,
-    @Body() body, // TODO DTO missing
+    @Body() body: CheckoutIdDto,
     @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
     const { checkoutId } = body;

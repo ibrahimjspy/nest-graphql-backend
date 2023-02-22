@@ -7,4 +7,4 @@ import { ShippingService } from './Shipping.service';
   providers: [ShippingService],
   exports: [ShippingService],
 })
-export class PaymentModule {}
+export class ShippingModule {}

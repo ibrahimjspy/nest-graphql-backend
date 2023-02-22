@@ -14,17 +14,13 @@ import {
 } from 'src/graphql/handlers/checkout';
 
 import { getLinesFromBundles, validateBundlesLength } from './Checkout.utils';
-import StripeService from 'src/external/services/stripe';
 import SqsService from 'src/external/endpoints/sqsMessage';
 import { NoPaymentIntentError } from './Checkout.errors';
 
 @Injectable()
 export class CheckoutService {
   private readonly logger = new Logger(CheckoutService.name);
-  constructor(
-    private stripeService: StripeService,
-    private sqsService: SqsService,
-  ) {
+  constructor(private sqsService: SqsService) {
     return;
   }
 

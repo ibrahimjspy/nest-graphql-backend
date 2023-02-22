@@ -1,7 +1,6 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
-import StripeService from 'src/external/services/stripe';
 import { getHttpErrorMessage } from 'src/external/utils/httpHelper';
 import {
   addShippingMethodHandler,
@@ -22,7 +21,7 @@ import {
 @Injectable()
 export class ShippingService {
   private readonly logger = new Logger(ShippingService.name);
-  constructor(private stripeService: StripeService) {
+  constructor() {
     return;
   }
   public async addBillingAddress(
