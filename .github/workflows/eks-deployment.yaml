@@ -59,4 +59,9 @@ jobs:
             echo "successfully deleted old version."
             helm install middleware-b2b-api ./helm-middleware
             echo "Successfully deployed new version."
+            cd /home/ubuntu/sharove-eks/sharove-b2c/middleware
+            helm delete middleware-b2c-api
+            echo "successfully deleted old version."
+            helm install middleware-b2c-api ./helm-middleware
+            echo "Successfully deployed new version."
           '
