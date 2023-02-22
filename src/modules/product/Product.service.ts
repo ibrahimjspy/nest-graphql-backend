@@ -198,7 +198,6 @@ export class ProductService {
     filter: shopProductsDTO,
   ): Promise<object> {
     try {
-      // Get product ids against given shopId and categoryId
       const productIdsResponse =
         await ProductsHandlers.shopProductIdsByCategoryIdHandler(
           shopId,
@@ -208,7 +207,6 @@ export class ProductService {
       const productIds = productIdsResponse?.productIds || [];
 
       if (productIds.length) {
-        // Get products list against given shop productIds
         const response = await ProductsHandlers.productListPageHandler(
           filter.categoryId,
           productIds,

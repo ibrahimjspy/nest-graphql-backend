@@ -35,14 +35,12 @@ export class CategoriesService {
     filter: shopCategoriesDTO,
   ): Promise<object> {
     try {
-      // Get category ids against given shop id
       const categoryIdsResponse = await shopCategoryIdsHandler(
         shopId,
         filter.isB2c,
       );
       const categoryIds = categoryIdsResponse?.categoryIds || [];
       if (categoryIds.length) {
-        // Get categories list against given shop category ids
         const response = await categoriesHandler(
           categoryIds,
           filter,
