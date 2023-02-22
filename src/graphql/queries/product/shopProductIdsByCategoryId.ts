@@ -1,11 +1,11 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
-const b2cQuery = (filter): string => {
+const b2cQuery = ({shopId, categoryId}): string => {
   return gql`
   query {
-    getProductsByShop(shopId: "${filter.shopId}", filter: {
-      categoryId: "${filter.categoryId}"
+    getProductsByShop(shopId: "${shopId}", filter: {
+      categoryId: "${categoryId}"
     }) {
       ... on ProductsShopType {
         productIds
