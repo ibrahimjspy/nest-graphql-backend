@@ -42,8 +42,7 @@ export class CategoriesService {
       const categoryIds = categoryIdsResponse?.categoryIds || [];
       if (categoryIds.length) {
         const response = await categoriesHandler(
-          categoryIds,
-          filter,
+          { ...filter, categoryIds },
           filter.isB2c,
         );
         return prepareSuccessResponse(response);
