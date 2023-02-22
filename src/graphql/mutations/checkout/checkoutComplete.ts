@@ -1,7 +1,6 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
-const b2bQuery = (checkoutId: string) => {
+export const orderCreateFromCheckoutMutation = (checkoutId: string) => {
   return gql`
     mutation {
       orderCreateFromCheckout(
@@ -32,8 +31,4 @@ const b2bQuery = (checkoutId: string) => {
       }
     }
   `;
-};
-
-export const orderCreateFromCheckoutMutation = (checkoutId: string) => {
-  return graphqlQueryCheck(b2bQuery(checkoutId), b2bQuery(checkoutId));
 };

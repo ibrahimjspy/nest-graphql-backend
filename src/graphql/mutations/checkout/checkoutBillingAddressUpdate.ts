@@ -1,7 +1,9 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
-const federationQuery = (checkoutId, addressDetails) => {
+export const checkoutBillingAddressUpdateMutation = (
+  checkoutId,
+  addressDetails,
+) => {
   const {
     country,
     countryArea,
@@ -55,14 +57,4 @@ const federationQuery = (checkoutId, addressDetails) => {
       }
     }
   `;
-};
-
-export const checkoutBillingAddressUpdateMutation = (
-  checkoutId,
-  addressDetails,
-) => {
-  return graphqlQueryCheck(
-    federationQuery(checkoutId, addressDetails),
-    federationQuery(checkoutId, addressDetails),
-  );
 };

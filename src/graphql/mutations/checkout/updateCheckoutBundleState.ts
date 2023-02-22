@@ -1,7 +1,6 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
-const federationQuery = (
+export const updateCheckoutBundleStateMutation = (
   action: string,
   userEmail: string,
   checkoutBundles: Array<string>,
@@ -106,15 +105,4 @@ const federationQuery = (
       }
     }
   `;
-};
-
-export const updateCheckoutBundleStateMutation = (
-  action: string,
-  userEmail: string,
-  checkoutBundles: Array<string>,
-) => {
-  return graphqlQueryCheck(
-    federationQuery(action, userEmail, checkoutBundles),
-    federationQuery(action, userEmail, checkoutBundles),
-  );
 };

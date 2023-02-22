@@ -53,14 +53,14 @@ export class PaymentService {
     intentId: string,
   ): Promise<object> {
     try {
-      const paymentInfoResponse = await savePaymentInfoHandler(
+      const paymentInfoResponse = await savePaymentInfoHandler({
         token,
         checkoutId,
         userEmail,
         amount,
         paymentStatus,
         intentId,
-      );
+      });
 
       return paymentInfoResponse;
     } catch (error) {

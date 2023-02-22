@@ -1,7 +1,6 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
-const federationQuery = (
+export const deleteCheckoutBundlesMutation = (
   checkoutBundleIds: Array<string>,
   userEmail: string,
 ) => {
@@ -104,14 +103,4 @@ const federationQuery = (
       }
     }
   `;
-};
-
-export const deleteCheckoutBundlesMutation = (
-  checkoutBundleIds: Array<string>,
-  userEmail: string,
-) => {
-  return graphqlQueryCheck(
-    federationQuery(checkoutBundleIds, userEmail),
-    federationQuery(checkoutBundleIds, userEmail),
-  );
 };
