@@ -68,6 +68,8 @@ jobs:
           (echo "UPS_USER_TOKEN=${{ secrets.UPS_USER_TOKEN }}") >> .env
           (echo "MAPPING_SERVICE_TOKEN=${{ secrets.MAPPING_SERVICE_TOKEN }}") >> .env
           (echo "MAPPING_SERVICE_URL=${{ secrets.MAPPING_SERVICE_URL }}") >> .env
+          (echo "PROVISION_STOREFRONT_URL=${{ secrets.PROVISION_STOREFRONT_URL }}") >> .env
+          (echo "AUTH_TOKEN_GITHUB=${{ secrets.AUTH_TOKEN_GITHUB }}") >> .env
           
 
         # Docker login
