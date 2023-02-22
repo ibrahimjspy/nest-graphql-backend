@@ -207,7 +207,7 @@ export class ProductService {
         );
       const productIds = productIdsResponse?.productIds || [];
 
-      if(productIds.length){
+      if (productIds.length) {
         // Get products list against given shop productIds
         const response = await ProductsHandlers.productListPageHandler(
           filter.categoryId,
@@ -217,7 +217,7 @@ export class ProductService {
         );
         return prepareSuccessResponse(response);
       }
-      return prepareFailedResponse("Products not found", 404);
+      return prepareFailedResponse('Products not found', 404);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

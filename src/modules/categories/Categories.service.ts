@@ -1,6 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
-import { prepareFailedResponse, prepareSuccessResponse } from 'src/core/utils/response';
+import {
+  prepareFailedResponse,
+  prepareSuccessResponse,
+} from 'src/core/utils/response';
 import {
   categoriesHandler,
   menuCategoriesHandler,
@@ -38,7 +41,7 @@ export class CategoriesService {
         filter.isB2c,
       );
       const categoryIds = categoryIdsResponse?.categoryIds || [];
-      if(categoryIds.length){
+      if (categoryIds.length) {
         // Get categories list against given shop category ids
         const response = await categoriesHandler(
           categoryIds,
@@ -47,7 +50,7 @@ export class CategoriesService {
         );
         return prepareSuccessResponse(response);
       }
-      return prepareFailedResponse("Categories not found", 404);
+      return prepareFailedResponse('Categories not found', 404);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
