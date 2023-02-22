@@ -3,15 +3,15 @@ import { DEFAULT_CHANNEL } from 'src/constants';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
 
-const b2bQuery = (filter): string => {
+const b2bQuery = ({categoryId, productIds, pagination}): string => {
   return gql`
     query {
       products(
-        ${validatePageFilter(filter.pagination)}
+        ${validatePageFilter(pagination)}
         channel: "${DEFAULT_CHANNEL}"
         filter: {
-          categories: ["${filter.categoryId}"],
-          ids: ${JSON.stringify(filter.productIds)}
+          categories: ["${categoryId}"],
+          ids: ${JSON.stringify(productIds)}
         }
       ) {
         totalCount
