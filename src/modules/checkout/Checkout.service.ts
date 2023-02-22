@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
-import GeneralError from 'src/core/exceptions/generalError';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import {
   prepareFailedResponse,
@@ -17,6 +16,7 @@ import {
 import { getLinesFromBundles, validateBundlesLength } from './Checkout.utils';
 import StripeService from 'src/external/services/stripe';
 import SqsService from 'src/external/endpoints/sqsMessage';
+import { NoPaymentIntentError } from './Checkout.errors';
 
 @Injectable()
 export class CheckoutService {
@@ -57,30 +57,29 @@ export class CheckoutService {
 
   public async checkoutComplete(
     token: string,
-    checkoutID: string,
+    checkoutId: string,
   ): Promise<object> {
     try {
       const paymentIntent = await CheckoutHandlers.getPaymentIntentHandler(
-        checkoutID,
+        checkoutId,
         token,
       );
       if (!paymentIntent['intentId'])
-        // TODO create specific error
-        throw new GeneralError('Cannot get Payment intent Id');
+        throw new NoPaymentIntentError(checkoutId);
       const createOrder = await orderCreateFromCheckoutHandler(
-        checkoutID,
+        checkoutId,
         token,
       );
-      await this.triggerWebhookForOS(checkoutID, createOrder['order'], token);
+      await this.triggerWebhookForOS(checkoutId, createOrder['order'], token);
       const disableCheckout = await CheckoutHandlers.disableCheckoutSession(
-        checkoutID,
+        checkoutId,
         token,
       );
 
       return prepareSuccessResponse({ createOrder, disableCheckout }, '', 201);
     } catch (error) {
       this.logger.error(error);
-      if (error instanceof GeneralError) {
+      if (error instanceof NoPaymentIntentError) {
         return prepareFailedResponse(error.message);
       } else {
         return graphqlExceptionHandler(error);

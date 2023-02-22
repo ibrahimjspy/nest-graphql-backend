@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { STRIPE_RETURN_URL } from 'src/constants';
-
-import GeneralError from 'src/core/exceptions/generalError';
 import { toCents } from 'src/modules/checkout/Checkout.utils';
 
 import Stripe from 'stripe';
@@ -69,7 +67,7 @@ export default class StripeService {
         type: 'card',
       });
     } else {
-      throw new GeneralError(`Cannot Find Any Customer`);
+      throw new Error(`Cannot Find Any Customer against ${userEmail}`);
     }
 
     return paymentMethods;
@@ -98,7 +96,7 @@ export default class StripeService {
         return_url: STRIPE_RETURN_URL,
       });
     } else {
-      throw new GeneralError(`Cannot Find Any Customer`);
+      throw new Error(`Cannot Find Any Customer against ${userEmail}`);
     }
     return createPaymentIntent;
   }

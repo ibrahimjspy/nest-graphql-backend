@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import GeneralError from 'src/core/exceptions/generalError';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareFailedResponse } from 'src/core/utils/response';
 import StripeService from 'src/external/services/stripe';
@@ -7,6 +6,7 @@ import {
   getTotalAmountByCheckoutIdHandler,
   savePaymentInfoHandler,
 } from 'src/graphql/handlers/checkout';
+import { EmptyCartError, PaymentIntentCreationError } from '../Checkout.errors';
 
 @Injectable()
 export class PaymentService {
@@ -102,8 +102,7 @@ export class PaymentService {
       );
 
       if (!totalAmountResponse['totalAmount'])
-        // TODO create custom error
-        throw new GeneralError('Empty cart');
+        throw new EmptyCartError(userEmail);
 
       const paymentIntentResponse =
         await this.stripeService.createPaymentintent(
@@ -112,7 +111,7 @@ export class PaymentService {
           totalAmountResponse['totalAmount'],
         );
       if (!paymentIntentResponse)
-        throw new GeneralError('Paymnet Intent Creation Error');
+        throw new PaymentIntentCreationError(userEmail, paymentMethodId);
 
       const savePaymentInfoResponse = await this.savePaymentInfo(
         token,
