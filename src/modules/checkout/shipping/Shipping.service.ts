@@ -24,6 +24,9 @@ export class ShippingService {
   constructor() {
     return;
   }
+  /**
+   * @description -- this method adds a billing address against checkout id , it is currently storing this in saleor
+   */
   public async addBillingAddress(
     checkoutId: string,
     addressDetails: AddressDetailType,
@@ -42,6 +45,9 @@ export class ShippingService {
     }
   }
 
+  /**
+   * @description -- returns shipping and billing address against a checkout session
+   */
   public async getShippingAndBillingAddress(
     checkoutId: string,
     token: string,
@@ -58,6 +64,9 @@ export class ShippingService {
     }
   }
 
+  /**
+   * @description -- returns shipping methods from shop service
+   */
   public async getShippingMethods(
     userId: string,
     token: string,
@@ -90,6 +99,9 @@ export class ShippingService {
     }
   }
 
+  /**
+   * @description --this method is called to select shipping methods against a user id
+   */
   public async selectShippingMethods(
     userId: string,
     shippingIds: string[],
@@ -122,6 +134,9 @@ export class ShippingService {
     }
   }
 
+  /**
+   * @description -- this adds shipping address against a checkout session
+   */
   public async addShippingAddress(
     checkoutId: string,
     addressDetails: AddressDetailType,
@@ -136,15 +151,6 @@ export class ShippingService {
       );
 
       await updateDeliveryMethodHandler(checkoutId, shippingMethodId, token);
-
-      // When address is added we also need to update on OrangeShine.
-      // addShippingAddressInfo({
-      //   address1: addressDetails.streetAddress1,
-      //   address2: addressDetails.streetAddress2,
-      //   city: addressDetails.city,
-      //   state: addressDetails.countryArea,
-      //   zipcode: addressDetails.postalCode,
-      // });
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
       this.logger.error(error);

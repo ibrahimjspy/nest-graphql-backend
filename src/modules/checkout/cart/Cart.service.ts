@@ -27,6 +27,9 @@ import { UpdateBundleStateDto } from '../dto/add-bundle.dto';
 export class CartService {
   private readonly logger = new Logger(CartService.name);
 
+  /**
+   * @description -- fetches shopping cart data from bundle service against userEmail
+   */
   public async getShoppingCartData(
     userEmail: string,
     token: string,
@@ -39,6 +42,12 @@ export class CartService {
       return graphqlExceptionHandler(error);
     }
   }
+
+  /**
+   * @description -- this is private method which validates if bundles provided do not match aginst allready existing bundles
+   * if so -- it adds those bundles against userEmail
+   * @deprecated -- infuture we plan to have this logic in cart service so this method will be deprecated
+   */
   private async addBundles(
     bundlesForCart: any,
     validateBundleList: [],
@@ -57,7 +66,11 @@ export class CartService {
     return addedBundleList;
   }
 
-  // TODO make update bundles and update bundles from cart same
+  /**
+   * @description -- this is private method which validates if bundles provided do match against all ready existing bundles
+   * if so -- it adds those bundles against userEmail
+   * @deprecated -- infuture we plan to have this logic in cart service so this method will be deprecated
+   */
   private async updateBundles(
     bundlesForCart: any,
     validateBundleList: [],
@@ -76,6 +89,11 @@ export class CartService {
     return updatedBundle;
   }
 
+  /**
+   * @description -- this method adds bundles to cart against a user id
+   * @deprecated -- it has additional call to fetch bundle status which in future will be deprecated as this logic will move to shop service
+   * @deprecated -- in future usage of both update bundles and add bundles will be deprecated as they are adding useless validation logic to add to cart
+   */
   public async addToCart(
     userEmail: string,
     bundlesForCart: CheckoutBundleInputType[],
@@ -90,8 +108,6 @@ export class CartService {
         getBundleIdsArray,
         token,
       );
-      /* The below code is checking if the bundleIdsExist in the cart or not. If it exists then it will
-     update the bundle in the cart. If it does not exist then it will add the bundle in the cart. */
       if (validateBundlesLength(bundleStatus['bundleIdsExist'])) {
         const updateBundleList = await this.updateBundles(
           bundlesForCart,
@@ -128,6 +144,9 @@ export class CartService {
     }
   }
 
+  /**
+   * @description -- removes given bundles from cart against a user email
+   */
   public async deleteBundleFromCart(
     userEmail: string,
     checkoutBundleIds: string[],
@@ -147,6 +166,9 @@ export class CartService {
     }
   }
 
+  /**
+   * @description -- updates bundle quantity in cart against a user email
+   */
   public async updateBundleFromCart(
     userEmail: string,
     bundlesFromCart: object,
@@ -167,17 +189,19 @@ export class CartService {
     }
   }
 
+  /**
+   * @description -- this method adds checkout id against a user checkout bundle session made against a user email
+   */
   protected async updateCartBundlesCheckoutIdService(
     userEmail: string,
     token: string,
-    checkoutID: string,
+    checkoutId: string,
   ) {
     try {
-      /* The below code is updating the cart bundles for a checkout ID. */
       const response = await updateCartBundlesCheckoutIdHandler(
         userEmail,
         token,
-        checkoutID,
+        checkoutId,
       );
 
       return response;
@@ -187,6 +211,10 @@ export class CartService {
     }
   }
 
+  /**
+   * @description -- this method updates state of given list of checkout bundles
+   * @satisfies -- it updates status in form of ~~ selected -- unselected
+   */
   public async updateCheckoutBundleState(
     updateBundleState: UpdateBundleStateDto,
     token: string,

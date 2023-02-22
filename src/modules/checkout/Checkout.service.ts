@@ -24,6 +24,12 @@ export class CheckoutService {
     return;
   }
 
+  /**
+   * @description -- this method is called at the end of order placement in sharove to send an event to sqs queue providing it
+   * created order details and checkout id
+   * @step - this method behind the scenes triggers a lambda which transforms an order from Sharove structure to OS structure
+   * @step - uses transformed order to place it against OS
+   */
   protected async triggerWebhookForOS(
     checkoutId: string,
     orderDetails: object,
@@ -51,6 +57,15 @@ export class CheckoutService {
     }
   }
 
+  /**
+   * @description -- this method is called after shipping methods and payment methods assignment with Checkout to create an order
+   * at the end of process
+   * @step - it validates if payment intent is created using preAuth method in payment service
+   * @step - it then creates order by just giving checkout id and Auth token
+   * @step - it triggers an sqs event to add that order to shop
+   * @step - disables checkout session from shop service checkout
+   * @step - it takes order and bundle information and then store that order to shop using addOrderToShop
+   */
   public async checkoutComplete(
     token: string,
     checkoutId: string,
@@ -83,10 +98,18 @@ export class CheckoutService {
     }
   }
 
+  /**
+   * @description -- this method is called when create checkout is hit by admin,
+   * @step - it bypasses shipping and payment apis to use all ready predefined methods to place an order directly
+   */
   public async createAdminCheckout(userEmail: string, token: string) {
     return { userEmail, token };
   }
 
+  /**
+   * @description -- this method is called when create checkout is hit by end consumer
+   * @step - it creates checkout session in both saleor and shop service checkout
+   */
   public async createCheckout(userEmail: string, token: string) {
     try {
       const checkoutData = await CheckoutHandlers.getCheckoutBundlesHandler(
@@ -96,7 +119,7 @@ export class CheckoutService {
       if (validateBundlesLength(checkoutData['checkoutBundles'])) {
         throw new RecordNotFound('Empty Cart');
       }
-      const checkoutLines = await getLinesFromBundles(
+      const checkoutLines = getLinesFromBundles(
         checkoutData['checkoutBundles'],
       );
       const checkoutCreate = await createCheckoutHandler(

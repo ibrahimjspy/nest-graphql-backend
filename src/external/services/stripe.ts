@@ -14,21 +14,23 @@ export default class StripeService {
       timeout: 5000,
     });
   }
+
   protected async getCustomerByEmail(Email: string) {
-    const customerID = await this.stripe.customers.list({
+    const customerId = await this.stripe.customers.list({
       email: Email,
     });
-    return customerID['data'].length > 0 ? customerID['data'][0]['id'] : null;
+    return customerId['data'].length > 0 ? customerId['data'][0]['id'] : null;
   }
+
   public async customer(name: string, email: string, paymentMethodId: string) {
-    const customerID: any = await this.getCustomerByEmail(email);
+    const customerId: any = await this.getCustomerByEmail(email);
 
     let response = {};
     /* This is checking if the customer exists in the stripe database. If it does, it will update the
    customer with the new payment method. If it doesn't, it will create a new customer with the new
    payment method. */
-    if (customerID) {
-      response = await this.updateCustomer(customerID, paymentMethodId);
+    if (customerId) {
+      response = await this.updateCustomer(customerId, paymentMethodId);
     } else {
       response = await this.createCustomer(name, email, paymentMethodId);
     }
@@ -58,12 +60,12 @@ export default class StripeService {
   }
 
   public async paymentMethodsList(userEmail: string) {
-    const customerID: any = await this.getCustomerByEmail(userEmail);
+    const customerId: any = await this.getCustomerByEmail(userEmail);
 
     let paymentMethods = {};
-    if (customerID) {
+    if (customerId) {
       paymentMethods = await this.stripe.paymentMethods.list({
-        customer: customerID,
+        customer: customerId,
         type: 'card',
       });
     } else {
@@ -73,7 +75,7 @@ export default class StripeService {
     return paymentMethods;
   }
 
-  public async createPaymentintent(
+  public async createPaymentIntent(
     userEmail: string,
     paymentMethodId: string,
     totalAmount: number,
@@ -107,8 +109,8 @@ export default class StripeService {
     );
     return paymentInfo;
   }
-  public async createpaymentMethods() {
-    const createpaymentMethod = await this.stripe.paymentMethods.create({
+  public async createPaymentMethods() {
+    const createPaymentMethod = await this.stripe.paymentMethods.create({
       type: 'card',
       card: {
         number: '2223003122003222',
@@ -117,6 +119,6 @@ export default class StripeService {
         cvc: '112',
       },
     });
-    return createpaymentMethod;
+    return createPaymentMethod;
   }
 }

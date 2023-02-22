@@ -7,6 +7,7 @@ import {
   savePaymentInfoHandler,
 } from 'src/graphql/handlers/checkout';
 import { EmptyCartError, PaymentIntentCreationError } from '../Checkout.errors';
+import { PaymentInfoInterface } from './Payment.types';
 
 @Injectable()
 export class PaymentService {
@@ -14,6 +15,9 @@ export class PaymentService {
   constructor(private stripeService: StripeService) {
     return;
   }
+  /**
+   * @description -- returns payment methods list from stripe against a customer
+   */
   public async getPaymentMethodsList(userEmail: string): Promise<object> {
     try {
       const cardList = await this.stripeService.paymentMethodsList(userEmail);
@@ -25,6 +29,9 @@ export class PaymentService {
     }
   }
 
+  /**
+   * @description -- this creates a payment session against user
+   */
   public async createPayment(
     name: string,
     email: string,
@@ -43,15 +50,17 @@ export class PaymentService {
     }
   }
 
-  // TODO make this an object
-  protected async savePaymentInfo(
-    token: string,
-    checkoutId: string,
-    userEmail: string,
-    amount: number,
-    paymentStatus: number,
-    intentId: string,
-  ): Promise<object> {
+  /**
+   * @description -- this saves payment information provided by customer in stripe
+   */
+  protected async savePaymentInfo({
+    token,
+    checkoutId,
+    userEmail,
+    amount,
+    paymentStatus,
+    intentId,
+  }: PaymentInfoInterface): Promise<object> {
     try {
       const paymentInfoResponse = await savePaymentInfoHandler({
         token,
@@ -69,6 +78,9 @@ export class PaymentService {
     }
   }
 
+  /**
+   * @description -- this returns total amount against a checkout id from saleor
+   */
   protected async getTotalAmountByCheckoutID(
     token: string,
     checkoutID: string,
@@ -86,10 +98,14 @@ export class PaymentService {
     }
   }
 
+  /**
+   * @description -- this creates a payment intent in stripe against user by first fetching its total amount from salor
+   * cart and then adding this amount to stripe and lastly saving this information back in saleor
+   */
   public async paymentPreAuth(
     userEmail: string,
     paymentMethodId: string,
-    checkoutID: string,
+    checkoutId: string,
     token: string,
     paymentStatus = 1,
   ): Promise<object> {
@@ -97,7 +113,7 @@ export class PaymentService {
       /* 1. It is creating a payment intent with stripe.
        2. It is saving the payment info in the database. */
       const totalAmountResponse = await this.getTotalAmountByCheckoutID(
-        checkoutID,
+        checkoutId,
         token,
       );
 
@@ -105,7 +121,7 @@ export class PaymentService {
         throw new EmptyCartError(userEmail);
 
       const paymentIntentResponse =
-        await this.stripeService.createPaymentintent(
+        await this.stripeService.createPaymentIntent(
           userEmail,
           paymentMethodId,
           totalAmountResponse['totalAmount'],
@@ -113,14 +129,14 @@ export class PaymentService {
       if (!paymentIntentResponse)
         throw new PaymentIntentCreationError(userEmail, paymentMethodId);
 
-      const savePaymentInfoResponse = await this.savePaymentInfo(
+      const savePaymentInfoResponse = await this.savePaymentInfo({
         token,
-        checkoutID,
+        checkoutId,
         userEmail,
-        paymentIntentResponse['amount'],
+        amount: paymentIntentResponse['amount'],
         paymentStatus,
-        paymentIntentResponse['id'],
-      );
+        intentId: paymentIntentResponse['id'],
+      });
 
       return savePaymentInfoResponse;
     } catch (error) {
