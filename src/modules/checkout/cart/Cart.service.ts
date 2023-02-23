@@ -191,7 +191,7 @@ export class CartService {
   /**
    * @description -- this method adds checkout id against a user checkout bundle session made against a user email
    */
-  protected async updateCartBundlesCheckoutIdService(
+  public async updateCartBundlesCheckoutIdService(
     userEmail: string,
     token: string,
     checkoutId: string,

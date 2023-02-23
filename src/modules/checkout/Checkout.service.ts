@@ -16,11 +16,15 @@ import {
 import { getLinesFromBundles, validateBundlesLength } from './Checkout.utils';
 import SqsService from 'src/external/endpoints/sqsMessage';
 import { NoPaymentIntentError } from './Checkout.errors';
+import { CartService } from './cart/Cart.service';
 
 @Injectable()
 export class CheckoutService {
   private readonly logger = new Logger(CheckoutService.name);
-  constructor(private sqsService: SqsService) {
+  constructor(
+    private sqsService: SqsService,
+    private cartService: CartService,
+  ) {
     return;
   }
 
@@ -126,6 +130,11 @@ export class CheckoutService {
         userEmail,
         checkoutLines,
         token,
+      );
+      await this.cartService.updateCartBundlesCheckoutIdService(
+        userEmail,
+        token,
+        checkoutCreate['checkout']['id'],
       );
       return checkoutCreate;
     } catch (error) {
