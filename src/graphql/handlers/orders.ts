@@ -35,14 +35,18 @@ import {
 import { getOrderStatus } from '../queries/orders/getOrderStatuses';
 import { orderFulfillMutation } from '../mutations/order/fulfillOrder';
 import { orderLineDTO } from 'src/modules/orders/dto/fulfill';
-import { OrderRefundDTO } from 'src/modules/orders/dto/refund';
-import { orderRefundMutation } from '../mutations/order/refundOrder';
+import {
+  OrderAmountRefundDto,
+  OrderFulfillmentRefundDto,
+} from 'src/modules/orders/dto/refund';
+import { orderFulfillmentsRefundMutation } from '../mutations/order/refundOrderFulfillments';
 import { orderCancelMutation } from '../mutations/order/cancelOrder';
 import { orderFulfillmentCancelMutation } from '../mutations/order/cancelOrderFulfillment';
 import { updateOrderMetadataMutation } from '../mutations/order/orderMetadata';
 import { getReturnsListQuery } from '../queries/orders/returnsList';
 import { OrderMetadataDto } from 'src/modules/orders/dto/metadata';
 import { returnOrderDetailsQuery } from '../queries/orders/returnedOrderDetails';
+import { orderAmountRefundMutation } from '../mutations/order/refundOrderAmount';
 
 export const dashboardByIdHandler = async (
   id: string,
@@ -337,22 +341,41 @@ export const orderFulfillHandler = async (
 };
 
 export const orderFulfillmentRefundHandler = async (
-  refundObject: OrderRefundDTO,
+  refundObject: OrderFulfillmentRefundDto,
   token,
+  isB2c = false,
 ): Promise<object> => {
   orderLinesTransformer;
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
-      orderRefundMutation({
-        orderId: refundObject.orderId,
-        amountToRefund: refundObject.amountToRefund,
-        orderLines: JSON.stringify(refundObject.orderLines),
-        fulfillmentLines: JSON.stringify(refundObject.fulfillmentLines),
-      }),
+      orderFulfillmentsRefundMutation(
+        refundObject.order,
+        refundObject.input,
+        isB2c,
+      ),
       token,
     ),
   );
   return response['orderFulfillmentRefundProducts'];
+};
+
+export const orderAmountRefundHandler = async (
+  refundObject: OrderAmountRefundDto,
+  token,
+  isB2c = false,
+): Promise<object> => {
+  orderLinesTransformer;
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      orderAmountRefundMutation(
+        refundObject.orderId,
+        refundObject.amount,
+        isB2c,
+      ),
+      token,
+    ),
+  );
+  return response['orderRefund'];
 };
 
 export const orderCancelHandler = async (

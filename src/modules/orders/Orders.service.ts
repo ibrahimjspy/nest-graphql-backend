@@ -11,6 +11,7 @@ import {
   dashboardByIdHandler,
   getReturnOrderIdsHandler,
   orderActivityHandler,
+  orderAmountRefundHandler,
   orderCancelHandler,
   orderDetailsHandler,
   orderFulfillHandler,
@@ -59,7 +60,7 @@ import {
   getTotalEarningsHandler,
 } from 'src/graphql/handlers/orders.reporting';
 import { orderLineDTO } from './dto/fulfill';
-import { OrderRefundDTO } from './dto/refund';
+import { OrderAmountRefundDto, OrderFulfillmentRefundDto } from './dto/refund';
 import { AddOrderToShopDto } from './dto/addOrderToShop';
 import { StoreOrderAssigneeDto } from './dto/storeOrderAssignee';
 import { OrderMetadataDto } from './dto/metadata';
@@ -374,12 +375,25 @@ export class OrdersService {
     }
   }
 
-  public async orderRefund(
-    refundObject: OrderRefundDTO,
+  public async orderFulfillmentRefund(
+    refundObject: OrderFulfillmentRefundDto,
     token: string,
   ): Promise<object> {
     try {
       const response = await orderFulfillmentRefundHandler(refundObject, token);
+      return prepareSuccessResponse(response, '', 201);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async orderAmountRefund(
+    refundObject: OrderAmountRefundDto,
+    token: string,
+  ): Promise<object> {
+    try {
+      const response = await orderAmountRefundHandler(refundObject, token);
       return prepareSuccessResponse(response, '', 201);
     } catch (error) {
       this.logger.error(error);
