@@ -1,14 +1,15 @@
 import { Body, Controller, Get, Param, Post, Put, Res } from '@nestjs/common';
 import { CartService } from './Cart.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { IsAuthenticated } from 'src/core/utils/decorators';
 import { makeResponse } from 'src/core/utils/response';
 import { AddBundleDto, UserIdDto } from '../dto';
-import { UpdateBundleStateDto } from '../dto/add-bundle.dto';
+import { UpdateBundleStateDto, UpdateBundlesDto } from '../dto/add-bundle.dto';
 import { DeleteBundlesDto } from './dto/cart';
 
 @ApiTags('checkout/cart')
 @Controller('')
+@ApiBearerAuth('JWT-auth')
 export class CartController {
   constructor(private readonly appService: CartService) {}
   // Returns top menu categories
@@ -25,6 +26,7 @@ export class CartController {
   }
 
   @Post('checkout/cart/bundle/add')
+  @ApiBearerAuth('JWT-auth')
   async addBundlesToCart(
     @Res() res,
     @Body() addBundleDto: AddBundleDto,
@@ -41,6 +43,7 @@ export class CartController {
   }
 
   @Put('checkout/cart/bundle/delete')
+  @ApiBearerAuth('JWT-auth')
   async deleteBundleFromCart(
     @Res() res,
     @Body() body: DeleteBundlesDto,
@@ -57,9 +60,10 @@ export class CartController {
   }
 
   @Put('checkout/cart/bundle/update')
+  @ApiBearerAuth('JWT-auth')
   async updateCartBundle(
     @Res() res,
-    @Body() body: AddBundleDto,
+    @Body() body: UpdateBundlesDto,
     @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
     return makeResponse(
@@ -73,6 +77,7 @@ export class CartController {
   }
 
   @Put('checkout/cart/bundle/state/update')
+  @ApiBearerAuth('JWT-auth')
   async updateCartState(
     @Res() res,
     @Body() updateBundleState: UpdateBundleStateDto,

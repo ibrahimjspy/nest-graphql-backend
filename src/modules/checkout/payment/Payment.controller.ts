@@ -1,4 +1,4 @@
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { PaymentService } from './Payment.service';
 import { Body, Controller, Get, Param, Post, Res } from '@nestjs/common';
 import { IsAuthenticated } from 'src/core/utils/decorators';
@@ -11,6 +11,7 @@ import { PaymentCreateDto, PaymentPreAuthDto } from './dto/paymentCreate';
 export class PaymentController {
   constructor(private readonly appService: PaymentService) {}
   @Post('checkout/payment/create')
+  @ApiBearerAuth('JWT-auth')
   async createPayment(
     @Res() res,
     @Body() body: PaymentCreateDto,
@@ -27,6 +28,7 @@ export class PaymentController {
   }
 
   @Post('checkout/payment/preauth')
+  @ApiBearerAuth('JWT-auth')
   async preAuth(
     @Res() res,
     @Body() body: PaymentPreAuthDto,

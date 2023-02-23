@@ -1,4 +1,4 @@
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ShippingService } from './Shipping.service';
 import {
   Body,
@@ -24,6 +24,7 @@ import { CheckoutIdDto } from '../dto/checkoutId';
 export class ShippingController {
   constructor(private readonly appService: ShippingService) {}
   @Post('checkout/shippingAddress')
+  @ApiBearerAuth('JWT-auth')
   async addShippingAddress(
     @Res() res,
     @Body() body: ShippingAddressCreateDto,
@@ -42,6 +43,7 @@ export class ShippingController {
   }
 
   @Post('checkout/billingAddress')
+  @ApiBearerAuth('JWT-auth')
   async addBillingAddress(
     @Res() res,
     @Body() body: BillingAddressDto,
@@ -59,6 +61,7 @@ export class ShippingController {
   }
 
   @Get('checkout/shippingAndBillingAddress/:checkoutId')
+  @ApiBearerAuth('JWT-auth')
   async getShippingAndBillingAddress(
     @Res() res,
     @Param() params: CheckoutIdDto,
@@ -75,6 +78,7 @@ export class ShippingController {
   }
 
   @Get('checkout/shippingMethods/:userId')
+  @ApiBearerAuth('JWT-auth')
   async getShippingMethods(
     @Res() res,
     @Param() params: GetShippingMethodDto,
@@ -88,6 +92,7 @@ export class ShippingController {
   }
 
   @Put('checkout/shippingMethods/select')
+  @ApiBearerAuth('JWT-auth')
   async selectShippingMethods(
     @Res() res,
     @Body() body: SelectShippingAddressDto,

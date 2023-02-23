@@ -171,14 +171,13 @@ export class CartService {
    */
   public async updateBundleFromCart(
     userEmail: string,
-    bundlesFromCart: object,
+    checkoutBundles,
     token: string,
   ): Promise<object> {
     try {
-      const bundlesList = [bundlesFromCart];
       const response = await updateCheckoutBundlesHandler(
         userEmail,
-        bundlesList,
+        checkoutBundles,
         token,
       );
 

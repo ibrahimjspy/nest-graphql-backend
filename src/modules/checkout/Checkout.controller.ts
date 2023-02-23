@@ -1,5 +1,5 @@
 import { Body, Controller, Post, Res } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CheckoutService } from './Checkout.service';
 import { makeResponse } from '../../core/utils/response';
 import { IsAuthenticated } from 'src/core/utils/decorators';
@@ -15,6 +15,7 @@ export class CheckoutController {
   }
 
   @Post('create/checkout')
+  @ApiBearerAuth('JWT-auth')
   async createCheckout(
     @Res() res,
     @Body() body: UserIdDto,
@@ -31,6 +32,7 @@ export class CheckoutController {
   }
 
   @Post('complete')
+  @ApiBearerAuth('JWT-auth')
   async checkoutComplete(
     @Res() res,
     @Body() body: CheckoutIdDto,
