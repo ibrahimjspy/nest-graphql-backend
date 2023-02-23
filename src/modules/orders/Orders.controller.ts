@@ -8,7 +8,7 @@ import {
   Query,
   Res,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OrdersService } from './Orders.service';
 import { makeResponse } from '../../core/utils/response';
 import { OrderIdDto, ShopIdDto, UserIdDto } from './dto';
@@ -21,7 +21,7 @@ import {
 } from './dto/order-returns.dto';
 import { IsAuthenticated } from 'src/core/utils/decorators';
 import { OrderFulfillDto, orderFulfillmentCancelDTO } from './dto/fulfill';
-import { OrderRefundDTO } from './dto/refund';
+import { OrderAmountRefundDto, OrderFulfillmentRefundDto } from './dto/refund';
 import { b2cDto, shopIdDTO } from '../shop/dto/shop';
 import { AddOrderToShopDto } from './dto/addOrderToShop';
 import { StoreOrderAssigneeDto } from './dto/storeOrderAssignee';
@@ -227,18 +227,35 @@ export class OrdersController {
     );
   }
 
-  @Post('api/v1/order/refund')
+  @Post('api/v1/order/fulfillment/refund')
+  @ApiBearerAuth('JWT-auth')
   @ApiOperation({
     summary: 'api to refund order lines both fulfilled and unfulfilled',
   })
   async refundOrder(
     @Res() res,
-    @Body() orderDto: OrderRefundDTO,
+    @Body() orderDto: OrderFulfillmentRefundDto,
     @IsAuthenticated('authorization') token: string,
   ) {
     return makeResponse(
       res,
-      await this.appService.orderRefund(orderDto, token),
+      await this.appService.orderFulfillmentRefund(orderDto, token),
+    );
+  }
+
+  @Post('api/v1/order/amount/refund')
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'api to refund order with specified order amount',
+  })
+  async refundOrderAmount(
+    @Res() res,
+    @Body() orderDto: OrderAmountRefundDto,
+    @IsAuthenticated('authorization') token: string,
+  ) {
+    return makeResponse(
+      res,
+      await this.appService.orderAmountRefund(orderDto, token),
     );
   }
 
