@@ -1,7 +1,7 @@
 import { gql } from 'graphql-request';
-import { pushToStoreDTO } from 'src/modules/productStore/dto/products';
+import { PushToStoreDto } from 'src/modules/productStore/dto/products';
 
-export const pushToStoreMutation = (pushToStoreInput: pushToStoreDTO) => {
+export const pushToStoreMutation = (pushToStoreInput: PushToStoreDto) => {
   const { products, shopId, storefrontId } = pushToStoreInput;
   return gql`
     mutation {

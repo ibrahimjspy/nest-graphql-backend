@@ -60,7 +60,7 @@ class productCreateDTO {
   images: string[];
 }
 
-export class pushToStoreDTO {
+export class PushToStoreDto {
   @ApiProperty({ required: true, isArray: true, type: productCreateDTO })
   @IsArray()
   @ArrayMinSize(1)
@@ -73,4 +73,8 @@ export class pushToStoreDTO {
   @ApiProperty({ description: 'storefront id in b2c', required: true })
   @IsNotEmpty()
   storefrontId: string;
+
+  @ApiProperty({ required: false, default: false })
+  @IsOptional()
+  importList: boolean;
 }

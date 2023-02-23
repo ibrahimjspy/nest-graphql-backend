@@ -11,3 +11,15 @@ export const addProductListToStoredProducts = (
   });
   return productStoreResponse;
 };
+
+/**
+ * this method parses list of objects and return ids from list
+ * @returns list of ids -- string[]
+ */
+export const getIdsFromList = (list, key = 'id') => {
+  const ids = [];
+  list.map((item) => {
+    ids.push(item[`${key}`]);
+  });
+  return ids;
+};

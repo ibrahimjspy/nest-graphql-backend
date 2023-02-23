@@ -9,10 +9,10 @@ import { updateStoreInfoMutation } from '../mutations/productStore/storeInfo';
 import { getStoredProductsQuery } from '../queries/productStore/products';
 import { getStoreInfoQuery } from '../queries/productStore/storeInfo';
 import {
+  PushToStoreDto,
   addToProductStoreDTO,
   deleteFromProductStoreDTO,
   getStoredProductsDTO,
-  pushToStoreDTO,
 } from 'src/modules/productStore/dto/products';
 import { shopInfoDto } from 'src/modules/orders/dto';
 import { pushToStoreMutation } from '../mutations/productStore/pushtToStore';
@@ -93,7 +93,7 @@ export const updateStoreInfoHandler = async (
 };
 
 export const pushToStoreHandler = async (
-  pushToStoreInput: pushToStoreDTO,
+  pushToStoreInput: PushToStoreDto,
   token: string,
 ): Promise<object> => {
   try {
