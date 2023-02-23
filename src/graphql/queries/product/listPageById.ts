@@ -3,7 +3,7 @@ import { DEFAULT_CHANNEL } from 'src/constants';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
 
-const b2bQuery = ({ categoryId, productIds, pagination }): string => {
+const b2bQuery = ({ categoryId, productIds, ...pagination }): string => {
   return gql`
     query {
       products(
