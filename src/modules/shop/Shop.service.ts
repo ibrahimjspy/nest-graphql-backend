@@ -149,16 +149,14 @@ export class ShopService {
         }),
       );
       if (productIds.length > 0) {
-        return prepareSuccessResponse(
-          [retailer, await getMyProductsHandler(productIds, filter)],
-          '',
-          200,
-        );
+        return prepareSuccessResponse([
+          retailer,
+          await getMyProductsHandler(productIds, filter),
+        ]);
       }
       return prepareSuccessResponse(
         [retailer, []],
         'no products exists against given shop id',
-        200,
       );
     } catch (error) {
       this.logger.error(error);

@@ -37,17 +37,12 @@ export const shopCategoryIdsHandler = async (
 };
 
 export const categoriesHandler = async (
-  categoryIds: string[],
-  filter: shopCategoriesDTO,
+  filter,
   isb2c = false,
 ): Promise<object> => {
   const userToken = '';
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(
-      categoriesQuery(categoryIds, filter, isb2c),
-      userToken,
-      isb2c,
-    ),
+    await graphqlCall(categoriesQuery(filter, isb2c), userToken, isb2c),
   );
   return response['categories'];
 };

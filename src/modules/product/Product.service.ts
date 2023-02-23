@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import {
+  prepareFailedResponse,
   prepareGQLPaginatedResponse,
   prepareSuccessResponse,
 } from 'src/core/utils/response';
@@ -114,11 +115,11 @@ export class ProductService {
     try {
       const retailerId = filter.retailerId;
       const productIds = [];
-      const productsData = await ProductsHandlers.productListPageHandler(
+      const productsData = await ProductsHandlers.productListPageHandler({
+        ...filter,
         categoryId,
         productIds,
-        filter,
-      );
+      });
       return prepareSuccessResponse(
         makeProductListResponse(
           await this.addProductsMapping(productsData, retailerId),
@@ -197,23 +198,21 @@ export class ProductService {
     filter: shopProductsDTO,
   ): Promise<object> {
     try {
-      // Get product ids against given shopId and categoryId
       const productIdsResponse =
         await ProductsHandlers.shopProductIdsByCategoryIdHandler(
-          shopId,
-          filter.categoryId,
+          { ...filter, shopId },
           filter.isB2c,
         );
       const productIds = productIdsResponse?.productIds || [];
 
-      // Get products list against given shop productIds
-      const response = await ProductsHandlers.productListPageHandler(
-        filter.categoryId,
-        productIds,
-        filter,
-        filter.isB2c,
-      );
-      return prepareSuccessResponse(response);
+      if (productIds.length) {
+        const response = await ProductsHandlers.productListPageHandler(
+          { ...filter, productIds },
+          filter.isB2c,
+        );
+        return prepareSuccessResponse(response);
+      }
+      return prepareFailedResponse('Products not found', 404);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
