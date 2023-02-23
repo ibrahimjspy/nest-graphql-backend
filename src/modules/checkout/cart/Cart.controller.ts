@@ -59,7 +59,7 @@ export class CartController {
   @ApiOperation({
     summary: 'deletes bundles from cart against a user email',
   })
-  @Delete('api/v1/cart')
+  @Delete('api/v1/cart/items')
   @ApiBearerAuth('JWT-auth')
   async deleteBundleFromCart(
     @Res() res,
@@ -79,7 +79,7 @@ export class CartController {
   @ApiOperation({
     summary: 'updates bundles from cart against a user email',
   })
-  @Put('api/v1/cart')
+  @Put('api/v1/cart/items')
   @ApiBearerAuth('JWT-auth')
   async updateCartBundle(
     @Res() res,
@@ -99,7 +99,7 @@ export class CartController {
   @ApiOperation({
     summary: 'updates bundles from cart against a user email',
   })
-  @Put('api/v1/cart/state')
+  @Put('api/v1/cart/items/status')
   @ApiBearerAuth('JWT-auth')
   async updateCartState(
     @Res() res,
