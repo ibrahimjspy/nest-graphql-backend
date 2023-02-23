@@ -1,5 +1,3 @@
-import { PushToStoreDto } from './dto/products';
-
 /**
  * this util adds product list fetched from saleor to product store by matching through id
  * @returns composite response

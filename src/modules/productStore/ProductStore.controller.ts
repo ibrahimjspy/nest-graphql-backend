@@ -125,7 +125,9 @@ export class ProductStoreController {
     @Body() body: PushToStoreDto,
   ): Promise<object> {
     const { importList } = body;
-    importList ? await this.appService.addBulkProductsToStore(body) : ''; // adds to import list as well if required
+    if (importList) {
+      await this.appService.addBulkProductsToStore(body);
+    }
     return await makeResponse(res, await this.appService.pushToStore(body));
   }
 }
