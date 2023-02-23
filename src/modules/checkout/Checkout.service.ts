@@ -116,7 +116,7 @@ export class CheckoutService {
         userEmail,
         token,
       );
-      if (validateBundlesLength(checkoutData['checkoutBundles'])) {
+      if (!validateBundlesLength(checkoutData['checkoutBundles'])) {
         throw new RecordNotFound('Empty Cart');
       }
       const checkoutLines = getLinesFromBundles(
