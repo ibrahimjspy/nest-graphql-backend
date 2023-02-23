@@ -1,7 +1,6 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
-const federationQuery = (
+export const addCheckoutShippingMethodsMutation = (
   checkoutId: string,
   shopShippingMethodIds: Array<string>,
 ) => {
@@ -30,14 +29,4 @@ const federationQuery = (
      }
    }
   `;
-};
-
-export const addCheckoutShippingMethodsMutation = (
-  checkoutId: string,
-  shopShippingMethodIds: Array<string>,
-) => {
-  return graphqlQueryCheck(
-    federationQuery(checkoutId, shopShippingMethodIds),
-    federationQuery(checkoutId, shopShippingMethodIds),
-  );
 };

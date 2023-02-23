@@ -12,6 +12,16 @@ class BundleDto {
   quantity: number;
 }
 
+class CheckoutBundleDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  checkoutBundleId: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  quantity: number;
+}
+
 export class AddBundleDto {
   @ApiProperty()
   @IsNotEmpty()
@@ -25,7 +35,7 @@ export class AddBundleDto {
 }
 
 export class UpdateBundleStateDto {
-  @ApiProperty({ isArray: true })
+  @ApiProperty({ isArray: true, type: String })
   @IsNotEmpty()
   checkoutBundleIds: Array<string>;
 
@@ -36,4 +46,15 @@ export class UpdateBundleStateDto {
   @ApiProperty()
   @IsNotEmpty()
   action: string;
+}
+export class UpdateBundlesDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  userEmail: string;
+
+  @ApiProperty({ type: [CheckoutBundleDto] })
+  @Type(() => CheckoutBundleDto)
+  @ArrayNotEmpty()
+  @ValidateNested()
+  bundles: CheckoutBundleDto[];
 }

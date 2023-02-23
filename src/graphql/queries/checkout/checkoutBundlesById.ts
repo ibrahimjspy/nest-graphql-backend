@@ -1,23 +1,19 @@
 import { gql } from 'graphql-request';
 
-export const deleteCheckoutBundlesMutation = (
-  checkoutBundleIds: Array<string>,
-  userEmail: string,
-) => {
+export const checkoutBundlesByIdQuery = (
+  checkoutId: string,
+  isSelected: any,
+): string => {
   return gql`
-    mutation {
-      deleteCheckoutBundles(
-        Input: {
-          userEmail: "${userEmail}"
-          checkoutBundleIds: ${JSON.stringify(checkoutBundleIds)}
+    query {
+      checkoutBundles(
+        Filter: {
+          checkoutId: "${checkoutId}"
+          isSelected: ${isSelected}
         }
       ) {
         ... on CheckoutBundlesType {
           __typename
-          totalAmount
-          subTotal
-          taxes
-          discounts
           checkoutId
           checkoutBundles {
             checkoutBundleId
@@ -28,16 +24,16 @@ export const deleteCheckoutBundlesMutation = (
               name
               description
               slug
-                 product {
-                    name
-                    id
-                    thumbnail {
-                      url
-                    }
-                    media {
-                      url
-                    }
-                  }
+              product {
+                name
+                id
+                thumbnail {
+                  url
+                }
+                media {
+                  url
+                }
+              }
               productVariants {
                 quantity
                 productVariant {
@@ -52,7 +48,7 @@ export const deleteCheckoutBundlesMutation = (
                       name
                     }
                   }
-               
+
                   pricing {
                     price {
                       net {
@@ -94,11 +90,10 @@ export const deleteCheckoutBundlesMutation = (
             }
           }
         }
-        __typename
         ... on ResultError {
           __typename
-          errors
           message
+          errors
         }
       }
     }

@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { STRIPE_RETURN_URL } from 'src/constants';
-
-import GeneralError from 'src/core/exceptions/generalError';
-import { to_cents } from 'src/modules/checkout/Checkout.utils';
+import { toCents } from 'src/modules/checkout/Checkout.utils';
 
 import Stripe from 'stripe';
 
@@ -16,18 +14,23 @@ export default class StripeService {
       timeout: 5000,
     });
   }
+
   protected async getCustomerByEmail(Email: string) {
-    const customerID = await this.stripe.customers.list({
+    const customerId = await this.stripe.customers.list({
       email: Email,
     });
-    return customerID['data'].length > 0 ? customerID['data'][0]['id'] : null;
+    return customerId['data'].length > 0 ? customerId['data'][0]['id'] : null;
   }
+
   public async customer(name: string, email: string, paymentMethodId: string) {
-    const customerID: any = await this.getCustomerByEmail(email);
+    const customerId: any = await this.getCustomerByEmail(email);
 
     let response = {};
-    if (customerID) {
-      response = await this.updateCustomer(customerID, paymentMethodId);
+    /* This is checking if the customer exists in the stripe database. If it does, it will update the
+   customer with the new payment method. If it doesn't, it will create a new customer with the new
+   payment method. */
+    if (customerId) {
+      response = await this.updateCustomer(customerId, paymentMethodId);
     } else {
       response = await this.createCustomer(name, email, paymentMethodId);
     }
@@ -57,22 +60,22 @@ export default class StripeService {
   }
 
   public async paymentMethodsList(userEmail: string) {
-    const customerID: any = await this.getCustomerByEmail(userEmail);
+    const customerId: any = await this.getCustomerByEmail(userEmail);
 
     let paymentMethods = {};
-    if (customerID) {
+    if (customerId) {
       paymentMethods = await this.stripe.paymentMethods.list({
-        customer: customerID,
+        customer: customerId,
         type: 'card',
       });
     } else {
-      throw new GeneralError(`Cannot Find Any Customer`);
+      throw new Error(`Cannot Find Any Customer against ${userEmail}`);
     }
 
     return paymentMethods;
   }
 
-  public async createPaymentintent(
+  public async createPaymentIntent(
     userEmail: string,
     paymentMethodId: string,
     totalAmount: number,
@@ -84,7 +87,7 @@ export default class StripeService {
     if (customerID) {
       createPaymentIntent = await this.stripe.paymentIntents.create({
         customer: customerID,
-        amount: to_cents(totalAmount),
+        amount: toCents(totalAmount),
         currency: process.env.STRIPE_CURRENCY,
         payment_method: paymentMethodId,
         automatic_payment_methods: {
@@ -95,12 +98,19 @@ export default class StripeService {
         return_url: STRIPE_RETURN_URL,
       });
     } else {
-      throw new GeneralError(`Cannot Find Any Customer`);
+      throw new Error(`Cannot Find Any Customer against ${userEmail}`);
     }
     return createPaymentIntent;
   }
-  public async createpaymentMethods() {
-    const createpaymentMethod = await this.stripe.paymentMethods.create({
+
+  public async verifyPaymentByIntentId(paymentIntent: string) {
+    const paymentInfo = await this.stripe.paymentIntents.retrieve(
+      paymentIntent,
+    );
+    return paymentInfo;
+  }
+  public async createPaymentMethods() {
+    const createPaymentMethod = await this.stripe.paymentMethods.create({
       type: 'card',
       card: {
         number: '2223003122003222',
@@ -109,6 +119,6 @@ export default class StripeService {
         cvc: '112',
       },
     });
-    return createpaymentMethod;
+    return createPaymentMethod;
   }
 }

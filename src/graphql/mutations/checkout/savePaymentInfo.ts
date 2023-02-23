@@ -1,13 +1,12 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
-const federationQuery = (
-  checkoutId: string,
-  userEmail: string,
-  amount: number,
-  paymentStatus: number,
-  intentId: string,
-) => {
+export const savePaymentInfoMutation = ({
+  checkoutId,
+  userEmail,
+  amount,
+  paymentStatus,
+  intentId,
+}) => {
   return gql`
     mutation {
       paymentInfoMutation(
@@ -30,17 +29,4 @@ const federationQuery = (
       }
     }
   `;
-};
-
-export const savePaymnetInfoMutation = (
-  checkoutId: string,
-  userEmail: string,
-  amount: number,
-  paymentStatus: number,
-  intentId: string,
-) => {
-  return graphqlQueryCheck(
-    federationQuery(checkoutId, userEmail, amount, paymentStatus, intentId),
-    federationQuery(checkoutId, userEmail, amount, paymentStatus, intentId),
-  );
 };

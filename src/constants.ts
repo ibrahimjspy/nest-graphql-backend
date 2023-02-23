@@ -18,6 +18,12 @@ export const GQL_TOTAL_COUNT = 'totalCount';
 export const B2BClientPlatform = 'sharove@sharove.com';
 
 export const STRIPE_RETURN_URL = 'http://3.13.238.104:4003/';
+
+export const QUEUE_URL = process.env.SQS_QUEUE_URL;
+export const SQS_ACCESSID = process.env.SQS_ACCESS_ID;
+export const SQS_SECRET_ACCESS_KEY = process.env.SQS_SECRET_ACCESS_KEY;
+
+export const SQS_MESSAGE_GROUPID = 'MessageGroupId';
 //
 export const COMMON_HEADERS = {
   headers: {
