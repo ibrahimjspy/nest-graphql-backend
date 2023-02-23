@@ -13,10 +13,10 @@ import {
   updateStoreInfoHandler,
 } from 'src/graphql/handlers/productStore';
 import {
+  PushToStoreDto,
   addToProductStoreDTO,
   deleteFromProductStoreDTO,
   getStoredProductsDTO,
-  pushToStoreDTO,
 } from './dto/products';
 import { shopInfoDto } from '../orders/dto';
 import { uploadImagesHandler } from 'src/external/services/uploadImages';
@@ -119,7 +119,7 @@ export class ProductStoreService {
   }
 
   public async pushToStore(
-    pushToStoreInput: pushToStoreDTO,
+    pushToStoreInput: PushToStoreDto,
     token: string,
   ): Promise<object> {
     try {

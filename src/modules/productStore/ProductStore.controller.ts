@@ -18,10 +18,10 @@ import { makeResponse } from 'src/core/utils/response';
 import { ShopIdDto, shopInfoDto } from 'src/modules/orders/dto';
 import { ProductStoreService } from './ProductStore.service';
 import {
+  PushToStoreDto,
   addToProductStoreDTO,
   deleteFromProductStoreDTO,
   getStoredProductsDTO,
-  pushToStoreDTO,
 } from './dto/products';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { IsAuthenticated } from 'src/core/utils/decorators';
@@ -123,7 +123,7 @@ export class ProductStoreController {
   @ApiOperation({ summary: 'imports products to storefront' })
   public async pushToStore(
     @Res() res,
-    @Body() body: pushToStoreDTO,
+    @Body() body: PushToStoreDto,
     @IsAuthenticated('authorization') token: string,
   ): Promise<any> {
     return await makeResponse(
