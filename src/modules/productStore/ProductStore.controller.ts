@@ -24,7 +24,6 @@ import {
   getStoredProductsDTO,
 } from './dto/products';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { IsAuthenticated } from 'src/core/utils/decorators';
 
 @ApiTags('productStore')
 @Controller()
@@ -124,11 +123,9 @@ export class ProductStoreController {
   public async pushToStore(
     @Res() res,
     @Body() body: PushToStoreDto,
-    @IsAuthenticated('authorization') token: string,
-  ): Promise<any> {
-    return await makeResponse(
-      res,
-      await this.appService.pushToStore(body, token),
-    );
+  ): Promise<object> {
+    const { importList } = body;
+    importList ? await this.appService.addBulkProductsToStore(body) : ''; // adds to import list as well if required
+    return await makeResponse(res, await this.appService.pushToStore(body));
   }
 }

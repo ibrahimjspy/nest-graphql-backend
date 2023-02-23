@@ -15,13 +15,13 @@ export const addProductListToStoredProducts = (
 };
 
 /**
- * this method parses product store list which should be push to store and returns product ids
- * @returns list of product ids -- string[]
+ * this method parses list of objects and return ids from list
+ * @returns list of ids -- string[]
  */
-export const getIdsFromProductStoreList = (input: PushToStoreDto) => {
-  const productIds = [];
-  input.products.map((product) => {
-    productIds.push(product.id);
+export const getIdsFromList = (list, key = 'id') => {
+  const ids = [];
+  list.map((item) => {
+    ids.push(item[`${key}`]);
   });
-  return productIds;
+  return ids;
 };
