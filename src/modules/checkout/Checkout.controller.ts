@@ -1,5 +1,5 @@
 import { Body, Controller, Post, Res } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CheckoutService } from './Checkout.service';
 import { makeResponse } from '../../core/utils/response';
 import { IsAuthenticated } from 'src/core/utils/decorators';
@@ -8,13 +8,17 @@ import { UserIdDto } from './dto';
 import { CheckoutIdDto } from './dto/checkoutId';
 
 @ApiTags('checkout')
-@Controller('checkout')
+@Controller('')
 export class CheckoutController {
   constructor(private readonly appService: CheckoutService) {
     return;
   }
 
-  @Post('create/checkout')
+  @Post('api/v1/checkout')
+  @ApiOperation({
+    summary:
+      'this creates a checkout session against a user email and returns checkout id',
+  })
   @ApiBearerAuth('JWT-auth')
   async createCheckout(
     @Res() res,
@@ -31,7 +35,11 @@ export class CheckoutController {
     );
   }
 
-  @Post('complete')
+  @Post('api/v1/checkout/complete')
+  @ApiOperation({
+    summary:
+      'this completes checkout against checkout id in both Saleor and Shop service',
+  })
   @ApiBearerAuth('JWT-auth')
   async checkoutComplete(
     @Res() res,

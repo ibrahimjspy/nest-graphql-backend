@@ -1,4 +1,4 @@
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PaymentService } from './Payment.service';
 import { Body, Controller, Get, Param, Post, Res } from '@nestjs/common';
 import { IsAuthenticated } from 'src/core/utils/decorators';
@@ -10,8 +10,12 @@ import { PaymentCreateDto, PaymentPreAuthDto } from './dto/paymentCreate';
 @Controller('')
 export class PaymentController {
   constructor(private readonly appService: PaymentService) {}
-  @Post('checkout/payment/create')
+
+  @Post('api/v1/checkout/payment')
   @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'creates a payment against a user',
+  })
   async createPayment(
     @Res() res,
     @Body() body: PaymentCreateDto,
@@ -27,8 +31,11 @@ export class PaymentController {
     );
   }
 
-  @Post('checkout/payment/preauth')
+  @Post('api/v1/checkout/payment/preauth')
   @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'creates a payment preauth against a user',
+  })
   async preAuth(
     @Res() res,
     @Body() body: PaymentPreAuthDto,
@@ -47,7 +54,10 @@ export class PaymentController {
     );
   }
 
-  @Get('checkout/cards/:userEmail')
+  @Get('api/v1/checkout/payment/methods/:userEmail')
+  @ApiOperation({
+    summary: 'returns payment methods list against a user',
+  })
   async getCards(@Res() res, @Param() params: UserIdDto): Promise<object> {
     const { userEmail } = params;
     return makeResponse(

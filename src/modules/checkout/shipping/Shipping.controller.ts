@@ -1,4 +1,4 @@
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ShippingService } from './Shipping.service';
 import {
   Body,
@@ -23,7 +23,10 @@ import { CheckoutIdDto } from '../dto/checkoutId';
 @Controller('')
 export class ShippingController {
   constructor(private readonly appService: ShippingService) {}
-  @Post('checkout/shippingAddress')
+  @Post('api/v1/checkout/shipping/address')
+  @ApiOperation({
+    summary: 'adds shipping address against checkout id',
+  })
   @ApiBearerAuth('JWT-auth')
   async addShippingAddress(
     @Res() res,
@@ -42,7 +45,10 @@ export class ShippingController {
     );
   }
 
-  @Post('checkout/billingAddress')
+  @Post('api/v1/checkout/billing/address')
+  @ApiOperation({
+    summary: 'adds billing address against checkout id',
+  })
   @ApiBearerAuth('JWT-auth')
   async addBillingAddress(
     @Res() res,
@@ -60,7 +66,10 @@ export class ShippingController {
     );
   }
 
-  @Get('checkout/shippingAndBillingAddress/:checkoutId')
+  @Get('api/v1/checkout/address')
+  @ApiOperation({
+    summary: 'returns billing and shipping address against a checkout id',
+  })
   @ApiBearerAuth('JWT-auth')
   async getShippingAndBillingAddress(
     @Res() res,
@@ -77,7 +86,10 @@ export class ShippingController {
     );
   }
 
-  @Get('checkout/shippingMethods/:userId')
+  @Get('api/v1/checkout/shipping/address')
+  @ApiOperation({
+    summary: 'returns shipping address against a checkout id',
+  })
   @ApiBearerAuth('JWT-auth')
   async getShippingMethods(
     @Res() res,
@@ -91,7 +103,10 @@ export class ShippingController {
     );
   }
 
-  @Put('checkout/shippingMethods/select')
+  @Put('api/v1/checkout/shipping/methods/select')
+  @ApiOperation({
+    summary: 'selects shipping address for a checkout id',
+  })
   @ApiBearerAuth('JWT-auth')
   async selectShippingMethods(
     @Res() res,

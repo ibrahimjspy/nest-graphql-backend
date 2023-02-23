@@ -1,6 +1,15 @@
-import { Body, Controller, Get, Param, Post, Put, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Res,
+} from '@nestjs/common';
 import { CartService } from './Cart.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { IsAuthenticated } from 'src/core/utils/decorators';
 import { makeResponse } from 'src/core/utils/response';
 import { AddBundleDto, UserIdDto } from '../dto';
@@ -12,8 +21,10 @@ import { DeleteBundlesDto } from './dto/cart';
 @ApiBearerAuth('JWT-auth')
 export class CartController {
   constructor(private readonly appService: CartService) {}
-  // Returns top menu categories
-  @Get('checkout/:userEmail')
+  @ApiOperation({
+    summary: 'returns shopping cart data against a user email',
+  })
+  @Get('api/v1/cart/:userEmail')
   async getShoppingCartData(
     @Res() res,
     @Param() userDto: UserIdDto,
@@ -25,7 +36,10 @@ export class CartController {
     );
   }
 
-  @Post('checkout/cart/bundle/add')
+  @ApiOperation({
+    summary: 'adds bundles against user email in cart',
+  })
+  @Post('api/v1/cart')
   @ApiBearerAuth('JWT-auth')
   async addBundlesToCart(
     @Res() res,
@@ -42,7 +56,10 @@ export class CartController {
     );
   }
 
-  @Put('checkout/cart/bundle/delete')
+  @ApiOperation({
+    summary: 'deletes bundles from cart against a user email',
+  })
+  @Delete('api/v1/cart')
   @ApiBearerAuth('JWT-auth')
   async deleteBundleFromCart(
     @Res() res,
@@ -59,7 +76,10 @@ export class CartController {
     );
   }
 
-  @Put('checkout/cart/bundle/update')
+  @ApiOperation({
+    summary: 'updates bundles from cart against a user email',
+  })
+  @Put('api/v1/cart')
   @ApiBearerAuth('JWT-auth')
   async updateCartBundle(
     @Res() res,
@@ -76,7 +96,10 @@ export class CartController {
     );
   }
 
-  @Put('checkout/cart/bundle/state/update')
+  @ApiOperation({
+    summary: 'updates bundles from cart against a user email',
+  })
+  @Put('api/v1/cart/state')
   @ApiBearerAuth('JWT-auth')
   async updateCartState(
     @Res() res,
