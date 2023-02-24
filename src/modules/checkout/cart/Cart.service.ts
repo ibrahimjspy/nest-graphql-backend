@@ -6,26 +6,24 @@ import {
   prepareSuccessResponse,
 } from 'src/core/utils/response';
 import {
-  addCheckoutBundlesHandler,
-  bundleStatusHandler,
-  deleteBundlesHandler,
-  getCheckoutBundlesHandler,
   updateCartBundlesCheckoutIdHandler,
   updateCheckoutBundleState,
   updateCheckoutBundlesHandler,
-} from 'src/graphql/handlers/checkout';
+} from 'src/graphql/handlers/checkout/checkout';
 import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
-import {
-  getBundleIds,
-  getNewBundlesList,
-  getUpdatedBundlesList,
-  validateBundlesLength,
-} from '../Checkout.utils';
 import { UpdateBundleStateDto } from '../dto/add-bundle.dto';
+import { getLinesFromBundles } from './Cart.utils';
+import { deleteCheckoutBundlesHandler } from 'src/graphql/handlers/checkout/cart/cart.marketplace';
+import { SaleorCartService } from './services/saleor/Cart.saleor.service';
+import { MarketplaceCheckoutService } from './services/marketplace/Cart.marketplace.service';
 
 @Injectable()
 export class CartService {
   private readonly logger = new Logger(CartService.name);
+  constructor(
+    private saleorService: SaleorCartService,
+    private marketplaceService: MarketplaceCheckoutService,
+  ) {}
 
   /**
    * @description -- fetches shopping cart data from bundle service against userEmail
@@ -35,58 +33,11 @@ export class CartService {
     token: string,
   ): Promise<object> {
     try {
-      const checkoutData = await getCheckoutBundlesHandler(userEmail, token);
-      return prepareSuccessResponse(checkoutData);
+      return await this.marketplaceService.getCheckoutBundles(userEmail, token);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
     }
-  }
-
-  /**
-   * @description -- this is private method which validates if bundles provided do not match aginst allready existing bundles
-   * if so -- it adds those bundles against userEmail
-   * @deprecated -- infuture we plan to have this logic in cart service so this method will be deprecated
-   */
-  private async addBundles(
-    bundlesForCart: any,
-    validateBundleList: [],
-    userEmail: string,
-    token: string,
-  ) {
-    const bundlesList = await getNewBundlesList(
-      bundlesForCart,
-      validateBundleList,
-    );
-    const addedBundleList = await addCheckoutBundlesHandler(
-      userEmail,
-      bundlesList,
-      token,
-    );
-    return addedBundleList;
-  }
-
-  /**
-   * @description -- this is private method which validates if bundles provided do match against all ready existing bundles
-   * if so -- it adds those bundles against userEmail
-   * @deprecated -- infuture we plan to have this logic in cart service so this method will be deprecated
-   */
-  private async updateBundles(
-    bundlesForCart: any,
-    validateBundleList: [],
-    userEmail: string,
-    token: string,
-  ) {
-    const bundleList = getUpdatedBundlesList(
-      bundlesForCart,
-      validateBundleList,
-    );
-    const updatedBundle = await updateCheckoutBundlesHandler(
-      userEmail,
-      bundleList,
-      token,
-    );
-    return updatedBundle;
   }
 
   /**
@@ -96,45 +47,31 @@ export class CartService {
    */
   public async addToCart(
     userEmail: string,
-    bundlesForCart: CheckoutBundleInputType[],
+    bundlesList: CheckoutBundleInputType[],
     token: string,
   ): Promise<object> {
     try {
-      let response: object = {};
-      const getBundleIdsArray = await getBundleIds(bundlesForCart);
-      /* Mapping the bundleIds from the bundlesForCart array. */
-      const bundleStatus = await bundleStatusHandler(
+      const marketplaceResponse = await this.marketplaceService.addBundles(
         userEmail,
-        getBundleIdsArray,
+        bundlesList,
         token,
       );
-      if (validateBundlesLength(bundleStatus['bundleIdsExist'])) {
-        const updateBundleList = await this.updateBundles(
-          bundlesForCart,
-          bundleStatus,
-          userEmail,
-          token,
-        );
-
-        response = {
-          ...response,
-          updateBundleList,
-        };
-      }
-      if (validateBundlesLength(bundleStatus['bundleIdsNotExist'])) {
-        const addBundleList = await this.addBundles(
-          bundlesForCart,
-          bundleStatus,
-          userEmail,
-          token,
-        );
-        response = {
-          ...response,
-          addedBundle: addBundleList,
-        };
-      }
-
-      return prepareSuccessResponse(response, '', 201);
+      const checkoutLines: any = getLinesFromBundles(
+        marketplaceResponse.data.checkoutBundles,
+      );
+      const checkoutId =
+        marketplaceResponse.data.checkoutId ||
+        'Q2hlY2tvdXQ6NzA5YTI1ODYtMTAxYy00MDRjLWE3ZGQtMDg5MGQzZDMwNTgz';
+      const saleorResponse = await this.saleorService.addLines(
+        checkoutId,
+        checkoutLines,
+        token,
+      );
+      return prepareSuccessResponse(
+        { marketplaceResponse, saleorResponse },
+        '',
+        201,
+      );
     } catch (error) {
       this.logger.error(error);
       if (error instanceof RecordNotFound) {
@@ -153,13 +90,13 @@ export class CartService {
     token: string,
   ): Promise<object> {
     try {
-      const response = await deleteBundlesHandler(
+      const marketplaceResponse: any = await deleteCheckoutBundlesHandler(
         checkoutBundleIds,
         userEmail,
         false,
         token,
       );
-      return prepareSuccessResponse(response, '', 201);
+      return prepareSuccessResponse(marketplaceResponse, '', 201);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -175,13 +112,13 @@ export class CartService {
     token: string,
   ): Promise<object> {
     try {
-      const response = await updateCheckoutBundlesHandler(
+      const marketplaceResponse = await updateCheckoutBundlesHandler(
         userEmail,
         checkoutBundles,
         token,
       );
 
-      return prepareSuccessResponse(response, '', 201);
+      return prepareSuccessResponse(marketplaceResponse, '', 201);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -191,7 +128,7 @@ export class CartService {
   /**
    * @description -- this method adds checkout id against a user checkout bundle session made against a user email
    */
-  public async updateCartBundlesCheckoutIdService(
+  public async addCheckoutIdToMarketplace(
     userEmail: string,
     token: string,
     checkoutId: string,

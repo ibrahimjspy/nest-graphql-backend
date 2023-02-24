@@ -6,12 +6,12 @@ import {
   prepareSuccessResponse,
 } from 'src/core/utils/response';
 
-import * as CheckoutHandlers from 'src/graphql/handlers/checkout';
+import * as CheckoutHandlers from 'src/graphql/handlers/checkout/checkout';
 import {
   createCheckoutHandler,
   getCheckoutBundlesByCheckoutIdHandler,
   orderCreateFromCheckoutHandler,
-} from 'src/graphql/handlers/checkout';
+} from 'src/graphql/handlers/checkout/checkout';
 
 import { getLinesFromBundles, validateBundlesLength } from './Checkout.utils';
 import SqsService from 'src/external/endpoints/sqsMessage';
@@ -131,7 +131,7 @@ export class CheckoutService {
         checkoutLines,
         token,
       );
-      await this.cartService.updateCartBundlesCheckoutIdService(
+      await this.cartService.addCheckoutIdToMarketplace(
         userEmail,
         token,
         checkoutCreate['checkout']['id'],

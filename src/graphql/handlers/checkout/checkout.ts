@@ -11,30 +11,29 @@ import {
 } from 'src/graphql/handlers/checkout.type';
 import { GQL_EDGES } from 'src/constants';
 import { UpdateBundleStateDto } from 'src/modules/checkout/dto/add-bundle.dto';
-import { getPaymentIntentQuery } from '../queries/checkout/paymentIntent';
-import { updateCheckoutBundleStateMutation } from '../mutations/checkout/updateCheckoutBundleState';
-import { createCheckoutMutation } from '../mutations/checkout/createCheckout';
-import { addCheckoutShippingMethodsMutation } from '../mutations/checkout/addCheckoutShippingMethods';
-import { checkoutBillingAddressUpdateMutation } from '../mutations/checkout/checkoutBillingAddressUpdate';
-import { orderCreateFromCheckoutMutation } from '../mutations/checkout/checkoutComplete';
-import { checkoutDeliveryMethodUpdateMutation } from '../mutations/checkout/checkoutDeliveryMethodUpdate';
-import { checkoutShippingAddressUpdateMutation } from '../mutations/checkout/checkoutShippingAddressUpdate';
-import { deleteCheckoutBundlesMutation } from '../mutations/checkout/deleteCheckoutBundle';
-import { disableUserCartSessionMutation } from '../mutations/checkout/disableCheckoutSession';
-import { updateCartBundlesCheckoutIdMutation } from '../mutations/checkout/updateCartBundlesCheckoutId';
-import { savePaymentInfoMutation } from '../mutations/checkout/savePaymentInfo';
-import { availablePaymentGatewaysQuery } from '../queries/checkout/availablePaymentGateways';
-import { bundleStatusQuery } from '../queries/checkout/bundleStatus';
-import { cartAmountQuery } from '../queries/checkout/cartAmount';
-import { checkoutWithShippingInfoQuery } from '../queries/checkout/checkoutWithShippingInfo';
-import { checkoutBundlesByIdQuery } from '../queries/checkout/checkoutBundlesById';
-import { getCheckoutBundleQuery } from '../queries/checkout/getCheckoutBundle';
-import { getMarketplaceCheckoutQuery } from '../queries/checkout/marketplaceCheckout';
-import { getMarketplaceCheckoutWithCategoriesQuery } from '../queries/checkout/marketplaceCheckoutWithCategories';
-import { shippingAndBillingAddressQuery } from '../queries/checkout/shippingAndBillingAddress';
-import { shippingZonesQuery } from '../queries/checkout/shippingZones';
-import { updateCheckoutBundleQuery } from '../queries/checkout/updateCheckoutBundle';
-import { addCheckoutBundleQuery } from '../queries/checkout/addCheckoutBundles';
+import { getPaymentIntentQuery } from '../../queries/checkout/paymentIntent';
+import { updateCheckoutBundleStateMutation } from '../../mutations/checkout/updateCheckoutBundleState';
+import { createCheckoutMutation } from '../../mutations/checkout/createCheckout';
+import { addCheckoutShippingMethodsMutation } from '../../mutations/checkout/addCheckoutShippingMethods';
+import { checkoutBillingAddressUpdateMutation } from '../../mutations/checkout/checkoutBillingAddressUpdate';
+import { orderCreateFromCheckoutMutation } from '../../mutations/checkout/checkoutComplete';
+import { checkoutDeliveryMethodUpdateMutation } from '../../mutations/checkout/checkoutDeliveryMethodUpdate';
+import { checkoutShippingAddressUpdateMutation } from '../../mutations/checkout/checkoutShippingAddressUpdate';
+import { disableUserCartSessionMutation } from '../../mutations/checkout/disableCheckoutSession';
+import { updateCartBundlesCheckoutIdMutation } from '../../mutations/checkout/updateCartBundlesCheckoutId';
+import { savePaymentInfoMutation } from '../../mutations/checkout/savePaymentInfo';
+import { availablePaymentGatewaysQuery } from '../../queries/checkout/availablePaymentGateways';
+import { bundleStatusQuery } from '../../queries/checkout/bundleStatus';
+import { cartAmountQuery } from '../../queries/checkout/cartAmount';
+import { checkoutWithShippingInfoQuery } from '../../queries/checkout/checkoutWithShippingInfo';
+import { checkoutBundlesByIdQuery } from '../../queries/checkout/checkoutBundlesById';
+import { getCheckoutBundleQuery } from '../../queries/checkout/getCheckoutBundle';
+import { getMarketplaceCheckoutQuery } from '../../queries/checkout/marketplaceCheckout';
+import { getMarketplaceCheckoutWithCategoriesQuery } from '../../queries/checkout/marketplaceCheckoutWithCategories';
+import { shippingAndBillingAddressQuery } from '../../queries/checkout/shippingAndBillingAddress';
+import { shippingZonesQuery } from '../../queries/checkout/shippingZones';
+import { updateCheckoutBundleQuery } from '../../queries/checkout/updateCheckoutBundle';
+import { addCheckoutBundleQuery } from '../../queries/checkout/addCheckoutBundles';
 
 export const marketplaceCheckoutHandler = async (
   id: string,
@@ -145,22 +144,6 @@ export const checkoutWithShippingInfoHandler = async (
 ): Promise<object> => {
   const response = await graphqlCall(checkoutWithShippingInfoQuery(checkoutId));
   return response['checkout'];
-};
-
-export const deleteBundlesHandler = async (
-  checkoutBundleIds: Array<string>,
-  userEmail: string,
-  throwException = false,
-  token: string,
-): Promise<object> => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(
-      deleteCheckoutBundlesMutation(checkoutBundleIds, userEmail),
-      token,
-    ),
-    throwException,
-  );
-  return response['deleteCheckoutBundles'];
 };
 
 export const shippingAddressUpdateHandler = async (

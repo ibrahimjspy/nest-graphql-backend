@@ -5,7 +5,7 @@ import StripeService from 'src/external/services/stripe';
 import {
   getTotalAmountByCheckoutIdHandler,
   savePaymentInfoHandler,
-} from 'src/graphql/handlers/checkout';
+} from 'src/graphql/handlers/checkout/checkout';
 import { EmptyCartError, PaymentIntentCreationError } from '../Checkout.errors';
 import { PaymentInfoInterface } from './Payment.types';
 

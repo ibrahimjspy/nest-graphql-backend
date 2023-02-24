@@ -10,7 +10,7 @@ import {
   shippingAddressUpdateHandler,
   shippingAndBillingAddressHandler,
   updateDeliveryMethodHandler,
-} from 'src/graphql/handlers/checkout';
+} from 'src/graphql/handlers/checkout/checkout';
 import { AddressDetailType } from 'src/graphql/handlers/checkout.type';
 import {
   getShippingMethods,
