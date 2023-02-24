@@ -207,10 +207,14 @@ export class OrdersService {
       const shopDetails = await shopOrdersByIdHandler(id, token);
       const orderFilter: OrdersListDTO = filter;
       orderFilter.orderIds = getOrderIdsFromShopData(shopDetails);
-      const ordersList = await ordersListHandler(orderFilter, token);
-      const response = { ...shopDetails, ...ordersList };
-
-      return prepareSuccessResponse(response, '', 201);
+      if (orderFilter.orderIds.length) {
+        const ordersList = await ordersListHandler(orderFilter, token);
+        return prepareSuccessResponse({ ...shopDetails, ...ordersList });
+      }
+      return prepareSuccessResponse(
+        shopDetails,
+        'No order exists against shop',
+      );
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);

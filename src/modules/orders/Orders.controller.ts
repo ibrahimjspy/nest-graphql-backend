@@ -120,6 +120,7 @@ export class OrdersController {
 
   // Returns shop orders list
   @Get('api/v1/orders/list/shop/:shopId')
+  @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'returns orders list against given shop id' })
   async getOrdersListByShopId(
     @Res() res,
