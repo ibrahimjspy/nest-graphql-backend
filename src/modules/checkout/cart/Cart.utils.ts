@@ -109,7 +109,9 @@ export const getLineItems = async (bundles, targetBundles) => {
 export const getTargetBundleByBundleId = (bundles, bundleId) => {
   if (Array.isArray(bundleId)) {
     return (bundles || []).filter((bundle) => {
-      return bundleId.includes(bundle?.bundle?.id);
+      return bundleId.some(
+        (e) => e.checkoutBundleId === bundle?.checkoutBundleId,
+      );
     });
   } else {
     return (bundles || []).filter((bundle) => bundleId === bundle?.bundle?.id);
@@ -123,9 +125,9 @@ export const getTargetBundleByBundleId = (bundles, bundleId) => {
 export const getVariantIds = (targetBundles) => {
   const variantIds = [];
   (targetBundles || []).forEach((bundlesObj) => {
-    bundlesObj?.bundle?.variants.forEach((variant) =>
-      variantIds.push(variant?.variant?.id),
-    );
+    bundlesObj?.bundle?.productVariants.forEach((variant) => {
+      variantIds.push(variant?.productVariant?.id);
+    });
   });
   return variantIds;
 };
@@ -160,4 +162,71 @@ export const getLinesFromBundles = (bundles) => {
     );
   });
   return lines;
+};
+
+/**
+ * returns particular bundle for which is updated (i.e select/ unselect/ delete)
+ * @params bundles: all the bundles array from the checkout data
+ * @params checkoutBundleIds: checkout bundle id (string or array) against which the target bundle will be searched
+ */
+export const getTargetBundleByCheckoutBundleId = (
+  bundles,
+  checkoutBundleIds,
+) => {
+  if (Array.isArray(checkoutBundleIds)) {
+    return (bundles || []).filter((bundle) => {
+      return checkoutBundleIds.includes(bundle?.checkoutBundleId);
+    });
+  } else {
+    return (bundles || []).filter(
+      (bundle) => checkoutBundleIds === bundle?.checkoutBundleId,
+    );
+  }
+};
+/**
+ * returns line items array for saleor api
+ * @params lines: checkout lines from saleor checkout
+ * @params bundles: all the bundles array from the checkout data
+ * @params checkoutBundleIds: array of checkout bundle ids
+ */
+export const getCheckoutLineItemsForDelete = (
+  lines,
+  bundles,
+  checkoutBundleIds: string[],
+) => {
+  const targetBundle = getTargetBundleByCheckoutBundleId(
+    bundles,
+    checkoutBundleIds,
+  );
+  const variantIds = getVariantIds(targetBundle);
+  return (lines || [])
+    .filter((line) => variantIds.includes(line?.variant?.id))
+    .map((line) => ({
+      lineId: line?.id,
+      quantity: line?.quantity,
+    }));
+};
+
+/**
+ * @description -- this method takes saleor checkout lines and checkout bundles which are supposed to be deleted and returns updated
+ * lines quantity which should be updated in Saleor
+ * @params lines: checkout lines from saleor checkout
+ * @params bundles: checkout bundles which are deleted
+ */
+export const getCheckoutDeleteLines = (lines, checkoutBundles) => {
+  const checkoutLines = lines;
+  (checkoutBundles || []).map((checkoutBundle) => {
+    checkoutBundle?.bundle?.productVariants?.map((variant) => {
+      const matchingVariant = checkoutLines.find((obj) => {
+        return obj.variant.id === variant.productVariant.id;
+      });
+      if (matchingVariant) {
+        matchingVariant.quantity = matchingVariant.quantity - variant.quantity;
+      }
+    });
+  });
+  checkoutLines.forEach(function (line) {
+    delete line.variant;
+  });
+  return checkoutLines;
 };

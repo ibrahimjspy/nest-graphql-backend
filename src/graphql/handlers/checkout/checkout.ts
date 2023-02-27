@@ -34,6 +34,7 @@ import { shippingAndBillingAddressQuery } from '../../queries/checkout/shippingA
 import { shippingZonesQuery } from '../../queries/checkout/shippingZones';
 import { updateCheckoutBundleQuery } from '../../queries/checkout/updateCheckoutBundle';
 import { addCheckoutBundleQuery } from '../../queries/checkout/addCheckoutBundles';
+import { checkoutQuery } from 'src/graphql/queries/checkout/checkout';
 
 export const marketplaceCheckoutHandler = async (
   id: string,
@@ -337,4 +338,15 @@ export const savePaymentInfoHandler = async ({
   );
 
   return response;
+};
+
+export const getCheckoutHandler = async (
+  checkoutId: string,
+  token: string,
+): Promise<object> => {
+  const response = await graphqlCall(checkoutQuery(checkoutId), token);
+  if (!response['checkout']) {
+    throw new RecordNotFound('Checkout');
+  }
+  return response['checkout'];
 };

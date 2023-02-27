@@ -13,8 +13,8 @@ import { UpdateBundleStateDto } from 'src/modules/checkout/dto/add-bundle.dto';
 import { deleteCheckoutBundlesHandler } from 'src/graphql/handlers/checkout/cart/cart.marketplace';
 
 @Injectable()
-export class MarketplaceCheckoutService {
-  private readonly logger = new Logger(MarketplaceCheckoutService.name);
+export class MarketplaceCartService {
+  private readonly logger = new Logger(MarketplaceCartService.name);
 
   /**
    * @description -- fetches shopping cart data from bundle service against userEmail
@@ -34,23 +34,14 @@ export class MarketplaceCheckoutService {
 
   /**
    * @description -- this method adds bundles against checkout
+   * @warn - this method throws an error caught by graphql handler - so make sure to wrap it around in try catch
    */
   public async addBundles(
     userEmail: string,
     checkoutBundles: CheckoutBundleInputType[],
     token: string,
   ) {
-    try {
-      const response = await addCheckoutBundlesHandler(
-        userEmail,
-        checkoutBundles,
-        token,
-      );
-      return prepareSuccessResponse(response, '', 201);
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
+    return await addCheckoutBundlesHandler(userEmail, checkoutBundles, token);
   }
 
   /**
@@ -83,40 +74,12 @@ export class MarketplaceCheckoutService {
     checkoutBundleIds: string[],
     token: string,
   ): Promise<object> {
-    try {
-      const response = await deleteCheckoutBundlesHandler(
-        checkoutBundleIds,
-        userEmail,
-        false,
-        token,
-      );
-      return prepareSuccessResponse(response, '', 201);
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
-  }
-
-  /**
-   * @description -- this method adds checkout id against a user checkout bundle session made against a user email
-   */
-  public async updateCartBundlesCheckoutIdService(
-    userEmail: string,
-    token: string,
-    checkoutId: string,
-  ) {
-    try {
-      const response = await updateCartBundlesCheckoutIdHandler(
-        userEmail,
-        token,
-        checkoutId,
-      );
-
-      return response;
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
+    return await deleteCheckoutBundlesHandler(
+      checkoutBundleIds,
+      userEmail,
+      false,
+      token,
+    );
   }
 
   /**
@@ -133,6 +96,28 @@ export class MarketplaceCheckoutService {
         token,
       );
       return prepareSuccessResponse(response, '', 200);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description -- this method adds checkout id against a user checkout bundle session made against a user email
+   */
+  public async addCheckoutIdToMarketplace(
+    userEmail: string,
+    token: string,
+    checkoutId: string,
+  ) {
+    try {
+      const response = await updateCartBundlesCheckoutIdHandler(
+        userEmail,
+        token,
+        checkoutId,
+      );
+
+      return response;
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

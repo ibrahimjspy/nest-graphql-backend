@@ -17,6 +17,7 @@ import { getLinesFromBundles, validateBundlesLength } from './Checkout.utils';
 import SqsService from 'src/external/endpoints/sqsMessage';
 import { NoPaymentIntentError } from './Checkout.errors';
 import { CartService } from './cart/Cart.service';
+import { MarketplaceCartService } from './cart/services/marketplace/Cart.marketplace.service';
 
 @Injectable()
 export class CheckoutService {
@@ -24,6 +25,7 @@ export class CheckoutService {
   constructor(
     private sqsService: SqsService,
     private cartService: CartService,
+    private marketplaceCartService: MarketplaceCartService,
   ) {
     return;
   }
@@ -131,7 +133,7 @@ export class CheckoutService {
         checkoutLines,
         token,
       );
-      await this.cartService.addCheckoutIdToMarketplace(
+      await this.marketplaceCartService.addCheckoutIdToMarketplace(
         userEmail,
         token,
         checkoutCreate['checkout']['id'],
