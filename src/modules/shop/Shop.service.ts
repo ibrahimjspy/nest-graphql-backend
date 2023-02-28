@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
-  GetShopDetailsbyEmailHandler,
   addStoreToShopHandler,
   addVendorsToShopHandler,
   carouselHandler,
@@ -21,7 +20,7 @@ import {
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
 import { SuccessResponseType } from 'src/core/utils/response.type';
-import { createStoreDTO, shopDetailDTO } from './dto/shop';
+import { createStoreDTO, shopDetailDto } from './dto/shop';
 
 import {
   getMyVendorsFieldValues,
@@ -87,7 +86,7 @@ export class ShopService {
   }
 
   public async getShopDetailsV2(
-    filter: shopDetailDTO,
+    filter: shopDetailDto,
     isb2c = false,
   ): Promise<object> {
     try {
@@ -129,11 +128,6 @@ export class ShopService {
     } catch (error) {
       this.logger.error(error);
     }
-  }
-
-  public async getShopDetailsbyEmail(email: string) {
-    const response = await GetShopDetailsbyEmailHandler(email);
-    return response;
   }
 
   public async getMyProducts(retailerId: string, filter: myProductsDTO) {

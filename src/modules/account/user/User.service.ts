@@ -7,7 +7,6 @@ import { SuccessResponseType } from 'src/core/utils/response.type';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import * as AccountHandlers from 'src/graphql/handlers/account/user';
 import { ShopService } from '../../shop/Shop.service';
-import { User } from './dto/userinfo';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import { UserInputDTO } from './dto/user.dto';
 @Injectable()
@@ -17,26 +16,22 @@ export class UserService {
   }
   private readonly logger = new Logger(UserService.name);
 
-  public async getUserinfo(Token: string): Promise<SuccessResponseType> {
+  public async getUserinfo(token: string): Promise<SuccessResponseType> {
     try {
-      const UserDetails = await AccountHandlers.getUserDetailsHandler(Token);
-      const ShopDetails = await this.shopService.getShopDetailsbyEmail(
-        UserDetails['email'],
-      );
-      let Userinfo: User = {};
-      /* This is a way to check if the shop is present or not. */
-      if (ShopDetails['message']) {
-        Userinfo = {
-          ...UserDetails,
-          Shop: null,
-        };
-      } else {
-        Userinfo = {
-          ...UserDetails,
-          Shop: ShopDetails['edges'][0].node,
-        };
+      const userDetails = await AccountHandlers.getUserDetailsHandler(token);
+      const shopDetails = await this.shopService.getShopDetailsV2({
+        email: userDetails['email'],
+      });
+      if (shopDetails['status'] == 200) {
+        return prepareSuccessResponse({
+          ...userDetails,
+          shopDetails: shopDetails['data'],
+        });
       }
-      return prepareSuccessResponse(Userinfo);
+      return prepareSuccessResponse({
+        ...userDetails,
+        shopDetails: shopDetails,
+      });
     } catch (error) {
       this.logger.error(error);
       if (error instanceof RecordNotFound) {
