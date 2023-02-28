@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Headers, Put, Res } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
 import { UserService } from './User.service';
 import { IsAuthenticated } from 'src/core/utils/decorators';
@@ -10,6 +10,7 @@ export class UserController {
   constructor(private readonly appService: UserService) {}
 
   @Get('/account/user/whoami')
+  @ApiBearerAuth('JWT-auth')
   async User(
     @Res() res,
     @IsAuthenticated('authorization') token: string,

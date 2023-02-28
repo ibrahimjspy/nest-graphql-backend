@@ -18,7 +18,7 @@ import {
   allShopIdsDTO,
   b2cDto,
   createStoreDTO,
-  shopDetailDTO,
+  shopDetailDto,
   shopIdByProductsDTO,
   shopIdByVariantsDTO,
   shopIdDTO,
@@ -60,7 +60,7 @@ export class ShopController {
   })
   async getShopDetailsV2(
     @Res() res,
-    @Query() filter: shopDetailDTO,
+    @Query() filter: shopDetailDto,
   ): Promise<object> {
     return makeResponse(
       res,
