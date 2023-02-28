@@ -5,13 +5,15 @@ import {
   prepareFailedResponse,
   prepareSuccessResponse,
 } from 'src/core/utils/response';
-import {
-  updateCheckoutBundleState,
-  updateCheckoutBundlesHandler,
-} from 'src/graphql/handlers/checkout/checkout';
+import { updateCheckoutBundleState } from 'src/graphql/handlers/checkout/checkout';
 import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
 import { UpdateBundleStateDto } from '../dto/add-bundle.dto';
-import { getCheckoutLineItems, getLinesFromBundles } from './Cart.utils';
+import {
+  getCheckoutLineItems,
+  getDeleteBundlesLines,
+  getLinesFromBundles,
+  getTargetBundleByCheckoutBundleId,
+} from './Cart.utils';
 import { SaleorCartService } from './services/saleor/Cart.saleor.service';
 import { MarketplaceCartService } from './services/marketplace/Cart.marketplace.service';
 import { SaleorCheckoutService } from '../services/Checkout.saleor';
@@ -103,13 +105,13 @@ export class CartService {
     token: string,
   ): Promise<object> {
     try {
-      const marketplaceResponse = await updateCheckoutBundlesHandler(
+      const marketplaceResponse = await this.marketplaceService.updateBundles(
         userEmail,
         checkoutBundles,
         token,
       );
       const checkoutId =
-        marketplaceResponse.checkoutId ||
+        marketplaceResponse['checkoutId'] ||
         'Q2hlY2tvdXQ6OGQ5Zjg1YTgtNDJkZi00YTBiLTk1MzItZDZjMzJlNDhjMDNh';
       const saleorCheckout = await this.saleorCheckoutService.getCheckout(
         checkoutId,
@@ -117,7 +119,7 @@ export class CartService {
       );
       const checkoutLines = getCheckoutLineItems(
         saleorCheckout['lines'],
-        marketplaceResponse.checkoutBundles,
+        marketplaceResponse['checkoutBundles'],
         checkoutBundles,
       );
       const saleorResponse = await this.saleorService.updateLines(
@@ -130,6 +132,48 @@ export class CartService {
         '',
         201,
       );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description -- deletes bundle and cart lines against given checkout bundle ids
+   */
+  public async deleteBundlesFromCart(
+    userEmail: string,
+    checkoutBundleIds: string[],
+    token: string,
+  ): Promise<object> {
+    try {
+      const marketplaceCheckout: any =
+        await this.marketplaceService.getCheckoutBundles(userEmail, token);
+      const saleorCheckout: any = await this.saleorCheckoutService.getCheckout(
+        marketplaceCheckout.data.checkoutId,
+        token,
+      );
+      const checkoutBundlesData = getTargetBundleByCheckoutBundleId(
+        marketplaceCheckout['data']['checkoutBundles'],
+        checkoutBundleIds,
+      );
+      const updatedSaleorLines = getDeleteBundlesLines(
+        saleorCheckout.lines,
+        checkoutBundlesData,
+      );
+      const [saleorResponse, marketplaceResponse] = await Promise.all([
+        this.saleorService.updateLines(
+          marketplaceCheckout.data.checkoutId,
+          updatedSaleorLines,
+          token,
+        ),
+        this.marketplaceService.deleteBundles(
+          userEmail,
+          checkoutBundleIds,
+          token,
+        ),
+      ]);
+      return prepareSuccessResponse({ saleorResponse, marketplaceResponse });
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

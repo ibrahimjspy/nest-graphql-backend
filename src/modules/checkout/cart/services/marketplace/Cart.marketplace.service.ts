@@ -53,13 +53,11 @@ export class MarketplaceCartService {
     token: string,
   ): Promise<object> {
     try {
-      const response = await updateCheckoutBundlesHandler(
+      return await updateCheckoutBundlesHandler(
         userEmail,
         checkoutBundles,
         token,
       );
-
-      return prepareSuccessResponse(response, '', 201);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

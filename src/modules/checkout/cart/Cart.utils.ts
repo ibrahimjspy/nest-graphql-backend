@@ -183,29 +183,6 @@ export const getTargetBundleByCheckoutBundleId = (
     );
   }
 };
-/**
- * returns line items array for saleor api
- * @params lines: checkout lines from saleor checkout
- * @params bundles: all the bundles array from the checkout data
- * @params checkoutBundleIds: array of checkout bundle ids
- */
-export const getCheckoutLineItemsForDelete = (
-  lines,
-  bundles,
-  checkoutBundleIds: string[],
-) => {
-  const targetBundle = getTargetBundleByCheckoutBundleId(
-    bundles,
-    checkoutBundleIds,
-  );
-  const variantIds = getVariantIds(targetBundle);
-  return (lines || [])
-    .filter((line) => variantIds.includes(line?.variant?.id))
-    .map((line) => ({
-      lineId: line?.id,
-      quantity: line?.quantity,
-    }));
-};
 
 /**
  * @description -- this method takes saleor checkout lines and checkout bundles which are supposed to be deleted and returns updated
@@ -213,7 +190,7 @@ export const getCheckoutLineItemsForDelete = (
  * @params lines: checkout lines from saleor checkout
  * @params bundles: checkout bundles which are deleted
  */
-export const getCheckoutDeleteLines = (lines, checkoutBundles) => {
+export const getDeleteBundlesLines = (lines, checkoutBundles) => {
   const checkoutLines = lines;
   (checkoutBundles || []).map((checkoutBundle) => {
     checkoutBundle?.bundle?.productVariants?.map((variant) => {

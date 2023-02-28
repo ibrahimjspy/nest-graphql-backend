@@ -9,6 +9,8 @@ const b2bQuery = (checkoutId: string, lines: CheckoutLinesInterface) => {
           checkoutId: "${checkoutId}", 
           lines: ${JSON.stringify(lines)
             .replace(/"variantId"/g, 'variantId')
+            .replace(/"lineId"/g, 'lineId')
+            .replace(/"id"/g, 'lineId')
             .replace(/"quantity"/g, 'quantity')}
         ) {
           checkout {

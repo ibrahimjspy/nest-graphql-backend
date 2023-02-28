@@ -68,7 +68,7 @@ export class CartController {
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.deleteBundleFromCart(
+      await this.appService.deleteBundlesFromCart(
         body?.userEmail,
         body?.checkoutBundleIds,
         token,
