@@ -82,21 +82,23 @@ export const validateBundlesLength = (bundles: any[]) => {
  * @params bundles: all bundles array in the checkout
  * @params targetBundles: bundles array for which we need line items
  */
-export const getLineItems = async (bundles, targetBundles) => {
+export const getLineItems = (checkoutBundles, targetBundles) => {
   const lines: Array<{ quantity: number; variantId: string }> = [];
-  bundles.forEach((bundle) => {
+  checkoutBundles.forEach((checkoutBundle) => {
     const targetBundle = (targetBundles || []).find(
-      (a) => a?.bundleId === bundle?.id,
+      (a) => a?.bundleId === checkoutBundle?.bundle.id,
     );
-
+    if (!targetBundle) {
+      return;
+    }
     // Bundle quantity is multiplied with variant quantity for getting actual quantity ordered by user
     const bundleQty = targetBundle?.quantity;
-    bundle?.variants?.forEach((v) =>
+    checkoutBundle?.bundle?.productVariants?.forEach((v) => {
       lines.push({
         quantity: bundleQty * v?.quantity,
-        variantId: v?.variant?.id,
-      }),
-    );
+        variantId: v?.productVariant?.id,
+      });
+    });
   });
   return lines;
 };
