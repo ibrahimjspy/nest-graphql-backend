@@ -18,6 +18,7 @@ import {
 } from './Product.utils';
 import {
   GetBundlesDto,
+  ProductDetailsDto,
   ProductListFilterDto,
   shopProductsDTO,
 } from './dto/product.dto';
@@ -103,10 +104,21 @@ export class ProductService {
   }
 
   // Single product details by <slug> {Quick View , SingleProductDetailsPage}
+  // TODO deprecate this api with frontend notice
   public getProductDetailsBySlug(slug: string): Promise<object> {
     return ProductsHandlers.singleProductDetailsHandler(slug);
   }
 
+  public async getProductDetails(filter: ProductDetailsDto): Promise<object> {
+    try {
+      return prepareSuccessResponse(
+        await ProductsHandlers.getProductDetailsHandler(filter, filter.isB2c),
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
   // Product list page data relating to category <slug>
   public async getProductListPageById(
     categoryId: string,

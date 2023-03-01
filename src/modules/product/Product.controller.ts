@@ -5,6 +5,7 @@ import { ProductFilterDto, ProductFilterTypeEnum } from './dto';
 import { makeResponse } from 'src/core/utils/response';
 import {
   GetBundlesDto,
+  ProductDetailsDto,
   ProductIdDto,
   ProductListDto,
   ProductListFilterDto,
@@ -65,6 +66,14 @@ export class ProductController {
   @Get('/product/details/:slug')
   findProductDetailsBySlug(@Param() params): Promise<object> {
     return this.appService.getProductDetailsBySlug(params.slug);
+  }
+
+  @Get('api/v1/product')
+  @ApiOperation({
+    summary: 'returns detail of product based on id and slug',
+  })
+  getProductDetails(@Query() filter: ProductDetailsDto): Promise<object> {
+    return this.appService.getProductDetails(filter);
   }
 
   // Returns product list page data relating to category <slug>
