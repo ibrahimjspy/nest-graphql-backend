@@ -368,11 +368,19 @@ export class OrdersService {
   public async orderFulfill(
     orderId: string,
     orderLineIds: orderLineDTO[],
+    trackingNumber: string,
     token: string,
   ): Promise<object> {
     try {
       const response = await orderFulfillHandler(orderId, orderLineIds, token);
-      return prepareSuccessResponse(response, '', 201);
+      const metadata: OrderMetadataDto[] = [
+        {
+          key: 'trackingNumber',
+          value: trackingNumber,
+        },
+      ];
+      await updateOrderMetadataHandler(orderId, metadata, token);
+      return prepareSuccessResponse(response, 'order fulfilled', 201);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
