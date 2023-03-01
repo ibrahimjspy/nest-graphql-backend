@@ -1,7 +1,6 @@
 import { gql } from 'graphql-request';
 import { DEFAULT_CHANNEL } from 'src/constants';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
-import { removeKeysQuoutes } from 'src/core/utils/helpers';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
 import { ProductFilterDto } from 'src/modules/product/dto';
 
@@ -18,7 +17,7 @@ export const federationQuery = (filter: ProductFilterDto): string => {
           field: PUBLISHED_AT
         }
         filter: {
-          ids: ${removeKeysQuoutes(filter['ids'] || [])}
+          ids: ${JSON.stringify(filter.productIds || [])}
           isPublished: true,
           hasCategory: true,
           stockAvailability: IN_STOCK,

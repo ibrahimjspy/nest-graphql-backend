@@ -11,7 +11,7 @@ import {
   Res,
 } from '@nestjs/common';
 import { makeResponse } from '../../core/utils/response';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ShopService } from './Shop.service';
 import {
   accountIdDTO,
@@ -27,7 +27,7 @@ import {
 import { IsAuthenticated } from 'src/core/utils/decorators';
 import {
   myProductsDTO,
-  removeProductDTO,
+  removeMyProductsDto,
   updateMyProductDTO,
 } from './dto/myProducts';
 
@@ -172,21 +172,19 @@ export class ShopController {
   }
 
   @Delete('/api/v1/shop/my/products')
+  @ApiBearerAuth('JWT-auth')
   @ApiOperation({
     summary: 'deletes product from my products ',
   })
   async deleteProductsFromMyProducts(
     @Res() res,
-    @Body() body: removeProductDTO,
+    @Body() body: removeMyProductsDto,
     @Headers() headers,
   ): Promise<object> {
     const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.removeProductsFromMyProducts(
-        body.productIds,
-        Authorization,
-      ),
+      await this.appService.removeProductsFromMyProducts(body, Authorization),
     );
   }
 
