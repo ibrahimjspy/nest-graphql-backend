@@ -70,7 +70,7 @@ export class ProductController {
 
   @Get('api/v1/product')
   @ApiOperation({
-    summary: 'returns detail of product based on id and slug',
+    summary: 'returns detail of product based on id or slug',
   })
   getProductDetails(@Query() filter: ProductDetailsDto): Promise<object> {
     return this.appService.getProductDetails(filter);
