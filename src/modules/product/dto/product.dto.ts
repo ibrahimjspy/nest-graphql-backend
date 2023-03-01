@@ -34,6 +34,10 @@ export class ProductFilterDto extends PaginationDto {
   @ApiProperty({ required: false })
   @IsOptional()
   retailerId: string;
+
+  @ApiProperty({ required: false, type: Array })
+  @IsOptional()
+  productIds: string[];
 }
 
 export class ProductListDto {
