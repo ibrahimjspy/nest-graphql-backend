@@ -67,10 +67,11 @@ export const B2C_ENDPOINT = process.env.B2C_ENDPOINT;
 export const B2B_ENDPOINT = process.env.B2B_ENDPOINT;
 export const B2C_ENABLED = process.env.B2C_ENABLED;
 export const B2B_DEVELOPMENT_TOKEN = process.env.B2B_DEVELOPMENT_TOKEN;
+export const MAPPING_SERVICE_TOKEN = process.env.MAPPING_SERVICE_TOKEN;
 export const MAPPING_SERVICE_HEADERS = {
   headers: {
     'Content-Type': 'application/json',
-    Authorization: `Bearer private-${process.env.MAPPING_SERVICE_TOKEN}`,
+    Authorization: `Bearer private-${MAPPING_SERVICE_TOKEN}`,
   },
 };
 export const MAPPING_SERVICE_URL = process.env.MAPPING_SERVICE_URL;

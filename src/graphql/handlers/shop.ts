@@ -23,6 +23,7 @@ import { vendorDetailsQuery } from '../queries/shop/vendorDetails';
 import { shopIdByProductQuery } from '../queries/shop/shopIdByProductId';
 import { getAllShopsQuery } from '../queries/shop/getAllShops';
 import { shopDetailsV2Query } from '../queries/shop/shopDetailsV2';
+import { removeProductsFromShopMutation } from '../mutations/shop/removeProducts';
 
 export const carouselHandler = async (token: string): Promise<object> => {
   try {
@@ -270,4 +271,20 @@ export const getAllShopsHandler = async (
       message: errorMessage.message,
     };
   }
+};
+
+export const removeProductsFromShopHandler = async (
+  productIds: string[],
+  shop: string,
+  token: string,
+  isb2c = false,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      removeProductsFromShopMutation(productIds, shop),
+      token,
+      isb2c,
+    ),
+  );
+  return response['deleteProductsFromShop'];
 };

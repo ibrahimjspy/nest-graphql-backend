@@ -10,6 +10,7 @@ import {
   getStoreFrontIdHandler,
   getStoreProductVariantsHandler,
   removeMyVendorsHandler,
+  removeProductsFromShopHandler,
   saveShopBankDetailsHandler,
   shopDetailsHandler,
   shopIdByOrderIdHandler,
@@ -35,9 +36,14 @@ import {
   getMyProductsHandler,
   updateMyProductHandler,
 } from 'src/graphql/handlers/product';
-import { myProductsDTO, updateMyProductDTO } from './dto/myProducts';
+import {
+  myProductsDTO,
+  removeMyProductsDTO,
+  updateMyProductDTO,
+} from './dto/myProducts';
 import { provisionStoreFront } from 'src/external/endpoints/provisionStorefront';
 import { B2C_DEVELOPMENT_TOKEN, B2C_STOREFRONT_TLD } from 'src/constants';
+import { removeB2cProductMapping } from 'src/external/endpoints/b2cMapping';
 @Injectable()
 export class ShopService {
   private readonly logger = new Logger(ShopService.name);
@@ -166,12 +172,20 @@ export class ShopService {
     }
   }
 
-  public async removeProductsFromMyProducts(productIds: string[], token) {
+  public async removeProductsFromMyProducts(input: removeMyProductsDTO, token) {
     try {
-      const response = await deleteBulkProductHandler(productIds, token, true);
-      return prepareSuccessResponse(response, '', 200);
+      const productIds = input.productIds;
+      const storeId = input.storeId;
+      const isB2c = true;
+      const [saleor, mapping, multiVendor] = await Promise.all([
+        deleteBulkProductHandler(productIds, token, isB2c),
+        removeB2cProductMapping(productIds),
+        removeProductsFromShopHandler(productIds, storeId, token, isB2c),
+      ]);
+      return prepareSuccessResponse({ saleor, mapping, multiVendor });
     } catch (error) {
       this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
