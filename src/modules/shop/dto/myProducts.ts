@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsArray } from 'class-validator';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 
-export class removeMyProductsDTO {
+export class removeMyProductsDto {
   @ApiProperty({ required: true })
   productIds: string[];
 

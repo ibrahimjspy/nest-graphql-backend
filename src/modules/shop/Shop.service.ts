@@ -38,7 +38,7 @@ import {
 } from 'src/graphql/handlers/product';
 import {
   myProductsDTO,
-  removeMyProductsDTO,
+  removeMyProductsDto,
   updateMyProductDTO,
 } from './dto/myProducts';
 import { provisionStoreFront } from 'src/external/endpoints/provisionStorefront';
@@ -172,7 +172,7 @@ export class ShopService {
     }
   }
 
-  public async removeProductsFromMyProducts(input: removeMyProductsDTO, token) {
+  public async removeProductsFromMyProducts(input: removeMyProductsDto, token) {
     try {
       const productIds = input.productIds;
       const storeId = input.storeId;

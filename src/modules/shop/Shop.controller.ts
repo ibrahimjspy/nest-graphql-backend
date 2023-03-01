@@ -27,7 +27,7 @@ import {
 import { IsAuthenticated } from 'src/core/utils/decorators';
 import {
   myProductsDTO,
-  removeMyProductsDTO,
+  removeMyProductsDto,
   updateMyProductDTO,
 } from './dto/myProducts';
 
@@ -178,7 +178,7 @@ export class ShopController {
   })
   async deleteProductsFromMyProducts(
     @Res() res,
-    @Body() body: removeMyProductsDTO,
+    @Body() body: removeMyProductsDto,
     @Headers() headers,
   ): Promise<object> {
     const Authorization: string = headers.authorization;
