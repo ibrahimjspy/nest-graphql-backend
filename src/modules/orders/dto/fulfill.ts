@@ -20,6 +20,10 @@ export class OrderFulfillDto {
   @IsString()
   orderId: string;
 
+  @ApiProperty({ required: true })
+  @IsString()
+  trackingNumber: string;
+
   @ApiProperty({ required: true, isArray: true, type: orderLineDTO })
   @IsArray()
   @ArrayMinSize(1)

@@ -6,18 +6,18 @@ export const validateArray = (input) => {
 };
 
 /**
- * take shop fields and returns storefront ids in an array
+ * @description : take shop fields and returns values of that field in shop
  */
-export const getStoreFrontFieldValues = (fields) => {
-  let storefrontIds = [];
+export const getFieldValues = (fields, fieldName: string) => {
+  let fieldValues = [];
   if (fields.map) {
     fields.map((field) => {
-      if (field.name == 'storefrontids') {
-        storefrontIds = field.values;
+      if (field.name == fieldName) {
+        fieldValues = field.values;
       }
     });
   }
-  return storefrontIds;
+  return fieldValues;
 };
 
 /**

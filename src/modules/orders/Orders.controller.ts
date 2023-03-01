@@ -200,6 +200,7 @@ export class OrdersController {
   }
 
   @Post('api/v1/order/return')
+  @ApiBearerAuth('JWT-auth')
   async returnOrder(
     @Res() res,
     @Query() filters: ReturnsStaffDto,
@@ -213,6 +214,7 @@ export class OrdersController {
   }
 
   @Post('api/v1/order/fulfill')
+  @ApiBearerAuth('JWT-auth')
   async fulfillOrder(
     @Res() res,
     @Body() orderDto: OrderFulfillDto,
@@ -223,6 +225,7 @@ export class OrdersController {
       await this.appService.orderFulfill(
         orderDto.orderId,
         orderDto.orderLines,
+        orderDto.trackingNumber,
         token,
       ),
     );
@@ -261,6 +264,7 @@ export class OrdersController {
   }
 
   @Post('api/v1/order/cancel')
+  @ApiBearerAuth('JWT-auth')
   @ApiOperation({
     summary: 'cancels an order against its id',
   })
@@ -276,6 +280,7 @@ export class OrdersController {
   }
 
   @Post('api/v1/order/fulfillment/cancel')
+  @ApiBearerAuth('JWT-auth')
   @ApiOperation({
     summary: 'cancels an order fulfillment against its id',
   })
@@ -295,6 +300,7 @@ export class OrdersController {
   }
 
   @Get('api/v1/orders/report/:shopId')
+  @ApiBearerAuth('JWT-auth')
   @ApiOperation({
     summary: 'returns order report against a particular shop',
   })
@@ -310,6 +316,7 @@ export class OrdersController {
   }
 
   @Get('api/v1/orders/return')
+  @ApiBearerAuth('JWT-auth')
   @ApiOperation({
     summary:
       'Return all orders which are return by end customer extending list api filters',
@@ -327,6 +334,7 @@ export class OrdersController {
 
   // Returns shop order details
   @Get('api/v1/order/return/:orderId')
+  @ApiBearerAuth('JWT-auth')
   async getReturnedOrderDetails(
     @Res() res,
     @Param() orderDto: OrderIdDto,
@@ -345,6 +353,7 @@ export class OrdersController {
   }
 
   @Post('api/v1/marketplace/order')
+  @ApiBearerAuth('JWT-auth')
   @ApiOperation({
     summary: 'this api adds orders against marketplace shops',
   })
@@ -361,6 +370,7 @@ export class OrdersController {
   }
 
   @Post('api/v1/order/assign')
+  @ApiBearerAuth('JWT-auth')
   @ApiOperation({
     summary: 'this api store assignee information in order metadata',
   })
@@ -377,6 +387,7 @@ export class OrdersController {
   }
 
   @Post('api/v1/order/shipping/label')
+  @ApiBearerAuth('JWT-auth')
   @ApiOperation({
     summary:
       'this api generates a shipping label based on Shipping information such as address, charges and services',

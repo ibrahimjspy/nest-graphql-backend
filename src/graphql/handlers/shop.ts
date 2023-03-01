@@ -15,8 +15,8 @@ import { createStoreMutation } from '../mutations/shop/createShop';
 import { addStoreToShopMutation } from '../mutations/shop/addStoreToShop';
 import { deactivateStoreMutation } from '../mutations/shop/deactivateStore';
 import {
+  getFieldValues,
   getMyVendorsFieldValues,
-  getStoreFrontFieldValues,
 } from 'src/modules/shop/Shop.utils';
 import { updateMyVendorsMutation } from '../mutations/shop/updateMyVendors';
 import { vendorDetailsQuery } from '../queries/shop/vendorDetails';
@@ -45,20 +45,27 @@ export const createStoreHandler = async (
 };
 
 export const addStoreToShopHandler = async (
-  shopId: string,
-  storeId: string,
+  storeDetails: object,
   shopDetail: object,
   token: string,
 ): Promise<object> => {
   try {
     // concat previous storeIds and new storeId for shop
     const shopStoreIds = [
-      storeId,
-      ...getStoreFrontFieldValues(shopDetail['fields']),
+      storeDetails['id'],
+      ...getFieldValues(shopDetail['fields'], 'storefrontids'),
+    ];
+    const shopStoreUrls = [
+      storeDetails['url'],
+      ...getFieldValues(shopDetail['fields'], 'storefronturls'),
     ];
     const response = await graphqlResultErrorHandler(
       await graphqlCall(
-        addStoreToShopMutation(shopId, [...new Set(shopStoreIds)]),
+        addStoreToShopMutation(
+          shopDetail['id'],
+          [...new Set(shopStoreIds)],
+          [...new Set(shopStoreUrls)],
+        ),
         token,
       ),
     );
@@ -66,7 +73,11 @@ export const addStoreToShopHandler = async (
   } catch (error) {
     // If store adding in shop fails then we need to deactivate that store
     await graphqlResultErrorHandler(
-      await graphqlCall(deactivateStoreMutation(storeId), token, true),
+      await graphqlCall(
+        deactivateStoreMutation(storeDetails['id']),
+        token,
+        true,
+      ),
     );
     const errorMessage = await graphqlExceptionHandler(error);
     return {
