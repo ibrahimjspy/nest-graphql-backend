@@ -58,9 +58,9 @@ export class shopIdDTO {
 
 export class b2cDTO {
   @ApiProperty({ required: false, default: false })
-  @IsBoolean()
+  @IsOptional()
   @Transform(({ obj, key }) => obj[key] === 'true')
-  public isB2c: boolean;
+  public isB2c?: boolean;
 }
 
 export class shopProductsDTO extends IntersectionType(b2cDTO, PaginationDto) {
@@ -101,4 +101,20 @@ export class GetBundlesDto extends PaginationDto {
 export class ProductIdDto {
   @ApiProperty({ type: String, required: true })
   productId: string;
+}
+
+export class ProductDetailsDto extends b2cDTO {
+  @ApiProperty({
+    required: false,
+    description: 'product id in uuid format ',
+  })
+  @IsOptional()
+  productId?: string;
+
+  @ApiProperty({
+    required: false,
+    description: 'product slug in uuid format ',
+  })
+  @IsOptional()
+  productSlug?: string;
 }

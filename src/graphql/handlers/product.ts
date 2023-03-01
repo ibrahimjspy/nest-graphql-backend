@@ -6,7 +6,6 @@ import {
 } from 'src/core/proxies/graphqlHandler';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import { BundleType } from 'src/graphql/types/bundle.type';
-import { PaginationDto } from '../dto/pagination.dto';
 import { getProductIdsByVariantIdsQuery } from '../queries/product/productIdsByVariantIds';
 import { hasNextPage } from '../utils/orders';
 import { getUniqueProductIds } from '../utils/product';
@@ -21,9 +20,13 @@ import { updateMyProductMutation } from '../mutations/product/updateMyProducts';
 import { deleteBulkMediaMutation } from '../mutations/product/mediaBulkDelete';
 import { getStoredProductsListQuery } from '../queries/product/storedProductsList';
 import { shopProductIdsByCategoryIdQuery } from '../queries/product/shopProductIdsByCategoryId';
-import { GetBundlesDto } from 'src/modules/product/dto/product.dto';
+import {
+  GetBundlesDto,
+  ProductDetailsDto,
+} from 'src/modules/product/dto/product.dto';
 import { getBundlesQuery } from '../queries/product/getBundles';
 import { getProductSlugQuery } from '../queries/product/productSlug';
+import { getProductDetailsQuery } from '../queries/product/details';
 
 export const productListPageHandler = async (
   filter,
@@ -249,4 +252,15 @@ export const getProductSlugHandler = async (
     await graphqlCall(getProductSlugQuery(productId), token, isb2c),
   );
   return response['product'];
+};
+
+export const getProductDetailsHandler = async (
+  filter: ProductDetailsDto,
+  isB2c = false,
+): Promise<object> => {
+  try {
+    return await graphqlCall(getProductDetailsQuery(filter, isB2c), '', isB2c);
+  } catch (error) {
+    return graphqlExceptionHandler(error);
+  }
 };
