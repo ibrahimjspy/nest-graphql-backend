@@ -69,6 +69,7 @@ export class ShopController {
   }
 
   @Post('/api/v1/store/create/:shopId')
+  @ApiBearerAuth('JWT-auth')
   @ApiOperation({
     summary: 'create store against given user shop id',
   })

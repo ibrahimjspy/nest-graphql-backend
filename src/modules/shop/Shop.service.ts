@@ -24,9 +24,9 @@ import { SuccessResponseType } from 'src/core/utils/response.type';
 import { createStoreDTO, shopDetailDto } from './dto/shop';
 
 import {
+  getFieldValues,
   getMyVendorsFieldValues,
   getProductIdsFromShop,
-  getStoreFrontFieldValues,
   validateArray,
   validateStoreInput,
 } from './Shop.utils';
@@ -61,7 +61,8 @@ export class ShopService {
     token: string,
   ): Promise<any> {
     try {
-      storeInput.url = this.generateStorefrontUrl(storeInput.name);
+      const storeUrl = this.generateStorefrontUrl(storeInput.name);
+      storeInput.url = storeUrl;
       const response = await createStoreHandler(
         validateStoreInput(storeInput),
         // TODO replace development token with AUTHO token
@@ -71,7 +72,7 @@ export class ShopService {
       // getting shop details by given shop id
       const shopDetail = await shopDetailsHandler(shopId);
       // Adding created store in user shop
-      await addStoreToShopHandler(shopId, response.id, shopDetail, token);
+      await addStoreToShopHandler(response, shopDetail, token);
       // provision storefront against given unique domain
       await provisionStoreFront(storeInput.url);
       return prepareSuccessResponse(response, '', 201);
@@ -140,7 +141,7 @@ export class ShopService {
     try {
       let productIds = [];
       const retailer = await getStoreFrontIdHandler(retailerId);
-      const storefrontIds = getStoreFrontFieldValues(retailer['fields']);
+      const storefrontIds = getFieldValues(retailer['fields'], 'storefrontids');
       await Promise.all(
         (storefrontIds || []).map(async (id) => {
           const shopDetails = await getStoreProductVariantsHandler(id);
