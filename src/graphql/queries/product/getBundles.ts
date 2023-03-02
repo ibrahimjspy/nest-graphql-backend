@@ -5,6 +5,7 @@ import { GetBundlesDto } from 'src/modules/product/dto/product.dto';
 export const getBundlesQuery = (filter: GetBundlesDto) => {
   const getProductDetails = filter.getProductDetails || false;
   const productVariantIds = filter.productVariants || null;
+  const bundleIds = filter.bundleIds || null;
   const productId = filter.productId ? `"${filter.productId}"` : null;
   const pagination = validatePageFilter(filter);
 
@@ -16,6 +17,7 @@ export const getBundlesQuery = (filter: GetBundlesDto) => {
         Filter: {
           productVariantIds: ${JSON.stringify(productVariantIds)}
           productId: ${productId}
+          bundleIds: ${JSON.stringify(bundleIds)}
         }
       ) {
         ... on BundleConnectionType {
@@ -97,6 +99,7 @@ export const getBundlesQuery = (filter: GetBundlesDto) => {
         Filter: {
             productVariantIds: ${JSON.stringify(productVariantIds)}
             productId: ${productId}
+            bundleIds: ${JSON.stringify(bundleIds)}
           }
       ) {
         ... on BundleConnectionType {

@@ -4,6 +4,7 @@ import { CartController } from './Cart.controller';
 import { MarketplaceCartService } from './services/marketplace/Cart.marketplace.service';
 import { SaleorCartService } from './services/saleor/Cart.saleor.service';
 import { SaleorCheckoutService } from '../services/Checkout.saleor';
+import { ProductService } from 'src/modules/product/Product.service';
 
 @Module({
   controllers: [CartController],
@@ -12,6 +13,7 @@ import { SaleorCheckoutService } from '../services/Checkout.saleor';
     SaleorCartService,
     MarketplaceCartService,
     SaleorCheckoutService,
+    ProductService,
   ],
   exports: [CartService],
 })

@@ -1,5 +1,5 @@
 export interface CheckoutLinesInterface {
-  quantity: number;
-  variantId: string;
+  quantity?: number;
+  variantId?: string;
 }
 [];

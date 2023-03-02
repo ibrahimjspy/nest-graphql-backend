@@ -85,6 +85,17 @@ export class GetBundlesDto extends PaginationDto {
 
   @ApiProperty({
     required: false,
+    description: 'bundle ids in uuid format you need data for',
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  @Type(() => String)
+  @Transform(({ value }) => value.split(','))
+  bundleIds?: string[];
+
+  @ApiProperty({
+    required: false,
     default: false,
     description:
       'if you want product details fetched from saleor against bundle you can pass this filter as true  warn -- it might increase response time',

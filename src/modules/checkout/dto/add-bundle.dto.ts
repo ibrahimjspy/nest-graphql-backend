@@ -1,6 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { ArrayNotEmpty, IsNotEmpty, ValidateNested } from 'class-validator';
+import {
+  ArrayNotEmpty,
+  IsNotEmpty,
+  IsOptional,
+  ValidateNested,
+} from 'class-validator';
 
 class BundleDto {
   @ApiProperty()
@@ -26,6 +31,10 @@ export class AddBundleDto {
   @ApiProperty()
   @IsNotEmpty()
   userEmail: string;
+
+  @ApiProperty({ required: true })
+  @IsOptional()
+  checkoutId: string;
 
   @ApiProperty({ type: [BundleDto] })
   @Type(() => BundleDto)

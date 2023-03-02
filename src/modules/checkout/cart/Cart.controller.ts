@@ -48,8 +48,9 @@ export class CartController {
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.addToCart(
+      await this.appService.addBundlesToCart(
         addBundleDto.userEmail,
+        addBundleDto.checkoutId,
         addBundleDto.bundles,
         token,
       ),
@@ -88,7 +89,7 @@ export class CartController {
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.updateBundleFromCart(
+      await this.appService.updateBundlesFromCart(
         body?.userEmail,
         body?.bundles,
         token,

@@ -1,14 +1,13 @@
 import { makeQuantity } from 'src/core/utils/helpers';
 import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
+import { CheckoutLinesInterface } from './services/saleor/Cart.saleor.types';
 
 /**
  * parses checkout bundles object and returns bundle ids
  * @params bundlesForCart: bundles to be used for array of bundle ids
  * @returns bundleIds in array
  */
-export const getBundleIds = async (
-  bundlesForCart: CheckoutBundleInputType[],
-) => {
+export const getBundleIds = (bundlesForCart: CheckoutBundleInputType[]) => {
   return bundlesForCart.map((res) => res['bundleId']);
 };
 
@@ -78,15 +77,18 @@ export const validateBundlesLength = (bundles: any[]) => {
 };
 
 /**
- * returns line items (for saleor apis)
+ * returns line items updated bundles lines
  * @params bundles: all bundles array in the checkout
  * @params targetBundles: bundles array for which we need line items
  */
-export const getLineItems = (checkoutBundles, targetBundles) => {
-  const lines: Array<{ quantity: number; variantId: string }> = [];
+export const getUpdateCartBundleLines = (
+  checkoutBundles,
+  targetBundles,
+): CheckoutLinesInterface => {
+  const lines: any = [];
   checkoutBundles.forEach((checkoutBundle) => {
     const targetBundle = (targetBundles || []).find(
-      (a) => a?.bundleId === checkoutBundle?.bundle.id,
+      (a) => a?.checkoutBundleId === checkoutBundle?.checkoutBundleId,
     );
     if (!targetBundle) {
       return;
@@ -193,13 +195,16 @@ export const getTargetBundleByCheckoutBundleId = (
  * @params bundles: checkout bundles which are deleted
  */
 export const getDeleteBundlesLines = (lines, checkoutBundles) => {
+  console.log(lines);
   const checkoutLines = lines;
   (checkoutBundles || []).map((checkoutBundle) => {
     checkoutBundle?.bundle?.productVariants?.map((variant) => {
       const matchingVariant = checkoutLines.find((obj) => {
+        console.log(obj.variant.id, variant.productVariant.id);
         return obj.variant.id === variant.productVariant.id;
       });
       if (matchingVariant) {
+        console.log(matchingVariant.quantity, variant.quantity);
         matchingVariant.quantity = matchingVariant.quantity - variant.quantity;
       }
     });
@@ -208,4 +213,34 @@ export const getDeleteBundlesLines = (lines, checkoutBundles) => {
     delete line.variant;
   });
   return checkoutLines;
+};
+
+/**
+ * returns line items (for saleor apis)
+ * @params bundles: all bundles array fetched from bundle service
+ * @params targetBundles: bundles array for which we need line items
+ */
+export const getAddBundleToCartLines = (
+  bundlesData,
+  targetBundles,
+): CheckoutLinesInterface => {
+  const lines: any = [];
+  bundlesData.edges.forEach((checkoutBundle) => {
+    const targetBundle = (targetBundles || []).find(
+      (a) => a?.bundleId === checkoutBundle?.node.id,
+    );
+    if (!targetBundle) {
+      return;
+    }
+
+    // Bundle quantity is multiplied with variant quantity for getting actual quantity ordered by user
+    const bundleQty = targetBundle?.quantity;
+    checkoutBundle?.node?.productVariants?.forEach((v) => {
+      lines.push({
+        quantity: bundleQty * v?.quantity,
+        variantId: v?.productVariant?.id,
+      });
+    });
+  });
+  return lines;
 };
