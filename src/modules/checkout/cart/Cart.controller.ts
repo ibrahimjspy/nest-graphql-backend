@@ -109,7 +109,12 @@ export class CartController {
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.updateCheckoutBundleState(updateBundleState, token),
+      updateBundleState.isSelected
+        ? await this.appService.selectBundlesAsUnselected(
+            updateBundleState,
+            token,
+          )
+        : '',
     );
   }
 }

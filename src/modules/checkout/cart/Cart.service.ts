@@ -123,16 +123,26 @@ export class CartService {
    * @description -- this method updates state of given list of checkout bundles
    * @satisfies -- it updates status in form of ~~ selected -- unselected
    */
-  public async updateCheckoutBundleState(
+  public async selectBundlesAsUnselected(
     updateBundleState: UpdateBundleStateDto,
     token: string,
   ) {
     try {
-      const response = await updateCheckoutBundleState(
-        updateBundleState,
-        token,
+      const { userEmail, checkoutBundleIds } = updateBundleState;
+
+      const [saleor, marketplace] = await Promise.all([
+        this.saleorService.removeBundleLines(
+          userEmail,
+          checkoutBundleIds,
+          token,
+        ),
+        await updateCheckoutBundleState(updateBundleState, token),
+      ]);
+      return prepareSuccessResponse(
+        { saleor, marketplace },
+        'bundles state updated in cart',
+        201,
       );
-      return prepareSuccessResponse(response, '', 200);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

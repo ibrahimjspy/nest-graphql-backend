@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   ArrayNotEmpty,
+  IsBoolean,
   IsNotEmpty,
   IsOptional,
   ValidateNested,
@@ -54,7 +55,11 @@ export class UpdateBundleStateDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  action: string;
+  checkoutId: string;
+
+  @ApiProperty({ required: true })
+  @IsBoolean()
+  isSelected: boolean;
 }
 export class UpdateBundlesDto {
   @ApiProperty()
