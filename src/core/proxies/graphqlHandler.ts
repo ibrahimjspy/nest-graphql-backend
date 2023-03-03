@@ -20,17 +20,18 @@ export const graphqlCall = async (
   Token?: string,
   isB2c?: boolean,
 ): Promise<any> => {
-  console.log('token', Token);
-  console.log('endpoint', graphqlEndpoint(isB2c ? isB2c : false));
-  const graphQLClient = new GraphQLClient(
-    graphqlEndpoint(isB2c ? isB2c : false),
-    {
-      headers: {
-        authorization: `${Token}`,
-      },
+  const startTime = new Date().getTime();
+  const endpoint = graphqlEndpoint(isB2c ? isB2c : false);
+  const request = { endpoint: endpoint, queryName: Query.split('(')[0] };
+  const graphQLClient = new GraphQLClient(endpoint, {
+    headers: {
+      authorization: `${Token}`,
     },
-  );
-  return await graphQLClient.request(Query);
+  });
+  const response = await graphQLClient.request(Query);
+  const endTime = new Date().getTime();
+  console.log('Request took ' + (endTime - startTime) + 'ms', { request });
+  return response;
 };
 
 /**
