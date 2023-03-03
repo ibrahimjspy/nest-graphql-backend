@@ -137,6 +137,7 @@ export class CartService {
   ) {
     try {
       const { userEmail, checkoutBundleIds } = updateBundleState;
+      const action = 'un-select';
       const { checkoutId, checkoutBundlesData } =
         await this.marketplaceService.getCheckoutBundlesByIds(
           userEmail,
@@ -149,7 +150,7 @@ export class CartService {
           checkoutBundlesData,
           token,
         ),
-        await updateCheckoutBundleState(updateBundleState, token),
+        await updateCheckoutBundleState(action, updateBundleState, token),
       ]);
       return prepareSuccessResponse(
         { saleor, marketplace },
@@ -172,6 +173,7 @@ export class CartService {
   ) {
     try {
       const { userEmail, checkoutBundleIds } = updateBundleState;
+      const action = 'select';
       const { checkoutId, checkoutBundlesData } =
         await this.marketplaceService.getCheckoutBundlesByIds(
           userEmail,
@@ -186,7 +188,7 @@ export class CartService {
           bundlesList,
           token,
         ),
-        updateCheckoutBundleState(updateBundleState, token),
+        updateCheckoutBundleState(action, updateBundleState, token),
       ]);
       return prepareSuccessResponse(
         { saleor, marketplace },

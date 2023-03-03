@@ -279,13 +279,14 @@ export const getShippingZonesHandler = async (token: string) => {
 };
 
 export const updateCheckoutBundleState = async (
+  action: string,
   updateBundleState: UpdateBundleStateDto,
   token,
 ) => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
       updateCheckoutBundleStateMutation(
-        `updateBundleState.isSelected`,
+        action,
         updateBundleState.userEmail,
         updateBundleState.checkoutBundleIds,
       ),

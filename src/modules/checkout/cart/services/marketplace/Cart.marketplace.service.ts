@@ -113,11 +113,13 @@ export class MarketplaceCartService {
    * @satisfies -- it updates status in form of ~~ selected -- unselected
    */
   public async updateCheckoutBundleState(
+    action: string,
     updateBundleState: UpdateBundleStateDto,
     token: string,
   ) {
     try {
       const response = await updateCheckoutBundleState(
+        action,
         updateBundleState,
         token,
       );

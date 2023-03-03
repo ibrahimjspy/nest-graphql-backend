@@ -1,4 +1,3 @@
-import { makeQuantity } from 'src/core/utils/helpers';
 import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
 import { CheckoutLinesInterface } from './services/saleor/Cart.saleor.types';
 
@@ -25,62 +24,6 @@ export const getBundlesFromCheckout = (checkoutBundles) => {
     });
   });
   return bundles;
-};
-
-/**
- * matches bundles list provided by cart and target list which is old cart state
- * returns bundles which does not exist in target cart bundles list
- * @params bundlesForCart: bundles to be used for array of bundle ids
- * @params targetBundles: bundles to be used for for matching
- * @returns newBundles  -- bundles which should be added to cart in array
- */
-export const getNewBundlesList = async (
-  bundlesForCart: CheckoutBundleInputType[],
-  targetBundleList: [],
-) => {
-  const newBundles = [];
-  if (Array.isArray(bundlesForCart)) {
-    bundlesForCart.forEach((item) => {
-      targetBundleList['bundleIdsNotExist'].find(
-        (isNotExistingBundle: object) => {
-          if (item['bundleId'] === isNotExistingBundle['bundleId']) {
-            newBundles.push({
-              bundleId: item['bundleId'],
-              quantity: makeQuantity(item['quantity']),
-            });
-          }
-        },
-      );
-    });
-  }
-  return newBundles;
-};
-
-/**
- * matches bundles list provided by cart and target list which is old cart state
- * returns bundles which exist in both, which could be used for update cart bundles
- * @params bundlesForCart: bundles to be used for array of bundle ids
- * @params targetBundles: bundles to be used for for matching
- * @returns updateBundles  -- bundles which should be updated in array
- */
-export const getUpdatedBundlesList = (
-  bundlesForCart: CheckoutBundleInputType[],
-  targetBundles: [],
-) => {
-  const updateBundles = [];
-  if (Array.isArray(bundlesForCart)) {
-    bundlesForCart.forEach((item) => {
-      targetBundles['bundleIdsExist'].find((isExistingBundle: object) => {
-        if (item['bundleId'] === isExistingBundle['bundleId']) {
-          updateBundles.push({
-            checkoutBundleId: isExistingBundle['checkoutBundleId'],
-            quantity: makeQuantity(item['quantity']),
-          });
-        }
-      });
-    });
-  }
-  return updateBundles;
 };
 
 /**
@@ -151,23 +94,6 @@ export const getVariantIds = (targetBundles) => {
   });
   return variantIds;
 };
-/**
- * returns line items array for saleor api
- * @params lines: checkout lines from saleor checkout
- * @params bundles: all the bundles array from the checkout data
- * @params bundleIds: array of bundle ids
- */
-export const getCheckoutLineItems = (lines, bundles, bundleIds) => {
-  const targetBundle = getTargetBundleByBundleId(bundles, bundleIds);
-  const variantIds = getVariantIds(targetBundle);
-
-  return (lines || [])
-    .filter((line) => variantIds.includes(line?.variant?.id))
-    .map((line) => ({
-      variantId: line?.variant?.id,
-      quantity: line?.quantity,
-    }));
-};
 
 export const getLinesFromBundles = (bundles) => {
   const lines: Array<{ quantity: number; variantId: string }> = [];
@@ -211,16 +137,13 @@ export const getTargetBundleByCheckoutBundleId = (
  * @params bundles: checkout bundles which are deleted
  */
 export const getDeleteBundlesLines = (lines, checkoutBundles) => {
-  console.log(lines);
   const checkoutLines = lines;
   (checkoutBundles || []).map((checkoutBundle) => {
     checkoutBundle?.bundle?.productVariants?.map((variant) => {
       const matchingVariant = checkoutLines.find((obj) => {
-        console.log(obj.variant.id, variant.productVariant.id);
         return obj.variant.id === variant.productVariant.id;
       });
       if (matchingVariant) {
-        console.log(matchingVariant.quantity, variant.quantity);
         matchingVariant.quantity = matchingVariant.quantity - variant.quantity;
       }
     });
@@ -241,14 +164,13 @@ export const getAddBundleToCartLines = (
   targetBundles,
 ): CheckoutLinesInterface => {
   const lines: any = [];
-  bundlesData.edges.forEach((checkoutBundle) => {
+  bundlesData?.edges?.forEach((checkoutBundle) => {
     const targetBundle = (targetBundles || []).find(
       (a) => a?.bundleId === checkoutBundle?.node.id,
     );
     if (!targetBundle) {
       return;
     }
-
     // Bundle quantity is multiplied with variant quantity for getting actual quantity ordered by user
     const bundleQty = targetBundle?.quantity;
     checkoutBundle?.node?.productVariants?.forEach((v) => {
