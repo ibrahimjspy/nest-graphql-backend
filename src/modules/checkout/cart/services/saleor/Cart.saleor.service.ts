@@ -80,7 +80,6 @@ export class SaleorCartService {
         checkoutLines,
         token,
       );
-      console.log(createCheckout);
       await this.marketplaceService.addCheckoutIdToMarketplace(
         userEmail,
         token,
@@ -89,6 +88,7 @@ export class SaleorCartService {
       return createCheckout;
     } catch (error) {
       this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 
