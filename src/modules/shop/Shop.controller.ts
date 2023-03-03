@@ -272,6 +272,7 @@ export class ShopController {
   @ApiOperation({
     summary: 'create a marketplace shop',
   })
+  @ApiBearerAuth('JWT-auth')
   async createShop(
     @Res() res,
     @Query() filter: b2cDto,

@@ -20,6 +20,8 @@ export const graphqlCall = async (
   Token?: string,
   isB2c?: boolean,
 ): Promise<any> => {
+  console.log('token', Token);
+  console.log('endpoint', graphqlEndpoint(isB2c ? isB2c : false));
   const graphQLClient = new GraphQLClient(
     graphqlEndpoint(isB2c ? isB2c : false),
     {
