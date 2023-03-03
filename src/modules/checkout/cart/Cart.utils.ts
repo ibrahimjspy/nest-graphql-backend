@@ -12,6 +12,22 @@ export const getBundleIds = (bundlesForCart: CheckoutBundleInputType[]) => {
 };
 
 /**
+ * parses checkout bundles object and returns bundle ids
+ * @params bundlesForCart: bundles to be used for array of bundle ids
+ * @returns bundleIds in array
+ */
+export const getBundlesFromCheckout = (checkoutBundles) => {
+  const bundles = [];
+  checkoutBundles.map((checkoutBundle) => {
+    bundles.push({
+      bundleId: checkoutBundle.bundle.id,
+      quantity: checkoutBundle.quantity,
+    });
+  });
+  return bundles;
+};
+
+/**
  * matches bundles list provided by cart and target list which is old cart state
  * returns bundles which does not exist in target cart bundles list
  * @params bundlesForCart: bundles to be used for array of bundle ids

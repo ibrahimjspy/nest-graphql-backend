@@ -1,7 +1,11 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
-const b2bQuery = (userEmail: string, isSelected: any): string => {
-  return gql`
+export const getCheckoutBundleQuery = (
+  userEmail: string,
+  isSelected: any,
+  productDetails = true,
+) => {
+  if (productDetails) {
+    return gql`
     query {
       checkoutBundles(
         Filter: { userEmail: "${userEmail}",isSelected: ${isSelected} }
@@ -96,11 +100,36 @@ const b2bQuery = (userEmail: string, isSelected: any): string => {
       }
     }
   `;
-};
-
-export const getCheckoutBundleQuery = (userEmail: string, isSelected: any) => {
-  return graphqlQueryCheck(
-    b2bQuery(userEmail, isSelected),
-    b2bQuery(userEmail, isSelected),
-  );
+  }
+  return gql`
+    query {
+      checkoutBundles(
+        Filter: { userEmail: "${userEmail}" }
+      ) {
+        ... on CheckoutBundlesType {
+          __typename
+          checkoutId
+          checkoutBundles {
+            checkoutBundleId
+            isSelected
+            quantity
+            bundle {
+              id
+              productVariants {
+                quantity
+                productVariant {
+                  id             
+                }
+              }
+            }
+          }
+        }
+        ... on ResultError {
+          __typename
+          message
+          errors
+        }
+      }
+    }
+  `;
 };

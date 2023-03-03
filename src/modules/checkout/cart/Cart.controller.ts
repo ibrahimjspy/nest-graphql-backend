@@ -110,11 +110,14 @@ export class CartController {
     return makeResponse(
       res,
       updateBundleState.isSelected
-        ? await this.appService.selectBundlesAsUnselected(
+        ? await this.appService.selectBundlesAsSelected(
             updateBundleState,
             token,
           )
-        : '',
+        : await this.appService.selectBundlesAsUnselected(
+            updateBundleState,
+            token,
+          ),
     );
   }
 }

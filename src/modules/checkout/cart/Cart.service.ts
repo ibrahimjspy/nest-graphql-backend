@@ -6,7 +6,7 @@ import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
 import { UpdateBundleStateDto } from '../dto/add-bundle.dto';
 import { SaleorCartService } from './services/saleor/Cart.saleor.service';
 import { MarketplaceCartService } from './services/marketplace/Cart.marketplace.service';
-import { SaleorCheckoutService } from '../services/Checkout.saleor';
+import { getBundlesFromCheckout } from './Cart.utils';
 
 @Injectable()
 export class CartService {
@@ -14,7 +14,6 @@ export class CartService {
   constructor(
     private saleorService: SaleorCartService,
     private marketplaceService: MarketplaceCartService,
-    private saleorCheckoutService: SaleorCheckoutService,
   ) {}
 
   /**
@@ -25,7 +24,10 @@ export class CartService {
     token: string,
   ): Promise<object> {
     try {
-      return await this.marketplaceService.getCheckoutBundles(userEmail, token);
+      return await this.marketplaceService.getAllCheckoutBundles(
+        userEmail,
+        token,
+      );
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -96,10 +98,16 @@ export class CartService {
     token: string,
   ): Promise<object> {
     try {
-      const [saleor, marketplace] = await Promise.all([
-        this.saleorService.removeBundleLines(
+      const { checkoutId, checkoutBundlesData } =
+        await this.marketplaceService.getCheckoutBundlesByIds(
           userEmail,
           checkoutBundleIds,
+          token,
+        );
+      const [saleor, marketplace] = await Promise.all([
+        this.saleorService.removeBundleLines(
+          checkoutId,
+          checkoutBundlesData,
           token,
         ),
         this.marketplaceService.deleteBundles(
@@ -129,18 +137,60 @@ export class CartService {
   ) {
     try {
       const { userEmail, checkoutBundleIds } = updateBundleState;
-
-      const [saleor, marketplace] = await Promise.all([
-        this.saleorService.removeBundleLines(
+      const { checkoutId, checkoutBundlesData } =
+        await this.marketplaceService.getCheckoutBundlesByIds(
           userEmail,
           checkoutBundleIds,
+          token,
+        );
+      const [saleor, marketplace] = await Promise.all([
+        this.saleorService.removeBundleLines(
+          checkoutId,
+          checkoutBundlesData,
           token,
         ),
         await updateCheckoutBundleState(updateBundleState, token),
       ]);
       return prepareSuccessResponse(
         { saleor, marketplace },
-        'bundles state updated in cart',
+        'bundles state updated in cart to unselect',
+        201,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description -- this method updates state of given list of checkout bundles
+   * @satisfies -- it updates status in form of ~~ selected -- unselected
+   */
+  public async selectBundlesAsSelected(
+    updateBundleState: UpdateBundleStateDto,
+    token: string,
+  ) {
+    try {
+      const { userEmail, checkoutBundleIds } = updateBundleState;
+      const { checkoutId, checkoutBundlesData } =
+        await this.marketplaceService.getCheckoutBundlesByIds(
+          userEmail,
+          checkoutBundleIds,
+          token,
+        );
+      const bundlesList = getBundlesFromCheckout(checkoutBundlesData);
+      const [saleor, marketplace] = await Promise.all([
+        this.saleorService.addBundleLines(
+          userEmail,
+          checkoutId,
+          bundlesList,
+          token,
+        ),
+        updateCheckoutBundleState(updateBundleState, token),
+      ]);
+      return prepareSuccessResponse(
+        { saleor, marketplace },
+        'bundles state updated in cart to select',
         201,
       );
     } catch (error) {

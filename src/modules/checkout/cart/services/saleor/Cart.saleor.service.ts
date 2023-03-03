@@ -10,7 +10,6 @@ import {
   getAddBundleToCartLines,
   getBundleIds,
   getDeleteBundlesLines,
-  getTargetBundleByCheckoutBundleId,
   getUpdateCartBundleLines,
 } from '../../Cart.utils';
 import { SaleorCheckoutService } from 'src/modules/checkout/services/Checkout.saleor';
@@ -127,7 +126,7 @@ export class SaleorCartService {
   ) {
     try {
       const marketplaceCheckout =
-        await this.marketplaceService.getCheckoutBundles(userEmail, token);
+        await this.marketplaceService.getAllCheckoutBundles(userEmail, token);
       const checkoutId = marketplaceCheckout['data']['checkoutId'];
       const checkoutLines = getUpdateCartBundleLines(
         marketplaceCheckout['data']['checkoutBundles'],
@@ -140,22 +139,14 @@ export class SaleorCartService {
   }
 
   public async removeBundleLines(
-    userEmail: string,
-    checkoutBundleIds: string[],
+    checkoutId: string,
+    checkoutBundlesData,
     token: string,
   ) {
     try {
-      const marketplaceCheckout =
-        await this.marketplaceService.getCheckoutBundles(userEmail, token);
-      const checkoutId = marketplaceCheckout['data']['checkoutId'];
-
       const saleorCheckout = await this.saleorCheckoutService.getCheckout(
         checkoutId,
         token,
-      );
-      const checkoutBundlesData = getTargetBundleByCheckoutBundleId(
-        marketplaceCheckout['data']['checkoutBundles'],
-        checkoutBundleIds,
       );
       const updatedSaleorLines = getDeleteBundlesLines(
         saleorCheckout['lines'],

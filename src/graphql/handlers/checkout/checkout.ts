@@ -51,11 +51,15 @@ export const marketplaceCheckoutHandler = async (
 export const getCheckoutBundlesHandler = async (
   userEmail: string,
   token: string,
+  productDetails = true,
   throwException = true,
   isSelected = true,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(getCheckoutBundleQuery(userEmail, isSelected), token),
+    await graphqlCall(
+      getCheckoutBundleQuery(userEmail, isSelected, productDetails),
+      token,
+    ),
     throwException,
   );
 
@@ -281,7 +285,7 @@ export const updateCheckoutBundleState = async (
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
       updateCheckoutBundleStateMutation(
-        updateBundleState.action,
+        `updateBundleState.isSelected`,
         updateBundleState.userEmail,
         updateBundleState.checkoutBundleIds,
       ),
