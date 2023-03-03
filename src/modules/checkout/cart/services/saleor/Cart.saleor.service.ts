@@ -15,6 +15,7 @@ import {
 import { SaleorCheckoutService } from 'src/modules/checkout/services/Checkout.saleor';
 import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
 import { ProductService } from 'src/modules/product/Product.service';
+import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 
 @Injectable()
 export class SaleorCartService {
@@ -117,6 +118,7 @@ export class SaleorCartService {
       return await this.addLines(checkoutId, saleorLines, token);
     } catch (error) {
       this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
   public async updateBundleLines(
@@ -155,6 +157,7 @@ export class SaleorCartService {
       return this.updateLines(checkoutId, updatedSaleorLines, token);
     } catch (error) {
       this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 }

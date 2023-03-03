@@ -69,7 +69,12 @@ export class MarketplaceCartService {
     checkoutBundles: CheckoutBundleInputType[],
     token: string,
   ) {
-    return await addCheckoutBundlesHandler(userEmail, checkoutBundles, token);
+    try {
+      return await addCheckoutBundlesHandler(userEmail, checkoutBundles, token);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
   }
 
   /**
@@ -100,12 +105,17 @@ export class MarketplaceCartService {
     checkoutBundleIds: string[],
     token: string,
   ): Promise<object> {
-    return await deleteCheckoutBundlesHandler(
-      checkoutBundleIds,
-      userEmail,
-      false,
-      token,
-    );
+    try {
+      return await deleteCheckoutBundlesHandler(
+        checkoutBundleIds,
+        userEmail,
+        false,
+        token,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
   }
 
   /**
