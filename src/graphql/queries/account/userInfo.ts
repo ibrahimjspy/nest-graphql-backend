@@ -9,6 +9,7 @@ const b2bQuery = () => {
         firstName
         lastName
         email
+        checkoutIds
       }
     }
   `;
@@ -22,6 +23,7 @@ const b2cQuery = () => {
         firstName
         lastName
         email
+        checkoutIds
         metadata {
           key
           value
