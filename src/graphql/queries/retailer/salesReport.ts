@@ -5,8 +5,8 @@ export const getSalesReportQuery = (
   fromDate: string,
   toDate: string,
 ) => {
-  const _fromDate = fromDate?`"${fromDate}"`:null
-  const _toDate = toDate?`"${toDate}"`:null
+  const _fromDate = fromDate ? `"${fromDate}"` : null;
+  const _toDate = toDate ? `"${toDate}"` : null;
   return gql`
     query {
       salesReport(shopId: "${shopId}"

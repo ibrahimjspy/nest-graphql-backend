@@ -63,7 +63,9 @@ export class PaymentsController {
       await this.appService.getPurchaseHistory(
         param.shopId,
         date.fromDate,
-        date.toDate, Authorization),
+        date.toDate,
+        Authorization,
+      ),
     );
   }
 }
