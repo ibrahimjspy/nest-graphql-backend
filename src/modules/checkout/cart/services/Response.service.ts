@@ -94,4 +94,88 @@ export class CartResponseService {
       return graphqlExceptionHandler(error);
     }
   }
+
+  public async selectBundles(
+    saleorResponse,
+    marketplaceResponse,
+    { checkoutBundleIds, userEmail },
+    token: string,
+  ) {
+    try {
+      const saleor = saleorResponse.value;
+      const marketplace = marketplaceResponse.value;
+      if (
+        saleorResponse.status == 'fulfilled' &&
+        marketplaceResponse.status == 'fulfilled'
+      ) {
+        return prepareSuccessResponse(
+          { saleor, marketplace },
+          'bundles state updated to select',
+          201,
+        );
+      }
+
+      if (
+        saleorResponse.status == 'rejected' &&
+        marketplaceResponse.status == 'fulfilled'
+      ) {
+        await this.cartRollbackService.selectBundlesSaleor(
+          checkoutBundleIds,
+          userEmail,
+          token,
+        );
+        return prepareFailedResponse(
+          'updating cart state in Saleor failed',
+          401,
+          saleor,
+        );
+      }
+      return prepareFailedResponse('updating cart bundles state failed', 401);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async unselectBundles(
+    saleorResponse,
+    marketplaceResponse,
+    { checkoutBundleIds, userEmail },
+    token: string,
+  ) {
+    try {
+      const saleor = saleorResponse.value;
+      const marketplace = marketplaceResponse.value;
+      if (
+        saleorResponse.status == 'fulfilled' &&
+        marketplaceResponse.status == 'fulfilled'
+      ) {
+        return prepareSuccessResponse(
+          { saleor, marketplace },
+          'bundles state updated to un-select',
+          201,
+        );
+      }
+
+      if (
+        saleorResponse.status == 'rejected' &&
+        marketplaceResponse.status == 'fulfilled'
+      ) {
+        await this.cartRollbackService.unselectBundlesSaleor(
+          checkoutBundleIds,
+          userEmail,
+          token,
+        );
+        return prepareFailedResponse(
+          'updating cart state in Saleor failed',
+          401,
+          saleor,
+        );
+      }
+      return prepareFailedResponse('updating cart bundles state failed', 401);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
 }

@@ -148,7 +148,7 @@ export class CartService {
           checkoutBundleIds,
           token,
         );
-      const [saleor, marketplace] = await Promise.all([
+      const [saleor, marketplace] = await Promise.allSettled([
         this.saleorService.removeBundleLines(
           checkoutId,
           checkoutBundlesData,
@@ -156,10 +156,11 @@ export class CartService {
         ),
         await updateCheckoutBundleState(action, updateBundleState, token),
       ]);
-      return prepareSuccessResponse(
-        { saleor, marketplace },
-        'bundles state updated in cart to unselect',
-        201,
+      return this.cartResponseBuilder.unselectBundles(
+        saleor,
+        marketplace,
+        updateBundleState,
+        token,
       );
     } catch (error) {
       this.logger.error(error);
@@ -185,7 +186,7 @@ export class CartService {
           token,
         );
       const bundlesList = getBundlesFromCheckout(checkoutBundlesData);
-      const [saleor, marketplace] = await Promise.all([
+      const [saleor, marketplace] = await Promise.allSettled([
         this.saleorService.addBundleLines(
           userEmail,
           checkoutId,
@@ -194,10 +195,11 @@ export class CartService {
         ),
         updateCheckoutBundleState(action, updateBundleState, token),
       ]);
-      return prepareSuccessResponse(
-        { saleor, marketplace },
-        'bundles state updated in cart to select',
-        201,
+      return this.cartResponseBuilder.selectBundles(
+        saleor,
+        marketplace,
+        updateBundleState,
+        token,
       );
     } catch (error) {
       this.logger.error(error);

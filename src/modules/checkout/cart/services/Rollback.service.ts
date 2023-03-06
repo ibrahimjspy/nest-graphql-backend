@@ -32,7 +32,7 @@ export class CartRollbackService {
       );
 
       this.logger.warn(
-        `Rolling back marketplace bundles created due to failure in Saleor against user :: ${marketplaceResponse}`,
+        `Rolling back marketplace bundles created due to failure in Saleor against user :: ${userEmail}`,
       );
       return await this.marketplaceCartService.deleteBundles(
         userEmail,
@@ -52,10 +52,54 @@ export class CartRollbackService {
     try {
       const bundlesList = getBundlesFromCheckout(checkoutBundlesData);
       this.logger.warn(
-        `Rolling back Marketplace bundles deleted due to failure in Saleor against user :: ${token}`,
+        `Rolling back Marketplace bundles deleted due to failure in Saleor against user :: ${userEmail}`,
       );
       return await this.marketplaceCartService.addBundles(
         userEmail,
+        bundlesList,
+        token,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async selectBundlesSaleor(
+    checkoutBundleIds,
+    userEmail,
+    token: string,
+  ) {
+    try {
+      const action = 'select';
+      const bundlesList: any = { checkoutBundleIds, userEmail };
+      this.logger.warn(
+        `Rolling back Marketplace bundles deleted due to failure in Saleor against user :: ${userEmail}`,
+      );
+      return await this.marketplaceCartService.updateCheckoutBundleState(
+        action,
+        bundlesList,
+        token,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async unselectBundlesSaleor(
+    checkoutBundleIds,
+    userEmail,
+    token: string,
+  ) {
+    try {
+      const action = 'select';
+      const bundlesList: any = { checkoutBundleIds, userEmail };
+      this.logger.warn(
+        `Rolling back Marketplace bundles state updated due to failure in Saleor against user :: ${userEmail}`,
+      );
+      return await this.marketplaceCartService.updateCheckoutBundleState(
+        action,
         bundlesList,
         token,
       );
