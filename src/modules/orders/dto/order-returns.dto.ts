@@ -62,7 +62,6 @@ export class OrderReturnProductsInput {
 
   @ApiProperty({ required: true, isArray: true, type: orderLineDTO })
   @IsArray()
-  @ArrayMinSize(1)
   orderLines: orderLineDTO[];
 }
 export class OrderReturnDTO {
@@ -72,7 +71,6 @@ export class OrderReturnDTO {
 
   @ApiProperty({
     required: true,
-    isArray: true,
     type: OrderReturnProductsInput,
   })
   @ValidateNested({ each: true })
