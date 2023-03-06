@@ -6,11 +6,17 @@ import { CheckoutService } from './Checkout.service';
 import { ShippingModule } from './shipping/Shipping.module';
 import { PaymentModule } from './payment/Payment.module';
 import { CartModule } from './cart/Cart.module';
+import { MarketplaceCartService } from './cart/services/marketplace/Cart.marketplace.service';
 
 @Module({
   imports: [ShippingModule, PaymentModule, CartModule],
   controllers: [CheckoutController],
-  providers: [CheckoutService, StripeService, SqsService],
+  providers: [
+    CheckoutService,
+    StripeService,
+    SqsService,
+    MarketplaceCartService,
+  ],
   exports: [CheckoutService],
 })
 export class CheckoutModule {}

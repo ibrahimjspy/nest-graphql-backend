@@ -15,6 +15,7 @@ export const deleteCheckoutBundlesMutation = (
         ... on CheckoutBundlesType {
           __typename
           totalAmount
+          userEmail
           subTotal
           taxes
           discounts

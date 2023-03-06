@@ -48,8 +48,9 @@ export class CartController {
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.addToCart(
+      await this.appService.addBundlesToCart(
         addBundleDto.userEmail,
+        addBundleDto.checkoutId,
         addBundleDto.bundles,
         token,
       ),
@@ -68,7 +69,7 @@ export class CartController {
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.deleteBundleFromCart(
+      await this.appService.deleteBundlesFromCart(
         body?.userEmail,
         body?.checkoutBundleIds,
         token,
@@ -88,7 +89,7 @@ export class CartController {
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.updateBundleFromCart(
+      await this.appService.updateBundlesFromCart(
         body?.userEmail,
         body?.bundles,
         token,
@@ -108,7 +109,15 @@ export class CartController {
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.updateCheckoutBundleState(updateBundleState, token),
+      updateBundleState.isSelected
+        ? await this.appService.selectBundlesAsSelected(
+            updateBundleState,
+            token,
+          )
+        : await this.appService.selectBundlesAsUnselected(
+            updateBundleState,
+            token,
+          ),
     );
   }
 }
