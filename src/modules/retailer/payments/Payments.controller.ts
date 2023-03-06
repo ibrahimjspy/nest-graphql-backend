@@ -10,7 +10,7 @@ export class PaymentsController {
   constructor(private readonly appService: PaymentsService) {}
 
   @Get('api/v1/payments/sales/:shopId')
-  @ApiOperation({ summary: 'adds product to store' })
+  @ApiOperation({ summary: 'returns sales report against shop' })
   async getSalesReport(
     @Res() res,
     @Param() param: shopIdDto,
@@ -30,7 +30,7 @@ export class PaymentsController {
   }
 
   @Get('api/v1/payments/transactions/:shopId')
-  @ApiOperation({ summary: 'adds product to store' })
+  @ApiOperation({ summary: 'returns transaction history against shop' })
   async getTransactionHistory(
     @Res() res,
     @Param() param: shopIdDto,
@@ -50,16 +50,20 @@ export class PaymentsController {
   }
 
   @Get('api/v1/payments/purchases/:shopId')
-  @ApiOperation({ summary: 'adds product to store' })
+  @ApiOperation({ summary: 'returns purchase history against shop' })
   async getPurchaseHistory(
     @Res() res,
     @Param() param: shopIdDto,
+    @Query() date: dateDto,
     @Headers() headers,
   ): Promise<object> {
     const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.getPurchaseHistory(param.shopId, Authorization),
+      await this.appService.getPurchaseHistory(
+        param.shopId,
+        date.fromDate,
+        date.toDate, Authorization),
     );
   }
 }

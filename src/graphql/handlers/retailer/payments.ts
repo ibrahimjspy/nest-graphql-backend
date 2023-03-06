@@ -53,11 +53,13 @@ export const getTransactionHistoryHandler = async (
 
 export const getPurchaseHistoryHandler = async (
   shopId: string,
+  fromDate: string,
+  toDate: string,
   token: string,
 ): Promise<object> => {
   try {
     const response = await graphqlResultErrorHandler(
-      await graphqlCall(getPurchaseHistoryQuery(shopId), token),
+      await graphqlCall(getPurchaseHistoryQuery(shopId, fromDate, toDate), token),
     );
     if (!response['purchaseHistory']) {
       throw new RecordNotFound('Purchase history');

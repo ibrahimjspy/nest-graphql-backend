@@ -41,11 +41,13 @@ export class PaymentsService {
 
   public async getPurchaseHistory(
     shopId: string,
+    fromDate: string,
+    toDate: string,
     token: string,
   ): Promise<object> {
     try {
       return prepareSuccessResponse(
-        await getPurchaseHistoryHandler(shopId, token),
+        await getPurchaseHistoryHandler(shopId, fromDate, toDate, token),
       );
     } catch (error) {
       return graphqlExceptionHandler(error);

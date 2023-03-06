@@ -5,27 +5,31 @@ export const getSalesReportQuery = (
   fromDate: string,
   toDate: string,
 ) => {
+  const _fromDate = fromDate?`"${fromDate}"`:null
+  const _toDate = toDate?`"${toDate}"`:null
   return gql`
     query {
       salesReport(shopId: "${shopId}"
-        fromDate: "${fromDate}"
-        toDate: "${toDate}"
+        fromDate: ${_fromDate}
+        toDate: ${_toDate}
       ) {
         id
-        payout {
-          formated
-          price
-          currencyCode
-        }
-        totalPrice {
-          formated
-          price
-          currencyCode
-        }
-        pendingPayout {
-          formated
-          price
-          currencyCode
+        totalPayouts {
+            payout {
+            formated
+            price
+            currencyCode
+          }
+          totalPrice {
+            formated
+            price
+            currencyCode
+          }
+          pendingPayout {
+            formated
+            price
+            currencyCode
+          }
         }
       }
     }

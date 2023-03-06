@@ -35,7 +35,8 @@ export class shopIdDto {
 }
 
 export class dateDto {
-  @ApiProperty()
+  @ApiProperty({ required: false })
   fromDate: string;
+  @ApiProperty({ required: false })
   toDate: string;
 }
