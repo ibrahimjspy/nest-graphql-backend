@@ -86,15 +86,20 @@ describe('Cart utility tests', () => {
     });
 
     it('testing whether target bundles are correctly parsed and bundle is parsed correctly', async () => {
-      const targetBundle = getTargetBundleByBundleId(
-        checkoutBundleList,
-        'test',
-      );
+      const targetBundle = getTargetBundleByBundleId(checkoutBundleList, [
+        {
+          bundleId: 'test',
+        },
+      ]);
+      console.dir(targetBundle, { depth: null });
       expect(targetBundle).toBeDefined();
       expect(targetBundle).toStrictEqual([
         {
           checkoutBundleId: 'test',
-          bundle: { id: 'test', productVariants: [Array] },
+          bundle: {
+            id: 'test',
+            productVariants: [{ productVariant: { id: 'test' }, quantity: 2 }],
+          },
           quantity: 3,
         },
       ]);
