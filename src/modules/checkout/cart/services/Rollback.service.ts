@@ -17,6 +17,9 @@ export class CartRollbackService {
     private saleorCartService: SaleorCartService,
   ) {}
 
+  /**
+   * @description -- this method rolls back checkout bundles created due to failure in saleor add bundle lines
+   */
   public async addCheckoutBundleLinesSaleor(
     marketplaceResponse,
     userBundles,
@@ -45,6 +48,9 @@ export class CartRollbackService {
     }
   }
 
+  /**
+   * @description -- this method rolls back checkout bundles deleted due to failure in saleor delete bundle lines
+   */
   public async deleteCheckoutBundleLinesSaleor(
     { checkoutBundlesData, userEmail },
     token: string,
@@ -65,6 +71,9 @@ export class CartRollbackService {
     }
   }
 
+  /**
+   * @description -- this method rolls back checkout bundles state changed due to failure in saleor lines update
+   */
   public async selectBundlesSaleor(
     checkoutBundleIds,
     userEmail,
@@ -87,6 +96,9 @@ export class CartRollbackService {
     }
   }
 
+  /**
+   * @description -- this method rolls back checkout bundles state changed due to failure in saleor lines update
+   */
   public async unselectBundlesSaleor(
     checkoutBundleIds,
     userEmail,
