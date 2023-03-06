@@ -13,13 +13,21 @@ export class SaleorCheckoutService {
     userEmail: string,
     checkoutLines: LineType[],
     token: string,
+    throwException = true,
   ) {
-    const checkoutCreate = await createCheckoutHandler(
-      userEmail,
-      checkoutLines,
-      token,
-    );
-    return checkoutCreate['checkout'];
+    try {
+      const checkoutCreate = await createCheckoutHandler(
+        userEmail,
+        checkoutLines,
+        token,
+      );
+      return checkoutCreate['checkout'];
+    } catch (error) {
+      this.logger.error(error);
+      if (throwException) {
+        return error;
+      }
+    }
   }
 
   public async getCheckout(checkoutId: string, token: string) {

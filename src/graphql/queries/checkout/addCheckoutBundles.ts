@@ -20,6 +20,7 @@ const federationQuery = (
       ) {
         ... on CheckoutBundlesType {
           __typename
+          userEmail
           totalAmount
           subTotal
           taxes

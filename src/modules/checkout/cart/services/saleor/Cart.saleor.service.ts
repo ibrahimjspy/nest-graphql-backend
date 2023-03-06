@@ -15,7 +15,6 @@ import {
 import { SaleorCheckoutService } from 'src/modules/checkout/services/Checkout.saleor';
 import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
 import { ProductService } from 'src/modules/product/Product.service';
-import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 
 @Injectable()
 export class SaleorCartService {
@@ -31,12 +30,15 @@ export class SaleorCartService {
     checkoutId: string,
     checkoutLines: CheckoutLinesInterface,
     token: string,
+    throwException = true,
   ) {
     try {
-      const response = await addLinesHandler(checkoutId, checkoutLines, token);
-      return response;
+      return await addLinesHandler(checkoutId, checkoutLines, token);
     } catch (error) {
       this.logger.error(error);
+      if (throwException) {
+        throw error;
+      }
     }
   }
 
@@ -44,6 +46,7 @@ export class SaleorCartService {
     checkoutId: string,
     checkoutLines: CheckoutLinesInterface,
     token: string,
+    throwException = true,
   ) {
     try {
       const response = await updateLinesHandler(
@@ -54,6 +57,9 @@ export class SaleorCartService {
       return response;
     } catch (error) {
       this.logger.error(error);
+      if (throwException) {
+        throw error;
+      }
     }
   }
 
@@ -61,12 +67,15 @@ export class SaleorCartService {
     checkoutId: string,
     lineIds: string[],
     token: string,
+    throwException = true,
   ) {
     try {
-      const response = await deleteLinesHandler(checkoutId, lineIds, token);
-      return response;
+      return await deleteLinesHandler(checkoutId, lineIds, token);
     } catch (error) {
       this.logger.error(error);
+      if (throwException) {
+        throw error;
+      }
     }
   }
   public async createCheckoutFromBundleLines(
@@ -74,22 +83,17 @@ export class SaleorCartService {
     checkoutLines,
     token: string,
   ) {
-    try {
-      const createCheckout = await this.saleorCheckoutService.createCheckout(
-        userEmail,
-        checkoutLines,
-        token,
-      );
-      await this.marketplaceService.addCheckoutIdToMarketplace(
-        userEmail,
-        token,
-        createCheckout['id'],
-      );
-      return createCheckout;
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
+    const createCheckout = await this.saleorCheckoutService.createCheckout(
+      userEmail,
+      checkoutLines,
+      token,
+    );
+    await this.marketplaceService.addCheckoutIdToMarketplace(
+      userEmail,
+      token,
+      createCheckout['id'],
+    );
+    return createCheckout;
   }
 
   public async addBundleLines(
@@ -98,46 +102,37 @@ export class SaleorCartService {
     checkoutBundleLines: CheckoutBundleInputType[],
     token: string,
   ) {
-    try {
-      const bundleIds = getBundleIds(checkoutBundleLines);
-      const bundlesData = await this.productService.getProductBundles({
-        bundleIds: bundleIds,
-        first: 100,
-      });
-      const saleorLines: CheckoutLinesInterface = getAddBundleToCartLines(
-        bundlesData['data'],
-        checkoutBundleLines,
+    const bundleIds = getBundleIds(checkoutBundleLines);
+    const bundlesData = await this.productService.getProductBundles({
+      bundleIds: bundleIds,
+      first: 100,
+    });
+    const saleorLines: CheckoutLinesInterface = getAddBundleToCartLines(
+      bundlesData['data'],
+      checkoutBundleLines,
+    );
+    if (!checkoutId) {
+      return await this.createCheckoutFromBundleLines(
+        userEmail,
+        'saleorLines',
+        token,
       );
-      if (!checkoutId) {
-        return await this.createCheckoutFromBundleLines(
-          userEmail,
-          saleorLines,
-          token,
-        );
-      }
-      return await this.addLines(checkoutId, saleorLines, token);
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
     }
+    return await this.addLines(checkoutId, saleorLines, token);
   }
   public async updateBundleLines(
     userEmail: string,
     checkoutBundleLines: CheckoutLinesInterface,
     token: string,
   ) {
-    try {
-      const marketplaceCheckout =
-        await this.marketplaceService.getAllCheckoutBundles(userEmail, token);
-      const checkoutId = marketplaceCheckout['data']['checkoutId'];
-      const checkoutLines = getUpdateCartBundleLines(
-        marketplaceCheckout['data']['checkoutBundles'],
-        checkoutBundleLines,
-      );
-      return await this.updateLines(checkoutId, checkoutLines, token);
-    } catch (error) {
-      this.logger.error(error);
-    }
+    const marketplaceCheckout =
+      await this.marketplaceService.getAllCheckoutBundles(userEmail, token);
+    const checkoutId = marketplaceCheckout['data']['checkoutId'];
+    const checkoutLines = getUpdateCartBundleLines(
+      marketplaceCheckout['data']['checkoutBundles'],
+      checkoutBundleLines,
+    );
+    return await this.updateLines(checkoutId, checkoutLines, token);
   }
 
   public async removeBundleLines(
@@ -145,19 +140,14 @@ export class SaleorCartService {
     checkoutBundlesData,
     token: string,
   ) {
-    try {
-      const saleorCheckout = await this.saleorCheckoutService.getCheckout(
-        checkoutId,
-        token,
-      );
-      const updatedSaleorLines = getDeleteBundlesLines(
-        saleorCheckout['lines'],
-        checkoutBundlesData,
-      );
-      return this.updateLines(checkoutId, updatedSaleorLines, token);
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
+    const saleorCheckout = await this.saleorCheckoutService.getCheckout(
+      checkoutId,
+      token,
+    );
+    const updatedSaleorLines = getDeleteBundlesLines(
+      saleorCheckout['lines'],
+      checkoutBundlesData,
+    );
+    return this.updateLines(checkoutId, updatedSaleorLines, token);
   }
 }

@@ -7,6 +7,7 @@ import { UpdateBundleStateDto } from '../dto/add-bundle.dto';
 import { SaleorCartService } from './services/saleor/Cart.saleor.service';
 import { MarketplaceCartService } from './services/marketplace/Cart.marketplace.service';
 import { getBundlesFromCheckout } from './Cart.utils';
+import { CartResponseService } from './services/Response.service';
 
 @Injectable()
 export class CartService {
@@ -14,6 +15,7 @@ export class CartService {
   constructor(
     private saleorService: SaleorCartService,
     private marketplaceService: MarketplaceCartService,
+    private cartResponseBuilder: CartResponseService,
   ) {}
 
   /**
@@ -44,7 +46,7 @@ export class CartService {
     token: string,
   ): Promise<object> {
     try {
-      const [saleor, marketplace] = await Promise.all([
+      const [saleor, marketplace] = await Promise.allSettled([
         this.saleorService.addBundleLines(
           userEmail,
           checkoutId,
@@ -53,10 +55,11 @@ export class CartService {
         ),
         this.marketplaceService.addBundles(userEmail, bundlesList, token),
       ]);
-      return prepareSuccessResponse(
-        { saleor, marketplace },
-        'bundles added to cart',
-        201,
+      return await this.cartResponseBuilder.addBundlesToCart(
+        saleor,
+        marketplace,
+        bundlesList,
+        token,
       );
     } catch (error) {
       this.logger.error(error);
@@ -104,7 +107,7 @@ export class CartService {
           checkoutBundleIds,
           token,
         );
-      const [saleor, marketplace] = await Promise.all([
+      const [saleor, marketplace] = await Promise.allSettled([
         this.saleorService.removeBundleLines(
           checkoutId,
           checkoutBundlesData,
@@ -116,10 +119,11 @@ export class CartService {
           token,
         ),
       ]);
-      return prepareSuccessResponse(
-        { saleor, marketplace },
-        'bundles deleted from cart',
-        201,
+      return this.cartResponseBuilder.deleteBundlesFromCart(
+        saleor,
+        marketplace,
+        { checkoutBundlesData, userEmail },
+        token,
       );
     } catch (error) {
       this.logger.error(error);

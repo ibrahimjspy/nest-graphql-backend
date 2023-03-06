@@ -15,6 +15,15 @@ export const getBundleIds = (bundlesForCart: CheckoutBundleInputType[]) => {
  * @params bundlesForCart: bundles to be used for array of bundle ids
  * @returns bundleIds in array
  */
+export const getCheckoutBundleIds = (checkoutBundles) => {
+  return checkoutBundles.map((res) => res['checkoutBundleId']);
+};
+
+/**
+ * parses checkout bundles object and returns bundle ids
+ * @params bundlesForCart: bundles to be used for array of bundle ids
+ * @returns bundleIds in array
+ */
 export const getBundlesFromCheckout = (checkoutBundles) => {
   const bundles = [];
   checkoutBundles.map((checkoutBundle) => {
@@ -69,15 +78,15 @@ export const getUpdateCartBundleLines = (
  * @params bundles: all the bundles array from the checkout data
  * @params bundleId: bundle id (string or array) against which the target bundle will be searched
  */
-export const getTargetBundleByBundleId = (bundles, bundleId) => {
-  if (Array.isArray(bundleId)) {
-    return (bundles || []).filter((bundle) => {
-      return bundleId.some(
-        (e) => e.checkoutBundleId === bundle?.checkoutBundleId,
-      );
+export const getTargetBundleByBundleId = (checkoutBundles, bundles) => {
+  if (Array.isArray(checkoutBundles)) {
+    return (checkoutBundles || []).filter((checkoutBundle) => {
+      return bundles.some((e) => e.bundleId === checkoutBundle?.bundle.id);
     });
   } else {
-    return (bundles || []).filter((bundle) => bundleId === bundle?.bundle?.id);
+    return (checkoutBundles || []).filter(
+      (bundle) => bundles === bundle?.bundle?.id,
+    );
   }
 };
 

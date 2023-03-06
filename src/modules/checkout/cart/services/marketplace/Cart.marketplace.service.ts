@@ -68,11 +68,15 @@ export class MarketplaceCartService {
     userEmail: string,
     checkoutBundles: CheckoutBundleInputType[],
     token: string,
+    throwException = true,
   ) {
     try {
       return await addCheckoutBundlesHandler(userEmail, checkoutBundles, token);
     } catch (error) {
       this.logger.error(error);
+      if (throwException) {
+        throw error;
+      }
       return graphqlExceptionHandler(error);
     }
   }
@@ -133,7 +137,11 @@ export class MarketplaceCartService {
         updateBundleState,
         token,
       );
-      return prepareSuccessResponse(response, '', 200);
+      return prepareSuccessResponse(
+        response,
+        'checkout bundle state updated',
+        201,
+      );
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

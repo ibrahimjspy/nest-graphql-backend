@@ -2,7 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { SaleorCartService } from './saleor/Cart.saleor.service';
 import { MarketplaceCartService } from './marketplace/Cart.marketplace.service';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
-import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
+import {
+  getBundlesFromCheckout,
+  getCheckoutBundleIds,
+  getTargetBundleByBundleId,
+} from '../Cart.utils';
 
 @Injectable()
 export class CartRollbackService {
@@ -14,13 +18,21 @@ export class CartRollbackService {
   ) {}
 
   public async addCheckoutBundleLinesSaleor(
-    userEmail: string,
-    checkoutBundleIds: string[],
-    token: string,
+    marketplaceResponse,
+    userBundles,
+    token,
   ) {
     try {
+      const userEmail = marketplaceResponse.userEmail;
+      const checkoutBundleIds = getCheckoutBundleIds(
+        getTargetBundleByBundleId(
+          marketplaceResponse['checkoutBundles'],
+          userBundles,
+        ),
+      );
+
       this.logger.warn(
-        `Rolling back marketplace bundles created due to failure in Saleor against user :: ${userEmail}`,
+        `Rolling back marketplace bundles created due to failure in Saleor against user :: ${marketplaceResponse}`,
       );
       return await this.marketplaceCartService.deleteBundles(
         userEmail,
@@ -33,56 +45,14 @@ export class CartRollbackService {
     }
   }
 
-  public async addCheckoutBundlesMarketplace(
-    checkoutId: string,
-    lineIds: string[],
-    token: string,
-  ) {
-    try {
-      this.logger.warn(
-        `Rolling back Saleor lines created due to failure in Saleor against checkout :: ${checkoutId}`,
-      );
-      return await this.saleorCartService.deleteLines(
-        checkoutId,
-        lineIds,
-        token,
-      );
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
-  }
-
-  public async deleteCheckoutBundlesMarketplace(
-    userEmail,
-    checkoutId,
-    bundlesList,
-    token,
-  ) {
-    try {
-      this.logger.warn(
-        `Rolling back Saleor lines deleted due to failure in Marketplace against checkout :: ${checkoutId}`,
-      );
-      return await this.saleorCartService.addBundleLines(
-        userEmail,
-        checkoutId,
-        bundlesList,
-        token,
-      );
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
-  }
-
   public async deleteCheckoutBundleLinesSaleor(
-    userEmail: string,
-    bundlesList: CheckoutBundleInputType[],
+    { checkoutBundlesData, userEmail },
     token: string,
   ) {
     try {
+      const bundlesList = getBundlesFromCheckout(checkoutBundlesData);
       this.logger.warn(
-        `Rolling back Marketplace bundles deleted due to failure in Saleor against user :: ${userEmail}`,
+        `Rolling back Marketplace bundles deleted due to failure in Saleor against user :: ${token}`,
       );
       return await this.marketplaceCartService.addBundles(
         userEmail,

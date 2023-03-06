@@ -16,6 +16,7 @@ export const getCheckoutBundleQuery = (
           subTotal
           taxes
           discounts
+          userEmail
           checkoutId
           checkoutBundles {
             checkoutBundleId
@@ -109,6 +110,7 @@ export const getCheckoutBundleQuery = (
         ... on CheckoutBundlesType {
           __typename
           checkoutId
+          userEmail
           checkoutBundles {
             checkoutBundleId
             isSelected
