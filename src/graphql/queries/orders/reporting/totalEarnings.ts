@@ -12,10 +12,22 @@ const b2bQuery = (storefrontId: string): string => {
         toDate: "${new Date().toISOString().slice(0, 10)}"
       ) {
         id
-        totalPrice {
-          formated
-          price
-          currencyCode
+        totalPayouts {
+            payout {
+            formated
+            price
+            currencyCode
+          }
+          totalPrice {
+            formated
+            price
+            currencyCode
+          }
+          pendingPayout {
+            formated
+            price
+            currencyCode
+          }
         }
       }
     }
@@ -32,10 +44,22 @@ const b2cQuery = (storefrontId: string): string => {
         toDate: "${new Date().toISOString().slice(0, 10)}"
       ) {
         id
-        totalPrice {
-          formated
-          price
-          currencyCode
+        totalPayouts {
+            payout {
+            formated
+            price
+            currencyCode
+          }
+          totalPrice {
+            formated
+            price
+            currencyCode
+          }
+          pendingPayout {
+            formated
+            price
+            currencyCode
+          }
         }
       }
     }
