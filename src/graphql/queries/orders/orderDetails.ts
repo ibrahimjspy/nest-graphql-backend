@@ -237,10 +237,65 @@ const b2cQuery = (id: string): string => {
             amount
           }
         }
+        fulfillments {
+          status
+          lines {
+            id
+            quantity
+            orderLine {
+              id
+              quantity
+              totalPrice {
+                gross {
+                  amount
+                }
+              }
+              variant {
+                id
+                sku
+                pricing {
+                  price {
+                    gross {
+                      amount
+                    }
+                  }
+                }
+                attributes {
+                  attribute {
+                    name
+                  }
+                  values {
+                    name
+                  }
+                }
+                media {
+                  url
+                }
+                product {
+                  id
+                  name
+                  media {
+                      url
+                    }
+                  attributes {
+                    attribute {
+                      name
+                    }
+                    values {
+                      name
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
         lines {
           id
           productName
           variantName
+          quantityFulfilled
+          quantityToFulfill
           quantity
           variant {
             product {

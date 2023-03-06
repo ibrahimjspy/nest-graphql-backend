@@ -1,20 +1,14 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 import { OrderReturnDTO } from 'src/modules/orders/dto/order-returns.dto';
-import { orderLinesTransformer } from 'src/graphql/utils/orders';
+import { orderReturnInputTransformer } from 'src/graphql/utils/orders';
+
 const federationQuery = (payload: OrderReturnDTO): string => {
   return gql`
     mutation {
       orderFulfillmentReturnProducts(
         order:  "${payload.id}",
-        input: {
-            fulfillmentLines: ${JSON.stringify(payload.input.fulfillmentLines)
-              .replace(/"fulfillmentLineId"/g, 'fulfillmentLineId')
-              .replace(/"quantity"/g, 'quantity')}
-            includeShippingCosts: ${payload.input.includeShippingCosts}
-            refund: ${payload.input.refund}
-            orderLines: ${orderLinesTransformer(payload.input.orderLines)}
-        }
+        input: ${orderReturnInputTransformer(payload.input)}
       ) {
         errors {
           ...OrderError

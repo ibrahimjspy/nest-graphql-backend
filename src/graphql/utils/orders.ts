@@ -118,3 +118,20 @@ export const orderLinesFulfillTransformer = (
     .replace(/"warehouse"/g, 'warehouse')
     .replace(/"quantity"/g, 'quantity');
 };
+
+/**
+ *   transforms order return input to valid graphql strings
+ *   @params orderReturnInput
+ *   @returns graphql order return input in string format
+ */
+export const orderReturnInputTransformer = (orderReturnInput): any => {
+  return JSON.stringify(orderReturnInput)
+  .replace(/"fulfillmentLines"/g, 'fulfillmentLines')
+  .replace(/"orderLines"/g, 'orderLines')
+  .replace(/"refund"/g, 'refund')
+  .replace(/"includeShippingCosts"/g, 'includeShippingCosts')
+  .replace(/"fulfillmentLineId"/g, 'fulfillmentLineId')
+  .replace(/"orderLineId"/g, 'orderLineId')
+  .replace(/"quantity"/g, 'quantity')
+  .replace(/"replace"/g, 'replace');
+};
