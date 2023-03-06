@@ -137,7 +137,7 @@ describe('Cart utility tests', () => {
       console.log(deleteBundleLines);
       expect(deleteBundleLines).toBeDefined();
       expect(deleteBundleLines).toStrictEqual([
-        { lineId: 'test', quantity: 1 },
+        { lineId: 'test', quantity: -3 },
       ]);
     });
 

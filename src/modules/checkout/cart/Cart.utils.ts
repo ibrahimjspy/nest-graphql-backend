@@ -148,12 +148,14 @@ export const getTargetBundleByCheckoutBundleId = (
 export const getDeleteBundlesLines = (lines, checkoutBundles) => {
   const checkoutLines = lines;
   (checkoutBundles || []).map((checkoutBundle) => {
+    const bundleQuantity = checkoutBundle?.quantity;
     checkoutBundle?.bundle?.productVariants?.map((variant) => {
       const matchingVariant = checkoutLines.find((obj) => {
         return obj.variant.id === variant.productVariant.id;
       });
       if (matchingVariant) {
-        matchingVariant.quantity = matchingVariant.quantity - variant.quantity;
+        matchingVariant.quantity =
+          matchingVariant.quantity - variant.quantity * bundleQuantity;
       }
     });
   });
