@@ -114,7 +114,7 @@ export class SaleorCartService {
     if (!checkoutId) {
       return await this.createCheckoutFromBundleLines(
         userEmail,
-        'saleorLines',
+        saleorLines,
         token,
       );
     }
