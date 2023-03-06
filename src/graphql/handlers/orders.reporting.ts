@@ -105,5 +105,5 @@ export const getTotalEarningsHandler = async (
   const response = await graphqlResultErrorHandler(
     await graphqlCall(getTotalEarningsQuery(storefrontId, isb2c), token, isb2c),
   );
-  return response['salesReport']['totalPrice'];
+  return response['salesReport']['totalPayouts'];
 };

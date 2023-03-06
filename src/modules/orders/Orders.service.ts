@@ -447,7 +447,7 @@ export class OrdersService {
   ): Promise<object> {
     try {
       const shopDetails = await shopOrdersByIdHandler(shopId, token, true);
-      const orderIds: string[] = shopDetails['orders'];
+      const orderIds: string[] = getOrderIdsFromShopData(shopDetails);
       const [processing, shipped, cancelled, returned, totalEarnings] =
         await Promise.all([
           getProcessingOrdersCountHandler(token, orderIds, true),
@@ -467,7 +467,7 @@ export class OrdersService {
         ordersShipped: shipped,
         ordersCancelled: cancelled,
         ordersReturnsRequested: returned.length,
-        totalEarnings: Number(totalEarnings['price']),
+        totalEarnings: Number(totalEarnings['totalPrice']['price']),
       };
 
       return prepareSuccessResponse(response, '', 201);
