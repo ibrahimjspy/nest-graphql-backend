@@ -191,3 +191,39 @@ export const getAddBundleToCartLines = (
   });
   return lines;
 };
+
+/**
+ * @description - this method validates response objects sent by promise.allsettled and returns a string value with status
+ * @params response from saleor
+ * @params response from marketplace
+ * @returns status : "SUCCESS" | "SALEOR_FAILED" | "MARKETPLACE_FAILED" | "FAILED"
+ */
+export const responseStatusValidate = (saleorResponse, marketplaceResponse) => {
+  if (
+    saleorResponse.status == 'fulfilled' &&
+    marketplaceResponse.status == 'fulfilled'
+  ) {
+    return 'SUCCESS';
+  }
+
+  if (
+    saleorResponse.status == 'rejected' &&
+    marketplaceResponse.status == 'fulfilled'
+  ) {
+    return 'SALEOR_FAILED';
+  }
+
+  if (
+    saleorResponse.status == 'fulfilled' &&
+    marketplaceResponse.status == 'rejected'
+  ) {
+    return 'MARKETPLACE_FAILED';
+  }
+
+  if (
+    saleorResponse.status == 'rejected' &&
+    marketplaceResponse.status == 'rejected'
+  ) {
+    return 'FAILED';
+  }
+};

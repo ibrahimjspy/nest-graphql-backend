@@ -5,6 +5,7 @@ import {
   prepareFailedResponse,
   prepareSuccessResponse,
 } from 'src/core/utils/response';
+import { responseStatusValidate } from '../Cart.utils';
 
 @Injectable()
 export class CartResponseService {
@@ -19,12 +20,13 @@ export class CartResponseService {
     token: string,
   ) {
     try {
+      const status = responseStatusValidate(
+        saleorResponse,
+        marketplaceResponse,
+      );
       const saleor = saleorResponse.value;
       const marketplace = marketplaceResponse.value;
-      if (
-        saleorResponse.status == 'fulfilled' &&
-        marketplaceResponse.status == 'fulfilled'
-      ) {
+      if (status == 'SUCCESS') {
         return prepareSuccessResponse(
           { saleor, marketplace },
           'bundles added to cart',
@@ -32,10 +34,7 @@ export class CartResponseService {
         );
       }
 
-      if (
-        saleorResponse.status == 'rejected' &&
-        marketplaceResponse.status == 'fulfilled'
-      ) {
+      if (status == 'SALEOR_FAILED') {
         await this.cartRollbackService.addCheckoutBundleLinesSaleor(
           marketplace,
           userBundles,
@@ -61,12 +60,13 @@ export class CartResponseService {
     token: string,
   ) {
     try {
+      const status = responseStatusValidate(
+        saleorResponse,
+        marketplaceResponse,
+      );
       const saleor = saleorResponse.value;
       const marketplace = marketplaceResponse.value;
-      if (
-        saleorResponse.status == 'fulfilled' &&
-        marketplaceResponse.status == 'fulfilled'
-      ) {
+      if (status == 'SUCCESS') {
         return prepareSuccessResponse(
           { saleor, marketplace },
           'bundles deleted from cart',
@@ -74,10 +74,7 @@ export class CartResponseService {
         );
       }
 
-      if (
-        saleorResponse.status == 'rejected' &&
-        marketplaceResponse.status == 'fulfilled'
-      ) {
+      if (status == 'SALEOR_FAILED') {
         await this.cartRollbackService.deleteCheckoutBundleLinesSaleor(
           { checkoutBundlesData, userEmail },
           token,
@@ -102,12 +99,13 @@ export class CartResponseService {
     token: string,
   ) {
     try {
+      const status = responseStatusValidate(
+        saleorResponse,
+        marketplaceResponse,
+      );
       const saleor = saleorResponse.value;
       const marketplace = marketplaceResponse.value;
-      if (
-        saleorResponse.status == 'fulfilled' &&
-        marketplaceResponse.status == 'fulfilled'
-      ) {
+      if (status == 'SUCCESS') {
         return prepareSuccessResponse(
           { saleor, marketplace },
           'bundles state updated to select',
@@ -115,10 +113,7 @@ export class CartResponseService {
         );
       }
 
-      if (
-        saleorResponse.status == 'rejected' &&
-        marketplaceResponse.status == 'fulfilled'
-      ) {
+      if (status == 'SALEOR_FAILED') {
         await this.cartRollbackService.selectBundlesSaleor(
           checkoutBundleIds,
           userEmail,
@@ -144,12 +139,13 @@ export class CartResponseService {
     token: string,
   ) {
     try {
+      const status = responseStatusValidate(
+        saleorResponse,
+        marketplaceResponse,
+      );
       const saleor = saleorResponse.value;
       const marketplace = marketplaceResponse.value;
-      if (
-        saleorResponse.status == 'fulfilled' &&
-        marketplaceResponse.status == 'fulfilled'
-      ) {
+      if (status == 'SUCCESS') {
         return prepareSuccessResponse(
           { saleor, marketplace },
           'bundles state updated to un-select',
@@ -157,10 +153,7 @@ export class CartResponseService {
         );
       }
 
-      if (
-        saleorResponse.status == 'rejected' &&
-        marketplaceResponse.status == 'fulfilled'
-      ) {
+      if (status == 'SALEOR_FAILED') {
         await this.cartRollbackService.unselectBundlesSaleor(
           checkoutBundleIds,
           userEmail,

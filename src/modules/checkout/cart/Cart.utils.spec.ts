@@ -8,6 +8,7 @@ import {
   getTargetBundleByCheckoutBundleId,
   getUpdateCartBundleLines,
   getVariantIds,
+  responseStatusValidate,
   validateBundlesLength,
 } from './Cart.utils';
 
@@ -138,6 +139,24 @@ describe('Cart utility tests', () => {
       expect(deleteBundleLines).toStrictEqual([
         { lineId: 'test', quantity: 1 },
       ]);
+    });
+
+    it('testing whether response status is correctly getting validated', async () => {
+      const responseStatus = responseStatusValidate(
+        { status: 'fulfilled' },
+        { status: 'fulfilled' },
+      );
+      console.log(responseStatus);
+      expect(responseStatus).toBeDefined();
+      expect(responseStatus).toStrictEqual('SUCCESS');
+
+      const responseStatusFailure = responseStatusValidate(
+        { status: 'fulfilled' },
+        { status: 'rejected' },
+      );
+      console.log(responseStatusFailure);
+      expect(responseStatusFailure).toBeDefined();
+      expect(responseStatusFailure).toStrictEqual('MARKETPLACE_FAILED');
     });
 
     it('testing whether bundle lines are correctly getting from add bundle lines', async () => {
