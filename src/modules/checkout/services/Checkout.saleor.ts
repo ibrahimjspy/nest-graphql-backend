@@ -25,7 +25,7 @@ export class SaleorCheckoutService {
     } catch (error) {
       this.logger.error(error);
       if (throwException) {
-        return error;
+        throw error;
       }
     }
   }

@@ -42,11 +42,11 @@ export class CartResponseService {
         );
         return prepareFailedResponse(
           'Adding bundle lines to Saleor failed',
-          401,
+          400,
           saleor,
         );
       }
-      return prepareFailedResponse('Adding bundles to cart failed', 401);
+      return prepareFailedResponse('Adding bundles to cart failed', 400);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -81,11 +81,11 @@ export class CartResponseService {
         );
         return prepareFailedResponse(
           'deleting bundle lines from Saleor failed',
-          401,
+          400,
           saleor,
         );
       }
-      return prepareFailedResponse('deleting bundles from cart failed', 401);
+      return prepareFailedResponse('deleting bundles from cart failed', 400);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -121,11 +121,11 @@ export class CartResponseService {
         );
         return prepareFailedResponse(
           'updating cart state in Saleor failed',
-          401,
+          400,
           saleor,
         );
       }
-      return prepareFailedResponse('updating cart bundles state failed', 401);
+      return prepareFailedResponse('updating cart bundles state failed', 400);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -161,11 +161,11 @@ export class CartResponseService {
         );
         return prepareFailedResponse(
           'updating cart state in Saleor failed',
-          401,
+          400,
           saleor,
         );
       }
-      return prepareFailedResponse('updating cart bundles state failed', 401);
+      return prepareFailedResponse('updating cart bundles state failed', 400);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
