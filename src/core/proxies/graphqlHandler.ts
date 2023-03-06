@@ -1,7 +1,7 @@
 import { GraphQLClient } from 'graphql-request';
 import { graphqlEndpoint } from './graphqlEndpointToggle';
 import { ResultErrorType } from 'src/graphql/exceptions/resultError.type';
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus, Logger } from '@nestjs/common';
 import ResultError from 'src/graphql/exceptions/resultError';
 import { prepareFailedResponse } from 'src/core/utils/response';
 /**
@@ -22,6 +22,7 @@ export const graphqlCall = async (
 ): Promise<any> => {
   const startTime = new Date().getTime();
   const endpoint = graphqlEndpoint(isB2c ? isB2c : false);
+  const logger = new Logger('Graphql client');
   const request = { endpoint: endpoint, queryName: Query.split('(')[0] };
   const graphQLClient = new GraphQLClient(endpoint, {
     headers: {
@@ -30,7 +31,7 @@ export const graphqlCall = async (
   });
   const response = await graphQLClient.request(Query);
   const endTime = new Date().getTime();
-  console.log('Request took ' + (endTime - startTime) + 'ms', { request });
+  logger.log('Request took ' + (endTime - startTime) + 'ms', { request });
   return response;
 };
 
