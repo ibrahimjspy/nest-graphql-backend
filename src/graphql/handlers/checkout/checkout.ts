@@ -5,7 +5,6 @@ import {
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 
 import {
-  AddressDetailType,
   CheckoutBundleInputType,
   LineType,
 } from 'src/graphql/handlers/checkout.type';
@@ -14,7 +13,6 @@ import { UpdateBundleStateDto } from 'src/modules/checkout/dto/add-bundle.dto';
 import { getPaymentIntentQuery } from '../../queries/checkout/paymentIntent';
 import { updateCheckoutBundleStateMutation } from '../../mutations/checkout/updateCheckoutBundleState';
 import { createCheckoutMutation } from '../../mutations/checkout/createCheckout';
-import { addCheckoutShippingMethodsMutation } from '../../mutations/checkout/addCheckoutShippingMethods';
 import { checkoutBillingAddressUpdateMutation } from '../../mutations/checkout/checkoutBillingAddressUpdate';
 import { orderCreateFromCheckoutMutation } from '../../mutations/checkout/checkoutComplete';
 import { checkoutDeliveryMethodUpdateMutation } from '../../mutations/checkout/checkoutDeliveryMethodUpdate';
@@ -35,6 +33,7 @@ import { shippingZonesQuery } from '../../queries/checkout/shippingZones';
 import { updateCheckoutBundleQuery } from '../../queries/checkout/updateCheckoutBundle';
 import { addCheckoutBundleQuery } from '../../queries/checkout/addCheckoutBundles';
 import { checkoutQuery } from 'src/graphql/queries/checkout/checkout';
+import { AddressDto } from 'src/modules/checkout/shipping/dto/shippingAddress';
 
 export const marketplaceCheckoutHandler = async (
   id: string,
@@ -153,7 +152,7 @@ export const checkoutWithShippingInfoHandler = async (
 
 export const shippingAddressUpdateHandler = async (
   checkoutId: string,
-  addressDetails: AddressDetailType,
+  addressDetails: AddressDto,
   token: string,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
@@ -172,7 +171,7 @@ export const shippingAddressUpdateHandler = async (
 
 export const billingAddressUpdateHandler = async (
   checkoutId: string,
-  addressDetails: AddressDetailType,
+  addressDetails: AddressDto,
   token: string,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
@@ -191,28 +190,11 @@ export const billingAddressUpdateHandler = async (
 
 export const shippingAndBillingAddressHandler = async (
   checkoutId: string,
-  token: string,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(shippingAndBillingAddressQuery(checkoutId), token),
+    await graphqlCall(shippingAndBillingAddressQuery(checkoutId)),
   );
   return response['checkout'];
-};
-
-export const addShippingMethodHandler = async (
-  checkoutId: string,
-  shopShippingMethodIds: Array<string>,
-  throwException = false,
-  token: string,
-) => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(
-      addCheckoutShippingMethodsMutation(checkoutId, shopShippingMethodIds),
-      token,
-    ),
-    throwException,
-  );
-  return response['addCheckoutShippingMethods'];
 };
 
 export const updateDeliveryMethodHandler = async (

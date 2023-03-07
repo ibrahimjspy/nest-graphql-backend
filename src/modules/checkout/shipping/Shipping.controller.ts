@@ -5,19 +5,21 @@ import {
   Controller,
   Get,
   Headers,
-  Param,
   Post,
   Put,
+  Query,
   Res,
 } from '@nestjs/common';
 import { makeResponse } from 'src/core/utils/response';
 import {
   BillingAddressDto,
-  GetShippingMethodDto,
-  SelectShippingAddressDto,
   ShippingAddressCreateDto,
 } from './dto/shippingAddress';
 import { CheckoutIdDto } from '../dto/checkoutId';
+import {
+  GetShippingMethodsDto,
+  SelectShippingMethodDto,
+} from './dto/shippingMethods';
 
 @ApiTags('checkout/shipping')
 @Controller('')
@@ -70,55 +72,43 @@ export class ShippingController {
   @ApiOperation({
     summary: 'returns billing and shipping address against a checkout id',
   })
-  @ApiBearerAuth('JWT-auth')
   async getShippingAndBillingAddress(
     @Res() res,
-    @Param() params: CheckoutIdDto,
-    @Headers() headers,
+    @Query() filter: CheckoutIdDto,
   ): Promise<object> {
-    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.getShippingAndBillingAddress(
-        params?.checkoutId,
-        Authorization,
-      ),
+      await this.appService.getShippingAndBillingAddress(filter?.checkoutId),
     );
   }
 
-  @Get('api/v1/checkout/shipping/address')
+  @Get('api/v1/checkout/shipping/methods')
   @ApiOperation({
     summary: 'returns shipping address against a checkout id',
   })
-  @ApiBearerAuth('JWT-auth')
   async getShippingMethods(
     @Res() res,
-    @Param() params: GetShippingMethodDto,
-    @Headers() headers,
+    @Query() filter: GetShippingMethodsDto,
   ): Promise<object> {
-    const Authorization: string = headers.authorization;
-    return makeResponse(
-      res,
-      await this.appService.getShippingMethods(params?.userId, Authorization),
-    );
+    return makeResponse(res, await this.appService.getShippingMethods(filter));
   }
 
   @Put('api/v1/checkout/shipping/methods/select')
   @ApiOperation({
-    summary: 'selects shipping address for a checkout id',
+    summary: 'selects shipping method for a checkout id',
   })
   @ApiBearerAuth('JWT-auth')
   async selectShippingMethods(
     @Res() res,
-    @Body() body: SelectShippingAddressDto,
+    @Body() body: SelectShippingMethodDto,
     @Headers() headers,
   ): Promise<object> {
     const Authorization: string = headers.authorization;
     return makeResponse(
       res,
       await this.appService.selectShippingMethods(
-        body?.userId,
-        body?.shippingIds,
+        body?.checkoutId,
+        body?.shippingMethodId,
         Authorization,
       ),
     );
