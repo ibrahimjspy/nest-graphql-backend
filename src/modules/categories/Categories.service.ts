@@ -38,7 +38,7 @@ export class CategoriesService {
       );
       const categoryIds = shopCategoryIds?.categoryIds || [];
       const response = {
-        marketplace: categoryIds,
+        marketplace: { categoryIds },
         saleor: null,
       };
       if (categoryIds.length) {

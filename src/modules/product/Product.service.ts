@@ -217,7 +217,7 @@ export class ProductService {
         );
       const productIds = shopProductIds?.productIds || [];
       const response = {
-        marketplace: productIds,
+        marketplace: { productIds },
         saleor: null,
       };
       if (productIds.length) {
