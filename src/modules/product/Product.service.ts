@@ -218,20 +218,20 @@ export class ProductService {
       const productIds = shopProductIds?.productIds || [];
       const response = {
         marketplace: productIds,
-        saleor: null
-      }
+        saleor: null,
+      };
       if (productIds.length) {
         const categoryProducts = await ProductsHandlers.productListPageHandler(
           { ...filter, productIds },
           filter.isB2c,
         );
-        response.saleor = {...categoryProducts};
+        response.saleor = { ...categoryProducts };
         return prepareSuccessResponse(response);
       }
       return prepareSuccessResponse(
         response,
         'No products exists against shop category',
-      );    
+      );
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

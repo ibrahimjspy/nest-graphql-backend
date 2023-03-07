@@ -1,8 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
-import {
-  prepareSuccessResponse,
-} from 'src/core/utils/response';
+import { prepareSuccessResponse } from 'src/core/utils/response';
 import {
   categoriesHandler,
   menuCategoriesHandler,
@@ -41,8 +39,8 @@ export class CategoriesService {
       const categoryIds = shopCategoryIds?.categoryIds || [];
       const response = {
         marketplace: categoryIds,
-        saleor: null
-      }
+        saleor: null,
+      };
       if (categoryIds.length) {
         const categoriesDetails = await categoriesHandler(
           { ...filter, categoryIds },
