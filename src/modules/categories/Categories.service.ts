@@ -37,20 +37,18 @@ export class CategoriesService {
         filter.isB2c,
       );
       const categoryIds = shopCategoryIds?.categoryIds || [];
-      const response = {
-        marketplace: { categoryIds },
-        saleor: null,
-      };
       if (categoryIds.length) {
         const categoriesDetails = await categoriesHandler(
           { ...filter, categoryIds },
           filter.isB2c,
         );
-        response.saleor = { ...categoriesDetails };
-        return prepareSuccessResponse(response);
+        return prepareSuccessResponse({
+          marketplace: { categoryIds },
+          saleor: categoriesDetails,
+        });
       }
       return prepareSuccessResponse(
-        response,
+        { marketplace: { categoryIds } },
         'No categories exists against shop',
       );
     } catch (error) {

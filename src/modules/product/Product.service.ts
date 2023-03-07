@@ -216,20 +216,18 @@ export class ProductService {
           filter.isB2c,
         );
       const productIds = shopProductIds?.productIds || [];
-      const response = {
-        marketplace: { productIds },
-        saleor: null,
-      };
       if (productIds.length) {
         const categoryProducts = await ProductsHandlers.productListPageHandler(
           { ...filter, productIds },
           filter.isB2c,
         );
-        response.saleor = { ...categoryProducts };
-        return prepareSuccessResponse(response);
+        return prepareSuccessResponse({
+          marketplace: { productIds },
+          saleor: categoryProducts,
+        });
       }
       return prepareSuccessResponse(
-        response,
+        { marketplace: { productIds } },
         'No products exists against shop category',
       );
     } catch (error) {
