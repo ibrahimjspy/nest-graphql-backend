@@ -224,7 +224,7 @@ export class ProductService {
         );
         return prepareSuccessResponse(response);
       }
-      return prepareFailedResponse('Products not found', 404);
+      return prepareFailedResponse('Products not found', 200);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

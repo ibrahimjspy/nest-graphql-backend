@@ -47,7 +47,7 @@ export class CategoriesService {
         );
         return prepareSuccessResponse(response);
       }
-      return prepareFailedResponse('Categories not found', 404);
+      return prepareFailedResponse('Categories not found', 200);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

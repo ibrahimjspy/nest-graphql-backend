@@ -126,12 +126,12 @@ export const orderLinesFulfillTransformer = (
  */
 export const orderReturnInputTransformer = (orderReturnInput): any => {
   return JSON.stringify(orderReturnInput)
-  .replace(/"fulfillmentLines"/g, 'fulfillmentLines')
-  .replace(/"orderLines"/g, 'orderLines')
-  .replace(/"refund"/g, 'refund')
-  .replace(/"includeShippingCosts"/g, 'includeShippingCosts')
-  .replace(/"fulfillmentLineId"/g, 'fulfillmentLineId')
-  .replace(/"orderLineId"/g, 'orderLineId')
-  .replace(/"quantity"/g, 'quantity')
-  .replace(/"replace"/g, 'replace');
+    .replace(/"fulfillmentLines"/g, 'fulfillmentLines')
+    .replace(/"orderLines"/g, 'orderLines')
+    .replace(/"refund"/g, 'refund')
+    .replace(/"includeShippingCosts"/g, 'includeShippingCosts')
+    .replace(/"fulfillmentLineId"/g, 'fulfillmentLineId')
+    .replace(/"orderLineId"/g, 'orderLineId')
+    .replace(/"quantity"/g, 'quantity')
+    .replace(/"replace"/g, 'replace');
 };
