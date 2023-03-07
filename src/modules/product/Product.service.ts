@@ -210,24 +210,24 @@ export class ProductService {
     filter: shopProductsDTO,
   ): Promise<object> {
     try {
-      const shopProductIds =
+      const marketplace =
         await ProductsHandlers.shopProductIdsByCategoryIdHandler(
           { ...filter, shopId },
           filter.isB2c,
         );
-      const productIds = shopProductIds?.productIds || [];
+      const productIds = marketplace?.productIds || [];
       if (productIds.length) {
-        const categoryProducts = await ProductsHandlers.productListPageHandler(
+        const saleor = await ProductsHandlers.productListPageHandler(
           { ...filter, productIds },
           filter.isB2c,
         );
         return prepareSuccessResponse({
-          marketplace: { productIds },
-          saleor: categoryProducts,
+          marketplace,
+          saleor,
         });
       }
       return prepareSuccessResponse(
-        { marketplace: { productIds } },
+        { marketplace },
         'No products exists against shop category',
       );
     } catch (error) {

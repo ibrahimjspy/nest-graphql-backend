@@ -32,23 +32,20 @@ export class CategoriesService {
     filter: shopCategoriesDTO,
   ): Promise<object> {
     try {
-      const shopCategoryIds = await shopCategoryIdsHandler(
-        shopId,
-        filter.isB2c,
-      );
-      const categoryIds = shopCategoryIds?.categoryIds || [];
+      const marketplace = await shopCategoryIdsHandler(shopId, filter.isB2c);
+      const categoryIds = marketplace?.categoryIds || [];
       if (categoryIds.length) {
-        const categoriesDetails = await categoriesHandler(
+        const saleor = await categoriesHandler(
           { ...filter, categoryIds },
           filter.isB2c,
         );
         return prepareSuccessResponse({
-          marketplace: { categoryIds },
-          saleor: categoriesDetails,
+          marketplace,
+          saleor,
         });
       }
       return prepareSuccessResponse(
-        { marketplace: { categoryIds } },
+        { marketplace },
         'No categories exists against shop',
       );
     } catch (error) {
