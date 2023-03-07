@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import {
-  prepareFailedResponse,
   prepareSuccessResponse,
 } from 'src/core/utils/response';
 import {
@@ -35,19 +34,27 @@ export class CategoriesService {
     filter: shopCategoriesDTO,
   ): Promise<object> {
     try {
-      const categoryIdsResponse = await shopCategoryIdsHandler(
+      const shopCategoryIds = await shopCategoryIdsHandler(
         shopId,
         filter.isB2c,
       );
-      const categoryIds = categoryIdsResponse?.categoryIds || [];
+      const categoryIds = shopCategoryIds?.categoryIds || [];
+      const response = {
+        marketplace: categoryIds,
+        saleor: null
+      }
       if (categoryIds.length) {
-        const response = await categoriesHandler(
+        const categoriesDetails = await categoriesHandler(
           { ...filter, categoryIds },
           filter.isB2c,
         );
+        response.saleor = { ...categoriesDetails };
         return prepareSuccessResponse(response);
       }
-      return prepareFailedResponse('Categories not found', 200);
+      return prepareSuccessResponse(
+        response,
+        'No categories exists against shop',
+      );
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
