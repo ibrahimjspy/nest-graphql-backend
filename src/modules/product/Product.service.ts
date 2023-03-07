@@ -210,21 +210,26 @@ export class ProductService {
     filter: shopProductsDTO,
   ): Promise<object> {
     try {
-      const productIdsResponse =
+      const marketplace =
         await ProductsHandlers.shopProductIdsByCategoryIdHandler(
           { ...filter, shopId },
           filter.isB2c,
         );
-      const productIds = productIdsResponse?.productIds || [];
-
+      const productIds = marketplace?.productIds || [];
       if (productIds.length) {
-        const response = await ProductsHandlers.productListPageHandler(
+        const saleor = await ProductsHandlers.productListPageHandler(
           { ...filter, productIds },
           filter.isB2c,
         );
-        return prepareSuccessResponse(response);
+        return prepareSuccessResponse({
+          marketplace,
+          saleor,
+        });
       }
-      return prepareFailedResponse('Products not found', 404);
+      return prepareSuccessResponse(
+        { marketplace },
+        'No products exists against shop category',
+      );
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
