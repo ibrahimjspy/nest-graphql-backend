@@ -80,12 +80,11 @@ export default class StripeService {
     paymentMethodId: string,
     totalAmount: number,
     confirmIntent = true,
-  ) {
+  ): Promise<Stripe.Response<Stripe.PaymentIntent>> {
     const customerID: any = await this.getCustomerByEmail(userEmail);
 
-    let createPaymentIntent = {};
     if (customerID) {
-      createPaymentIntent = await this.stripe.paymentIntents.create({
+      return await this.stripe.paymentIntents.create({
         customer: customerID,
         amount: toCents(totalAmount),
         currency: process.env.STRIPE_CURRENCY,
@@ -100,10 +99,9 @@ export default class StripeService {
     } else {
       throw new Error(`Cannot Find Any Customer against ${userEmail}`);
     }
-    return createPaymentIntent;
   }
 
-  public async verifyPaymentByIntentId(paymentIntent: string) {
+  public async getPaymentIntentId(paymentIntent: string) {
     const paymentInfo = await this.stripe.paymentIntents.retrieve(
       paymentIntent,
     );
@@ -120,5 +118,12 @@ export default class StripeService {
       },
     });
     return createPaymentMethod;
+  }
+
+  public async cancelPaymentIntentById(paymentIntentId: string) {
+    const cancelPaymentIntentId = await this.stripe.paymentIntents.cancel(
+      paymentIntentId,
+    );
+    return cancelPaymentIntentId;
   }
 }
