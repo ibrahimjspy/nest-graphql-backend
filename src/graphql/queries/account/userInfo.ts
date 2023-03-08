@@ -9,7 +9,6 @@ const b2bQuery = () => {
         firstName
         lastName
         email
-        checkoutIds
       }
     }
   `;
