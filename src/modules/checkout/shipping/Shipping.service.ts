@@ -1,27 +1,23 @@
-import { HttpException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
-import { getHttpErrorMessage } from 'src/external/utils/httpHelper';
 import {
-  addShippingMethodHandler,
   billingAddressUpdateHandler,
-  getShippingZonesHandler,
-  marketplaceCheckoutHandler,
   shippingAddressUpdateHandler,
   shippingAndBillingAddressHandler,
   updateDeliveryMethodHandler,
 } from 'src/graphql/handlers/checkout/checkout';
-import { AddressDetailType } from 'src/graphql/handlers/checkout.type';
-import {
-  getShippingMethods,
-  getShippingMethodsFromShippingZones,
-  getShippingMethodsWithUUID,
-} from '../Checkout.utils';
+import { getCheckoutShippingMethodsHandler } from 'src/graphql/handlers/checkout/shipping';
+import { GetShippingMethodsDto } from './dto/shippingMethods';
+import { AddressDto } from './dto/shippingAddress';
+import { ShippingPromotionService } from './services/Shipping.promotion';
 
 @Injectable()
 export class ShippingService {
   private readonly logger = new Logger(ShippingService.name);
-  constructor() {
+  constructor(
+    private readonly shippingPromotionService: ShippingPromotionService,
+  ) {
     return;
   }
   /**
@@ -29,7 +25,7 @@ export class ShippingService {
    */
   public async addBillingAddress(
     checkoutId: string,
-    addressDetails: AddressDetailType,
+    addressDetails: AddressDto,
     token: string,
   ): Promise<object> {
     try {
@@ -50,14 +46,10 @@ export class ShippingService {
    */
   public async getShippingAndBillingAddress(
     checkoutId: string,
-    token: string,
   ): Promise<object> {
     try {
-      const response = await shippingAndBillingAddressHandler(
-        checkoutId,
-        token,
-      );
-      return prepareSuccessResponse(response, '', 201);
+      const response = await shippingAndBillingAddressHandler(checkoutId);
+      return prepareSuccessResponse(response);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -66,33 +58,16 @@ export class ShippingService {
 
   /**
    * @description -- returns shipping methods from shop service
+   * @warn - we are only allowing one shipping method per checkout so we do not need to map shipping methods against bundles
    */
   public async getShippingMethods(
-    userId: string,
-    token: string,
+    filter: GetShippingMethodsDto,
   ): Promise<object> {
     try {
-      const checkoutData = await marketplaceCheckoutHandler(
-        userId,
-        true,
-        token,
+      const isB2c = filter.isB2c;
+      return prepareSuccessResponse(
+        await getCheckoutShippingMethodsHandler(filter.checkoutId, isB2c),
       );
-
-      const shippingZones = await getShippingZonesHandler(token);
-      const shippingMethodsFromShippingZones =
-        getShippingMethodsFromShippingZones(shippingZones);
-
-      const methodsListFromShopService = getShippingMethods(
-        checkoutData['bundles'],
-      );
-
-      const methodsListFromSaleor = getShippingMethodsWithUUID(
-        shippingMethodsFromShippingZones,
-        methodsListFromShopService,
-        checkoutData['selectedMethods'],
-      );
-
-      return prepareSuccessResponse(methodsListFromSaleor, '', 201);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -103,32 +78,28 @@ export class ShippingService {
    * @description --this method is called to select shipping methods against a user id
    */
   public async selectShippingMethods(
-    userId: string,
-    shippingIds: string[],
+    checkoutId: string,
+    shippingMethodId: string,
     token: string,
   ): Promise<object> {
     try {
-      const checkoutData = await marketplaceCheckoutHandler(
-        userId,
-        true,
+      const updateDeliveryMethod = await updateDeliveryMethodHandler(
+        checkoutId,
+        shippingMethodId,
         token,
       );
-      await Promise.all([
-        addShippingMethodHandler(
-          checkoutData['checkoutId'],
-          shippingIds,
-          true,
+      const applyPromoCode =
+        this.shippingPromotionService.applyPromoCodeToCheckout(
+          checkoutId,
           token,
-        ),
-        updateDeliveryMethodHandler(
-          checkoutData['checkoutId'],
-          checkoutData['selectedMethods'],
-          token,
-        ),
-      ]);
-      const response = await this.getShippingMethods(userId, token);
-      return prepareSuccessResponse(response, '', 201);
+        );
+      return prepareSuccessResponse(
+        { updateDeliveryMethod, applyPromoCode },
+        'shipping methods added against checkout',
+        201,
+      );
     } catch (error) {
+      console.log(error);
       this.logger.error(error);
       return graphqlExceptionHandler(error);
     }
@@ -136,10 +107,11 @@ export class ShippingService {
 
   /**
    * @description -- this adds shipping address against a checkout session
+   *  --!-- it also adds shipping method to checkout if provided as well
    */
   public async addShippingAddress(
     checkoutId: string,
-    addressDetails: AddressDetailType,
+    addressDetails: AddressDto,
     shippingMethodId: string,
     token: string,
   ): Promise<object> {
@@ -149,20 +121,17 @@ export class ShippingService {
         addressDetails,
         token,
       );
-
-      await updateDeliveryMethodHandler(checkoutId, shippingMethodId, token);
-      return prepareSuccessResponse(response, '', 201);
+      if (shippingMethodId) {
+        await updateDeliveryMethodHandler(checkoutId, shippingMethodId, token);
+      }
+      return prepareSuccessResponse(
+        response,
+        'shipping address added against checkout',
+        201,
+      );
     } catch (error) {
       this.logger.error(error);
-      if (error instanceof HttpException) {
-        const parsed_error = getHttpErrorMessage(error);
-        return {
-          error: JSON.stringify(parsed_error.message?.data),
-          status: parsed_error?.status,
-        };
-      } else {
-        return graphqlExceptionHandler(error);
-      }
+      return graphqlExceptionHandler(error);
     }
   }
 }

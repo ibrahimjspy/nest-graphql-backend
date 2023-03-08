@@ -8,6 +8,15 @@ const federationQuery = (checkoutId: string) => {
           id: "${checkoutId}",
       ) {
         id
+        metadata {
+          key 
+          value
+        }
+        totalPrice {
+          gross {
+            amount
+          }
+        }
         shippingMethods {
           id,
           name,

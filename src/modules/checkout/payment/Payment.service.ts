@@ -1,18 +1,28 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
-import { prepareFailedResponse } from 'src/core/utils/response';
-import StripeService from 'src/external/services/stripe';
 import {
-  getTotalAmountByCheckoutIdHandler,
-  savePaymentInfoHandler,
-} from 'src/graphql/handlers/checkout/checkout';
-import { EmptyCartError, PaymentIntentCreationError } from '../Checkout.errors';
-import { PaymentInfoInterface } from './Payment.types';
+  prepareFailedResponse,
+  prepareSuccessResponse,
+} from 'src/core/utils/response';
+import StripeService from 'src/external/services/stripe';
+import { PaymentIntentCreationError } from '../Checkout.errors';
+import { SaleorCheckoutService } from '../services/Checkout.saleor';
+import {
+  getPaymentIntentFromMetadata,
+  paymentIntentAmountValidate,
+} from './Payment.utils';
+import {
+  preAuthTransactionHandler,
+  storePaymentIntentHandler,
+} from 'src/graphql/handlers/checkout/payment/payment.saleor';
 
 @Injectable()
 export class PaymentService {
   private readonly logger = new Logger(PaymentService.name);
-  constructor(private stripeService: StripeService) {
+  constructor(
+    private stripeService: StripeService,
+    private saleorCheckoutService: SaleorCheckoutService,
+  ) {
     return;
   }
   /**
@@ -51,53 +61,91 @@ export class PaymentService {
   }
 
   /**
-   * @description -- this saves payment information provided by customer in stripe
+   * @description -- this returns total amount against a checkout id from saleor
    */
-  protected async savePaymentInfo({
-    token,
+  protected async createPaymentIntent({
     checkoutId,
     userEmail,
-    amount,
-    paymentStatus,
-    intentId,
-  }: PaymentInfoInterface): Promise<object> {
+    paymentMethodId,
+    totalAmount,
+    token,
+  }): Promise<object> {
     try {
-      const paymentInfoResponse = await savePaymentInfoHandler({
-        token,
-        checkoutId,
-        userEmail,
-        amount,
-        paymentStatus,
-        intentId,
-      });
-
-      return paymentInfoResponse;
+      const paymentIntentResponse =
+        await this.stripeService.createPaymentIntent(
+          userEmail,
+          paymentMethodId,
+          totalAmount,
+        );
+      if (!paymentIntentResponse)
+        throw new PaymentIntentCreationError(userEmail, paymentMethodId);
+      const paymentIntentId = paymentIntentResponse.id;
+      await Promise.all([
+        storePaymentIntentHandler(checkoutId, paymentIntentId, token),
+        preAuthTransactionHandler(
+          checkoutId,
+          paymentIntentId,
+          totalAmount,
+          token,
+        ),
+      ]);
+      return prepareSuccessResponse(
+        { paymentIntentId },
+        'new payment intent Id created and added against checkout',
+        201,
+      );
     } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
+      this.logger.error(error.message);
+      return prepareFailedResponse(error.message);
     }
   }
-
   /**
    * @description -- this returns total amount against a checkout id from saleor
    */
-  protected async getTotalAmountByCheckoutID(
+  protected async validatePaymentIntent(
+    checkoutData,
+    paymentIntentId: string,
+    userEmail: string,
     token: string,
-    checkoutID: string,
   ): Promise<object> {
     try {
-      const totalAmountResponse = await getTotalAmountByCheckoutIdHandler(
-        checkoutID,
-        token,
+      const checkoutId = checkoutData['id'];
+      const checkoutAmount = checkoutData.totalPrice.gross.amount;
+      const paymentIntentData = await this.stripeService.getPaymentIntentId(
+        paymentIntentId,
       );
+      const paymentMethodId = paymentIntentData.payment_method;
+      const paymentIntentAmount = paymentIntentData.amount;
 
-      return totalAmountResponse;
+      if (paymentIntentAmountValidate(checkoutAmount, paymentIntentAmount)) {
+        return prepareSuccessResponse(
+          { paymentIntentId },
+          'existing payment intent id is valid',
+          201,
+        );
+      }
+
+      await this.stripeService.cancelPaymentIntentById(paymentIntentId);
+      const newPaymentIntentCreate = await this.createPaymentIntent({
+        checkoutId,
+        userEmail,
+        paymentMethodId,
+        totalAmount: checkoutAmount,
+        token,
+      });
+
+      return prepareSuccessResponse(
+        {
+          paymentIntentId: newPaymentIntentCreate['data']['paymentIntentId'],
+        },
+        'new payment intent created as checkout and intent amount are different',
+        201,
+      );
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
     }
   }
-
   /**
    * @description -- this creates a payment intent in stripe against user by first fetching its total amount from salor
    * cart and then adding this amount to stripe and lastly saving this information back in saleor
@@ -107,38 +155,32 @@ export class PaymentService {
     paymentMethodId: string,
     checkoutId: string,
     token: string,
-    paymentStatus = 1,
   ): Promise<object> {
     try {
-      /* 1. It is creating a payment intent with stripe.
-       2. It is saving the payment info in the database. */
-      const totalAmountResponse = await this.getTotalAmountByCheckoutID(
+      const checkoutData = await this.saleorCheckoutService.getCheckout(
         checkoutId,
         token,
       );
+      const checkoutAmount = checkoutData['totalPrice'].gross.amount;
 
-      if (!totalAmountResponse['totalAmount'])
-        throw new EmptyCartError(userEmail);
-
-      const paymentIntentResponse =
-        await this.stripeService.createPaymentIntent(
+      const paymentIntentId = getPaymentIntentFromMetadata(
+        checkoutData['metadata'],
+      );
+      if (paymentIntentId) {
+        return this.validatePaymentIntent(
+          checkoutData,
+          paymentIntentId,
           userEmail,
-          paymentMethodId,
-          totalAmountResponse['totalAmount'],
+          token,
         );
-      if (!paymentIntentResponse)
-        throw new PaymentIntentCreationError(userEmail, paymentMethodId);
-
-      const savePaymentInfoResponse = await this.savePaymentInfo({
-        token,
+      }
+      return await this.createPaymentIntent({
         checkoutId,
         userEmail,
-        amount: paymentIntentResponse['amount'],
-        paymentStatus,
-        intentId: paymentIntentResponse['id'],
+        token,
+        totalAmount: checkoutAmount,
+        paymentMethodId,
       });
-
-      return savePaymentInfoResponse;
     } catch (error) {
       this.logger.error(error);
       return prepareFailedResponse(error.message);

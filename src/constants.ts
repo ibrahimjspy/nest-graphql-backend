@@ -85,3 +85,12 @@ export const UPS_CONFIGURATIONS = {
 };
 
 export const B2C_STOREFRONT_TLD = '.sharove.co';
+
+export const preAuthTransactionInput = {
+  status: 'Authorized',
+  type: 'Credit card',
+  currency: 'USD',
+  eventStatus: 'SUCCESS',
+  eventName: 'Authorized credit card',
+  availableActions: '[VOID, CHARGE]',
+};

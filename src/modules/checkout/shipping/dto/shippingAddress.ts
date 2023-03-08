@@ -1,6 +1,47 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
-import { AddressDetailType } from 'src/graphql/handlers/checkout.type';
+import { IsOptional, IsString } from 'class-validator';
+
+export class AddressDto {
+  @ApiProperty({ required: false, default: '' })
+  @IsOptional()
+  country?: string;
+
+  @ApiProperty({ required: false, default: '' })
+  @IsOptional()
+  countryArea?: string;
+
+  @ApiProperty({ required: false, default: '' })
+  @IsOptional()
+  firstName?: string;
+
+  @ApiProperty({ required: false, default: '' })
+  @IsOptional()
+  lastName?: string;
+
+  @ApiProperty({ required: false, default: '' })
+  @IsOptional()
+  streetAddress1?: string;
+
+  @ApiProperty({ required: false, default: '' })
+  @IsOptional()
+  streetAddress2?: string;
+
+  @ApiProperty({ required: false, default: '' })
+  @IsOptional()
+  phone?: string;
+
+  @ApiProperty({ required: false, default: '' })
+  @IsOptional()
+  companyName?: string;
+
+  @ApiProperty({ required: false, default: '' })
+  @IsOptional()
+  postalCode?: string;
+
+  @ApiProperty({ required: false, default: '' })
+  @IsOptional()
+  city?: string;
+}
 
 export class ShippingAddressCreateDto {
   @ApiProperty()
@@ -8,11 +49,11 @@ export class ShippingAddressCreateDto {
   checkoutId: string;
 
   @ApiProperty()
-  addressDetails: AddressDetailType;
+  addressDetails: AddressDto;
 
-  @ApiProperty()
-  @IsString()
-  shippingMethodId: string;
+  @ApiProperty({ required: false, default: '' })
+  @IsOptional()
+  shippingMethodId?: string;
 }
 
 export class BillingAddressDto {
@@ -21,16 +62,7 @@ export class BillingAddressDto {
   checkoutId: string;
 
   @ApiProperty()
-  addressDetails: AddressDetailType;
-}
-
-export class SelectShippingAddressDto {
-  @ApiProperty()
-  @IsString()
-  userId: string;
-
-  @ApiProperty({ isArray: true, type: String })
-  shippingIds: string[];
+  addressDetails: AddressDto;
 }
 
 export class GetShippingMethodDto {
