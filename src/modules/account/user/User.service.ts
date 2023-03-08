@@ -16,18 +16,29 @@ export class UserService {
   }
   private readonly logger = new Logger(UserService.name);
 
-  public async getUserinfo(token: string): Promise<SuccessResponseType> {
+  public async getUserinfo(
+    token: string,
+    isB2c = false,
+  ): Promise<SuccessResponseType> {
     try {
+      let checkoutId = null;
       const userDetails = await AccountHandlers.getUserDetailsHandler(token);
       const shopDetails = await this.shopService.getShopDetailsV2({
         email: userDetails['email'],
       });
+      if (!isB2c) {
+        checkoutId = await AccountHandlers.getCheckoutIdFromMarketplaceHandler(
+          userDetails['email'],
+        );
+      }
       if (shopDetails['status'] == 200) {
+        userDetails['checkoutId'] = checkoutId;
         return prepareSuccessResponse({
           ...userDetails,
           shopDetails: shopDetails['data'],
         });
       }
+      userDetails['checkoutId'] = checkoutId;
       return prepareSuccessResponse({
         ...userDetails,
         shopDetails: shopDetails,
