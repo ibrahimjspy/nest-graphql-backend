@@ -20,15 +20,11 @@ import {
   GetShippingMethodsDto,
   SelectShippingMethodDto,
 } from './dto/shippingMethods';
-import { ShippingPromotionService } from './services/Shipping.promotion';
 
 @ApiTags('checkout/shipping')
 @Controller('')
 export class ShippingController {
-  constructor(
-    private readonly appService: ShippingService,
-    private readonly testservice: ShippingPromotionService,
-  ) {}
+  constructor(private readonly appService: ShippingService) {}
   @Post('api/v1/checkout/shipping/address')
   @ApiOperation({
     summary: 'adds shipping address against checkout id',

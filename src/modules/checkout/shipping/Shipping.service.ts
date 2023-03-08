@@ -10,11 +10,14 @@ import {
 import { getCheckoutShippingMethodsHandler } from 'src/graphql/handlers/checkout/shipping';
 import { GetShippingMethodsDto } from './dto/shippingMethods';
 import { AddressDto } from './dto/shippingAddress';
+import { ShippingPromotionService } from './services/Shipping.promotion';
 
 @Injectable()
 export class ShippingService {
   private readonly logger = new Logger(ShippingService.name);
-  constructor() {
+  constructor(
+    private readonly shippingPromotionService: ShippingPromotionService,
+  ) {
     return;
   }
   /**
@@ -85,8 +88,13 @@ export class ShippingService {
         shippingMethodId,
         token,
       );
+      const applyPromoCode =
+        this.shippingPromotionService.applyPromoCodeToCheckout(
+          checkoutId,
+          token,
+        );
       return prepareSuccessResponse(
-        updateDeliveryMethod,
+        { updateDeliveryMethod, applyPromoCode },
         'shipping methods added against checkout',
         201,
       );

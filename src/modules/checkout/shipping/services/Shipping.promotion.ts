@@ -2,7 +2,10 @@ import { Injectable, Logger } from '@nestjs/common';
 import { SaleorCheckoutService } from '../../services/Checkout.saleor';
 import { prepareSuccessResponse } from 'src/core/utils/response';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
-import { getShippingVouchersHandler } from 'src/graphql/handlers/checkout/shipping';
+import {
+  addCheckoutPromoCodeHandler,
+  getShippingVouchersHandler,
+} from 'src/graphql/handlers/checkout/shipping';
 import { vouchersType } from './Shipping.promotion.types';
 
 @Injectable()
@@ -12,7 +15,7 @@ export class ShippingPromotionService {
     return;
   }
   /**
-   * @description -- this method adds a billing address against checkout id , it is currently storing this in saleor
+   * @description --  this method fetches applies shipping promo code to checkout based on checkout total amount
    */
   public async applyPromoCodeToCheckout(
     checkoutId: string,
@@ -24,12 +27,28 @@ export class ShippingPromotionService {
         token,
       );
       const checkoutTotalPrice = checkout['totalPrice']['gross']['amount'];
-      const voucher = await getShippingVouchersHandler(token);
-      const voucherCode = this.getVoucherIdForCheckout(
+      const vouchersData = await getShippingVouchersHandler(token);
+      const promoCode = this.getVoucherIdForCheckout(
         checkoutTotalPrice,
-        voucher,
+        vouchersData,
       );
-      return prepareSuccessResponse(checkout, '', 201);
+      if (promoCode) {
+        const addPromoCode = await addCheckoutPromoCodeHandler(
+          checkoutId,
+          promoCode,
+          token,
+        );
+        return prepareSuccessResponse(
+          addPromoCode,
+          'checkout promo code added',
+          201,
+        );
+      }
+      return prepareSuccessResponse(
+        checkout,
+        'no promo code added due to checkout amount',
+        201,
+      );
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -45,7 +64,7 @@ export class ShippingPromotionService {
     vouchersData: vouchersType,
   ): string {
     let voucherCode: string;
-    let voucherAmount: number;
+    let voucherAmount = 0;
     vouchersData?.edges?.map((voucher) => {
       const minimumOrderAmount =
         voucher?.node?.channelListings[0]?.minSpent?.amount;
