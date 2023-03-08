@@ -25,7 +25,6 @@ export const preAuthTransactionHandler = async (
   amount: string,
   token: string,
 ): Promise<object> => {
-  console.log(token);
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
       preAuthTransactionMutation({ checkoutId, paymentIntentId, amount }),
