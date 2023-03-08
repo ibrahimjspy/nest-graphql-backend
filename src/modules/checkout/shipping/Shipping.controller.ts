@@ -20,11 +20,15 @@ import {
   GetShippingMethodsDto,
   SelectShippingMethodDto,
 } from './dto/shippingMethods';
+import { ShippingPromotionService } from './services/Shipping.promotion';
 
 @ApiTags('checkout/shipping')
 @Controller('')
 export class ShippingController {
-  constructor(private readonly appService: ShippingService) {}
+  constructor(
+    private readonly appService: ShippingService,
+    private readonly testservice: ShippingPromotionService,
+  ) {}
   @Post('api/v1/checkout/shipping/address')
   @ApiOperation({
     summary: 'adds shipping address against checkout id',
@@ -34,7 +38,7 @@ export class ShippingController {
     @Res() res,
     @Body() body: ShippingAddressCreateDto,
     @Headers() headers,
-  ): Promise<object> {
+  ): Promise<any> {
     const Authorization: string = headers.authorization;
     return makeResponse(
       res,
