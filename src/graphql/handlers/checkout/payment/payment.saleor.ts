@@ -2,6 +2,7 @@ import {
   graphqlCall,
   graphqlResultErrorHandler,
 } from 'src/core/proxies/graphqlHandler';
+import { preAuthTransactionMutation } from 'src/graphql/mutations/checkout/payment/authTransaction';
 import { storePaymentIntentMutation } from 'src/graphql/mutations/checkout/payment/storePaymentIntent';
 
 export const storePaymentIntentHandler = async (
@@ -16,4 +17,20 @@ export const storePaymentIntentHandler = async (
     ),
   );
   return response['updateMetadata'];
+};
+
+export const preAuthTransactionHandler = async (
+  checkoutId: string,
+  paymentIntentId: string,
+  amount: string,
+  token: string,
+): Promise<object> => {
+  console.log(token);
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      preAuthTransactionMutation({ checkoutId, paymentIntentId, amount }),
+      token,
+    ),
+  );
+  return response['transactionCreate'];
 };

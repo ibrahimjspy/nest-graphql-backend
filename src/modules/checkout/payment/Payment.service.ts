@@ -11,7 +11,10 @@ import {
   getPaymentIntentFromMetadata,
   paymentIntentAmountValidate,
 } from './Payment.utils';
-import { storePaymentIntentHandler } from 'src/graphql/handlers/checkout/payment/payment.saleor';
+import {
+  preAuthTransactionHandler,
+  storePaymentIntentHandler,
+} from 'src/graphql/handlers/checkout/payment/payment.saleor';
 
 @Injectable()
 export class PaymentService {
@@ -77,15 +80,23 @@ export class PaymentService {
       if (!paymentIntentResponse)
         throw new PaymentIntentCreationError(userEmail, paymentMethodId);
       const paymentIntentId = paymentIntentResponse.id;
-      await storePaymentIntentHandler(checkoutId, paymentIntentId, token);
+      await Promise.all([
+        storePaymentIntentHandler(checkoutId, paymentIntentId, token),
+        preAuthTransactionHandler(
+          checkoutId,
+          paymentIntentId,
+          totalAmount,
+          token,
+        ),
+      ]);
       return prepareSuccessResponse(
         { paymentIntentId },
         'new payment intent Id created and added against checkout',
         201,
       );
     } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
+      this.logger.error(error.message);
+      return prepareFailedResponse(error.message);
     }
   }
   /**
@@ -172,7 +183,6 @@ export class PaymentService {
       });
     } catch (error) {
       this.logger.error(error);
-      console.log('error tim');
       return prepareFailedResponse(error.message);
     }
   }
