@@ -12,6 +12,7 @@ import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
 import { UpdateBundleStateDto } from 'src/modules/checkout/dto/add-bundle.dto';
 import { deleteCheckoutBundlesHandler } from 'src/graphql/handlers/checkout/cart/cart.marketplace';
 import { getTargetBundleByCheckoutBundleId } from '../../Cart.utils';
+import { CheckoutIdError } from 'src/modules/checkout/Checkout.errors';
 
 @Injectable()
 export class MarketplaceCartService {
@@ -55,6 +56,9 @@ export class MarketplaceCartService {
       productDetails,
     });
     const checkoutId = marketplaceCheckout['data']['checkoutId'];
+    if (!checkoutId) {
+      throw new CheckoutIdError(userEmail);
+    }
     // TODO replace this with get bundles by checkout bundles id
     const checkoutBundlesData = getTargetBundleByCheckoutBundleId(
       marketplaceCheckout['data']['checkoutBundles'],

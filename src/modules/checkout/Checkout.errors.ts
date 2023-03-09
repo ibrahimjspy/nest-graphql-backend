@@ -24,3 +24,12 @@ export class PaymentIntentCreationError extends Error {
     this.paymentMethodId = paymentMethodId;
   }
 }
+
+export class CheckoutIdError extends Error {
+  userEmail: string;
+  constructor(userEmail) {
+    super('no checkout Id exists against ' + userEmail);
+    this.name = 'CheckoutIdError';
+    this.userEmail = userEmail;
+  }
+}
