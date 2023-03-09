@@ -118,10 +118,10 @@ export class CheckoutService {
    */
   public async createCheckout(userEmail: string, token: string) {
     try {
-      const checkoutData = await CheckoutHandlers.getCheckoutBundlesHandler(
+      const checkoutData = await CheckoutHandlers.getCheckoutBundlesHandler({
         userEmail,
         token,
-      );
+      });
       if (!validateBundlesLength(checkoutData['checkoutBundles'])) {
         throw new RecordNotFound('Empty Cart');
       }

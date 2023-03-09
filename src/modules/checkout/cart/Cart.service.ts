@@ -26,10 +26,14 @@ export class CartService {
     token: string,
   ): Promise<object> {
     try {
-      return await this.marketplaceService.getAllCheckoutBundles(
+      const isSelected = null;
+      const productDetails = true;
+      return await this.marketplaceService.getAllCheckoutBundles({
         userEmail,
         token,
-      );
+        productDetails,
+        isSelected,
+      });
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
