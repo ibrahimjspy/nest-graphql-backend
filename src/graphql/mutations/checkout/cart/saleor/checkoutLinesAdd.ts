@@ -15,6 +15,7 @@ const b2bQuery = (checkoutId: string, bundles: CheckoutLinesInterface) => {
           id
           lines {
             id
+            quantity
             variant{
               id
             }

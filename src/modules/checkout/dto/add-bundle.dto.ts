@@ -53,10 +53,6 @@ export class UpdateBundleStateDto {
   @IsNotEmpty()
   userEmail: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  checkoutId: string;
-
   @ApiProperty({ required: true })
   @IsBoolean()
   isSelected: boolean;

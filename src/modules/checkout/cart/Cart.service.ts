@@ -155,7 +155,7 @@ export class CartService {
   ) {
     try {
       const { userEmail, checkoutBundleIds } = updateBundleState;
-      const action = 'un-select';
+      const action = false;
       const { checkoutId, checkoutBundlesData } =
         await this.marketplaceService.getCheckoutBundlesByIds(
           userEmail,
@@ -195,7 +195,7 @@ export class CartService {
   ) {
     try {
       const { userEmail, checkoutBundleIds } = updateBundleState;
-      const action = 'select';
+      const action = true;
       const { checkoutId, checkoutBundlesData } =
         await this.marketplaceService.getCheckoutBundlesByIds(
           userEmail,

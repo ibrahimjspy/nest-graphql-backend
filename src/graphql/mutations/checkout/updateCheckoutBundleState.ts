@@ -1,17 +1,17 @@
 import { gql } from 'graphql-request';
 
 export const updateCheckoutBundleStateMutation = (
-  action: string,
+  action: boolean,
   userEmail: string,
   checkoutBundles: Array<string>,
 ) => {
   return gql`
     mutation {
       updateCheckoutBundleStatus(
-        Input: {
+        input: {
           checkoutBundleIds: ${JSON.stringify(checkoutBundles)}
           userEmail: "${userEmail}"
-          action: "${action}"
+          action: ${action}
         }
       ) {
         __typename

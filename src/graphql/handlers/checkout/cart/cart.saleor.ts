@@ -15,7 +15,7 @@ export const addLinesHandler = async (
   const response = await graphqlResultErrorHandler(
     await graphqlCall(checkoutLinesAddMutation(checkoutId, lines), token),
   );
-  return response['checkoutLinesAdd'];
+  return response['checkoutLinesAdd']['checkout'];
 };
 
 export const updateLinesHandler = async (
