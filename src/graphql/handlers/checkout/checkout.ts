@@ -261,7 +261,7 @@ export const getShippingZonesHandler = async (token: string) => {
 };
 
 export const updateCheckoutBundleState = async (
-  action: string,
+  action: boolean,
   updateBundleState: UpdateBundleStateDto,
   token,
 ) => {

@@ -19,6 +19,7 @@ export const createCheckoutMutation = (
         checkout {
           id
           lines {
+            quantity
             id
             variant{
               id

@@ -134,7 +134,7 @@ export class MarketplaceCartService {
    * @satisfies -- it updates status in form of ~~ selected -- unselected
    */
   public async updateCheckoutBundleState(
-    action: string,
+    action: boolean,
     updateBundleState: UpdateBundleStateDto,
     token: string,
   ) {

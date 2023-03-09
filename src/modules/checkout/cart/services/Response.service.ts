@@ -34,6 +34,19 @@ export class CartResponseService {
         );
       }
 
+      if (status == 'MARKETPLACE_FAILED') {
+        await this.cartRollbackService.addCheckoutBundlesMarketplace(
+          saleor,
+          userBundles,
+          token,
+        );
+        return prepareFailedResponse(
+          'Adding bundle lines to Marketplace failed',
+          400,
+          saleor,
+        );
+      }
+
       if (status == 'SALEOR_FAILED') {
         await this.cartRollbackService.addCheckoutBundleLinesSaleor(
           marketplace,
