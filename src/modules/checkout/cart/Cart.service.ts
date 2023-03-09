@@ -1,6 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
-import { prepareSuccessResponse } from 'src/core/utils/response';
+import {
+  prepareFailedResponse,
+  prepareSuccessResponse,
+} from 'src/core/utils/response';
 import { updateCheckoutBundleState } from 'src/graphql/handlers/checkout/checkout';
 import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
 import { UpdateBundleStateDto } from '../dto/add-bundle.dto';
@@ -8,6 +11,7 @@ import { SaleorCartService } from './services/saleor/Cart.saleor.service';
 import { MarketplaceCartService } from './services/marketplace/Cart.marketplace.service';
 import { getBundlesFromCheckout } from './Cart.utils';
 import { CartResponseService } from './services/Response.service';
+import { CheckoutIdError } from '../Checkout.errors';
 
 @Injectable()
 export class CartService {
@@ -95,6 +99,9 @@ export class CartService {
       );
     } catch (error) {
       this.logger.error(error);
+      if (error instanceof CheckoutIdError) {
+        return prepareFailedResponse(error.message);
+      }
       return graphqlExceptionHandler(error);
     }
   }
@@ -131,6 +138,9 @@ export class CartService {
       );
     } catch (error) {
       this.logger.error(error);
+      if (error instanceof CheckoutIdError) {
+        return prepareFailedResponse(error.message);
+      }
       return graphqlExceptionHandler(error);
     }
   }
@@ -158,9 +168,9 @@ export class CartService {
           checkoutBundlesData,
           token,
         ),
-        await updateCheckoutBundleState(action, updateBundleState, token),
+        updateCheckoutBundleState(action, updateBundleState, token),
       ]);
-      return this.cartResponseBuilder.unselectBundles(
+      return await this.cartResponseBuilder.unselectBundles(
         saleor,
         marketplace,
         updateBundleState,
@@ -168,6 +178,9 @@ export class CartService {
       );
     } catch (error) {
       this.logger.error(error);
+      if (error instanceof CheckoutIdError) {
+        return prepareFailedResponse(error.message);
+      }
       return graphqlExceptionHandler(error);
     }
   }
@@ -199,7 +212,7 @@ export class CartService {
         ),
         updateCheckoutBundleState(action, updateBundleState, token),
       ]);
-      return this.cartResponseBuilder.selectBundles(
+      return await this.cartResponseBuilder.selectBundles(
         saleor,
         marketplace,
         updateBundleState,
@@ -207,6 +220,9 @@ export class CartService {
       );
     } catch (error) {
       this.logger.error(error);
+      if (error instanceof CheckoutIdError) {
+        return prepareFailedResponse(error.message);
+      }
       return graphqlExceptionHandler(error);
     }
   }
