@@ -118,7 +118,14 @@ export class SaleorCartService {
         token,
       );
     }
-    return await this.addLines(checkoutId, saleorLines, token);
+    const response = await this.addLines(checkoutId, saleorLines, token);
+    // TODO remove this call after marketplace service start to persist checkout id
+    this.marketplaceService.addCheckoutIdToMarketplace(
+      userEmail,
+      token,
+      checkoutId,
+    );
+    return response;
   }
   public async updateBundleLines(
     userEmail: string,
