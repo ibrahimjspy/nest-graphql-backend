@@ -20,17 +20,19 @@ export class MarketplaceCartService {
   /**
    * @description -- fetches shopping cart data from bundle service against userEmail
    */
-  public async getAllCheckoutBundles(
-    userEmail: string,
-    token: string,
+  public async getAllCheckoutBundles({
+    userEmail,
+    token,
     productDetails = true,
-  ): Promise<object> {
+    isSelected = null,
+  }): Promise<object> {
     try {
-      const checkoutData = await getCheckoutBundlesHandler(
+      const checkoutData = await getCheckoutBundlesHandler({
         userEmail,
         token,
         productDetails,
-      );
+        isSelected,
+      });
       return prepareSuccessResponse(checkoutData);
     } catch (error) {
       this.logger.error(error);
@@ -46,11 +48,12 @@ export class MarketplaceCartService {
     checkoutBundleIds: string[],
     token: string,
   ) {
-    const marketplaceCheckout = await this.getAllCheckoutBundles(
+    const productDetails = false;
+    const marketplaceCheckout = await this.getAllCheckoutBundles({
       userEmail,
       token,
-      false,
-    );
+      productDetails,
+    });
     const checkoutId = marketplaceCheckout['data']['checkoutId'];
     // TODO replace this with get bundles by checkout bundles id
     const checkoutBundlesData = getTargetBundleByCheckoutBundleId(

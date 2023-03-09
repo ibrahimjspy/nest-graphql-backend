@@ -133,7 +133,7 @@ export class SaleorCartService {
     token: string,
   ) {
     const marketplaceCheckout =
-      await this.marketplaceService.getAllCheckoutBundles(userEmail, token);
+      await this.marketplaceService.getAllCheckoutBundles({ userEmail, token });
     const checkoutId = marketplaceCheckout['data']['checkoutId'];
     const checkoutLines = getUpdateCartBundleLines(
       marketplaceCheckout['data']['checkoutBundles'],

@@ -6,6 +6,6 @@ export class MarketplaceCheckoutService {
   private readonly logger = new Logger(MarketplaceCheckoutService.name);
 
   public async getCheckout(userEmail: string, token: string) {
-    return await getCheckoutBundlesHandler(userEmail, token);
+    return await getCheckoutBundlesHandler({ userEmail, token });
   }
 }

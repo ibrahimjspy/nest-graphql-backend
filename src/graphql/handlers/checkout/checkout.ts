@@ -47,13 +47,13 @@ export const marketplaceCheckoutHandler = async (
   return response['marketplaceCheckout'];
 };
 
-export const getCheckoutBundlesHandler = async (
-  userEmail: string,
-  token: string,
+export const getCheckoutBundlesHandler = async ({
+  userEmail,
+  token,
   productDetails = true,
   throwException = true,
   isSelected = true,
-): Promise<object> => {
+}): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
       getCheckoutBundleQuery(userEmail, isSelected, productDetails),
