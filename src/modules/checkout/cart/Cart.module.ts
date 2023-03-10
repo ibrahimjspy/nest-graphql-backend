@@ -7,6 +7,7 @@ import { SaleorCheckoutService } from '../services/Checkout.saleor';
 import { ProductService } from 'src/modules/product/Product.service';
 import { CartResponseService } from './services/Response.service';
 import { CartRollbackService } from './services/Rollback.service';
+import { CartValidationService } from './services/Validation.service';
 
 @Module({
   controllers: [CartController],
@@ -18,6 +19,7 @@ import { CartRollbackService } from './services/Rollback.service';
     ProductService,
     CartResponseService,
     CartRollbackService,
+    CartValidationService,
   ],
   exports: [CartService],
 })

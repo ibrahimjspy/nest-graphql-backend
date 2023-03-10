@@ -11,8 +11,13 @@ import { SaleorCartService } from './services/saleor/Cart.saleor.service';
 import { MarketplaceCartService } from './services/marketplace/Cart.marketplace.service';
 import { getBundlesFromCheckout, getNewBundlesToAdd } from './Cart.utils';
 import { CartResponseService } from './services/Response.service';
-import { CheckoutIdError } from '../Checkout.errors';
+import {
+  CheckoutIdError,
+  SelectBundleError,
+  UnSelectBundleError,
+} from '../Checkout.errors';
 import { ReplaceBundleDto } from './dto/cart';
+import { CartValidationService } from './services/Validation.service';
 
 @Injectable()
 export class CartService {
@@ -21,6 +26,7 @@ export class CartService {
     private saleorService: SaleorCartService,
     private marketplaceService: MarketplaceCartService,
     private cartResponseBuilder: CartResponseService,
+    private cartValidationService: CartValidationService,
   ) {}
 
   /**
@@ -163,6 +169,9 @@ export class CartService {
           checkoutBundleIds,
           token,
         );
+      await this.cartValidationService.validateUnSelectBundles(
+        checkoutBundlesData,
+      );
       const [saleor, marketplace] = await Promise.allSettled([
         this.saleorService.removeBundleLines(
           checkoutId,
@@ -179,7 +188,10 @@ export class CartService {
       );
     } catch (error) {
       this.logger.error(error);
-      if (error instanceof CheckoutIdError) {
+      if (
+        error instanceof CheckoutIdError ||
+        error instanceof UnSelectBundleError
+      ) {
         return prepareFailedResponse(error.message);
       }
       return graphqlExceptionHandler(error);
@@ -203,6 +215,9 @@ export class CartService {
           checkoutBundleIds,
           token,
         );
+      await this.cartValidationService.validateSelectBundles(
+        checkoutBundlesData,
+      );
       const bundlesList = getBundlesFromCheckout(checkoutBundlesData);
       const [saleor, marketplace] = await Promise.allSettled([
         this.saleorService.addBundleLines(
@@ -221,7 +236,10 @@ export class CartService {
       );
     } catch (error) {
       this.logger.error(error);
-      if (error instanceof CheckoutIdError) {
+      if (
+        error instanceof CheckoutIdError ||
+        error instanceof SelectBundleError
+      ) {
         return prepareFailedResponse(error.message);
       }
       return graphqlExceptionHandler(error);
