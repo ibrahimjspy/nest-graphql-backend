@@ -9,7 +9,11 @@ import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
 import { UpdateBundleStateDto } from '../dto/add-bundle.dto';
 import { SaleorCartService } from './services/saleor/Cart.saleor.service';
 import { MarketplaceCartService } from './services/marketplace/Cart.marketplace.service';
-import { getBundlesFromCheckout, getNewBundlesToAdd } from './Cart.utils';
+import {
+  getBundlesFromCheckout,
+  getCheckoutBundleIds,
+  getNewBundlesToAdd,
+} from './Cart.utils';
 import { CartResponseService } from './services/Response.service';
 import {
   CheckoutIdError,
@@ -87,15 +91,27 @@ export class CartService {
    */
   public async updateBundlesFromCart(
     userEmail: string,
-    checkoutBundles,
+    updatedCheckoutBundles,
     token: string,
   ): Promise<object> {
     try {
+      const checkoutBundleIds = getCheckoutBundleIds(updatedCheckoutBundles);
+      const { checkoutBundlesData, checkoutId } =
+        await this.marketplaceService.getCheckoutBundlesByIds(
+          userEmail,
+          checkoutBundleIds,
+          token,
+        );
       const [saleor, marketplace] = await Promise.all([
-        this.saleorService.updateBundleLines(userEmail, checkoutBundles, token),
+        this.saleorService.updateBundleLines(
+          checkoutId,
+          checkoutBundlesData,
+          updatedCheckoutBundles,
+          token,
+        ),
         this.marketplaceService.updateBundles(
           userEmail,
-          checkoutBundles,
+          updatedCheckoutBundles,
           token,
         ),
       ]);

@@ -8,34 +8,32 @@ export class CartValidationService {
   /**
    * @description --this method validates if any of checkout bundles are all ready selected, if so it returns an error
    */
-  public async validateSelectBundles(checkoutBundles) {
-    try {
-      checkoutBundles.map((checkoutBundle) => {
-        if (checkoutBundle.isSelected == true) {
+  public async validateSelectBundles(checkoutBundles, throwException = true) {
+    let isValid = true;
+    checkoutBundles.map((checkoutBundle) => {
+      if (checkoutBundle.isSelected == true) {
+        if (throwException) {
           throw new SelectBundleError();
         }
-      });
-      return;
-    } catch (error) {
-      this.logger.error(error);
-      throw error;
-    }
+        isValid = false;
+      }
+    });
+    return isValid;
   }
 
   /**
    * @description --this method validates if any of checkout bundles are all ready un selected, if so it returns an error
    */
-  public async validateUnSelectBundles(checkoutBundles) {
-    try {
-      checkoutBundles.map((checkoutBundle) => {
-        if (checkoutBundle.isSelected == false) {
+  public async validateUnSelectBundles(checkoutBundles, throwException = true) {
+    let isValid = true;
+    checkoutBundles.map((checkoutBundle) => {
+      if (checkoutBundle.isSelected == false) {
+        if (throwException) {
           throw new UnSelectBundleError();
         }
-      });
-      return;
-    } catch (error) {
-      this.logger.error(error);
-      throw error;
-    }
+        isValid = false;
+      }
+    });
+    return isValid;
   }
 }
