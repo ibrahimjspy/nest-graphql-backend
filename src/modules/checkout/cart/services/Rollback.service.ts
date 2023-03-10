@@ -115,6 +115,32 @@ export class CartRollbackService {
   }
 
   /**
+   * @description -- this method rolls back checkout lines deleted due to failure in marketplace delete checkout bundles
+   */
+  public async deleteCheckoutBundlesMarketplace(
+    checkoutBundles,
+    userEmail,
+    checkoutId,
+    token: string,
+  ) {
+    try {
+      const addBundles = getBundlesFromCheckout(checkoutBundles);
+      this.logger.warn(
+        `Rolling back Saleor lines deleted due to failure in Marketplace against user :: ${userEmail}`,
+      );
+      return await this.saleorCartService.addBundleLines(
+        userEmail,
+        checkoutId,
+        addBundles,
+        token,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
    * @description -- this method rolls back checkout bundles state changed due to failure in saleor lines update
    */
   public async selectBundlesSaleor(

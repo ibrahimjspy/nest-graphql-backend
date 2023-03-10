@@ -81,7 +81,7 @@ export class CartResponseService {
   public async deleteBundlesFromCart(
     saleorResponse,
     marketplaceResponse,
-    { checkoutBundlesData, userEmail },
+    { checkoutBundlesData, userEmail, checkoutId },
     token: string,
   ) {
     try {
@@ -106,6 +106,20 @@ export class CartResponseService {
         );
         return prepareFailedResponse(
           'deleting bundle lines from Saleor failed',
+          400,
+          saleor,
+        );
+      }
+
+      if (status == MARKETPLACE_FAILED) {
+        await this.cartRollbackService.deleteCheckoutBundlesMarketplace(
+          checkoutBundlesData,
+          userEmail,
+          checkoutId,
+          token,
+        );
+        return prepareFailedResponse(
+          'deleting bundle lines from Marketplace failed',
           400,
           saleor,
         );

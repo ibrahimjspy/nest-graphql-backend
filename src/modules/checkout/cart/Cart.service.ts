@@ -156,7 +156,7 @@ export class CartService {
       return this.cartResponseBuilder.deleteBundlesFromCart(
         saleor,
         marketplace,
-        { checkoutBundlesData, userEmail },
+        { checkoutBundlesData, userEmail, checkoutId },
         token,
       );
     } catch (error) {
