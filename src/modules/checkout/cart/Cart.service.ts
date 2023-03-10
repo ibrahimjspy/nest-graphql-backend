@@ -245,7 +245,7 @@ export class CartService {
         );
       const newBundles = getNewBundlesToAdd(checkoutBundlesData, newBundleId);
       const [deletePreviousBundle, createNewBundle] = await Promise.allSettled([
-        this.deleteBundlesFromCart(userEmail, [checkoutBundleId], token),
+        await this.deleteBundlesFromCart(userEmail, [checkoutBundleId], token),
         this.addBundlesToCart(userEmail, checkoutId, newBundles, token),
       ]);
       return await this.cartResponseBuilder.replaceCheckoutBundle(
