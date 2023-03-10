@@ -1,3 +1,10 @@
+import {
+  PromiseResolvedEnum,
+  ReplaceBundleStatusCodesEnum,
+  ReplaceBundleStatusEnum,
+  ResponseStatusEnum,
+} from './Response.utils.type';
+
 /**
  * @description - this method validates response objects sent by promise.allsettled and returns a string value with status
  * @params response from saleor
@@ -5,33 +12,31 @@
  * @returns status : "SUCCESS" | "SALEOR_FAILED" | "MARKETPLACE_FAILED" | "FAILED"
  */
 export const responseStatusValidate = (saleorResponse, marketplaceResponse) => {
+  const { SUCCESS, SALEOR_FAILED, MARKETPLACE_FAILED, FAILED } =
+    ResponseStatusEnum;
+  const { FULFILLED, REJECTED } = PromiseResolvedEnum;
   if (
-    saleorResponse.status == 'fulfilled' &&
-    marketplaceResponse.status == 'fulfilled'
+    saleorResponse.status == FULFILLED &&
+    marketplaceResponse.status == FULFILLED
   ) {
-    return 'SUCCESS';
+    return SUCCESS;
   }
 
   if (
-    saleorResponse.status == 'rejected' &&
-    marketplaceResponse.status == 'fulfilled'
+    saleorResponse.status == REJECTED &&
+    marketplaceResponse.status == FULFILLED
   ) {
-    return 'SALEOR_FAILED';
+    return SALEOR_FAILED;
   }
 
   if (
-    saleorResponse.status == 'fulfilled' &&
-    marketplaceResponse.status == 'rejected'
+    saleorResponse.status == FULFILLED &&
+    marketplaceResponse.status == REJECTED
   ) {
-    return 'MARKETPLACE_FAILED';
+    return MARKETPLACE_FAILED;
   }
 
-  if (
-    saleorResponse.status == 'rejected' &&
-    marketplaceResponse.status == 'rejected'
-  ) {
-    return 'FAILED';
-  }
+  return FAILED;
 };
 
 /**
@@ -44,26 +49,36 @@ export const replaceBundleStatusValidate = (
   deletePreviousBundle,
   createNewBundle,
 ) => {
-  if (deletePreviousBundle.status == '201' && createNewBundle.status == '201') {
-    return 'SUCCESS';
+  const {
+    REPLACED,
+    PREVIOUS_BUNDLE_DELETION_FAILED,
+    NEW_BUNDLE_CREATION_FAILED,
+    FAILED,
+  } = ReplaceBundleStatusEnum;
+  const { BAD_REQUEST, UNAUTHORIZED, CREATED } = ReplaceBundleStatusCodesEnum;
+
+  if (
+    deletePreviousBundle.status == CREATED &&
+    createNewBundle.status == CREATED
+  ) {
+    return REPLACED;
   }
 
   if (
-    (deletePreviousBundle.status == '400' ||
-      deletePreviousBundle.status == '401') &&
-    createNewBundle.status == '201'
+    (deletePreviousBundle.status == BAD_REQUEST ||
+      deletePreviousBundle.status == UNAUTHORIZED) &&
+    createNewBundle.status == CREATED
   ) {
-    return 'PREVIOUS_BUNDLE_DELETION_FAILED';
+    return PREVIOUS_BUNDLE_DELETION_FAILED;
   }
 
   if (
-    deletePreviousBundle.status == '201' &&
-    (createNewBundle.status == '401' || createNewBundle.status == '400')
+    deletePreviousBundle.status == CREATED &&
+    (createNewBundle.status == UNAUTHORIZED ||
+      createNewBundle.status == BAD_REQUEST)
   ) {
-    return 'NEW_BUNDLE_CREATION_FAILED';
+    return NEW_BUNDLE_CREATION_FAILED;
   }
 
-  if (deletePreviousBundle.status == '401' && createNewBundle.status == '401') {
-    return 'FAILED';
-  }
+  return FAILED;
 };

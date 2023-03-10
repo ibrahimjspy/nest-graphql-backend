@@ -9,7 +9,16 @@ import {
   replaceBundleStatusValidate,
   responseStatusValidate,
 } from './Response.utils';
-
+import {
+  ReplaceBundleStatusEnum,
+  ResponseStatusEnum,
+} from './Response.utils.type';
+const { SUCCESS, SALEOR_FAILED, MARKETPLACE_FAILED } = ResponseStatusEnum;
+const {
+  REPLACED,
+  PREVIOUS_BUNDLE_DELETION_FAILED,
+  NEW_BUNDLE_CREATION_FAILED,
+} = ReplaceBundleStatusEnum;
 @Injectable()
 export class CartResponseService {
   private readonly logger = new Logger(CartResponseService.name);
@@ -29,7 +38,7 @@ export class CartResponseService {
       );
       const saleor = saleorResponse.value;
       const marketplace = marketplaceResponse.value;
-      if (status == 'SUCCESS') {
+      if (status == SUCCESS) {
         return prepareSuccessResponse(
           { saleor, marketplace },
           'bundles added to cart',
@@ -37,7 +46,7 @@ export class CartResponseService {
         );
       }
 
-      if (status == 'MARKETPLACE_FAILED') {
+      if (status == MARKETPLACE_FAILED) {
         await this.cartRollbackService.addCheckoutBundlesMarketplace(
           saleor,
           userBundles,
@@ -50,7 +59,7 @@ export class CartResponseService {
         );
       }
 
-      if (status == 'SALEOR_FAILED') {
+      if (status == SALEOR_FAILED) {
         await this.cartRollbackService.addCheckoutBundleLinesSaleor(
           marketplace,
           userBundles,
@@ -82,7 +91,7 @@ export class CartResponseService {
       );
       const saleor = saleorResponse.value;
       const marketplace = marketplaceResponse.value;
-      if (status == 'SUCCESS') {
+      if (status == SUCCESS) {
         return prepareSuccessResponse(
           { saleor, marketplace },
           'bundles deleted from cart',
@@ -90,7 +99,7 @@ export class CartResponseService {
         );
       }
 
-      if (status == 'SALEOR_FAILED') {
+      if (status == SALEOR_FAILED) {
         await this.cartRollbackService.deleteCheckoutBundleLinesSaleor(
           { checkoutBundlesData, userEmail },
           token,
@@ -121,7 +130,7 @@ export class CartResponseService {
       );
       const saleor = saleorResponse.value;
       const marketplace = marketplaceResponse.value;
-      if (status == 'SUCCESS') {
+      if (status == SUCCESS) {
         return prepareSuccessResponse(
           { saleor, marketplace },
           'bundles state updated to select',
@@ -129,7 +138,7 @@ export class CartResponseService {
         );
       }
 
-      if (status == 'SALEOR_FAILED') {
+      if (status == SALEOR_FAILED) {
         await this.cartRollbackService.selectBundlesSaleor(
           checkoutBundleIds,
           userEmail,
@@ -161,7 +170,7 @@ export class CartResponseService {
       );
       const saleor = saleorResponse.value;
       const marketplace = marketplaceResponse.value;
-      if (status == 'SUCCESS') {
+      if (status == SUCCESS) {
         return prepareSuccessResponse(
           { saleor, marketplace },
           'bundles state updated to un-select',
@@ -169,7 +178,7 @@ export class CartResponseService {
         );
       }
 
-      if (status == 'SALEOR_FAILED') {
+      if (status == SALEOR_FAILED) {
         await this.cartRollbackService.unselectBundlesSaleor(
           checkoutBundleIds,
           userEmail,
@@ -200,14 +209,15 @@ export class CartResponseService {
         createNewBundle.value,
       );
       const createBundle = createNewBundle.value.data;
-      if (status == 'SUCCESS') {
+
+      if (status == REPLACED) {
         return prepareSuccessResponse(
           { createBundle },
           'checkout bundle is replaced',
           201,
         );
       }
-      if (status == 'PREVIOUS_BUNDLE_DELETION_FAILED') {
+      if (status == PREVIOUS_BUNDLE_DELETION_FAILED) {
         await this.cartRollbackService.replaceBundleDelete(
           createBundle,
           newBundleId,
@@ -215,7 +225,7 @@ export class CartResponseService {
         );
         return prepareFailedResponse('deleting old bundle failed', 400);
       }
-      if (status == 'NEW_BUNDLE_CREATION_FAILED') {
+      if (status == NEW_BUNDLE_CREATION_FAILED) {
         await this.cartRollbackService.replaceBundleCreate(
           userEmail,
           checkoutId,
