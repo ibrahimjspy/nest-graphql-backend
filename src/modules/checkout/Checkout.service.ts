@@ -144,4 +144,17 @@ export class CheckoutService {
       return prepareFailedResponse(error.message);
     }
   }
+
+  public async validateCheckout(checkoutId: string, token: string) {
+    try {
+      const validateCheckout = await CheckoutHandlers.validateCheckoutHandler(
+        checkoutId,
+        token,
+      );
+      return prepareSuccessResponse(validateCheckout);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
 }

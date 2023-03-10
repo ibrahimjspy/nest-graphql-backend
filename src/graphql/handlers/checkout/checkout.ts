@@ -34,6 +34,7 @@ import { updateCheckoutBundleQuery } from '../../queries/checkout/updateCheckout
 import { addCheckoutBundleQuery } from '../../queries/checkout/addCheckoutBundles';
 import { checkoutQuery } from 'src/graphql/queries/checkout/checkout';
 import { AddressDto } from 'src/modules/checkout/shipping/dto/shippingAddress';
+import { validateCheckoutQuery } from 'src/graphql/queries/checkout/validateCheckout';
 
 export const marketplaceCheckoutHandler = async (
   id: string,
@@ -336,4 +337,14 @@ export const getCheckoutHandler = async (
     throw new RecordNotFound('Checkout');
   }
   return response['checkout'];
+};
+
+export const validateCheckoutHandler = async (
+  checkoutId: string,
+  token: string,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(validateCheckoutQuery(checkoutId), token),
+  );
+  return response['validateCartAmounts'];
 };
