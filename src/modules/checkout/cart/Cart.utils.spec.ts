@@ -4,11 +4,11 @@ import {
   getBundlesFromCheckout,
   getDeleteBundlesLines,
   getLinesFromBundles,
+  getNewBundlesToAdd,
   getTargetBundleByBundleId,
   getTargetBundleByCheckoutBundleId,
   getUpdateCartBundleLines,
   getVariantIds,
-  responseStatusValidate,
   validateBundlesLength,
 } from './Cart.utils';
 
@@ -141,24 +141,6 @@ describe('Cart utility tests', () => {
       ]);
     });
 
-    it('testing whether response status is correctly getting validated', async () => {
-      const responseStatus = responseStatusValidate(
-        { status: 'fulfilled' },
-        { status: 'fulfilled' },
-      );
-      console.log(responseStatus);
-      expect(responseStatus).toBeDefined();
-      expect(responseStatus).toStrictEqual('SUCCESS');
-
-      const responseStatusFailure = responseStatusValidate(
-        { status: 'fulfilled' },
-        { status: 'rejected' },
-      );
-      console.log(responseStatusFailure);
-      expect(responseStatusFailure).toBeDefined();
-      expect(responseStatusFailure).toStrictEqual('MARKETPLACE_FAILED');
-    });
-
     it('testing whether bundle lines are correctly getting from add bundle lines', async () => {
       const addBundleLines = getAddBundleToCartLines(
         bundlesList,
@@ -169,6 +151,13 @@ describe('Cart utility tests', () => {
       expect(addBundleLines).toStrictEqual([
         { quantity: 20, variantId: 'test' },
       ]);
+    });
+
+    it('testing whether new bundles object are correctly created', async () => {
+      const newBundles = getNewBundlesToAdd(checkoutBundleList, 'bundleId');
+      console.log(newBundles);
+      expect(newBundles).toBeDefined();
+      expect(newBundles).toStrictEqual([{ bundleId: 'bundleId', quantity: 3 }]);
     });
   });
 });

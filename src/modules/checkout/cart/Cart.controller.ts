@@ -14,7 +14,7 @@ import { IsAuthenticated } from 'src/core/utils/decorators';
 import { makeResponse } from 'src/core/utils/response';
 import { AddBundleDto, UserIdDto } from '../dto';
 import { UpdateBundleStateDto, UpdateBundlesDto } from '../dto/add-bundle.dto';
-import { DeleteBundlesDto } from './dto/cart';
+import { DeleteBundlesDto, ReplaceBundleDto } from './dto/cart';
 
 @ApiTags('checkout/cart')
 @Controller('')
@@ -118,6 +118,22 @@ export class CartController {
             updateBundleState,
             token,
           ),
+    );
+  }
+
+  @ApiOperation({
+    summary: 'replaces checkout bundle with another bundle',
+  })
+  @Post('api/v1/cart/items/replace')
+  @ApiBearerAuth('JWT-auth')
+  async replaceCheckoutBundle(
+    @Res() res,
+    @Body() replaceBundleData: ReplaceBundleDto,
+    @IsAuthenticated('authorization') token: string,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.replaceCheckoutBundle(replaceBundleData, token),
     );
   }
 }

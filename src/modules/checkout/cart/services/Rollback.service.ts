@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { SaleorCartService } from './saleor/Cart.saleor.service';
 import { MarketplaceCartService } from './marketplace/Cart.marketplace.service';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
@@ -12,7 +12,7 @@ import {
 import { ProductService } from 'src/modules/product/Product.service';
 import { getUpdatedLinesRollback } from './Rollback.utils';
 import { CheckoutLinesInterface } from './saleor/Cart.saleor.types';
-
+import { CartService } from '../Cart.service';
 @Injectable()
 export class CartRollbackService {
   private readonly logger = new Logger(CartRollbackService.name);
@@ -20,6 +20,8 @@ export class CartRollbackService {
   constructor(
     private marketplaceCartService: MarketplaceCartService,
     private saleorCartService: SaleorCartService,
+    @Inject(forwardRef(() => CartService))
+    private cartService: CartService,
     private productService: ProductService,
   ) {}
 
@@ -154,6 +156,61 @@ export class CartRollbackService {
       return await this.marketplaceCartService.updateCheckoutBundleState(
         action,
         bundlesList,
+        token,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description -- this method rolls back when old bundle is not deleted correctly and new one is created in place of it
+   */
+  public async replaceBundleDelete(
+    newBundleCreated,
+    newBundleId,
+    token: string,
+  ) {
+    try {
+      const userEmail = newBundleCreated?.marketplace?.userEmail;
+      const checkoutBundles = newBundleCreated?.marketplace?.checkoutBundles;
+      const checkoutBundle = getTargetBundleByBundleId(checkoutBundles, [
+        { bundleId: newBundleId },
+      ]);
+      const checkoutBundleId = checkoutBundle[0]?.checkoutBundleId;
+      this.logger.warn(
+        `Rolling back new bundle created due to failure in delete old bundle against user :: ${userEmail}`,
+      );
+      return await this.cartService.deleteBundlesFromCart(
+        userEmail,
+        [checkoutBundleId],
+        token,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description -- this method rolls back when old bundle is not deleted correctly and new one is created in place of it
+   */
+  public async replaceBundleCreate(
+    userEmail,
+    checkoutId,
+    checkoutBundle,
+    token: string,
+  ) {
+    try {
+      const addBundles = getBundlesFromCheckout(checkoutBundle);
+      this.logger.warn(
+        `Rolling back old bundle deleted due to failure in create new bundle against user :: ${userEmail}`,
+      );
+      return await this.cartService.addBundlesToCart(
+        userEmail,
+        checkoutId,
+        addBundles,
         token,
       );
     } catch (error) {

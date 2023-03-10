@@ -195,37 +195,25 @@ export const getAddBundleToCartLines = (
 };
 
 /**
- * @description - this method validates response objects sent by promise.allsettled and returns a string value with status
- * @params response from saleor
- * @params response from marketplace
- * @returns status : "SUCCESS" | "SALEOR_FAILED" | "MARKETPLACE_FAILED" | "FAILED"
+ * @description - this function returns bundle quantity from bundles
  */
-export const responseStatusValidate = (saleorResponse, marketplaceResponse) => {
-  if (
-    saleorResponse.status == 'fulfilled' &&
-    marketplaceResponse.status == 'fulfilled'
-  ) {
-    return 'SUCCESS';
-  }
+export const getBundleQuantity = (bundles): number => {
+  let quantity;
+  bundles.map((bundle) => {
+    quantity = bundle['quantity'];
+  });
+  return quantity;
+};
 
-  if (
-    saleorResponse.status == 'rejected' &&
-    marketplaceResponse.status == 'fulfilled'
-  ) {
-    return 'SALEOR_FAILED';
-  }
-
-  if (
-    saleorResponse.status == 'fulfilled' &&
-    marketplaceResponse.status == 'rejected'
-  ) {
-    return 'MARKETPLACE_FAILED';
-  }
-
-  if (
-    saleorResponse.status == 'rejected' &&
-    marketplaceResponse.status == 'rejected'
-  ) {
-    return 'FAILED';
-  }
+/**
+ * this builds a bundle create array which we can use to replace an old checkout bundle with new bundle
+ * @satisfies  - it uses quantity of older checkout bundler
+ */
+export const getNewBundlesToAdd = (checkoutBundles, bundleId) => {
+  return [
+    {
+      bundleId: bundleId,
+      quantity: getBundleQuantity(checkoutBundles),
+    },
+  ];
 };

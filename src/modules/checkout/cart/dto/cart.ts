@@ -11,3 +11,17 @@ export class DeleteBundlesDto {
   @ArrayMinSize(1)
   checkoutBundleIds: string[];
 }
+
+export class ReplaceBundleDto {
+  @ApiProperty()
+  @IsString()
+  userEmail: string;
+
+  @ApiProperty()
+  @IsString()
+  checkoutBundleId: string;
+
+  @ApiProperty()
+  @IsString()
+  newBundleId: string;
+}

@@ -33,3 +33,19 @@ export class CheckoutIdError extends Error {
     this.userEmail = userEmail;
   }
 }
+
+export class SelectBundleError extends Error {
+  userEmail: string;
+  constructor() {
+    super('Some of checkout bundles provided are all ready selected');
+    this.name = 'SelectBundleError';
+  }
+}
+
+export class UnSelectBundleError extends Error {
+  userEmail: string;
+  constructor() {
+    super('Some of checkout bundles provided are all ready un selected');
+    this.name = 'UnSelectBundleError';
+  }
+}
