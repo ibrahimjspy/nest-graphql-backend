@@ -15,6 +15,7 @@ import {
 import { SaleorCheckoutService } from 'src/modules/checkout/services/Checkout.saleor';
 import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
 import { ProductService } from 'src/modules/product/Product.service';
+import { CartValidationService } from '../Validation.service';
 
 @Injectable()
 export class SaleorCartService {
@@ -23,6 +24,7 @@ export class SaleorCartService {
   constructor(
     private marketplaceService: MarketplaceCartService,
     private saleorCheckoutService: SaleorCheckoutService,
+    private cartValidationService: CartValidationService,
     private productService: ProductService,
   ) {}
 
@@ -127,17 +129,25 @@ export class SaleorCartService {
     );
     return response;
   }
+
   public async updateBundleLines(
-    userEmail: string,
-    checkoutBundleLines: CheckoutLinesInterface,
+    checkoutId: string,
+    checkoutBundles,
+    updatedCheckoutBundles: CheckoutLinesInterface,
     token: string,
   ) {
-    const marketplaceCheckout =
-      await this.marketplaceService.getAllCheckoutBundles({ userEmail, token });
-    const checkoutId = marketplaceCheckout['data']['checkoutId'];
+    if (
+      !(await this.cartValidationService.validateUnSelectBundles(
+        checkoutBundles,
+        false,
+      ))
+    ) {
+      return;
+    }
+
     const checkoutLines = getUpdateCartBundleLines(
-      marketplaceCheckout['data']['checkoutBundles'],
-      checkoutBundleLines,
+      checkoutBundles,
+      updatedCheckoutBundles,
     );
     return await this.updateLines(checkoutId, checkoutLines, token);
   }
