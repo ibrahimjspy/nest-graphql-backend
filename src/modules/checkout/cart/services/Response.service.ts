@@ -5,7 +5,10 @@ import {
   prepareFailedResponse,
   prepareSuccessResponse,
 } from 'src/core/utils/response';
-import { responseStatusValidate } from '../Cart.utils';
+import {
+  replaceBundleStatusValidate,
+  responseStatusValidate,
+} from './Response.utils';
 
 @Injectable()
 export class CartResponseService {
@@ -179,6 +182,49 @@ export class CartResponseService {
         );
       }
       return prepareFailedResponse('updating cart bundles state failed', 400);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async replaceCheckoutBundle(
+    deletePreviousBundle,
+    createNewBundle,
+    { checkoutBundlesData, userEmail, checkoutId, newBundleId },
+    token: string,
+  ) {
+    try {
+      const status = replaceBundleStatusValidate(
+        deletePreviousBundle.value,
+        createNewBundle.value,
+      );
+      const createBundle = createNewBundle.value.data;
+      if (status == 'SUCCESS') {
+        return prepareSuccessResponse(
+          { createBundle },
+          'checkout bundle is replaced',
+          201,
+        );
+      }
+      if (status == 'PREVIOUS_BUNDLE_DELETION_FAILED') {
+        await this.cartRollbackService.replaceBundleDelete(
+          createBundle,
+          newBundleId,
+          token,
+        );
+        return prepareFailedResponse('deleting old bundle failed', 400);
+      }
+      if (status == 'NEW_BUNDLE_CREATION_FAILED') {
+        await this.cartRollbackService.replaceBundleCreate(
+          userEmail,
+          checkoutId,
+          checkoutBundlesData,
+          token,
+        );
+        return prepareFailedResponse('creating new bundle failed', 400);
+      }
+      return prepareFailedResponse('replacing bundle failed', 400);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

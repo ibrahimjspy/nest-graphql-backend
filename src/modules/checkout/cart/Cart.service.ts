@@ -9,9 +9,10 @@ import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
 import { UpdateBundleStateDto } from '../dto/add-bundle.dto';
 import { SaleorCartService } from './services/saleor/Cart.saleor.service';
 import { MarketplaceCartService } from './services/marketplace/Cart.marketplace.service';
-import { getBundlesFromCheckout } from './Cart.utils';
+import { getBundlesFromCheckout, getNewBundlesToAdd } from './Cart.utils';
 import { CartResponseService } from './services/Response.service';
 import { CheckoutIdError } from '../Checkout.errors';
+import { ReplaceBundleDto } from './dto/cart';
 
 @Injectable()
 export class CartService {
@@ -216,6 +217,41 @@ export class CartService {
         saleor,
         marketplace,
         updateBundleState,
+        token,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      if (error instanceof CheckoutIdError) {
+        return prepareFailedResponse(error.message);
+      }
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description -- this method replaces existing checkout bundle with another bundle
+   */
+  public async replaceCheckoutBundle(
+    replaceBundleData: ReplaceBundleDto,
+    token: string,
+  ) {
+    try {
+      const { checkoutBundleId, newBundleId, userEmail } = replaceBundleData;
+      const { checkoutId, checkoutBundlesData } =
+        await this.marketplaceService.getCheckoutBundlesByIds(
+          userEmail,
+          [checkoutBundleId],
+          token,
+        );
+      const newBundles = getNewBundlesToAdd(checkoutBundlesData, newBundleId);
+      const [deletePreviousBundle, createNewBundle] = await Promise.allSettled([
+        this.deleteBundlesFromCart(userEmail, [checkoutBundleId], token),
+        this.addBundlesToCart(userEmail, checkoutId, newBundles, token),
+      ]);
+      return await this.cartResponseBuilder.replaceCheckoutBundle(
+        deletePreviousBundle,
+        createNewBundle,
+        { checkoutBundlesData, userEmail, checkoutId, newBundleId },
         token,
       );
     } catch (error) {
