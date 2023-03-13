@@ -5,11 +5,15 @@ import { IsAuthenticated } from 'src/core/utils/decorators';
 import { makeResponse } from 'src/core/utils/response';
 import { UserIdDto } from '../dto';
 import { PaymentCreateDto, PaymentPreAuthDto } from './dto/paymentCreate';
+import StripeService from 'src/external/services/stripe';
 
 @ApiTags('checkout/payment')
 @Controller('')
 export class PaymentController {
-  constructor(private readonly appService: PaymentService) {}
+  constructor(
+    private readonly appService: PaymentService,
+    private stripeService: StripeService,
+  ) {}
 
   @Post('api/v1/checkout/payment')
   @ApiBearerAuth('JWT-auth')
@@ -64,5 +68,13 @@ export class PaymentController {
       res,
       await this.appService.getPaymentMethodsList(userEmail),
     );
+  }
+
+  @Get('api/v1/checkout/payment/methods/test')
+  @ApiOperation({
+    summary: 'creates a payment method for testing',
+  })
+  async createPaymentMethod(@Res() res): Promise<object> {
+    return makeResponse(res, await this.stripeService.createPaymentMethods());
   }
 }

@@ -18,6 +18,8 @@ import SqsService from 'src/external/endpoints/sqsMessage';
 import { NoPaymentIntentError } from './Checkout.errors';
 import { CartService } from './cart/Cart.service';
 import { MarketplaceCartService } from './cart/services/marketplace/Cart.marketplace.service';
+import { SaleorCheckoutService } from './services/Checkout.saleor';
+import { getPaymentIntentFromMetadata } from './payment/Payment.utils';
 
 @Injectable()
 export class CheckoutService {
@@ -26,6 +28,7 @@ export class CheckoutService {
     private sqsService: SqsService,
     private cartService: CartService,
     private marketplaceCartService: MarketplaceCartService,
+    private saleorCheckoutService: SaleorCheckoutService,
   ) {
     return;
   }
@@ -54,8 +57,6 @@ export class CheckoutService {
         orderId: orderDetails['id'],
       };
       /* Sending a message to the SQS queue. */
-      this.sqsService.send(orderObject);
-
       return orderObject;
     } catch (error) {
       this.logger.error(error);
@@ -77,12 +78,14 @@ export class CheckoutService {
     checkoutId: string,
   ): Promise<object> {
     try {
-      const paymentIntent = await CheckoutHandlers.getPaymentIntentHandler(
+      const checkoutData = await this.saleorCheckoutService.getCheckout(
         checkoutId,
         token,
       );
-      if (!paymentIntent['intentId'])
-        throw new NoPaymentIntentError(checkoutId);
+      const paymentIntent = getPaymentIntentFromMetadata(
+        checkoutData['metadata'],
+      );
+      if (!paymentIntent) throw new NoPaymentIntentError(checkoutId);
       const createOrder = await orderCreateFromCheckoutHandler(
         checkoutId,
         token,

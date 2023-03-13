@@ -7,6 +7,7 @@ import { ShippingModule } from './shipping/Shipping.module';
 import { PaymentModule } from './payment/Payment.module';
 import { CartModule } from './cart/Cart.module';
 import { MarketplaceCartService } from './cart/services/marketplace/Cart.marketplace.service';
+import { SaleorCheckoutService } from './services/Checkout.saleor';
 
 @Module({
   imports: [ShippingModule, PaymentModule, CartModule],
@@ -16,6 +17,7 @@ import { MarketplaceCartService } from './cart/services/marketplace/Cart.marketp
     StripeService,
     SqsService,
     MarketplaceCartService,
+    SaleorCheckoutService,
   ],
   exports: [CheckoutService],
 })
