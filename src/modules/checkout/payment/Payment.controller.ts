@@ -1,15 +1,28 @@
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PaymentService } from './Payment.service';
-import { Body, Controller, Get, Param, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Logger,
+  Param,
+  Post,
+  Res,
+} from '@nestjs/common';
 import { IsAuthenticated } from 'src/core/utils/decorators';
 import { makeResponse } from 'src/core/utils/response';
 import { UserIdDto } from '../dto';
 import { PaymentCreateDto, PaymentPreAuthDto } from './dto/paymentCreate';
+import StripeService from 'src/external/services/stripe';
 
 @ApiTags('checkout/payment')
 @Controller('')
 export class PaymentController {
-  constructor(private readonly appService: PaymentService) {}
+  private readonly logger = new Logger(PaymentController.name);
+  constructor(
+    private readonly appService: PaymentService,
+    private stripeService: StripeService,
+  ) {}
 
   @Post('api/v1/checkout/payment')
   @ApiBearerAuth('JWT-auth')
