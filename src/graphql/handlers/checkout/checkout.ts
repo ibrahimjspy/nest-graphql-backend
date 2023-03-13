@@ -19,7 +19,6 @@ import { checkoutDeliveryMethodUpdateMutation } from '../../mutations/checkout/c
 import { checkoutShippingAddressUpdateMutation } from '../../mutations/checkout/checkoutShippingAddressUpdate';
 import { disableUserCartSessionMutation } from '../../mutations/checkout/disableCheckoutSession';
 import { updateCartBundlesCheckoutIdMutation } from '../../mutations/checkout/updateCartBundlesCheckoutId';
-import { savePaymentInfoMutation } from '../../mutations/checkout/savePaymentInfo';
 import { availablePaymentGatewaysQuery } from '../../queries/checkout/availablePaymentGateways';
 import { bundleStatusQuery } from '../../queries/checkout/bundleStatus';
 import { cartAmountQuery } from '../../queries/checkout/cartAmount';
@@ -35,6 +34,8 @@ import { addCheckoutBundleQuery } from '../../queries/checkout/addCheckoutBundle
 import { checkoutQuery } from 'src/graphql/queries/checkout/checkout';
 import { AddressDto } from 'src/modules/checkout/shipping/dto/shippingAddress';
 import { validateCheckoutQuery } from 'src/graphql/queries/checkout/validateCheckout';
+import { CheckoutBundlesDto } from 'src/graphql/types/checkout.type';
+import { getCheckoutMetadataQuery } from 'src/graphql/queries/checkout/metadata';
 
 export const marketplaceCheckoutHandler = async (
   id: string,
@@ -51,29 +52,27 @@ export const marketplaceCheckoutHandler = async (
 export const getCheckoutBundlesHandler = async ({
   userEmail,
   token,
+  checkoutId,
   productDetails = true,
   throwException = true,
   isSelected = true,
-}): Promise<object> => {
-  const response = await graphqlResultErrorHandler(
+}: CheckoutBundlesDto): Promise<object> => {
+  let response = {};
+  if (checkoutId) {
+    response = await graphqlResultErrorHandler(
+      await graphqlCall(
+        checkoutBundlesByIdQuery(checkoutId, isSelected),
+        token,
+      ),
+      throwException,
+    );
+    return response['checkoutBundles'];
+  }
+  response = await graphqlResultErrorHandler(
     await graphqlCall(
       getCheckoutBundleQuery(userEmail, isSelected, productDetails),
       token,
     ),
-    throwException,
-  );
-
-  return response['checkoutBundles'];
-};
-
-export const getCheckoutBundlesByCheckoutIdHandler = async (
-  checkoutId: string,
-  token: string,
-  isSelected,
-  throwException = false,
-): Promise<object> => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(checkoutBundlesByIdQuery(checkoutId, isSelected), token),
     throwException,
   );
 
@@ -304,30 +303,6 @@ export const getTotalAmountByCheckoutIdHandler = async (
   return response['getUserCartAmount'];
 };
 
-export const savePaymentInfoHandler = async ({
-  token,
-  checkoutId,
-  userEmail,
-  amount,
-  paymentStatus,
-  intentId,
-}) => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(
-      savePaymentInfoMutation({
-        checkoutId,
-        userEmail,
-        amount,
-        paymentStatus,
-        intentId,
-      }),
-      token,
-    ),
-  );
-
-  return response;
-};
-
 export const getCheckoutHandler = async (
   checkoutId: string,
   token: string,
@@ -347,4 +322,14 @@ export const validateCheckoutHandler = async (
     await graphqlCall(validateCheckoutQuery(checkoutId), token),
   );
   return response['validateCartAmounts'];
+};
+
+export const getCheckoutMetadataHandler = async (
+  checkoutId: string,
+  token: string,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(getCheckoutMetadataQuery(checkoutId), token),
+  );
+  return response['checkout'];
 };

@@ -49,3 +49,13 @@ export class UnSelectBundleError extends Error {
     this.name = 'UnSelectBundleError';
   }
 }
+
+export class MinimumOrderAmountError extends Error {
+  userEmail: string;
+  constructor() {
+    super(
+      'Checkout can not be completed due to checkout total amount being lower than minimum amount needed to place order',
+    );
+    this.name = 'MinimumOrderAmountError';
+  }
+}

@@ -9,24 +9,27 @@ import {
 import * as CheckoutHandlers from 'src/graphql/handlers/checkout/checkout';
 import {
   createCheckoutHandler,
-  getCheckoutBundlesByCheckoutIdHandler,
   orderCreateFromCheckoutHandler,
 } from 'src/graphql/handlers/checkout/checkout';
 
 import { getLinesFromBundles, validateBundlesLength } from './Checkout.utils';
 import SqsService from 'src/external/endpoints/sqsMessage';
-import { NoPaymentIntentError } from './Checkout.errors';
-import { CartService } from './cart/Cart.service';
+import {
+  MinimumOrderAmountError,
+  NoPaymentIntentError,
+} from './Checkout.errors';
 import { MarketplaceCartService } from './cart/services/marketplace/Cart.marketplace.service';
 import { SaleorCheckoutService } from './services/Checkout.saleor';
-import { getPaymentIntentFromMetadata } from './payment/Payment.utils';
+import { CheckoutValidationService } from './services/Checkout.validation';
+import { PaymentService } from './payment/Payment.service';
 
 @Injectable()
 export class CheckoutService {
   private readonly logger = new Logger(CheckoutService.name);
   constructor(
     private sqsService: SqsService,
-    private cartService: CartService,
+    private paymentService: PaymentService,
+    private checkoutValidationService: CheckoutValidationService,
     private marketplaceCartService: MarketplaceCartService,
     private saleorCheckoutService: SaleorCheckoutService,
   ) {
@@ -40,19 +43,12 @@ export class CheckoutService {
    * @step - uses transformed order to place it against OS
    */
   protected async triggerWebhookForOS(
-    checkoutId: string,
+    checkoutBundles: string,
     orderDetails: object,
-    token: string,
-    isSelectedBundle = true,
   ): Promise<object> {
     try {
-      const checkoutData = await getCheckoutBundlesByCheckoutIdHandler(
-        checkoutId,
-        token,
-        isSelectedBundle,
-      );
       const orderObject = {
-        checkoutBundles: checkoutData['checkoutBundles'],
+        checkoutBundles: checkoutBundles,
         shippingAddress: orderDetails['shippingAddress'],
         orderId: orderDetails['id'],
       };
@@ -79,28 +75,47 @@ export class CheckoutService {
     checkoutId: string,
   ): Promise<object> {
     try {
-      const checkoutData = await this.saleorCheckoutService.getCheckout(
-        checkoutId,
-        token,
-      );
-      const paymentIntent = getPaymentIntentFromMetadata(
-        checkoutData['metadata'],
-      );
+      const [isValid, checkoutBundles, paymentIntent] = await Promise.all([
+        await this.checkoutValidationService.validateCheckout(
+          checkoutId,
+          token,
+        ),
+        await this.marketplaceCartService.getAllCheckoutBundles({
+          checkoutId,
+          token,
+          isSelected: true,
+        }),
+        await this.paymentService.getPaymentIntentFromMetadata(
+          checkoutId,
+          token,
+        ),
+      ]);
+
+      if (!isValid) throw new MinimumOrderAmountError();
       if (!paymentIntent) throw new NoPaymentIntentError(checkoutId);
+
       const createOrder = await orderCreateFromCheckoutHandler(
         checkoutId,
         token,
       );
-      await this.triggerWebhookForOS(checkoutId, createOrder['order'], token);
-      const disableCheckout = await CheckoutHandlers.disableCheckoutSession(
-        checkoutId,
-        token,
+      await Promise.all([
+        await this.triggerWebhookForOS(
+          checkoutBundles['checkoutBundles'],
+          createOrder['order'],
+        ),
+        await CheckoutHandlers.disableCheckoutSession(checkoutId, token),
+      ]);
+      return prepareSuccessResponse(
+        { createOrder },
+        'order created against checkout',
+        201,
       );
-
-      return prepareSuccessResponse({ createOrder, disableCheckout }, '', 201);
     } catch (error) {
       this.logger.error(error);
-      if (error instanceof NoPaymentIntentError) {
+      if (
+        error instanceof NoPaymentIntentError ||
+        error instanceof MinimumOrderAmountError
+      ) {
         return prepareFailedResponse(error.message);
       } else {
         return graphqlExceptionHandler(error);
