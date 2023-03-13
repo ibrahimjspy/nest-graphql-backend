@@ -36,4 +36,11 @@ export class CartValidationService {
     });
     return isValid;
   }
+
+  /**
+   * @description -- it for validating array length
+   */
+  public isEmptyList(saleorLines) {
+    return saleorLines.length;
+  }
 }

@@ -115,6 +115,7 @@ export class MarketplaceCartService {
     userEmail: string,
     checkoutBundleIds: string[],
     token: string,
+    throwException = true,
   ): Promise<object> {
     try {
       return await deleteCheckoutBundlesHandler(
@@ -125,6 +126,9 @@ export class MarketplaceCartService {
       );
     } catch (error) {
       this.logger.error(error);
+      if (throwException) {
+        throw error;
+      }
       return graphqlExceptionHandler(error);
     }
   }

@@ -5,8 +5,10 @@ import {
   getDeleteBundlesLines,
   getLinesFromBundles,
   getNewBundlesToAdd,
+  getSelectedCheckoutBundles,
   getTargetBundleByBundleId,
   getTargetBundleByCheckoutBundleId,
+  getUnSelectedCheckoutBundles,
   getUpdateCartBundleLines,
   getVariantIds,
   validateBundlesLength,
@@ -35,6 +37,7 @@ describe('Cart utility tests', () => {
   const checkoutBundleList: any = [
     {
       checkoutBundleId: 'test',
+      isSelected: false,
       bundle: {
         id: 'test',
         productVariants: [{ productVariant: { id: 'test' }, quantity: 2 }],
@@ -158,6 +161,28 @@ describe('Cart utility tests', () => {
       console.log(newBundles);
       expect(newBundles).toBeDefined();
       expect(newBundles).toStrictEqual([{ bundleId: 'bundleId', quantity: 3 }]);
+    });
+
+    it('testing whether selected bundles are getting parsed from all checkout bundles', async () => {
+      const selectedBundles = getSelectedCheckoutBundles(checkoutBundleList);
+      console.log(selectedBundles);
+      expect(selectedBundles).toBeDefined();
+      expect(selectedBundles).toStrictEqual([]);
+    });
+
+    it('testing whether un selected bundles are getting parsed from all checkout bundles', async () => {
+      const unSelectedBundles =
+        getUnSelectedCheckoutBundles(checkoutBundleList);
+      console.log(unSelectedBundles);
+      expect(unSelectedBundles).toBeDefined();
+      expect(unSelectedBundles).toStrictEqual([
+        {
+          checkoutBundleId: 'test',
+          isSelected: false,
+          bundle: { id: 'test', productVariants: [Array] },
+          quantity: 3,
+        },
+      ]);
     });
   });
 });
