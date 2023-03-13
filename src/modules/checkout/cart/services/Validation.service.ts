@@ -36,4 +36,11 @@ export class CartValidationService {
     });
     return isValid;
   }
+
+  /**
+   * @description -- this method saleor lines quantity
+   */
+  public validateSaleorLines(saleorLines) {
+    return saleorLines.length;
+  }
 }

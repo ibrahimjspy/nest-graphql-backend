@@ -13,6 +13,8 @@ import {
   getBundlesFromCheckout,
   getCheckoutBundleIds,
   getNewBundlesToAdd,
+  getSelectedCheckoutBundles,
+  getUnSelectedCheckoutBundles,
 } from './Cart.utils';
 import { CartResponseService } from './services/Response.service';
 import {
@@ -185,13 +187,10 @@ export class CartService {
           checkoutBundleIds,
           token,
         );
-      await this.cartValidationService.validateUnSelectBundles(
-        checkoutBundlesData,
-      );
       const [saleor, marketplace] = await Promise.allSettled([
         this.saleorService.removeBundleLines(
           checkoutId,
-          checkoutBundlesData,
+          getSelectedCheckoutBundles(checkoutBundlesData),
           token,
         ),
         updateCheckoutBundleState(action, updateBundleState, token),
@@ -231,10 +230,9 @@ export class CartService {
           checkoutBundleIds,
           token,
         );
-      await this.cartValidationService.validateSelectBundles(
-        checkoutBundlesData,
+      const bundlesList = getBundlesFromCheckout(
+        getUnSelectedCheckoutBundles(checkoutBundlesData),
       );
-      const bundlesList = getBundlesFromCheckout(checkoutBundlesData);
       const [saleor, marketplace] = await Promise.allSettled([
         this.saleorService.addBundleLines(
           userEmail,

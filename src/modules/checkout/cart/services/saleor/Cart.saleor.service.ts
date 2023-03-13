@@ -113,6 +113,9 @@ export class SaleorCartService {
       bundlesData['data'],
       checkoutBundleLines,
     );
+    if (!this.cartValidationService.validateSaleorLines(saleorLines)) {
+      return;
+    }
     if (!checkoutId) {
       return await this.createCheckoutFromBundleLines(
         userEmail,
@@ -165,6 +168,9 @@ export class SaleorCartService {
       saleorCheckout['lines'],
       checkoutBundlesData,
     );
+    if (!this.cartValidationService.validateSaleorLines(updatedSaleorLines)) {
+      return;
+    }
     return this.updateLines(checkoutId, updatedSaleorLines, token);
   }
 }

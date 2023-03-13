@@ -217,3 +217,21 @@ export const getNewBundlesToAdd = (checkoutBundles, bundleId) => {
     },
   ];
 };
+
+/**
+ * @description - this builds returns checkout bundles which are selected from checkout bundles object
+ */
+export const getSelectedCheckoutBundles = (checkoutBundles) => {
+  return checkoutBundles.filter(
+    (checkoutBundle) => checkoutBundle.isSelected == true,
+  );
+};
+
+/**
+ * @description - this builds returns checkout bundles which are un selected from checkout bundles object
+ */
+export const getUnSelectedCheckoutBundles = (checkoutBundles) => {
+  return checkoutBundles.filter(
+    (checkoutBundle) => checkoutBundle.isSelected == false,
+  );
+};
