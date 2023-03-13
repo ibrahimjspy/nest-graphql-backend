@@ -78,16 +78,4 @@ export class PaymentController {
       await this.appService.getPaymentMethodsList(userEmail),
     );
   }
-
-  @Post('api/v1/checkout/payment/methods/test')
-  @ApiOperation({
-    summary: 'creates a payment method for testing',
-  })
-  async createPaymentMethod(@Res() res): Promise<object> {
-    try {
-      return makeResponse(res, await this.stripeService.createPaymentMethods());
-    } catch (err) {
-      this.logger.error(err);
-    }
-  }
 }
