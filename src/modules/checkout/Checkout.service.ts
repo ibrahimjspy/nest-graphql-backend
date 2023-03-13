@@ -56,6 +56,7 @@ export class CheckoutService {
         shippingAddress: orderDetails['shippingAddress'],
         orderId: orderDetails['id'],
       };
+      await this.sqsService.send(orderObject);
       /* Sending a message to the SQS queue. */
       return orderObject;
     } catch (error) {
