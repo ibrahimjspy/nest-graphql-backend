@@ -26,6 +26,7 @@ import { b2cDto, shopIdDTO } from '../shop/dto/shop';
 import { AddOrderToShopDto } from './dto/addOrderToShop';
 import { StoreOrderAssigneeDto } from './dto/storeOrderAssignee';
 import UpsService from 'src/external/services/Ups.service';
+import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 
 @ApiTags('orders')
 @Controller('')
@@ -396,6 +397,19 @@ export class OrdersController {
     return makeResponse(
       res,
       await this.upsService.generateShippingLabel(shippingRequestBody),
+    );
+  }
+
+  @Get('api/v1/orders/events')
+  @ApiBearerAuth('JWT-auth')
+  async getOrderEvents(
+    @Res() res,
+    @Query() filter: PaginationDto,
+    @IsAuthenticated('authorization') token: string,
+  ) {
+    return makeResponse(
+      res,
+      await this.appService.getOrderEvents(filter, token),
     );
   }
 }

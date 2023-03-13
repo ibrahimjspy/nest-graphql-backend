@@ -14,6 +14,7 @@ import {
   orderAmountRefundHandler,
   orderCancelHandler,
   orderDetailsHandler,
+  orderEventsHandler,
   orderFulfillHandler,
   orderFulfillmentCancelHandler,
   orderFulfillmentRefundHandler,
@@ -64,6 +65,7 @@ import { OrderAmountRefundDto, OrderFulfillmentRefundDto } from './dto/refund';
 import { AddOrderToShopDto } from './dto/addOrderToShop';
 import { StoreOrderAssigneeDto } from './dto/storeOrderAssignee';
 import { OrderMetadataDto } from './dto/metadata';
+import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 @Injectable()
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
@@ -522,6 +524,19 @@ export class OrdersService {
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
+    }
+  }
+
+  public async getOrderEvents(
+    filter: PaginationDto,
+    token: string,
+  ): Promise<object> {
+    try {
+      const response = await orderEventsHandler(filter, token);
+      return prepareSuccessResponse(response);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 }
