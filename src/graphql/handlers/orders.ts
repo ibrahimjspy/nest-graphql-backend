@@ -47,6 +47,8 @@ import { getReturnsListQuery } from '../queries/orders/returnsList';
 import { OrderMetadataDto } from 'src/modules/orders/dto/metadata';
 import { returnOrderDetailsQuery } from '../queries/orders/returnedOrderDetails';
 import { orderAmountRefundMutation } from '../mutations/order/refundOrderAmount';
+import { getOrderEventsQuery } from '../queries/orders/orderEvents';
+import { PaginationDto } from '../dto/pagination.dto';
 
 export const dashboardByIdHandler = async (
   id: string,
@@ -440,4 +442,14 @@ export const returnOrderDetailsHandler = async (
     throw new RecordNotFound('Order details');
   }
   return response['order'];
+};
+
+export const orderEventsHandler = async (
+  filter: PaginationDto,
+  token: string,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(getOrderEventsQuery(filter), token),
+  );
+  return response['homepageEvents'];
 };
