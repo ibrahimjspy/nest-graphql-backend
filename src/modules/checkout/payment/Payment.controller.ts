@@ -79,7 +79,7 @@ export class PaymentController {
     );
   }
 
-  @Get('api/v1/checkout/payment/methods/test')
+  @Post('api/v1/checkout/payment/methods/test')
   @ApiOperation({
     summary: 'creates a payment method for testing',
   })
