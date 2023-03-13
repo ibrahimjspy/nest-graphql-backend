@@ -43,7 +43,7 @@ export class CartRollbackService {
       );
 
       this.logger.warn(
-        `Rolling back marketplace bundles created due to failure in Saleor against user :: ${userEmail}`,
+        `Rolling back marketplace bundles created due to failure in Saleor `,
       );
       return await this.marketplaceCartService.deleteBundles(
         userEmail,
@@ -101,7 +101,7 @@ export class CartRollbackService {
     try {
       const bundlesList = getBundlesFromCheckout(checkoutBundlesData);
       this.logger.warn(
-        `Rolling back Marketplace bundles deleted due to failure in Saleor against user :: ${userEmail}`,
+        `Rolling back Marketplace bundles deleted due to failure in Saleor `,
       );
       return await this.marketplaceCartService.addBundles(
         userEmail,
@@ -126,7 +126,7 @@ export class CartRollbackService {
     try {
       const addBundles = getBundlesFromCheckout(checkoutBundles);
       this.logger.warn(
-        `Rolling back Saleor lines deleted due to failure in Marketplace against user :: ${userEmail}`,
+        `Rolling back Saleor lines deleted due to failure in Marketplace`,
       );
       return await this.saleorCartService.addBundleLines(
         userEmail,
@@ -152,7 +152,7 @@ export class CartRollbackService {
       const action = true;
       const bundlesList: any = { checkoutBundleIds, userEmail };
       this.logger.warn(
-        `Rolling back Marketplace bundles deleted due to failure in Saleor against user :: ${userEmail}`,
+        `Rolling back Marketplace bundles deleted due to failure in Saleor`,
       );
       return await this.marketplaceCartService.updateCheckoutBundleState(
         action,
@@ -177,7 +177,7 @@ export class CartRollbackService {
       const action = false;
       const bundlesList: any = { checkoutBundleIds, userEmail };
       this.logger.warn(
-        `Rolling back Marketplace bundles state updated due to failure in Saleor against user :: ${userEmail}`,
+        `Rolling back Marketplace bundles state updated due to failure in Saleor`,
       );
       return await this.marketplaceCartService.updateCheckoutBundleState(
         action,
@@ -206,7 +206,7 @@ export class CartRollbackService {
       ]);
       const checkoutBundleId = checkoutBundle[0]?.checkoutBundleId;
       this.logger.warn(
-        `Rolling back new bundle created due to failure in delete old bundle against user :: ${userEmail}`,
+        `Rolling back new bundle created due to failure in delete old bundle`,
       );
       return await this.cartService.deleteBundlesFromCart(
         userEmail,
@@ -231,7 +231,7 @@ export class CartRollbackService {
     try {
       const addBundles = getBundlesFromCheckout(checkoutBundle);
       this.logger.warn(
-        `Rolling back old bundle deleted due to failure in create new bundle against user :: ${userEmail}`,
+        `Rolling back old bundle deleted due to failure in create new bundle against checkout :: ${checkoutId}`,
       );
       return await this.cartService.addBundlesToCart(
         userEmail,

@@ -38,9 +38,9 @@ export class CartValidationService {
   }
 
   /**
-   * @description -- this method saleor lines quantity
+   * @description -- it for validating array length
    */
-  public validateSaleorLines(saleorLines) {
+  public isEmptyList(saleorLines) {
     return saleorLines.length;
   }
 }

@@ -113,7 +113,7 @@ export class SaleorCartService {
       bundlesData['data'],
       checkoutBundleLines,
     );
-    if (!this.cartValidationService.validateSaleorLines(saleorLines)) {
+    if (!this.cartValidationService.isEmptyList(saleorLines)) {
       return;
     }
     if (!checkoutId) {
@@ -168,7 +168,7 @@ export class SaleorCartService {
       saleorCheckout['lines'],
       checkoutBundlesData,
     );
-    if (!this.cartValidationService.validateSaleorLines(updatedSaleorLines)) {
+    if (!this.cartValidationService.isEmptyList(updatedSaleorLines)) {
       return;
     }
     return this.updateLines(checkoutId, updatedSaleorLines, token);
