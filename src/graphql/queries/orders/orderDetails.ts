@@ -191,6 +191,7 @@ const b2cQuery = (id: string): string => {
         id
         status
         number
+        paymentStatus
         shippingAddress {
           id
           phone

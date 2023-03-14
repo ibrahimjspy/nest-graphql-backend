@@ -9,12 +9,13 @@ import { getShippingVouchersQuery } from 'src/graphql/queries/checkout/shipping/
 
 export const getCheckoutShippingMethodsHandler = async (
   checkoutId: string,
+  token: string,
   isB2c = false,
 ) => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
       getCheckoutShippingMethodsQuery(checkoutId, isB2c),
-      '',
+      token,
       isB2c,
     ),
   );

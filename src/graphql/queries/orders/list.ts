@@ -27,6 +27,10 @@ const federationQuery = (filter: OrdersListDTO): string => {
         }
         edges {
           node {
+            metadata {
+              key
+              value
+            }
             id
             token
             number
