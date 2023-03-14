@@ -207,10 +207,7 @@ export const getOrdersByShopId = (
     );
 
     //add additional information to object
-    shopOrder['shippingMethodId'] = getOrderShippingMethods(
-      checkoutData['selectedMethods'],
-      shopId,
-    );
+    shopOrder['shippingMethodId'] = orderInfo?.deliveryMethod.id;
     shopOrder['shopId'] = checkoutBundle?.bundle?.shop?.id;
     shopOrder['orderId'] = orderInfo['id'];
 
@@ -247,7 +244,7 @@ const getOrdersLineIds = (bundleVariants, orderInfo: object) => {
  * @params selectedMethods : shipping methods of all shops : object
  * @params shopId : string
  */
-const getOrderShippingMethods = (selectedMethods, shopId: string) => {
+export const getOrderShippingMethods = (selectedMethods, shopId: string) => {
   return (
     selectedMethods.find((shippingMethod) => shippingMethod.shop.id === shopId)
       ?.method.shippingMethodTypeId ||

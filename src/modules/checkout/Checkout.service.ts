@@ -14,6 +14,8 @@ import { MarketplaceCartService } from './cart/services/marketplace/Cart.marketp
 import { PaymentService } from './payment/Payment.service';
 import { CreateCheckoutDto } from './dto/createCheckout';
 import { B2B_CHECKOUT_APP_TOKEN } from 'src/constants';
+import { getOrdersByShopId } from '../orders/Orders.utils';
+import { OrdersService } from '../orders/Orders.service';
 
 @Injectable()
 export class CheckoutService {
@@ -22,6 +24,7 @@ export class CheckoutService {
     private sqsService: SqsService,
     private paymentService: PaymentService,
     private marketplaceCartService: MarketplaceCartService,
+    private ordersService: OrdersService,
   ) {
     return;
   }
@@ -66,27 +69,31 @@ export class CheckoutService {
   ): Promise<object> {
     try {
       const [checkoutBundles, paymentIntent] = await Promise.all([
-        await this.marketplaceCartService.getAllCheckoutBundles({
+        this.marketplaceCartService.getAllCheckoutBundles({
           checkoutId,
           token,
           isSelected: true,
         }),
-        await this.paymentService.getPaymentIntentFromMetadata(
-          checkoutId,
-          token,
-        ),
+        this.paymentService.getPaymentIntentFromMetadata(checkoutId, token),
       ]);
       if (!paymentIntent) throw new NoPaymentIntentError(checkoutId);
       const createOrder = await orderCreateFromCheckoutHandler(
         checkoutId,
         B2B_CHECKOUT_APP_TOKEN,
       );
+      const ordersByShop = {
+        marketplaceOrders: getOrdersByShopId(
+          checkoutBundles['data'],
+          createOrder['order'],
+        ),
+      };
       await Promise.all([
-        await this.triggerWebhookForOS(
+        this.triggerWebhookForOS(
           checkoutBundles['data']['checkoutBundles'],
           createOrder['order'],
         ),
-        await CheckoutHandlers.disableCheckoutSession(checkoutId, token),
+        this.ordersService.addOrderToShop(ordersByShop, token),
+        CheckoutHandlers.disableCheckoutSession(checkoutId, token),
       ]);
       return prepareSuccessResponse(
         { createOrder },

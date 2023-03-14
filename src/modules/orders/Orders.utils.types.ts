@@ -9,6 +9,10 @@ export interface orderListInterface {
 
 export interface orderSaleorInterface {
   id: string;
+  deliveryMethod: {
+    id: string;
+    name: string;
+  };
   lines: {
     id: string;
     variant: {

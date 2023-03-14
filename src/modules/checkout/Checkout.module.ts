@@ -9,6 +9,7 @@ import { CartModule } from './cart/Cart.module';
 import { MarketplaceCartService } from './cart/services/marketplace/Cart.marketplace.service';
 import { SaleorCheckoutService } from './services/Checkout.saleor';
 import { CheckoutValidationService } from './services/Checkout.validation';
+import { OrdersService } from '../orders/Orders.service';
 
 @Module({
   imports: [ShippingModule, PaymentModule, CartModule],
@@ -20,6 +21,7 @@ import { CheckoutValidationService } from './services/Checkout.validation';
     MarketplaceCartService,
     SaleorCheckoutService,
     CheckoutValidationService,
+    OrdersService,
   ],
   exports: [CheckoutService],
 })
