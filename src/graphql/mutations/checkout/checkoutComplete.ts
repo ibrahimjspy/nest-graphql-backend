@@ -9,6 +9,18 @@ export const orderCreateFromCheckoutMutation = (checkoutId: string) => {
       ) {
         order {
           id
+          deliveryMethod {
+            ... on ShippingMethod {
+              id
+              name
+            }
+          }
+          lines {
+            id
+            variant {
+              id
+            }
+          }
           shippingAddress {
             firstName
             lastName

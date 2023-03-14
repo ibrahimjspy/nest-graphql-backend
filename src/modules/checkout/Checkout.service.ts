@@ -14,6 +14,8 @@ import { MarketplaceCartService } from './cart/services/marketplace/Cart.marketp
 import { PaymentService } from './payment/Payment.service';
 import { CreateCheckoutDto } from './dto/createCheckout';
 import { B2B_CHECKOUT_APP_TOKEN } from 'src/constants';
+import { getOrdersByShopId } from '../orders/Orders.utils';
+import { OrdersService } from '../orders/Orders.service';
 
 @Injectable()
 export class CheckoutService {
@@ -22,6 +24,7 @@ export class CheckoutService {
     private sqsService: SqsService,
     private paymentService: PaymentService,
     private marketplaceCartService: MarketplaceCartService,
+    private ordersService: OrdersService,
   ) {
     return;
   }
@@ -81,11 +84,18 @@ export class CheckoutService {
         checkoutId,
         B2B_CHECKOUT_APP_TOKEN,
       );
+      const marketplaceOrders = {
+        marketplaceOrders: getOrdersByShopId(
+          checkoutBundles['data'],
+          createOrder['order'],
+        ),
+      };
       await Promise.all([
         await this.triggerWebhookForOS(
           checkoutBundles['data']['checkoutBundles'],
           createOrder['order'],
         ),
+        await this.ordersService.addOrderToShop(marketplaceOrders, token),
         await CheckoutHandlers.disableCheckoutSession(checkoutId, token),
       ]);
       return prepareSuccessResponse(
