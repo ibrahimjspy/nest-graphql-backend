@@ -81,7 +81,7 @@ export class CheckoutService {
         checkoutId,
         B2B_CHECKOUT_APP_TOKEN,
       );
-      const marketplaceOrders = {
+      const ordersByShop = {
         marketplaceOrders: getOrdersByShopId(
           checkoutBundles['data'],
           createOrder['order'],
@@ -92,7 +92,7 @@ export class CheckoutService {
           checkoutBundles['data']['checkoutBundles'],
           createOrder['order'],
         ),
-        this.ordersService.addOrderToShop(marketplaceOrders, token),
+        this.ordersService.addOrderToShop(ordersByShop, token),
         CheckoutHandlers.disableCheckoutSession(checkoutId, token),
       ]);
       return prepareSuccessResponse(
