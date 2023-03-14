@@ -62,11 +62,16 @@ export class ShippingService {
    */
   public async getShippingMethods(
     filter: GetShippingMethodsDto,
+    token: string,
   ): Promise<object> {
     try {
       const isB2c = filter.isB2c;
       return prepareSuccessResponse(
-        await getCheckoutShippingMethodsHandler(filter.checkoutId, isB2c),
+        await getCheckoutShippingMethodsHandler(
+          filter.checkoutId,
+          token,
+          isB2c,
+        ),
       );
     } catch (error) {
       this.logger.error(error);

@@ -86,11 +86,17 @@ export class ShippingController {
   @ApiOperation({
     summary: 'returns shipping address against a checkout id',
   })
+  @ApiBearerAuth('JWT-auth')
   async getShippingMethods(
     @Res() res,
+    @Headers() headers,
     @Query() filter: GetShippingMethodsDto,
   ): Promise<object> {
-    return makeResponse(res, await this.appService.getShippingMethods(filter));
+    const Authorization: string = headers.authorization;
+    return makeResponse(
+      res,
+      await this.appService.getShippingMethods(filter, Authorization),
+    );
   }
 
   @Put('api/v1/checkout/shipping/methods/select')
