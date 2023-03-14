@@ -29,6 +29,22 @@ export class CheckoutService {
     return;
   }
 
+  public async getCheckoutSummary(checkoutId: string, token: string) {
+    try {
+      const [MarketplaceCheckoutSummary, SaleorCheckoutSummary] =
+        await Promise.all([
+          CheckoutHandlers.marketplaceCheckoutSummaryHandler(checkoutId, token),
+          CheckoutHandlers.saleorCheckoutSummaryHandler(checkoutId, token),
+        ]);
+      return prepareSuccessResponse({
+        MarketplaceCheckoutSummary,
+        SaleorCheckoutSummary,
+      });
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
   /**
    * @description -- this method is called at the end of order placement in sharove to send an event to sqs queue providing it
    * created order details and checkout id

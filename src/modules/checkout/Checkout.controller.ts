@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CheckoutService } from './Checkout.service';
 import { makeResponse } from '../../core/utils/response';
@@ -12,6 +12,22 @@ import { CreateCheckoutDto } from './dto/createCheckout';
 export class CheckoutController {
   constructor(private readonly appService: CheckoutService) {
     return;
+  }
+
+  @Get('api/v1/checkout/summary')
+  @ApiOperation({
+    summary: 'returns checkout summary against id',
+  })
+  @ApiBearerAuth('JWT-auth')
+  async getCheckoutSummary(
+    @Res() res,
+    @Query() filter: CheckoutIdDto,
+    @IsAuthenticated('authorization') token: string,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.getCheckoutSummary(filter.checkoutId, token),
+    );
   }
 
   @Post('api/v1/checkout')
