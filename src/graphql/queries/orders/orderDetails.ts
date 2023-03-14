@@ -186,41 +186,66 @@ const b2bQuery = (id: string): string => {
 
 const b2cQuery = (id: string): string => {
   return gql`
-    query {
+     query {
       order(id: "${id}") {
-        id
-        status
         number
         paymentStatus
         shippingAddress {
-          id
-          phone
-          firstName
-          lastName
-          streetAddress1
-          city
-          postalCode
-          isDefaultBillingAddress
-          isDefaultShippingAddress
-          country {
-            code
-            country
+        metadata {
+          key
+          value
+        }
+        shippingPrice {
+          gross {
+            amount
           }
         }
-        billingAddress {
+        totalCaptured {
+          amount
+        }
+        total {
+          gross {
+            amount
+          }
+        }
+        paymentStatus
+        payments {
           id
-          phone
+          total {
+            amount
+          }
+        }
+        status
+        userEmail
+        billingAddress {
+          postalCode
           firstName
           lastName
           streetAddress1
+          streetAddress2
+        }
+        shippingAddress {
+          id
+          firstName
+          lastName
+          companyName
+          streetAddress1
+          streetAddress2
           city
+          cityArea
           postalCode
-          isDefaultBillingAddress
-          isDefaultShippingAddress
-          country {
+          country{
             code
-            country
           }
+          countryArea
+          phone
+        }
+        created
+        id
+        user {
+          firstName
+          lastName
+          email
         }
         subtotal {
           net {
@@ -232,19 +257,12 @@ const b2cQuery = (id: string): string => {
             amount
           }
         }
-        total {
-          gross {
-            currency
-            amount
-          }
-        }
         fulfillments {
           status
           lines {
             id
             quantity
             orderLine {
-              id
               quantity
               totalPrice {
                 gross {
@@ -294,39 +312,66 @@ const b2cQuery = (id: string): string => {
         lines {
           id
           productName
-          variantName
+          quantity
           quantityFulfilled
           quantityToFulfill
-          quantity
-          variant {
-            product {
-              media {
-                url
-                alt
-              }
+          productSku
+          totalPrice {
+            net {
+              amount
             }
-          }
-          thumbnail {
-            url
-            alt
+            gross {
+              amount
+            }
           }
           unitPrice {
+            net {
+              amount
+            }
             gross {
-              currency
-            amount
+              amount
             }
           }
-          totalPrice {
-            gross {
-              currency
-            amount
+          variant {
+            stocks {
+              quantity
             }
-          }
-        }
-        shippingPrice {
-          gross {
-            currency
-            amount
+            sku
+            attributes {
+              attribute {
+                name
+              }
+              values {
+                name
+              }
+            }
+            pricing {
+              price {
+                gross {
+                  amount
+                }
+                net {
+                  amount
+                }
+              }
+            }
+            media {
+              url
+            }
+            product {
+              id
+              media {
+                url
+              }
+              attributes {
+                attribute {
+                  name
+                }
+                values {
+                  name
+                }
+              }
+            }
           }
         }
       }
