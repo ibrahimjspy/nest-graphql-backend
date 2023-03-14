@@ -12,6 +12,19 @@ export const checkoutPromoCodeAddMutation = (
         }
         checkout {
           id
+          discount {
+            amount
+          }
+          shippingPrice {
+            gross {
+              amount
+            }
+          }
+          subtotalPrice {
+            gross {
+              amount
+            }
+          }
           totalPrice {
             gross {
               amount
