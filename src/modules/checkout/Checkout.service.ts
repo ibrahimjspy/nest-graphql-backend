@@ -69,15 +69,12 @@ export class CheckoutService {
   ): Promise<object> {
     try {
       const [checkoutBundles, paymentIntent] = await Promise.all([
-        await this.marketplaceCartService.getAllCheckoutBundles({
+        this.marketplaceCartService.getAllCheckoutBundles({
           checkoutId,
           token,
           isSelected: true,
         }),
-        await this.paymentService.getPaymentIntentFromMetadata(
-          checkoutId,
-          token,
-        ),
+        this.paymentService.getPaymentIntentFromMetadata(checkoutId, token),
       ]);
       if (!paymentIntent) throw new NoPaymentIntentError(checkoutId);
       const createOrder = await orderCreateFromCheckoutHandler(
@@ -91,12 +88,12 @@ export class CheckoutService {
         ),
       };
       await Promise.all([
-        await this.triggerWebhookForOS(
+        this.triggerWebhookForOS(
           checkoutBundles['data']['checkoutBundles'],
           createOrder['order'],
         ),
-        await this.ordersService.addOrderToShop(marketplaceOrders, token),
-        await CheckoutHandlers.disableCheckoutSession(checkoutId, token),
+        this.ordersService.addOrderToShop(marketplaceOrders, token),
+        CheckoutHandlers.disableCheckoutSession(checkoutId, token),
       ]);
       return prepareSuccessResponse(
         { createOrder },
