@@ -3,6 +3,7 @@ import {
   graphqlResultErrorHandler,
 } from 'src/core/proxies/graphqlHandler';
 import { checkoutPromoCodeAddMutation } from 'src/graphql/mutations/checkout/shipping/addShippingPromo';
+import { checkoutPromoCodeRemoveMutation } from 'src/graphql/mutations/checkout/shipping/removeShippingPromo';
 import { getCheckoutShippingMethodsQuery } from 'src/graphql/queries/checkout/shipping/getShippingMethods';
 import { getShippingVouchersQuery } from 'src/graphql/queries/checkout/shipping/vouchers';
 
@@ -41,4 +42,20 @@ export const addCheckoutPromoCodeHandler = async (
     ),
   );
   return response['checkoutAddPromoCode'];
+};
+
+export const removeCheckoutPromoCodeHandler = async (
+  checkoutId: string,
+  promoCode: string,
+  token,
+  isB2c = false,
+) => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      checkoutPromoCodeRemoveMutation(checkoutId, promoCode),
+      token,
+      isB2c,
+    ),
+  );
+  return response['checkoutRemovePromoCode'];
 };

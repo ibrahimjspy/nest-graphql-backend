@@ -15,6 +15,7 @@ import {
   preAuthTransactionHandler,
   storePaymentIntentHandler,
 } from 'src/graphql/handlers/checkout/payment/payment.saleor';
+import { getCheckoutMetadataHandler } from 'src/graphql/handlers/checkout/checkout';
 
 @Injectable()
 export class PaymentService {
@@ -38,7 +39,23 @@ export class PaymentService {
       return prepareFailedResponse(error.message);
     }
   }
-
+  /**
+   * @description -- this fetches saleor checkout metadata and parses payment intent id from it
+   */
+  public async getPaymentIntentFromMetadata(
+    checkoutId,
+    token,
+  ): Promise<string> {
+    try {
+      const checkoutData = await getCheckoutMetadataHandler(checkoutId, token);
+      const paymentIntentId = getPaymentIntentFromMetadata(
+        checkoutData['metadata'],
+      );
+      return paymentIntentId;
+    } catch (error) {
+      this.logger.error(error);
+    }
+  }
   /**
    * @description -- this creates a payment session against user
    */

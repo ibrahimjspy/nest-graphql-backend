@@ -13,6 +13,7 @@ import { UpdateBundleStateDto } from 'src/modules/checkout/dto/add-bundle.dto';
 import { deleteCheckoutBundlesHandler } from 'src/graphql/handlers/checkout/cart/cart.marketplace';
 import { getTargetBundleByCheckoutBundleId } from '../../Cart.utils';
 import { CheckoutIdError } from 'src/modules/checkout/Checkout.errors';
+import { CheckoutBundlesDto } from 'src/graphql/types/checkout.type';
 
 @Injectable()
 export class MarketplaceCartService {
@@ -24,12 +25,14 @@ export class MarketplaceCartService {
   public async getAllCheckoutBundles({
     userEmail,
     token,
+    checkoutId,
     productDetails = true,
     isSelected = null,
-  }): Promise<object> {
+  }: CheckoutBundlesDto): Promise<object> {
     try {
       const checkoutData = await getCheckoutBundlesHandler({
         userEmail,
+        checkoutId,
         token,
         productDetails,
         isSelected,

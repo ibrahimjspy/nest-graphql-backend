@@ -1,11 +1,11 @@
-import { Body, Controller, Get, Post, Query, Res } from '@nestjs/common';
+import { Body, Controller, Post, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CheckoutService } from './Checkout.service';
 import { makeResponse } from '../../core/utils/response';
 import { IsAuthenticated } from 'src/core/utils/decorators';
 import { B2BClientPlatform } from 'src/constants';
-import { UserIdDto } from './dto';
 import { CheckoutIdDto } from './dto/checkoutId';
+import { CreateCheckoutDto } from './dto/createCheckout';
 
 @ApiTags('checkout')
 @Controller('')
@@ -22,7 +22,7 @@ export class CheckoutController {
   @ApiBearerAuth('JWT-auth')
   async createCheckout(
     @Res() res,
-    @Body() body: UserIdDto,
+    @Body() body: CreateCheckoutDto,
     @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
     const typeMethod =
@@ -31,7 +31,7 @@ export class CheckoutController {
       }[body.userEmail] || this.appService.createCheckout;
     return makeResponse(
       res,
-      await typeMethod.call(this.appService, body.userEmail, token),
+      await typeMethod.call(this.appService, body, token),
     );
   }
 
@@ -50,24 +50,6 @@ export class CheckoutController {
     return makeResponse(
       res,
       await this.appService.checkoutComplete(token, checkoutId),
-    );
-  }
-
-  @Get('api/v1/checkout/validate')
-  @ApiOperation({
-    summary:
-      'this validates checkout amount against checkout id based on vendor and sharove rules',
-  })
-  @ApiBearerAuth('JWT-auth')
-  async checkoutValidate(
-    @Res() res,
-    @Query() filter: CheckoutIdDto,
-    @IsAuthenticated('authorization') token: string,
-  ): Promise<object> {
-    const { checkoutId } = filter;
-    return makeResponse(
-      res,
-      await this.appService.validateCheckout(checkoutId, token),
     );
   }
 }

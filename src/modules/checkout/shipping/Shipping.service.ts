@@ -88,15 +88,9 @@ export class ShippingService {
         shippingMethodId,
         token,
       );
-      const applyPromoCode =
-        this.shippingPromotionService.applyPromoCodeToCheckout(
-          checkoutId,
-          token,
-        );
-      return prepareSuccessResponse(
-        { updateDeliveryMethod, applyPromoCode },
-        'shipping methods added against checkout',
-        201,
+      return await this.shippingPromotionService.applyPromoCodeToCheckout(
+        updateDeliveryMethod['checkout'],
+        token,
       );
     } catch (error) {
       console.log(error);

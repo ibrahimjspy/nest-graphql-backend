@@ -1,15 +1,12 @@
 import { gql } from 'graphql-request';
 
-export const checkoutDeliveryMethodUpdateMutation = (
+export const checkoutPromoCodeRemoveMutation = (
   checkoutId: string,
-  deliveryMethodId: string,
+  promoCode: string,
 ) => {
   return gql`
     mutation {
-      checkoutDeliveryMethodUpdate(
-      deliveryMethodId: "${deliveryMethodId}",
-        id: "${checkoutId}"
-      ) {
+      checkoutRemovePromoCode(id: "${checkoutId}", promoCode: "${promoCode}") {
         checkout {
           id
           deliveryMethod {
@@ -23,9 +20,6 @@ export const checkoutDeliveryMethodUpdateMutation = (
               amount
             }
           }
-        }
-        errors {
-          message
         }
       }
     }

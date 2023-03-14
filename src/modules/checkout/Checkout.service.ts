@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import {
   prepareFailedResponse,
@@ -7,28 +6,22 @@ import {
 } from 'src/core/utils/response';
 
 import * as CheckoutHandlers from 'src/graphql/handlers/checkout/checkout';
-import {
-  createCheckoutHandler,
-  getCheckoutBundlesByCheckoutIdHandler,
-  orderCreateFromCheckoutHandler,
-} from 'src/graphql/handlers/checkout/checkout';
+import { orderCreateFromCheckoutHandler } from 'src/graphql/handlers/checkout/checkout';
 
-import { getLinesFromBundles, validateBundlesLength } from './Checkout.utils';
 import SqsService from 'src/external/endpoints/sqsMessage';
 import { NoPaymentIntentError } from './Checkout.errors';
-import { CartService } from './cart/Cart.service';
 import { MarketplaceCartService } from './cart/services/marketplace/Cart.marketplace.service';
-import { SaleorCheckoutService } from './services/Checkout.saleor';
-import { getPaymentIntentFromMetadata } from './payment/Payment.utils';
+import { PaymentService } from './payment/Payment.service';
+import { CreateCheckoutDto } from './dto/createCheckout';
+import { B2B_CHECKOUT_APP_TOKEN } from 'src/constants';
 
 @Injectable()
 export class CheckoutService {
   private readonly logger = new Logger(CheckoutService.name);
   constructor(
     private sqsService: SqsService,
-    private cartService: CartService,
+    private paymentService: PaymentService,
     private marketplaceCartService: MarketplaceCartService,
-    private saleorCheckoutService: SaleorCheckoutService,
   ) {
     return;
   }
@@ -40,22 +33,16 @@ export class CheckoutService {
    * @step - uses transformed order to place it against OS
    */
   protected async triggerWebhookForOS(
-    checkoutId: string,
+    checkoutBundles: string,
     orderDetails: object,
-    token: string,
-    isSelectedBundle = true,
   ): Promise<object> {
     try {
-      const checkoutData = await getCheckoutBundlesByCheckoutIdHandler(
-        checkoutId,
-        token,
-        isSelectedBundle,
-      );
       const orderObject = {
-        checkoutBundles: checkoutData['checkoutBundles'],
+        checkoutBundles: checkoutBundles,
         shippingAddress: orderDetails['shippingAddress'],
         orderId: orderDetails['id'],
       };
+      await this.sqsService.send(orderObject);
       /* Sending a message to the SQS queue. */
       return orderObject;
     } catch (error) {
@@ -78,25 +65,34 @@ export class CheckoutService {
     checkoutId: string,
   ): Promise<object> {
     try {
-      const checkoutData = await this.saleorCheckoutService.getCheckout(
-        checkoutId,
-        token,
-      );
-      const paymentIntent = getPaymentIntentFromMetadata(
-        checkoutData['metadata'],
-      );
+      const [checkoutBundles, paymentIntent] = await Promise.all([
+        await this.marketplaceCartService.getAllCheckoutBundles({
+          checkoutId,
+          token,
+          isSelected: true,
+        }),
+        await this.paymentService.getPaymentIntentFromMetadata(
+          checkoutId,
+          token,
+        ),
+      ]);
       if (!paymentIntent) throw new NoPaymentIntentError(checkoutId);
       const createOrder = await orderCreateFromCheckoutHandler(
         checkoutId,
-        token,
+        B2B_CHECKOUT_APP_TOKEN,
       );
-      await this.triggerWebhookForOS(checkoutId, createOrder['order'], token);
-      const disableCheckout = await CheckoutHandlers.disableCheckoutSession(
-        checkoutId,
-        token,
+      await Promise.all([
+        await this.triggerWebhookForOS(
+          checkoutBundles['data']['checkoutBundles'],
+          createOrder['order'],
+        ),
+        await CheckoutHandlers.disableCheckoutSession(checkoutId, token),
+      ]);
+      return prepareSuccessResponse(
+        { createOrder },
+        'order created against checkout',
+        201,
       );
-
-      return prepareSuccessResponse({ createOrder, disableCheckout }, '', 201);
     } catch (error) {
       this.logger.error(error);
       if (error instanceof NoPaymentIntentError) {
@@ -117,39 +113,11 @@ export class CheckoutService {
 
   /**
    * @description -- this method is called when create checkout is hit by end consumer
-   * @step - it creates checkout session in both saleor and shop service checkout
+   * @step - it validates whether checkout is valid for processing
    */
-  public async createCheckout(userEmail: string, token: string) {
+  public async createCheckout(checkoutData: CreateCheckoutDto, token: string) {
     try {
-      const checkoutData = await CheckoutHandlers.getCheckoutBundlesHandler({
-        userEmail,
-        token,
-      });
-      if (!validateBundlesLength(checkoutData['checkoutBundles'])) {
-        throw new RecordNotFound('Empty Cart');
-      }
-      const checkoutLines = getLinesFromBundles(
-        checkoutData['checkoutBundles'],
-      );
-      const checkoutCreate = await createCheckoutHandler(
-        userEmail,
-        checkoutLines,
-        token,
-      );
-      await this.marketplaceCartService.addCheckoutIdToMarketplace(
-        userEmail,
-        token,
-        checkoutCreate['checkout']['id'],
-      );
-      return checkoutCreate;
-    } catch (error) {
-      this.logger.error(error);
-      return prepareFailedResponse(error.message);
-    }
-  }
-
-  public async validateCheckout(checkoutId: string, token: string) {
-    try {
+      const checkoutId = checkoutData.checkoutId;
       const validateCheckout = await CheckoutHandlers.validateCheckoutHandler(
         checkoutId,
         token,
