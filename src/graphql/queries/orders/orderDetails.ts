@@ -190,7 +190,6 @@ const b2cQuery = (id: string): string => {
       order(id: "${id}") {
         number
         paymentStatus
-        shippingAddress {
         metadata {
           key
           value
