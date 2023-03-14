@@ -8,7 +8,7 @@ const federationQuery = (id): string => {
       products(
         first: 6
         channel: "${DEFAULT_CHANNEL}"
-        filter: { categories: ["${id}"] }
+        filter: { categories: ["${id}"] , isAvailable: true}
       ) {
         edges {
           node {

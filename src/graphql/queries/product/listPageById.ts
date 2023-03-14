@@ -11,6 +11,7 @@ const b2bQuery = ({ categoryId, productIds, ...pagination }): string => {
         channel: "${DEFAULT_CHANNEL}"
         filter: {
           categories: ["${categoryId}"],
+          isAvailable: true,
           ids: ${JSON.stringify(productIds)}
         }
       ) {
