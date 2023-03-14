@@ -1,38 +1,34 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { SaleorCheckoutService } from '../../services/Checkout.saleor';
 import { prepareSuccessResponse } from 'src/core/utils/response';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import {
   addCheckoutPromoCodeHandler,
   getShippingVouchersHandler,
+  removeCheckoutPromoCodeHandler,
 } from 'src/graphql/handlers/checkout/shipping';
 import { vouchersType } from './Shipping.promotion.types';
+import { PROMOTION_SHIPPING_METHOD } from 'src/constants';
 
 @Injectable()
 export class ShippingPromotionService {
   private readonly logger = new Logger(ShippingPromotionService.name);
-  constructor(private saleorCheckoutService: SaleorCheckoutService) {
+  constructor() {
     return;
   }
   /**
    * @description --  this method fetches applies shipping promo code to checkout based on checkout total amount
    */
-  public async applyPromoCodeToCheckout(
-    checkoutId: string,
-    token,
-  ): Promise<object> {
+  public async applyPromoCodeToCheckout(checkoutData, token): Promise<object> {
     try {
-      const checkout = await this.saleorCheckoutService.getCheckout(
-        checkoutId,
-        token,
-      );
-      const checkoutTotalPrice = checkout['totalPrice']['gross']['amount'];
+      const checkoutTotalPrice = checkoutData['totalPrice']['gross']['amount'];
+      const checkoutId = checkoutData['id'];
+      const deliveryMethod = checkoutData['deliveryMethod']['name'];
       const vouchersData = await getShippingVouchersHandler(token);
       const promoCode = this.getVoucherIdForCheckout(
         checkoutTotalPrice,
         vouchersData,
       );
-      if (promoCode) {
+      if (promoCode && deliveryMethod == PROMOTION_SHIPPING_METHOD) {
         const addPromoCode = await addCheckoutPromoCodeHandler(
           checkoutId,
           promoCode,
@@ -40,13 +36,13 @@ export class ShippingPromotionService {
         );
         return prepareSuccessResponse(
           addPromoCode,
-          'checkout promo code added',
+          'checkout promo code added and shipping method selected',
           201,
         );
       }
       return prepareSuccessResponse(
-        checkout,
-        'no promo code added due to checkout amount',
+        await removeCheckoutPromoCodeHandler(checkoutId, promoCode, token),
+        'no promo code added against shipping method created',
         201,
       );
     } catch (error) {

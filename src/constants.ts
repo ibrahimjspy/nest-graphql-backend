@@ -94,3 +94,5 @@ export const preAuthTransactionInput = {
   eventName: 'Authorized credit card',
   availableActions: '[VOID, CHARGE]',
 };
+export const PROMOTION_SHIPPING_METHOD = 'UPS';
+export const B2B_CHECKOUT_APP_TOKEN = process.env.B2B_CHECKOUT_APP_TOKEN;

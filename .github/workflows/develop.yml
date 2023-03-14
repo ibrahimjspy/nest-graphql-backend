@@ -73,8 +73,9 @@ jobs:
           (echo "MAPPING_SERVICE_URL=${{ secrets.MAPPING_SERVICE_URL }}") >> .env
           (echo "PROVISION_STOREFRONT_URL=${{ secrets.PROVISION_STOREFRONT_URL }}") >> .env
           (echo "AUTH_TOKEN_GITHUB=${{ secrets.AUTH_TOKEN_GITHUB }}") >> .env
-          
+          (echo "AUTH_TOKEN_GITHUB=${{ secrets.B2B_CHECKOUT_APP_TOKEN }}") >> .env
 
+          
         # Docker login
       - name: Login to DockerHub
         env:
