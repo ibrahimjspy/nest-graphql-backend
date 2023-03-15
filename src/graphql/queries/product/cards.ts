@@ -8,7 +8,7 @@ export const federationQuery = (): string => {
       products(
         first: 6
         channel: "${DEFAULT_CHANNEL}"
-        filter: { categories: [] }
+        filter: { categories: [], isAvailable: true }
       ) {
         edges {
           node {

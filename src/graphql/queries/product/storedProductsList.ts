@@ -4,7 +4,9 @@ import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 const b2bQuery = (productIds): string => {
   return gql`
     query {
-      products(first: 100, filter: { ids: ${JSON.stringify(productIds)} }) {
+      products(first: 100, filter: { isAvailable: true, ids: ${JSON.stringify(
+        productIds,
+      )} }) {
         edges {
           node {
             id

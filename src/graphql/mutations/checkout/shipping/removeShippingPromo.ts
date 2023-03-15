@@ -9,6 +9,19 @@ export const checkoutPromoCodeRemoveMutation = (
       checkoutRemovePromoCode(id: "${checkoutId}", promoCode: "${promoCode}") {
         checkout {
           id
+          discount {
+            amount
+          }
+          shippingPrice {
+            gross {
+              amount
+            }
+          }
+          subtotalPrice {
+            gross {
+              amount
+            }
+          }
           deliveryMethod {
             ... on ShippingMethod {
               id

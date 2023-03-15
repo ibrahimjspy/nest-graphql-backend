@@ -8,7 +8,7 @@ const b2cQuery = (productIds, filter: myProductsDTO): string => {
     query {
       products(${validatePageFilter(
         filter,
-      )}, channel: "default-channel", filter: { ids: ${JSON.stringify(
+      )}, channel: "default-channel", filter: { isAvailable: true, ids: ${JSON.stringify(
     productIds,
   )} search:"${filter.search || ''}" }) {
         totalCount

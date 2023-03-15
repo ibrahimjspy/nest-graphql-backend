@@ -19,6 +19,7 @@ export const federationQuery = (filter: ProductFilterDto): string => {
         filter: {
           ids: ${JSON.stringify(filter.productIds || [])}
           isPublished: true,
+          isAvailable: true,
           hasCategory: true,
           stockAvailability: IN_STOCK,
           categories: [${categoryFilter}]

@@ -36,6 +36,8 @@ import { AddressDto } from 'src/modules/checkout/shipping/dto/shippingAddress';
 import { validateCheckoutQuery } from 'src/graphql/queries/checkout/validateCheckout';
 import { CheckoutBundlesDto } from 'src/graphql/types/checkout.type';
 import { getCheckoutMetadataQuery } from 'src/graphql/queries/checkout/metadata';
+import { marketplaceCheckoutSummaryQuery } from 'src/graphql/queries/checkout/marketplaceCheckoutSummary';
+import { saleorCheckoutSummaryQuery } from 'src/graphql/queries/checkout/saleorCheckoutSummary';
 
 export const marketplaceCheckoutHandler = async (
   id: string,
@@ -330,6 +332,26 @@ export const getCheckoutMetadataHandler = async (
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(getCheckoutMetadataQuery(checkoutId), token),
+  );
+  return response['checkout'];
+};
+
+export const marketplaceCheckoutSummaryHandler = async (
+  checkoutId: string,
+  token: string,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(marketplaceCheckoutSummaryQuery(checkoutId), token),
+  );
+  return response['checkoutBundles'];
+};
+
+export const saleorCheckoutSummaryHandler = async (
+  checkoutId: string,
+  token: string,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(saleorCheckoutSummaryQuery(checkoutId), token),
   );
   return response['checkout'];
 };
