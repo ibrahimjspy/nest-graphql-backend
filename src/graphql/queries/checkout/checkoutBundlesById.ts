@@ -19,6 +19,7 @@ export const checkoutBundlesByIdQuery = (
             checkoutBundleId
             isSelected
             quantity
+            price
             bundle {
               id
               name
