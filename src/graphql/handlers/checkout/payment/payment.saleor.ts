@@ -1,5 +1,7 @@
+import { Logger } from '@nestjs/common';
 import {
   graphqlCall,
+  graphqlExceptionHandler,
   graphqlResultErrorHandler,
 } from 'src/core/proxies/graphqlHandler';
 import { preAuthTransactionMutation } from 'src/graphql/mutations/checkout/payment/authTransaction';
@@ -25,11 +27,16 @@ export const preAuthTransactionHandler = async (
   amount: string,
   token: string,
 ): Promise<object> => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(
-      preAuthTransactionMutation({ checkoutId, paymentIntentId, amount }),
-      token,
-    ),
-  );
-  return response['transactionCreate'];
+  try {
+    const response = await graphqlResultErrorHandler(
+      await graphqlCall(
+        preAuthTransactionMutation({ checkoutId, paymentIntentId, amount }),
+        token,
+      ),
+    );
+    return response['transactionCreate'];
+  } catch (err) {
+    Logger.error(err);
+    return graphqlExceptionHandler(err);
+  }
 };
