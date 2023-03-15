@@ -30,6 +30,7 @@ const federationQuery = (
             checkoutBundleId
             isSelected
             quantity
+            price
             bundle {
               id
               name
