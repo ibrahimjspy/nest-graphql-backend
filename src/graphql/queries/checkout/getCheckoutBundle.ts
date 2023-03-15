@@ -22,6 +22,7 @@ export const getCheckoutBundleQuery = (
             checkoutBundleId
             isSelected
             quantity
+            price
             bundle {
               id
               name
