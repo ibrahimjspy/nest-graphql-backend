@@ -31,6 +31,7 @@ export const updateCheckoutBundleStateMutation = (
             checkoutBundleId
             isSelected
             quantity
+            price
             bundle {
               id
               name

@@ -22,6 +22,7 @@ const federationQuery = (userEmail: string, checkoutBundles: any[]): string => {
             checkoutBundleId
             isSelected
             quantity
+            price
             bundle {
               id
               name
