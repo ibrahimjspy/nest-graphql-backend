@@ -25,6 +25,10 @@ const b2bQuery = ({ categoryId, productIds, ...pagination }): string => {
         edges {
           node {
             id
+            category {
+              id
+              name
+            }
             slug
             defaultVariant {
               attributes {
