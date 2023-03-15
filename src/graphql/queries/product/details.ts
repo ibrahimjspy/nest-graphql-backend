@@ -12,6 +12,10 @@ const b2bQuery = (filter: ProductDetailsDto): string => {
       product(${productIdentifier}, channel: "${DEFAULT_CHANNEL}") {
         name
         id
+        category {
+          id
+          name
+        }
         attributes{
           attribute{
             name
