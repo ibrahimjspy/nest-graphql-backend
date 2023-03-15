@@ -12,6 +12,10 @@ export const validateCheckoutQuery = (checkoutId: string) => {
         ... on VendorsMinimumAmountErrorResponse {
           __typename
           isValid
+          errorBundles {
+            message
+            bundleId
+          }
         }
         ... on ResultError {
           __typename
