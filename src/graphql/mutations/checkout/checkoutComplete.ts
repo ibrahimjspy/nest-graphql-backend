@@ -5,7 +5,7 @@ export const orderCreateFromCheckoutMutation = (checkoutId: string) => {
     mutation {
       orderCreateFromCheckout(
         id: "${checkoutId}"
-        removeCheckout: false
+        removeCheckout: true
       ) {
         order {
           id
