@@ -16,6 +16,7 @@ import {
   storePaymentIntentHandler,
 } from 'src/graphql/handlers/checkout/payment/payment.saleor';
 import { getCheckoutMetadataHandler } from 'src/graphql/handlers/checkout/checkout';
+import { B2B_CHECKOUT_APP_TOKEN } from 'src/constants';
 
 @Injectable()
 export class PaymentService {
@@ -103,7 +104,7 @@ export class PaymentService {
           checkoutId,
           paymentIntentId,
           totalAmount,
-          token,
+          B2B_CHECKOUT_APP_TOKEN,
         ),
       ]);
       return prepareSuccessResponse(
