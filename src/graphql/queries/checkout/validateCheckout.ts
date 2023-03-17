@@ -11,11 +11,10 @@ export const validateCheckoutQuery = (checkoutId: string) => {
         }
         ... on VendorsMinimumAmountErrorResponse {
           __typename
-          isValid
           errorBundles {
             message
-            bundleId
           }
+          isValid
         }
         ... on ResultError {
           __typename

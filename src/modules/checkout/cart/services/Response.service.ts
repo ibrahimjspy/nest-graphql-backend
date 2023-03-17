@@ -38,6 +38,9 @@ export class CartResponseService {
       );
       const saleor = saleorResponse.value;
       const marketplace = marketplaceResponse.value;
+      const saleorErrors = saleorResponse?.reason?.response?.errors;
+      const marketplaceErrors = marketplaceResponse?.reason;
+
       if (status == SUCCESS) {
         return prepareSuccessResponse(
           { saleor, marketplace },
@@ -55,7 +58,7 @@ export class CartResponseService {
         return prepareFailedResponse(
           'Adding bundle lines to Marketplace failed',
           400,
-          saleor,
+          marketplaceErrors,
         );
       }
 
@@ -68,7 +71,7 @@ export class CartResponseService {
         return prepareFailedResponse(
           'Adding bundle lines to Saleor failed',
           400,
-          saleor,
+          saleorErrors,
         );
       }
       return prepareFailedResponse('Adding bundles to cart failed', 400);
@@ -91,6 +94,9 @@ export class CartResponseService {
       );
       const saleor = saleorResponse.value;
       const marketplace = marketplaceResponse.value;
+      const saleorErrors = saleorResponse?.reason?.response?.errors;
+      const marketplaceErrors = marketplaceResponse?.reason?.response?.errors;
+
       if (status == SUCCESS) {
         return prepareSuccessResponse(
           { saleor, marketplace },
@@ -107,7 +113,7 @@ export class CartResponseService {
         return prepareFailedResponse(
           'deleting bundle lines from Saleor failed',
           400,
-          saleor,
+          saleorErrors,
         );
       }
 
@@ -121,10 +127,13 @@ export class CartResponseService {
         return prepareFailedResponse(
           'deleting bundle lines from Marketplace failed',
           400,
-          saleor,
+          marketplaceErrors,
         );
       }
-      return prepareFailedResponse('deleting bundles from cart failed', 400);
+      return prepareFailedResponse('deleting bundles from cart failed', 400, [
+        saleorErrors,
+        ...marketplaceErrors,
+      ]);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -144,6 +153,9 @@ export class CartResponseService {
       );
       const saleor = saleorResponse.value;
       const marketplace = marketplaceResponse.value;
+      const saleorErrors = saleorResponse?.reason?.response?.errors;
+      const marketplaceErrors = marketplaceResponse?.reason?.response?.errors;
+
       if (status == SUCCESS) {
         return prepareSuccessResponse(
           { saleor, marketplace },
@@ -161,10 +173,13 @@ export class CartResponseService {
         return prepareFailedResponse(
           'updating cart state in Saleor failed',
           400,
-          saleor,
+          saleorErrors,
         );
       }
-      return prepareFailedResponse('updating cart bundles state failed', 400);
+      return prepareFailedResponse('updating cart bundles state failed', 400, [
+        ...saleorErrors,
+        ...marketplaceErrors,
+      ]);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -184,6 +199,9 @@ export class CartResponseService {
       );
       const saleor = saleorResponse.value;
       const marketplace = marketplaceResponse.value;
+      const saleorErrors = saleorResponse?.reason?.response?.errors;
+      const marketplaceErrors = marketplaceResponse?.reason?.response?.errors;
+
       if (status == SUCCESS) {
         return prepareSuccessResponse(
           { saleor, marketplace },
@@ -201,10 +219,13 @@ export class CartResponseService {
         return prepareFailedResponse(
           'updating cart state in Saleor failed',
           400,
-          saleor,
+          saleorErrors,
         );
       }
-      return prepareFailedResponse('updating cart bundles state failed', 400);
+      return prepareFailedResponse('updating cart bundles state failed', 400, [
+        ...marketplaceErrors,
+        ...saleorErrors,
+      ]);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
