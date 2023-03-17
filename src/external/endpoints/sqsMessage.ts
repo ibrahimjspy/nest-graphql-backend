@@ -1,11 +1,6 @@
 import * as AWS from 'aws-sdk';
 import { Logger } from '@nestjs/common';
-import {
-  QUEUE_URL,
-  SQS_ACCESSID,
-  SQS_MESSAGE_GROUPID,
-  SQS_SECRET_ACCESS_KEY,
-} from 'src/constants';
+import { QUEUE_URL, SQS_ACCESSID, SQS_SECRET_ACCESS_KEY } from 'src/constants';
 
 export const sqsService = new AWS.SQS({
   apiVersion: '2012-11-05',
@@ -26,7 +21,6 @@ export default class SqsService {
     const sqsObject = {
       MessageBody: JSON.stringify(params),
       // MessageDeduplicationId: "TheWhistler",
-      MessageGroupId: SQS_MESSAGE_GROUPID, // Required for FIFO queues
       QueueUrl: QUEUE_URL,
     };
     return new Promise((resolve, reject) => {
