@@ -4,10 +4,8 @@ import {
   prepareFailedResponse,
   prepareSuccessResponse,
 } from 'src/core/utils/response';
-
 import * as CheckoutHandlers from 'src/graphql/handlers/checkout/checkout';
 import { orderCreateFromCheckoutHandler } from 'src/graphql/handlers/checkout/checkout';
-
 import SqsService from 'src/external/endpoints/sqsMessage';
 import { NoPaymentIntentError } from './Checkout.errors';
 import { MarketplaceCartService } from './cart/services/marketplace/Cart.marketplace.service';
@@ -16,6 +14,8 @@ import { CreateCheckoutDto } from './dto/createCheckout';
 import { B2B_CHECKOUT_APP_TOKEN } from 'src/constants';
 import { getOrdersByShopId } from '../orders/Orders.utils';
 import { OrdersService } from '../orders/Orders.service';
+import { LegacyService } from 'src/external/services/osPlaceOrder/Legacy.service';
+import { preparePromotionResponse } from './shipping/services/Shipping.response';
 
 @Injectable()
 export class CheckoutService {
@@ -36,6 +36,9 @@ export class CheckoutService {
           CheckoutHandlers.marketplaceCheckoutSummaryHandler(checkoutId, token),
           CheckoutHandlers.saleorCheckoutSummaryHandler(checkoutId, token),
         ]);
+      preparePromotionResponse({
+        checkout: SaleorCheckoutSummary,
+      });
       return prepareSuccessResponse({
         MarketplaceCheckoutSummary,
         SaleorCheckoutSummary,
@@ -46,27 +49,24 @@ export class CheckoutService {
     }
   }
   /**
-   * @description -- this method is called at the end of order placement in sharove to send an event to sqs queue providing it
-   * created order details and checkout id
-   * @step - this method behind the scenes triggers a lambda which transforms an order from Sharove structure to OS structure
-   * @step - uses transformed order to place it against OS
+   * @description -- this method is called at the end of order placement in sharove to place order in OS
    */
-  protected async triggerWebhookForOS(
+  protected async placeOrderOs(
     checkoutBundles: string,
     orderDetails: object,
+    token: string,
   ): Promise<object> {
     try {
-      const orderObject = {
-        checkoutBundles: checkoutBundles,
-        shippingAddress: orderDetails['shippingAddress'],
-        orderId: orderDetails['id'],
-      };
-      await this.sqsService.send(orderObject);
-      /* Sending a message to the SQS queue. */
-      return orderObject;
+      const instance = new LegacyService(
+        checkoutBundles,
+        orderDetails['shippingAddress'],
+        orderDetails['id'],
+        token,
+      );
+      return await instance.placeExternalOrder();
     } catch (error) {
       this.logger.error(error);
-      return graphqlExceptionHandler(error);
+      return prepareFailedResponse(error.me);
     }
   }
 
@@ -103,16 +103,17 @@ export class CheckoutService {
           createOrder['order'],
         ),
       };
-      await Promise.all([
-        this.triggerWebhookForOS(
+      const [osOrderResponse] = await Promise.all([
+        this.placeOrderOs(
           checkoutBundles['data']['checkoutBundles'],
           createOrder['order'],
+          token,
         ),
         this.ordersService.addOrderToShop(ordersByShop, token),
         CheckoutHandlers.disableCheckoutSession(checkoutId, token),
       ]);
       return prepareSuccessResponse(
-        { createOrder },
+        { createOrder, osOrderResponse },
         'order created against checkout',
         201,
       );

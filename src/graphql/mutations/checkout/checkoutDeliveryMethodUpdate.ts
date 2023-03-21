@@ -23,6 +23,11 @@ export const checkoutDeliveryMethodUpdateMutation = (
               amount
             }
           }
+          subtotalPrice {
+            gross {
+              amount
+            }
+          }
         }
         errors {
           message
