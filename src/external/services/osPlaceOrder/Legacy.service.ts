@@ -39,11 +39,13 @@ export class LegacyService {
   shoesVendorIds = [];
   user_id: string;
   token: string;
+  paymentMethodId: string;
 
-  constructor(selectedBundles, shipping_info, orderId, token) {
+  constructor(selectedBundles, shipping_info, orderId, paymentMethodId, token) {
     this.selectedBundles = selectedBundles;
     this.shipping_info = shipping_info;
     this.orderId = orderId;
+    this.paymentMethodId = paymentMethodId;
     this.token = token;
     this.BASE_URL = `${BASE_EXTERNAL_ENDPOINT}/api/v3`;
     this.Elastic_ClOUD_URL = `${ELASTIC_SEARCH_ENDPOINT}/api/as/v1`;
@@ -284,6 +286,7 @@ export class LegacyService {
       payment_type: PAYMENT_TYPE,
       spa_id: parseInt(shippingAddressInfo?.data?.user_id),
       sharove_order_id: this.orderId,
+      stripe_payment_method_id: this.paymentMethodId,
     };
   }
 

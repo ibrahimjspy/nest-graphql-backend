@@ -1,16 +1,20 @@
 import { toCents } from '../Checkout.utils';
 
 /**
- * @description returns paymentIntentId from checkout metadata
+ * @description returns paymentIntentId and payment method id from checkout metadata
  */
-export const getPaymentIntentFromMetadata = (checkoutMetadata) => {
+export const getPaymentDataFromMetadata = (checkoutMetadata) => {
   let paymentIntentId: string;
+  let paymentMethodId: string;
   (checkoutMetadata || []).map((metadata) => {
     if (metadata.key == 'paymentIntentId') {
       paymentIntentId = metadata.value;
     }
+    if (metadata.key == 'paymentMethodId') {
+      paymentMethodId = metadata.value;
+    }
   });
-  return paymentIntentId;
+  return { paymentIntentId, paymentMethodId };
 };
 
 /**

@@ -54,6 +54,7 @@ export class CheckoutService {
   protected async placeOrderOs(
     checkoutBundles: string,
     orderDetails: object,
+    paymentMethodId: string,
     token: string,
   ): Promise<object> {
     try {
@@ -61,6 +62,7 @@ export class CheckoutService {
         checkoutBundles,
         orderDetails['shippingAddress'],
         orderDetails['id'],
+        paymentMethodId,
         token,
       );
       return await instance.placeExternalOrder();
@@ -84,15 +86,17 @@ export class CheckoutService {
     checkoutId: string,
   ): Promise<object> {
     try {
-      const [checkoutBundles, paymentIntent] = await Promise.all([
+      const [checkoutBundles, paymentData] = await Promise.all([
         this.marketplaceCartService.getAllCheckoutBundles({
           checkoutId,
           token,
           isSelected: true,
         }),
-        this.paymentService.getPaymentIntentFromMetadata(checkoutId, token),
+        this.paymentService.getPaymentDataFromMetadata(checkoutId, token),
       ]);
-      if (!paymentIntent) throw new NoPaymentIntentError(checkoutId);
+      const { paymentIntentId, paymentMethodId } = paymentData;
+      if (!paymentIntentId || !paymentMethodId)
+        throw new NoPaymentIntentError(checkoutId);
       const createOrder = await orderCreateFromCheckoutHandler(
         checkoutId,
         B2B_CHECKOUT_APP_TOKEN,
@@ -107,6 +111,7 @@ export class CheckoutService {
         this.placeOrderOs(
           checkoutBundles['data']['checkoutBundles'],
           createOrder['order'],
+          paymentMethodId,
           token,
         ),
         this.ordersService.addOrderToShop(ordersByShop, token),

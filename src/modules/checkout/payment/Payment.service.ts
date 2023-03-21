@@ -8,7 +8,7 @@ import StripeService from 'src/external/services/stripe';
 import { PaymentIntentCreationError } from '../Checkout.errors';
 import { SaleorCheckoutService } from '../services/Checkout.saleor';
 import {
-  getPaymentIntentFromMetadata,
+  getPaymentDataFromMetadata,
   paymentIntentAmountValidate,
 } from './Payment.utils';
 import {
@@ -43,16 +43,16 @@ export class PaymentService {
   /**
    * @description -- this fetches saleor checkout metadata and parses payment intent id from it
    */
-  public async getPaymentIntentFromMetadata(
+  public async getPaymentDataFromMetadata(
     checkoutId,
     token,
-  ): Promise<string> {
+  ): Promise<{
+    paymentIntentId: string;
+    paymentMethodId: string;
+  }> {
     try {
       const checkoutData = await getCheckoutMetadataHandler(checkoutId, token);
-      const paymentIntentId = getPaymentIntentFromMetadata(
-        checkoutData['metadata'],
-      );
-      return paymentIntentId;
+      return getPaymentDataFromMetadata(checkoutData['metadata']);
     } catch (error) {
       this.logger.error(error);
     }
@@ -99,7 +99,12 @@ export class PaymentService {
         throw new PaymentIntentCreationError(userEmail, paymentMethodId);
       const paymentIntentId = paymentIntentResponse.id;
       await Promise.all([
-        storePaymentIntentHandler(checkoutId, paymentIntentId, token),
+        storePaymentIntentHandler(
+          checkoutId,
+          paymentIntentId,
+          paymentMethodId,
+          token,
+        ),
         preAuthTransactionHandler(
           checkoutId,
           paymentIntentId,
@@ -181,13 +186,12 @@ export class PaymentService {
       );
       const checkoutAmount = checkoutData['totalPrice'].gross.amount;
 
-      const paymentIntentId = getPaymentIntentFromMetadata(
-        checkoutData['metadata'],
-      );
+      const paymentData = getPaymentDataFromMetadata(checkoutData['metadata']);
+      const paymentIntentId = paymentData.paymentIntentId;
       if (paymentIntentId) {
         return this.validatePaymentIntent(
           checkoutData,
-          paymentIntentId,
+          paymentData.paymentIntentId,
           userEmail,
           token,
         );
