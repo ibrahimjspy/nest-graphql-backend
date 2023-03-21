@@ -366,6 +366,10 @@ const b2cQuery = (id: string): string => {
               media {
                 url
               }
+              metadata {
+                key
+                value
+              }
               attributes {
                 attribute {
                   name
