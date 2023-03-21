@@ -4,8 +4,8 @@ import {
   BASE_EXTERNAL_ENDPOINT,
   CATEGORY_SHOES,
   ELASTIC_SEARCH_ENDPOINT,
-  ELASTIC_SEARCH_TOKEN,
   IN_STOCK,
+  MAPPING_SERVICE_TOKEN,
   PAYMENT_TYPE,
   PRE_ORDER,
   SIGNATURE_REQUESTED,
@@ -59,7 +59,7 @@ export class LegacyService {
       const response = await http.post(URL, payload, header);
       return response?.data;
     } catch (err) {
-      Logger.log(err);
+      Logger.error(err);
       return prepareFailedResponse(err.message);
     }
   }
@@ -178,7 +178,7 @@ export class LegacyService {
         const URL = `${this.Elastic_ClOUD_URL}/engines/b2b-product-track-dev/search`;
         const response = await http.post(URL, payload, {
           headers: {
-            Authorization: `Bearer ${ELASTIC_SEARCH_TOKEN}`,
+            Authorization: `Bearer private-${MAPPING_SERVICE_TOKEN}`,
           },
         });
 
@@ -213,7 +213,7 @@ export class LegacyService {
         const URL = `${this.Elastic_ClOUD_URL}/engines/b2b-shop-track-dev/search`;
         const response = await http.post(URL, payload, {
           headers: {
-            Authorization: `Bearer ${ELASTIC_SEARCH_TOKEN}`,
+            Authorization: `Bearer private-${MAPPING_SERVICE_TOKEN}`,
           },
         });
         return response?.data.results[0];

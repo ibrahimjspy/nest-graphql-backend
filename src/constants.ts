@@ -96,7 +96,4 @@ export const preAuthTransactionInput = {
 };
 export const PROMOTION_SHIPPING_METHOD = 'UPS';
 export const B2B_CHECKOUT_APP_TOKEN = process.env.B2B_CHECKOUT_APP_TOKEN;
-
-export const ELASTIC_SEARCH_TOKEN = 'private-jsnv4r1vdeje9viuevkds3mq';
-export const ELASTIC_SEARCH_ENDPOINT =
-  'https://shr.ent.us-east-2.aws.elastic-cloud.com';
+export const ELASTIC_SEARCH_ENDPOINT = process.env.ELASTIC_SEARCH_ENDPOINT;
