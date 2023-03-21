@@ -96,3 +96,4 @@ export const preAuthTransactionInput = {
 };
 export const PROMOTION_SHIPPING_METHOD = 'UPS';
 export const B2B_CHECKOUT_APP_TOKEN = process.env.B2B_CHECKOUT_APP_TOKEN;
+export const ELASTIC_SEARCH_ENDPOINT = process.env.ELASTIC_SEARCH_ENDPOINT;

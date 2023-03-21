@@ -8,6 +8,7 @@ import {
 } from 'src/graphql/handlers/checkout/shipping';
 import { vouchersType } from './Shipping.promotion.types';
 import { PROMOTION_SHIPPING_METHOD } from 'src/constants';
+import { preparePromotionResponse } from './Shipping.response';
 
 @Injectable()
 export class ShippingPromotionService {
@@ -20,12 +21,13 @@ export class ShippingPromotionService {
    */
   public async applyPromoCodeToCheckout(checkoutData, token): Promise<object> {
     try {
-      const checkoutTotalPrice = checkoutData['totalPrice']['gross']['amount'];
+      const checkoutSubTotalPrice =
+        checkoutData['subtotalPrice']['gross']['amount'];
       const checkoutId = checkoutData['id'];
       const deliveryMethod = checkoutData['deliveryMethod']['name'];
       const vouchersData = await getShippingVouchersHandler(token);
       const promoCode = this.getVoucherIdForCheckout(
-        checkoutTotalPrice,
+        checkoutSubTotalPrice,
         vouchersData,
       );
       if (promoCode && deliveryMethod == PROMOTION_SHIPPING_METHOD) {
@@ -35,13 +37,15 @@ export class ShippingPromotionService {
           token,
         );
         return prepareSuccessResponse(
-          addPromoCode,
+          preparePromotionResponse(addPromoCode),
           'checkout promo code added and shipping method selected',
           201,
         );
       }
       return prepareSuccessResponse(
-        await removeCheckoutPromoCodeHandler(checkoutId, promoCode, token),
+        preparePromotionResponse(
+          await removeCheckoutPromoCodeHandler(checkoutId, promoCode, token),
+        ),
         'no promo code added against shipping method created',
         201,
       );
