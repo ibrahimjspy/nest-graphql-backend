@@ -49,7 +49,18 @@ export const checkoutBundlesByIdQuery = (
                       name
                     }
                   }
-
+                  product {
+                    category {
+                      ancestors(first: 100) {
+                        edges {
+                          node {
+                            id
+                            name
+                          }
+                        }
+                      }
+                    }
+                  }
                   pricing {
                     price {
                       net {
