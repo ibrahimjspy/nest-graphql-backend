@@ -304,8 +304,8 @@ export class LegacyService {
       const is_preorder = variants[i]?.productVariant?.preorder;
       // All variants have same category, So get first one.
       const category_name =
-        variants[i]?.variant?.product?.category?.ancestors?.edges[0]?.node
-          ?.name;
+        variants[i]?.productVariant?.product?.category?.ancestors?.edges[0]
+          ?.node?.name;
       // If category is shoes we need to seperately track bundle_name & shop_id
 
       if (category_name == CATEGORY_SHOES) {
@@ -413,7 +413,8 @@ export class LegacyService {
   getColorsByShop(shops, colorsData) {
     const colorsByShop = [];
     colorsData.map((color) => {
-      if (color.name == shops[color.brand]) {
+      const shopColorsList = shops[color.brand];
+      if (shopColorsList.includes(color.name)) {
         colorsByShop.push(color);
       }
     });
