@@ -17,17 +17,21 @@ import { addShippingAddressInfo } from 'src/external/endpoints/checkout';
 import axios from 'axios';
 import { Logger } from '@nestjs/common';
 import { prepareFailedResponse } from 'src/core/utils/response';
+import {
+  checkoutBundlesInterface,
+  shippingAddressType,
+} from './Legacy.service.types';
 
 // TODO refactor this class implementation according to nest js classes
 // TODO split down classes based on external services like mapping, os
 // TODO add test cases for transformer methods
 // TODO add documemtaton for class methods
 export class LegacyService {
-  selectedBundles: any;
-  shipping_info: any;
-  orderId: any;
-  BASE_URL: any;
-  Elastic_ClOUD_URL: any;
+  selectedBundles: checkoutBundlesInterface[];
+  shipping_info: shippingAddressType;
+  orderId: string;
+  baseUrl: string;
+  elasticSearchUrl: string;
   colorMappingObject = {};
   shopIdList = [];
   productIdList = [];
@@ -37,7 +41,7 @@ export class LegacyService {
   categoryMappingObject = {};
   shoeSizeNames = [];
   shoesVendorIds = [];
-  user_id: string;
+  userId: string;
   token: string;
   paymentMethodId: string;
   colorsByShops: any[];
@@ -48,13 +52,15 @@ export class LegacyService {
     this.orderId = orderId;
     this.paymentMethodId = paymentMethodId;
     this.token = token;
-    this.BASE_URL = `${BASE_EXTERNAL_ENDPOINT}/api/v3`;
-    this.Elastic_ClOUD_URL = `${ELASTIC_SEARCH_ENDPOINT}/api/as/v1`;
+    this.baseUrl = `${BASE_EXTERNAL_ENDPOINT}/api/v3`;
+    this.elasticSearchUrl = `${ELASTIC_SEARCH_ENDPOINT}/api/as/v1`;
   }
   async placeExternalOrder() {
     try {
       const payload = await this.getExternalOrderPlacePayload();
-      const URL = `${this.BASE_URL}/check-out/`;
+      const URL = `${this.baseUrl}/check-out/`;
+      console.dir(this.colorMappingObject, { depth: null });
+
       const tokenWithoutBearer = this.token.match(/^(\S+)\s(.*)/).slice(1);
       const header = {
         headers: { Authorization: tokenWithoutBearer[1] },
@@ -70,32 +76,19 @@ export class LegacyService {
   async getExternalOrderPlacePayload() {
     let shoe_size_mapping;
     const decodedToken = jwt_decode(this.token);
-    this.user_id = decodedToken['os_user_id'];
-    this.shopIdList = [];
-    this.productIdList = [];
-    this.stockTypeMappingObject = {};
-    this.categoryMappingObject = {};
-    this.colorMappingObject = {};
-    this.osProductList = [];
-    this.osShopIdList = [];
-    this.shoeSizeNames = [];
-    this.colorsByShops = [];
-
-    this.parseBundleDetails(); //fixed
+    this.userId = decodedToken['os_user_id'];
+    this.parseBundleDetails();
     await Promise.all([
-      this.GetShop_MappingidsFrom_Elastic_search(),
-      this.GetProduct_MappingIdsFrom_Elastic_search(),
+      this.getShopMappings(), // fetching mappings for product and shop from elastic search
+      this.getProductMappings(),
     ]);
     const productMappingObject = hash(this.osProductList, 'productId');
-
     const shopMappingObject = hash(this.osShopIdList, 'shopId');
     const updated_color_mapping = this.swapShopIdWithVendorId(
       this.colorMappingObject,
       shopMappingObject,
     );
-    const color_mapping_response = await this.getLegacyColorMappingIDs(
-      updated_color_mapping,
-    );
+    await this.getLegacyColorMappingIDs(updated_color_mapping);
 
     // only need to call if shoe exist
     if (this.shoeSizeNames.length > 0) {
@@ -115,7 +108,7 @@ export class LegacyService {
       city: this.shipping_info?.city,
       state: this.shipping_info?.country.code,
       zipcode: this.shipping_info?.postalCode,
-      user_id: this.user_id,
+      user_id: this.userId,
       company_name: this.shipping_info?.companyName,
       country: this.shipping_info?.country.code,
       first_name: this.shipping_info?.firstName,
@@ -130,7 +123,6 @@ export class LegacyService {
 
     const payload = this.payloadBuilder(
       productMappingObject,
-      color_mapping_response,
       shoe_size_mapping || {},
       shippingAddressInfo,
     );
@@ -145,7 +137,6 @@ export class LegacyService {
 
   parseBundleDetails() {
     const bundleList = this.selectedBundles;
-
     for (let i = 0; i < bundleList.length; i++) {
       const element = bundleList[i];
 
@@ -164,7 +155,7 @@ export class LegacyService {
     }
   }
 
-  async GetProduct_MappingIdsFrom_Elastic_search() {
+  async getProductMappings() {
     const bundleList = this.selectedBundles;
     const res = await Promise.all(
       bundleList.map(async (item) => {
@@ -179,7 +170,7 @@ export class LegacyService {
           },
         };
 
-        const URL = `${this.Elastic_ClOUD_URL}/engines/b2b-product-track-dev/search`;
+        const URL = `${this.elasticSearchUrl}/engines/b2b-product-track-dev/search`;
         const response = await http.post(URL, payload, {
           headers: {
             Authorization: `Bearer private-${MAPPING_SERVICE_TOKEN}`,
@@ -199,7 +190,7 @@ export class LegacyService {
     }
   }
 
-  async GetShop_MappingidsFrom_Elastic_search() {
+  async getShopMappings() {
     const bundleList = this.selectedBundles;
     const res = await Promise.all(
       bundleList.map(async (item) => {
@@ -214,7 +205,7 @@ export class LegacyService {
           },
         };
 
-        const URL = `${this.Elastic_ClOUD_URL}/engines/b2b-shop-track-dev/search`;
+        const URL = `${this.elasticSearchUrl}/engines/b2b-shop-track-dev/search`;
         const response = await http.post(URL, payload, {
           headers: {
             Authorization: `Bearer private-${MAPPING_SERVICE_TOKEN}`,
@@ -233,17 +224,12 @@ export class LegacyService {
   }
 
   async validate_order_quantity(payload) {
-    const URL = `${this.BASE_URL}/product/quantity-validator`;
+    const URL = `${this.baseUrl}/product/quantity-validator`;
     const response = await http.post(URL, payload);
     return response?.data;
   }
 
-  payloadBuilder(
-    productMappings,
-    colorMappings,
-    shoe_size_mapping,
-    shippingAddressInfo,
-  ) {
+  payloadBuilder(productMappings, shopSizeMappings, shippingAddressInfo) {
     const selectedBundlesData = this.selectedBundles;
     const payloadObject = {};
 
@@ -263,27 +249,25 @@ export class LegacyService {
         const bundle_name = elements?.bundle?.name;
         const productId = elements?.bundle?.product?.id;
 
-        const item_id = productMappings[productId]['legacyProductId'];
-        const composite_key = `${item_id}_${colorId}`;
-        if (productId && !(composite_key in payloadObject)) {
+        const itemId = productMappings[productId]['legacyProductId'];
+        const compositeKey = `${itemId}_${colorId}`;
+        if (productId && !(compositeKey in payloadObject)) {
           const tempObj = {
-            item_id: item_id,
+            item_id: itemId,
             color_id: colorId,
             pack_qty: elements?.quantity,
             stock_type: this.stockTypeMappingObject[productId],
-
             memo: '',
             sms_number: SMS_NUMBER,
             spa_id: shippingAddressInfo?.data?.user_id,
-            //  shippingAddressInfo?.data?.id,
             spm_name: 'UPS',
             store_credit: STORE_CREDIT,
             signature_requested: SIGNATURE_REQUESTED,
           };
 
-          payloadObject[composite_key] =
+          payloadObject[compositeKey] =
             this.categoryMappingObject[productId] == CATEGORY_SHOES
-              ? { ...tempObj, shoe_size_id: shoe_size_mapping[bundle_name]?.id }
+              ? { ...tempObj, shoe_size_id: shopSizeMappings[bundle_name]?.id }
               : tempObj;
         }
       });
@@ -332,9 +316,9 @@ export class LegacyService {
   }
 
   async getLegacyColorMappingIDs(colorObject) {
-    const URL = `${
-      this.BASE_URL
-    }/product/details?color-mapping=${JSON.stringify(colorObject)}`;
+    const URL = `${this.baseUrl}/product/details?color-mapping=${JSON.stringify(
+      colorObject,
+    )}`;
     const response = await axios.get(URL);
     const colorsData = response?.data?.data;
     this.colorsByShops = this.getColorsByShop(colorObject, colorsData);
@@ -344,7 +328,7 @@ export class LegacyService {
 
   async getShoeSizeIDs(vendor_name_list, shoe_size_name_list) {
     const URL = `${
-      this.BASE_URL
+      this.baseUrl
     }/product/shoe-sizes?vendor_name_list=${JSON.stringify(
       vendor_name_list,
     )}&shoe_size_name_list=${JSON.stringify(shoe_size_name_list)}`;
