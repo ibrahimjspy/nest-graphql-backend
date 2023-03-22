@@ -1,15 +1,21 @@
 import {
-  getPaymentIntentFromMetadata,
+  getPaymentDataFromMetadata,
   paymentIntentAmountValidate,
 } from './Payment.utils';
 
 describe('Payment utilities unit test', () => {
   it('testing whether payment intent id is correctly getting parsed from checkout metadata', async () => {
-    const checkoutMetadata = [{ paymentIntentId: 'testIntentId' }];
-    const paymentIntentId = getPaymentIntentFromMetadata(checkoutMetadata);
+    const checkoutMetadata = [
+      { key: 'paymentMethodId', value: 'testMethodId' },
+      { key: 'paymentIntentId', value: 'testIntentId' },
+    ];
+    const paymentIntentId = getPaymentDataFromMetadata(checkoutMetadata);
     console.log(paymentIntentId);
     expect(paymentIntentId).toBeDefined();
-    expect(paymentIntentId).toStrictEqual('testIntentId');
+    expect(paymentIntentId).toStrictEqual({
+      paymentIntentId: 'testIntentId',
+      paymentMethodId: 'testMethodId',
+    });
   });
 
   it('testing whether payment intent amount is correctly getting compared with checkout amount', async () => {

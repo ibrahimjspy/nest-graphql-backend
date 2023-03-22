@@ -87,7 +87,6 @@ export class LegacyService {
     const productMappingObject = hash(this.osProductList, 'productId');
 
     const shopMappingObject = hash(this.osShopIdList, 'shopId');
-
     const updated_color_mapping = this.swapShopIdWithVendorId(
       this.colorMappingObject,
       shopMappingObject,
@@ -95,6 +94,7 @@ export class LegacyService {
     const color_mapping_response = await this.getLegacyColorMappingIDs(
       updated_color_mapping,
     );
+
     // only need to call if shoe exist
     if (this.shoeSizeNames.length > 0) {
       const updated_shoes_vendor_ids = this.replaceShopWithVendorId(
@@ -328,7 +328,9 @@ export class LegacyService {
       this.BASE_URL
     }/product/details?color-mapping=${JSON.stringify(colorObject)}`;
     const response = await axios.get(URL);
-    return hash(response?.data?.data, 'name');
+    const colorsData = response?.data?.data;
+    const data = hash(this.getColorsByShop(colorObject, colorsData), 'name');
+    return data;
   }
 
   async getShoeSizeIDs(vendor_name_list, shoe_size_name_list) {
@@ -397,5 +399,15 @@ export class LegacyService {
     });
 
     return vendorIds;
+  }
+
+  getColorsByShop(shops, colorsData) {
+    const colorsByShop = [];
+    colorsData.map((color) => {
+      if (color.name == shops[color.brand]) {
+        colorsByShop.push(color);
+      }
+    });
+    return colorsByShop;
   }
 }
