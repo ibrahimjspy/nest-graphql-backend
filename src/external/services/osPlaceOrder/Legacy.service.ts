@@ -40,6 +40,7 @@ export class LegacyService {
   user_id: string;
   token: string;
   paymentMethodId: string;
+  colorsByShops: any[];
 
   constructor(selectedBundles, shipping_info, orderId, paymentMethodId, token) {
     this.selectedBundles = selectedBundles;
@@ -78,6 +79,7 @@ export class LegacyService {
     this.osProductList = [];
     this.osShopIdList = [];
     this.shoeSizeNames = [];
+    this.colorsByShops = [];
 
     this.parseBundleDetails(); //fixed
     await Promise.all([
@@ -246,21 +248,27 @@ export class LegacyService {
     const payloadObject = {};
 
     selectedBundlesData?.map((elements) => {
+      const shopId = elements.bundle.shop.id;
       elements?.bundle?.productVariants?.map((element) => {
+        const colorName = this.getColorAttribute(
+          element?.productVariant?.attributes,
+        )?.values[0]?.name;
+        const osShopId = this.getOsShopIdByShrShopId(this.osShopIdList, shopId);
+        const colorId = this.getColorIdFromColorsList(
+          this.colorsByShops,
+          colorName,
+          osShopId,
+        );
+
         const bundle_name = elements?.bundle?.name;
         const productId = elements?.bundle?.product?.id;
-        const color_id =
-          colorMappings[
-            this.getColorAttribute(element?.productVariant?.attributes)
-              ?.values[0]?.name
-          ]['id'];
 
         const item_id = productMappings[productId]['legacyProductId'];
-        const composite_key = `${item_id}_${color_id}`;
+        const composite_key = `${item_id}_${colorId}`;
         if (productId && !(composite_key in payloadObject)) {
           const tempObj = {
             item_id: item_id,
-            color_id: color_id,
+            color_id: colorId,
             pack_qty: elements?.quantity,
             stock_type: this.stockTypeMappingObject[productId],
 
@@ -329,6 +337,7 @@ export class LegacyService {
     }/product/details?color-mapping=${JSON.stringify(colorObject)}`;
     const response = await axios.get(URL);
     const colorsData = response?.data?.data;
+    this.colorsByShops = this.getColorsByShop(colorObject, colorsData);
     const data = hash(this.getColorsByShop(colorObject, colorsData), 'name');
     return data;
   }
@@ -409,5 +418,25 @@ export class LegacyService {
       }
     });
     return colorsByShop;
+  }
+
+  getOsShopIdByShrShopId(shopMappingsList, shopId) {
+    let sourceShopId: string;
+    shopMappingsList.map((mapping) => {
+      if (mapping.shopId == shopId) {
+        sourceShopId = mapping.vendorId;
+      }
+    });
+    return sourceShopId;
+  }
+
+  getColorIdFromColorsList(colorsByShop, color, shopId) {
+    let colorId: string;
+    colorsByShop.map((colorObject) => {
+      if (colorObject.brand == shopId && colorObject.name == color) {
+        colorId = colorObject.id;
+      }
+    });
+    return colorId;
   }
 }
