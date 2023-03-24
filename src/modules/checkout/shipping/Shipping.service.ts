@@ -4,10 +4,12 @@ import { prepareSuccessResponse } from 'src/core/utils/response';
 import {
   billingAddressUpdateHandler,
   shippingAddressUpdateHandler,
-  shippingAndBillingAddressHandler,
   updateDeliveryMethodHandler,
 } from 'src/graphql/handlers/checkout/checkout';
-import { getCheckoutShippingMethodsHandler } from 'src/graphql/handlers/checkout/shipping';
+import {
+  getCheckoutShippingAddressHandler,
+  getCheckoutShippingMethodsHandler,
+} from 'src/graphql/handlers/checkout/shipping';
 import { GetShippingMethodsDto } from './dto/shippingMethods';
 import { AddressDto } from './dto/shippingAddress';
 import { ShippingPromotionService } from './services/Shipping.promotion';
@@ -44,11 +46,15 @@ export class ShippingService {
   /**
    * @description -- returns shipping and billing address against a checkout session
    */
-  public async getShippingAndBillingAddress(
+  public async getCheckoutShippingAddress(
     checkoutId: string,
+    token: string,
   ): Promise<object> {
     try {
-      const response = await shippingAndBillingAddressHandler(checkoutId);
+      const response = await getCheckoutShippingAddressHandler(
+        checkoutId,
+        token,
+      );
       return prepareSuccessResponse(response);
     } catch (error) {
       this.logger.error(error);
