@@ -5,6 +5,7 @@ import {
   Controller,
   Get,
   Headers,
+  Param,
   Post,
   Put,
   Query,
@@ -68,17 +69,23 @@ export class ShippingController {
     );
   }
 
-  @Get('api/v1/checkout/address')
+  @Get('api/v1/checkout/address/:checkoutId')
   @ApiOperation({
     summary: 'returns billing and shipping address against a checkout id',
   })
-  async getShippingAndBillingAddress(
+  @ApiBearerAuth('JWT-auth')
+  async getShippingAddress(
     @Res() res,
-    @Query() filter: CheckoutIdDto,
+    @Param() params: CheckoutIdDto,
+    @Headers() headers,
   ): Promise<object> {
+    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.getShippingAndBillingAddress(filter?.checkoutId),
+      await this.appService.getCheckoutShippingAddress(
+        params?.checkoutId,
+        Authorization,
+      ),
     );
   }
 

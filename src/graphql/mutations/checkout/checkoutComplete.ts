@@ -1,14 +1,18 @@
 import { gql } from 'graphql-request';
 
-export const orderCreateFromCheckoutMutation = (checkoutId: string) => {
+export const orderCreateFromCheckoutMutation = (
+  checkoutId: string,
+  disableCheckout = true,
+) => {
   return gql`
     mutation {
       orderCreateFromCheckout(
         id: "${checkoutId}"
-        removeCheckout: true
+        removeCheckout: ${disableCheckout}
       ) {
         order {
           id
+          number
           deliveryMethod {
             ... on ShippingMethod {
               id

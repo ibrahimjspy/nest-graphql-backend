@@ -236,9 +236,13 @@ export const getPaymentIntentHandler = async (
 export const orderCreateFromCheckoutHandler = async (
   checkoutId: string,
   token: string,
+  disableCheckout = true,
 ) => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(orderCreateFromCheckoutMutation(checkoutId), token),
+    await graphqlCall(
+      orderCreateFromCheckoutMutation(checkoutId, disableCheckout),
+      token,
+    ),
   );
 
   return response['orderCreateFromCheckout'];
