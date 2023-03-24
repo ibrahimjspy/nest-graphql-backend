@@ -59,7 +59,6 @@ export class LegacyService {
     try {
       const payload = await this.getExternalOrderPlacePayload();
       const URL = `${this.baseUrl}/check-out/`;
-      console.dir(this.colorMappingObject, { depth: null });
 
       const tokenWithoutBearer = this.token.match(/^(\S+)\s(.*)/).slice(1);
       const header = {

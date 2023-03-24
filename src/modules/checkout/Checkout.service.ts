@@ -61,7 +61,7 @@ export class CheckoutService {
       const instance = new LegacyService(
         checkoutBundles,
         orderDetails['shippingAddress'],
-        orderDetails['id'],
+        orderDetails['number'],
         paymentMethodId,
         token,
       );
