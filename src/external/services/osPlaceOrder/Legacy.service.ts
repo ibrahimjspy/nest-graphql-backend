@@ -59,7 +59,6 @@ export class LegacyService {
     try {
       const payload = await this.getExternalOrderPlacePayload();
       const URL = `${this.baseUrl}/check-out/`;
-
       const tokenWithoutBearer = this.token.match(/^(\S+)\s(.*)/).slice(1);
       const header = {
         headers: { Authorization: tokenWithoutBearer[1] },
@@ -88,7 +87,6 @@ export class LegacyService {
       shopMappingObject,
     );
     await this.getLegacyColorMappingIDs(updated_color_mapping);
-
     // only need to call if shoe exist
     if (this.shoeSizeNames.length > 0) {
       const updated_shoes_vendor_ids = this.replaceShopWithVendorId(
@@ -125,12 +123,6 @@ export class LegacyService {
       shoe_size_mapping || {},
       shippingAddressInfo,
     );
-    const validated_payload = await this.validate_order_quantity(payload);
-
-    // if length of resp is 0, it means payload is valid.
-    if (validated_payload?.length > 0) {
-      throw Error(validated_payload);
-    }
     return payload;
   }
 
