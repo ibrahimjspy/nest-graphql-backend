@@ -12,6 +12,9 @@ export const preparePromotionResponse = (promotionResponse) => {
 
   promotionResponse.checkout.subtotalPrice.gross.amount =
     subtotalPrice + discount;
+  promotionResponse.checkout.shippingPrice.gross.amount =
+    promotionResponse.checkout.shippingPrice.gross.amount - discount;
+  promotionResponse.checkout.discount.amount = 0;
 
   return promotionResponse;
 };
