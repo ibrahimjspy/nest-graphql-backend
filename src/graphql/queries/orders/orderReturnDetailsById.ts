@@ -30,6 +30,10 @@ const federationQuery = (id: string): string => {
                   name
                   description
                   channel
+                  metadata {
+                    key
+                    value
+                  }
                   thumbnail {
                     url
                   }
