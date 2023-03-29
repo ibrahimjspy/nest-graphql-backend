@@ -18,6 +18,11 @@ const b2cQuery = () => {
   return gql`
     query {
       me {
+        isStaff
+        userPermissions {
+          name
+          code
+        }
         id
         firstName
         lastName
