@@ -41,9 +41,13 @@ const b2cQuery = (storefrontId: string): string => {
         shopId: "${storefrontId}"
         Paginate: { first: 12 }
         fromDate: "2020-12-20"
-        toDate: "${new Date().toISOString().slice(0, 10)}"
       ) {
         id
+        totalProfit {
+          formated
+          price
+          currencyCode
+        }
         totalPayouts {
             payout {
             formated
