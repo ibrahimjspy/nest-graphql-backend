@@ -34,10 +34,14 @@ import { addCheckoutBundleQuery } from '../../queries/checkout/addCheckoutBundle
 import { checkoutQuery } from 'src/graphql/queries/checkout/checkout';
 import { AddressDto } from 'src/modules/checkout/shipping/dto/shippingAddress';
 import { validateCheckoutQuery } from 'src/graphql/queries/checkout/validateCheckout';
-import { CheckoutBundlesDto } from 'src/graphql/types/checkout.type';
+import {
+  CheckoutBundlesDto,
+  FailedOrderInterface,
+} from 'src/graphql/types/checkout.type';
 import { getCheckoutMetadataQuery } from 'src/graphql/queries/checkout/metadata';
 import { marketplaceCheckoutSummaryQuery } from 'src/graphql/queries/checkout/marketplaceCheckoutSummary';
 import { saleorCheckoutSummaryQuery } from 'src/graphql/queries/checkout/saleorCheckoutSummary';
+import { saveFailedOrderMutation } from 'src/graphql/mutations/checkout/placeOrder/failedOrder';
 
 export const marketplaceCheckoutHandler = async (
   id: string,
@@ -358,4 +362,14 @@ export const saleorCheckoutSummaryHandler = async (
     await graphqlCall(saleorCheckoutSummaryQuery(checkoutId), token),
   );
   return response['checkout'];
+};
+
+export const saveFailedOrderHandler = async (
+  saveFailedOrderData: FailedOrderInterface,
+  token: string,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(saveFailedOrderMutation(saveFailedOrderData), token),
+  );
+  return response['saveFailedOrder'];
 };

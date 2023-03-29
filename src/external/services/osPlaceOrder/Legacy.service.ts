@@ -21,6 +21,8 @@ import {
   checkoutBundlesInterface,
   shippingAddressType,
 } from './Legacy.service.types';
+import packageInfo from '../../../../package.json';
+import { saveFailedOrderHandler } from 'src/graphql/handlers/checkout/checkout';
 
 // TODO refactor this class implementation according to nest js classes
 // TODO split down classes based on external services like mapping, os
@@ -66,6 +68,20 @@ export class LegacyService {
       const response = await http.post(URL, payload, header);
       return response?.data;
     } catch (err) {
+      await saveFailedOrderHandler(
+        {
+          source: packageInfo.name,
+          orderId: this.orderId,
+          exception: JSON.stringify(err),
+          errorShortDesc: err.message,
+          orderPayload: {
+            checkoutBundles: this.selectedBundles,
+            shippingInformation: this.shipping_info,
+            paymentMethodId: this.paymentMethodId,
+          },
+        },
+        this.token,
+      );
       Logger.error(err);
       return prepareFailedResponse(err.message);
     }
