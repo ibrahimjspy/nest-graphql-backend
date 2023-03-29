@@ -469,7 +469,7 @@ export class OrdersService {
         ordersShipped: shipped,
         ordersCancelled: cancelled,
         ordersReturnsRequested: returned.length,
-        totalEarnings: Number(totalEarnings['totalPrice']['price']),
+        totalEarnings: Number(totalEarnings['price']),
       };
 
       return prepareSuccessResponse(response, '', 201);
