@@ -462,7 +462,7 @@ export class OrdersService {
             isb2c: true,
           }),
           // TODO replace development token with AUTHO token
-          getTotalEarningsHandler(shopId, B2B_DEVELOPMENT_TOKEN, false),
+          getTotalEarningsHandler(shopId, token, true),
         ]);
       const response: ShopOrderReportResponseDto = {
         ordersProcessing: processing,
