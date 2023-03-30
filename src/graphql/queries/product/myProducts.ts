@@ -22,6 +22,10 @@ const b2cQuery = (productIds, filter: myProductsDTO): string => {
           node {
             name
             id
+            metadata {
+              key
+              value
+            }
             category {
               id
               name
