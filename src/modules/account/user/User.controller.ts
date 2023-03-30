@@ -25,7 +25,10 @@ export class UserController {
     @Query() filter: b2cDto,
     @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
-    return makeResponse(res, await this.appService.getUserinfo(token));
+    return makeResponse(
+      res,
+      await this.appService.getUserinfo(token, filter.isB2c),
+    );
   }
 
   @Put('/api/v1/user/update')
