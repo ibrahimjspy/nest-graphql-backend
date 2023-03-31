@@ -6,3 +6,11 @@ export interface CheckoutBundlesDto {
   isSelected?: boolean;
   token: string;
 }
+
+export interface FailedOrderInterface {
+  source: string;
+  orderId: string;
+  exception: string;
+  errorShortDesc: string;
+  orderPayload: any;
+}
