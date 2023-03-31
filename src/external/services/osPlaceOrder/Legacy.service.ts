@@ -68,6 +68,7 @@ export class LegacyService {
       const response = await http.post(URL, payload, header);
       return response?.data;
     } catch (err) {
+      Logger.error(err);
       await saveFailedOrderHandler(
         {
           source: packageInfo.name,
@@ -82,7 +83,6 @@ export class LegacyService {
         },
         this.token,
       );
-      Logger.error(err);
       return prepareFailedResponse(err.message);
     }
   }
