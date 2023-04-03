@@ -51,6 +51,10 @@ export class ShopOrderDto {
 }
 
 export class AddOrderToShopDto {
+  @ApiProperty({ required: true })
+  @IsString()
+  userEmail: string;
+
   @ApiProperty({
     required: true,
     isArray: true,

@@ -1,6 +1,7 @@
 import { gql } from 'graphql-request';
 
 export const addOrderToShopMutation = (
+  userEmail,
   { shopId, orderId, shippingMethodId, orderlineIds },
   orderBundles,
 ): string => {
@@ -8,6 +9,7 @@ export const addOrderToShopMutation = (
     mutation {
       addOrderToShop(
         input: {
+          email: "${userEmail}"
           shopId:"${shopId}"
           orderId:"${orderId}"
           shippingMethodId:"${shippingMethodId}"

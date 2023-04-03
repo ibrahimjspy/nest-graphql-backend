@@ -148,12 +148,14 @@ export const ordersListHandler = async (
 
 export const addOrderToShopHandler = async (
   order,
+  userEmail: string,
   token: string,
   isB2c = false,
 ) => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
       addOrderToShopMutation(
+        userEmail,
         order, //uses default bundle information for shop and shipping details
         orderBundlesTransformer(order), //transforms bundles array to graphql string
       ),

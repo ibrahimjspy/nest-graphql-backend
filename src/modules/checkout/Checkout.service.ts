@@ -102,6 +102,7 @@ export class CheckoutService {
         B2B_CHECKOUT_APP_TOKEN,
       );
       const ordersByShop = {
+        userEmail: checkoutBundles['data']['userEmail'],
         marketplaceOrders: getOrdersByShopId(
           checkoutBundles['data'],
           createOrder['order'],
