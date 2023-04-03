@@ -15,6 +15,7 @@ export const checkoutBundlesByIdQuery = (
         ... on CheckoutBundlesType {
           __typename
           checkoutId
+          userEmail
           checkoutBundles {
             checkoutBundleId
             isSelected

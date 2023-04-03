@@ -287,7 +287,14 @@ export class OrdersService {
       const response = [];
       await Promise.all(
         orders?.marketplaceOrders.map(async (shopOrder) => {
-          response.push(await addOrderToShopHandler(shopOrder, token, isB2c));
+          response.push(
+            await addOrderToShopHandler(
+              shopOrder,
+              orders.userEmail,
+              token,
+              isB2c,
+            ),
+          );
         }),
       );
       return prepareSuccessResponse(response);
