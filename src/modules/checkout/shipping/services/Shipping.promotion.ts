@@ -7,7 +7,7 @@ import {
   removeCheckoutPromoCodeHandler,
 } from 'src/graphql/handlers/checkout/shipping';
 import { vouchersType } from './Shipping.promotion.types';
-import { PROMOTION_SHIPPING_METHOD } from 'src/constants';
+import { PROMOTION_SHIPPING_METHOD_ID } from 'src/constants';
 import { preparePromotionResponse } from './Shipping.response';
 
 @Injectable()
@@ -24,13 +24,13 @@ export class ShippingPromotionService {
       const checkoutSubTotalPrice =
         checkoutData['subtotalPrice']['gross']['amount'];
       const checkoutId = checkoutData['id'];
-      const deliveryMethod = checkoutData['deliveryMethod']['name'];
+      const deliveryMethod = checkoutData['deliveryMethod']['id'];
       const vouchersData = await getShippingVouchersHandler(token);
       const promoCode = this.getVoucherIdForCheckout(
         checkoutSubTotalPrice,
         vouchersData,
       );
-      if (promoCode && deliveryMethod == PROMOTION_SHIPPING_METHOD) {
+      if (promoCode && deliveryMethod == PROMOTION_SHIPPING_METHOD_ID) {
         const addPromoCode = await addCheckoutPromoCodeHandler(
           checkoutId,
           promoCode,

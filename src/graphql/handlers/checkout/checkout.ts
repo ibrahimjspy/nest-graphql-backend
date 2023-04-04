@@ -42,6 +42,7 @@ import { getCheckoutMetadataQuery } from 'src/graphql/queries/checkout/metadata'
 import { marketplaceCheckoutSummaryQuery } from 'src/graphql/queries/checkout/marketplaceCheckoutSummary';
 import { saleorCheckoutSummaryQuery } from 'src/graphql/queries/checkout/saleorCheckoutSummary';
 import { saveFailedOrderMutation } from 'src/graphql/mutations/checkout/placeOrder/failedOrder';
+import { SaleorCheckoutInterface } from 'src/modules/checkout/Checkout.utils.type';
 
 export const marketplaceCheckoutHandler = async (
   id: string,
@@ -316,7 +317,7 @@ export const getTotalAmountByCheckoutIdHandler = async (
 export const getCheckoutHandler = async (
   checkoutId: string,
   token: string,
-): Promise<object> => {
+): Promise<SaleorCheckoutInterface> => {
   const response = await graphqlCall(checkoutQuery(checkoutId), token);
   if (!response['checkout']) {
     throw new RecordNotFound('Checkout');
@@ -357,7 +358,7 @@ export const marketplaceCheckoutSummaryHandler = async (
 export const saleorCheckoutSummaryHandler = async (
   checkoutId: string,
   token: string,
-): Promise<object> => {
+): Promise<SaleorCheckoutInterface> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(saleorCheckoutSummaryQuery(checkoutId), token),
   );

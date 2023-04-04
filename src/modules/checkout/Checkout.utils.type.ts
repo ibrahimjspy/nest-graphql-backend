@@ -23,3 +23,41 @@ export interface UnSelectBundlesType {
   checkoutBundleIds: string[];
   token: string;
 }
+
+export interface SaleorCheckoutInterface {
+  id: string;
+  metadata: {
+    key: string;
+    value: string;
+  }[];
+  totalPrice: {
+    gross: {
+      amount: number;
+    };
+  };
+  shippingMethods: {
+    id: string;
+    name: string;
+    active: boolean;
+    price: {
+      amount: number;
+      currency: string;
+    };
+  }[];
+  deliveryMethod: {
+    __typename: string;
+    id: string;
+    name: string;
+    metadata: {
+      key: string;
+      value: string;
+    }[];
+  };
+  lines: {
+    id: string;
+    quantity: number;
+    variant: {
+      id: string;
+    };
+  }[];
+}

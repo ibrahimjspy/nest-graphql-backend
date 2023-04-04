@@ -13,6 +13,8 @@ import {
 import { GetShippingMethodsDto } from './dto/shippingMethods';
 import { AddressDto } from './dto/shippingAddress';
 import { ShippingPromotionService } from './services/Shipping.promotion';
+import { SaleorCheckoutInterface } from '../Checkout.utils.type';
+import { checkoutShippingMethodsSort } from '../Checkout.utils';
 
 @Injectable()
 export class ShippingService {
@@ -72,13 +74,13 @@ export class ShippingService {
   ): Promise<object> {
     try {
       const isB2c = filter.isB2c;
-      return prepareSuccessResponse(
-        await getCheckoutShippingMethodsHandler(
-          filter.checkoutId,
-          token,
-          isB2c,
-        ),
+      const shippingMethods = await getCheckoutShippingMethodsHandler(
+        filter.checkoutId,
+        token,
+        isB2c,
       );
+      checkoutShippingMethodsSort(shippingMethods);
+      return prepareSuccessResponse(shippingMethods);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -138,5 +140,21 @@ export class ShippingService {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
     }
+  }
+
+  /**
+   * @description -- this method parses checkout data of saleor and returns delivery method pre auth amount stored in object metadata
+   */
+  public getDeliveryMethodPreAuth(
+    checkoutData: SaleorCheckoutInterface,
+  ): number {
+    const PRE_AUTH_AMOUNT_KEY = 'pre_auth_price';
+    let preAuthAmount = 0;
+    checkoutData?.deliveryMethod?.metadata?.map((meta) => {
+      if (meta.key == PRE_AUTH_AMOUNT_KEY) {
+        preAuthAmount = Number(meta.value);
+      }
+    });
+    return preAuthAmount;
   }
 }

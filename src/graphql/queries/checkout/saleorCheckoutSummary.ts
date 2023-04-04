@@ -9,6 +9,10 @@ export const saleorCheckoutSummaryQuery = (checkoutId: string): string => {
             amount
           }
         }
+        shippingMethods {
+          id
+          name
+        }
         discount {
           amount
         }
@@ -26,6 +30,20 @@ export const saleorCheckoutSummaryQuery = (checkoutId: string): string => {
         metadata {
           key
           value
+        }
+        deliveryMethod {
+          ... on ShippingMethod {
+          id
+          metadata {
+            key
+            value
+          }
+          }
+          ... on Warehouse {
+            __typename,
+            id,
+            name
+          }
         }
       }
     }

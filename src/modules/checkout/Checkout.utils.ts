@@ -1,6 +1,10 @@
 import { makeQuantity } from 'src/core/utils/helpers';
 import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
-import { CheckoutBundleType } from './Checkout.utils.type';
+import {
+  CheckoutBundleType,
+  SaleorCheckoutInterface,
+} from './Checkout.utils.type';
+import { PROMOTION_SHIPPING_METHOD_ID } from 'src/constants';
 
 export const toCents = (amount: any) => {
   // TODO :Math.round() - rounds to the nearest integer (if the fraction is 0.5 or greater - rounds up
@@ -156,4 +160,18 @@ export const getShippingMethodsFromShippingZones = (shippingZones) => {
  */
 export const validateBundlesLength = (bundles: any[]) => {
   return bundles.length > 0;
+};
+
+/**
+ * @description -- this function sorts shipping methods and places shipping method with promotion on top
+ */
+export const checkoutShippingMethodsSort = (
+  checkoutData: SaleorCheckoutInterface,
+) => {
+  checkoutData.shippingMethods.map((shippingMethod, key) => {
+    if (shippingMethod.id == PROMOTION_SHIPPING_METHOD_ID) {
+      checkoutData.shippingMethods.splice(key, 1);
+      checkoutData.shippingMethods.splice(0, 0, shippingMethod);
+    }
+  });
 };

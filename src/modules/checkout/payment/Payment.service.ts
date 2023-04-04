@@ -17,6 +17,8 @@ import {
 } from 'src/graphql/handlers/checkout/payment/payment.saleor';
 import { getCheckoutMetadataHandler } from 'src/graphql/handlers/checkout/checkout';
 import { B2B_CHECKOUT_APP_TOKEN } from 'src/constants';
+import { ShippingService } from '../shipping/Shipping.service';
+import { SaleorCheckoutInterface } from '../Checkout.utils.type';
 
 @Injectable()
 export class PaymentService {
@@ -24,6 +26,7 @@ export class PaymentService {
   constructor(
     private stripeService: StripeService,
     private saleorCheckoutService: SaleorCheckoutService,
+    private shippingService: ShippingService,
   ) {
     return;
   }
@@ -57,6 +60,19 @@ export class PaymentService {
       this.logger.error(error);
     }
   }
+
+  /**
+   * @description -- this returns total amount which should be pre authorized for checkout
+   */
+  public getCheckoutPreAuthAmount(
+    checkoutData: SaleorCheckoutInterface,
+  ): number {
+    const checkoutTotalGrossAmount = checkoutData?.totalPrice?.gross?.amount;
+    const checkoutShippingPreAuthAmount =
+      this.shippingService.getDeliveryMethodPreAuth(checkoutData);
+    return checkoutTotalGrossAmount + checkoutShippingPreAuthAmount;
+  }
+
   /**
    * @description -- this creates a payment session against user
    */
@@ -133,7 +149,7 @@ export class PaymentService {
   ): Promise<object> {
     try {
       const checkoutId = checkoutData['id'];
-      const checkoutAmount = checkoutData.totalPrice.gross.amount;
+      const checkoutAmount = this.getCheckoutPreAuthAmount(checkoutData);
       const paymentIntentData = await this.stripeService.getPaymentIntentId(
         paymentIntentId,
       );
@@ -180,12 +196,9 @@ export class PaymentService {
     token: string,
   ): Promise<object> {
     try {
-      const checkoutData = await this.saleorCheckoutService.getCheckout(
-        checkoutId,
-        token,
-      );
-      const checkoutAmount = checkoutData['totalPrice'].gross.amount;
-
+      const checkoutData: SaleorCheckoutInterface =
+        await this.saleorCheckoutService.getCheckout(checkoutId, token);
+      const checkoutAmount = this.getCheckoutPreAuthAmount(checkoutData);
       const paymentData = getPaymentDataFromMetadata(checkoutData['metadata']);
       const paymentIntentId = paymentData.paymentIntentId;
       if (paymentIntentId) {
