@@ -39,9 +39,12 @@ export class CheckoutService {
       preparePromotionResponse({
         checkout: SaleorCheckoutSummary,
       });
+      const CheckoutPreAuthAmount =
+        this.paymentService.getCheckoutPreAuthAmount(SaleorCheckoutSummary);
       return prepareSuccessResponse({
         MarketplaceCheckoutSummary,
         SaleorCheckoutSummary,
+        CheckoutPreAuthAmount,
       });
     } catch (error) {
       this.logger.error(error);

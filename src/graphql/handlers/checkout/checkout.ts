@@ -358,7 +358,7 @@ export const marketplaceCheckoutSummaryHandler = async (
 export const saleorCheckoutSummaryHandler = async (
   checkoutId: string,
   token: string,
-): Promise<object> => {
+): Promise<SaleorCheckoutInterface> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(saleorCheckoutSummaryQuery(checkoutId), token),
   );

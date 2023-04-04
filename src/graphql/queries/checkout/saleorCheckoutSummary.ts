@@ -27,6 +27,20 @@ export const saleorCheckoutSummaryQuery = (checkoutId: string): string => {
           key
           value
         }
+        deliveryMethod {
+          ... on ShippingMethod {
+          id
+          metadata {
+            key
+            value
+          }
+          }
+          ... on Warehouse {
+            __typename,
+            id,
+            name
+          }
+        }
       }
     }
   `;
