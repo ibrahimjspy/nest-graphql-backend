@@ -4,9 +4,10 @@ import {
   graphqlResultErrorHandler,
 } from 'src/core/proxies/graphqlHandler';
 import { menuCategoriesQuery } from 'src/graphql/queries/categories/menu';
-import { shopCategoriesDTO } from 'src/modules/categories/dto/categories';
 import { categoriesQuery } from '../queries/categories/categories';
 import { shopCategoryIdsQuery } from '../queries/categories/shopCategoryIds';
+import { syncCategoriesQuery } from '../queries/categories/syncCategories';
+import { SyncCategoriesDto } from 'src/modules/categories/dto/categories';
 
 export const menuCategoriesHandler = async (): Promise<object> => {
   try {
@@ -43,6 +44,20 @@ export const categoriesHandler = async (
   const userToken = '';
   const response = await graphqlResultErrorHandler(
     await graphqlCall(categoriesQuery(filter, isb2c), userToken, isb2c),
+  );
+  return response['categories'];
+};
+
+export const syncCategoriesHandler = async (
+  syncCategoriesFilter: SyncCategoriesDto,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      syncCategoriesQuery(
+        syncCategoriesFilter.categoryLevel,
+        syncCategoriesFilter,
+      ),
+    ),
   );
   return response['categories'];
 };

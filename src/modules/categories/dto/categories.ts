@@ -19,3 +19,13 @@ export class shopCategoriesDTO extends IntersectionType(
   b2cDTO,
   PaginationDto,
 ) {}
+
+export class SyncCategoriesDto extends PaginationDto {
+  @ApiProperty({
+    type: String,
+    required: false,
+    default: 0,
+    description: 'Filter categories by the nesting level in the category tree.',
+  })
+  categoryLevel: number;
+}
