@@ -29,8 +29,12 @@ const federationQuery = (checkoutId: string) => {
           deliveryMethod {
             ... on ShippingMethod {
             __typename,
-            id,
+            id
             name
+            metadata {
+              key
+              value
+            }
             }
             ... on Warehouse {
             __typename,

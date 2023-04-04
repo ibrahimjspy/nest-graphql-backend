@@ -4,6 +4,7 @@ import {
   createCheckoutHandler,
   getCheckoutHandler,
 } from 'src/graphql/handlers/checkout/checkout';
+import { SaleorCheckoutInterface } from '../Checkout.utils.type';
 
 @Injectable()
 export class SaleorCheckoutService {
@@ -30,7 +31,10 @@ export class SaleorCheckoutService {
     }
   }
 
-  public async getCheckout(checkoutId: string, token: string) {
+  public async getCheckout(
+    checkoutId: string,
+    token: string,
+  ): Promise<SaleorCheckoutInterface> {
     return await getCheckoutHandler(checkoutId, token);
   }
 }
