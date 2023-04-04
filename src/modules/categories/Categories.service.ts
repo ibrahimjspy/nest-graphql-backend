@@ -1,6 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
-import { prepareFailedResponse, prepareSuccessResponse } from 'src/core/utils/response';
+import {
+  prepareFailedResponse,
+  prepareSuccessResponse,
+} from 'src/core/utils/response';
 import {
   categoriesHandler,
   menuCategoriesHandler,
@@ -9,7 +12,7 @@ import {
   syncCategoriesHandler,
 } from 'src/graphql/handlers/categories';
 import { SyncCategoriesDto, shopCategoriesDTO } from './dto/categories';
-import { getSyncCategories } from 'src/external/endpoints/syncCategoriesMapping';
+import { getSyncCategoriesMapping } from 'src/external/endpoints/syncCategoriesMapping';
 import { prepareSyncedCategoriesResponse } from './Categories.utils';
 
 @Injectable()
@@ -36,7 +39,9 @@ export class CategoriesService {
   ): Promise<object> {
     try {
       const categoriesData = await syncCategoriesHandler(syncCategoriesFilter);
-      const syncedCategoriesMapping = await getSyncCategories(retailerId);
+      const syncedCategoriesMapping = await getSyncCategoriesMapping(
+        retailerId,
+      );
       return prepareSyncedCategoriesResponse(
         categoriesData,
         syncedCategoriesMapping,
