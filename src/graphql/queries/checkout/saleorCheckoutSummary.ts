@@ -9,6 +9,10 @@ export const saleorCheckoutSummaryQuery = (checkoutId: string): string => {
             amount
           }
         }
+        shippingMethods {
+          id
+          name
+        }
         discount {
           amount
         }

@@ -14,6 +14,7 @@ import { GetShippingMethodsDto } from './dto/shippingMethods';
 import { AddressDto } from './dto/shippingAddress';
 import { ShippingPromotionService } from './services/Shipping.promotion';
 import { SaleorCheckoutInterface } from '../Checkout.utils.type';
+import { checkoutShippingMethodsSort } from '../Checkout.utils';
 
 @Injectable()
 export class ShippingService {
@@ -73,13 +74,13 @@ export class ShippingService {
   ): Promise<object> {
     try {
       const isB2c = filter.isB2c;
-      return prepareSuccessResponse(
-        await getCheckoutShippingMethodsHandler(
-          filter.checkoutId,
-          token,
-          isB2c,
-        ),
+      const shippingMethods = await getCheckoutShippingMethodsHandler(
+        filter.checkoutId,
+        token,
+        isB2c,
       );
+      checkoutShippingMethodsSort(shippingMethods);
+      return prepareSuccessResponse(shippingMethods);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

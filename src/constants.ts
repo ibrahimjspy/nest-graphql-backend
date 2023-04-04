@@ -94,7 +94,7 @@ export const preAuthTransactionInput = {
   eventName: 'Authorized credit card',
   availableActions: '[VOID, CHARGE]',
 };
-export const PROMOTION_SHIPPING_METHOD = 'UPS Ground';
+export const PROMOTION_SHIPPING_METHOD_ID = 'U2hpcHBpbmdNZXRob2Q6NzA=';
 export const B2B_CHECKOUT_APP_TOKEN = process.env.B2B_CHECKOUT_APP_TOKEN;
 export const ELASTIC_SEARCH_ENDPOINT = process.env.ELASTIC_SEARCH_ENDPOINT;
 export const AUTO_SYNC_MAPPING_URL = `${ELASTIC_SEARCH_ENDPOINT}/api/as/v1/engines/auto-sync-category-mapping`;
