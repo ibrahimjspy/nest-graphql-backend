@@ -26,8 +26,8 @@ import {
   shopOrderFulfillmentsByIdHandler,
   shopOrderFulfillmentsDetailsHandler,
   shopOrdersByIdHandler,
-  updateOrderMetadataHandler,
   shopOrdersListHandler,
+  updateOrderMetadataHandler,
 } from 'src/graphql/handlers/orders';
 import {
   addStatusAndTotalToBundles,
@@ -208,17 +208,19 @@ export class OrdersService {
     token: string,
   ): Promise<object> {
     try {
-      const shopOrders = await shopOrdersListHandler(shopId, filter, token, filter.isB2c);
+      const shopOrders = await shopOrdersListHandler(
+        shopId,
+        filter,
+        token,
+        filter.isB2c,
+      );
       const orderFilter: ShopOrdersListDTO = filter;
       orderFilter.orderIds = getOrderIdsFromShopOrders(shopOrders);
       if (orderFilter.orderIds.length) {
         const ordersList = await ordersListHandler(orderFilter, token);
         return prepareSuccessResponse({ ...shopOrders, ...ordersList });
       }
-      return prepareSuccessResponse(
-        shopOrders,
-        'No order exists against shop',
-      );
+      return prepareSuccessResponse(shopOrders, 'No order exists against shop');
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);

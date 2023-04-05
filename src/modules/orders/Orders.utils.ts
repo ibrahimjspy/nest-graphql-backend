@@ -38,7 +38,7 @@ export const getOrderIdsFromShopData = (shopData): string[] => {
  * @returns orderIds = in array of strings[]
  */
 export const getOrderIdsFromShopOrders = (shopOrders): string[] => {
-  const mapEdgesToArray = shopOrders?.edges?.map(({ node }) => node) || [];;
+  const mapEdgesToArray = shopOrders?.edges?.map(({ node }) => node) || [];
   return mapEdgesToArray.map((orderData) => orderData.orderId);
 };
 
