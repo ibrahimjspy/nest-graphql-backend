@@ -1,6 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional } from 'class-validator';
+import { ApiProperty, IntersectionType } from '@nestjs/swagger';
+import { IsEmail, IsOptional } from 'class-validator';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
+import { b2cDto } from 'src/modules/shop/dto/shop';
 
 const DEFAULT_START_DATE = '1970-12-26';
 export enum OrderStatusEnum {
@@ -69,4 +70,17 @@ export class OrdersListDTO extends PaginationDto {
     enum: ReturnStatusEnum,
   })
   returnStatus?: string;
+}
+
+export class ShopOrdersListDTO extends IntersectionType(b2cDto, PaginationDto) {
+
+  @ApiProperty({ required: false, default: [] })
+  @IsOptional()
+  orderIds?: string[];
+
+  @ApiProperty()
+  @IsOptional()
+  @IsEmail()
+  email: string;
+
 }

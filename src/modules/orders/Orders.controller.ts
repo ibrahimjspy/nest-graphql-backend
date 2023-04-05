@@ -12,7 +12,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OrdersService } from './Orders.service';
 import { makeResponse } from '../../core/utils/response';
 import { OrderIdDto, ShopIdDto, UserIdDto } from './dto';
-import { OrdersListDTO } from './dto/list';
+import { OrdersListDTO, ShopOrdersListDTO } from './dto/list';
 import {
   OrderReturnDTO,
   OrderReturnFilterDTO,
@@ -126,7 +126,7 @@ export class OrdersController {
   async getOrdersListByShopId(
     @Res() res,
     @Param() shopDto: ShopIdDto,
-    @Query() filter: OrdersListDTO,
+    @Query() filter: ShopOrdersListDTO,
     @Headers() headers,
   ): Promise<object> {
     const Authorization: string = headers.authorization;
