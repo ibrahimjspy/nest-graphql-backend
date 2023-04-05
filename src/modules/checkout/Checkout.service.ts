@@ -16,7 +16,10 @@ import { getOrdersByShopId } from '../orders/Orders.utils';
 import { OrdersService } from '../orders/Orders.service';
 import { LegacyService } from 'src/external/services/osPlaceOrder/Legacy.service';
 import { preparePromotionResponse } from './shipping/services/Shipping.response';
-import { checkoutShippingMethodsSort } from './Checkout.utils';
+import {
+  addPreAuthInCheckoutResponse,
+  checkoutShippingMethodsSort,
+} from './Checkout.utils';
 
 @Injectable()
 export class CheckoutService {
@@ -43,6 +46,10 @@ export class CheckoutService {
       const CheckoutPreAuthAmount =
         this.paymentService.getCheckoutPreAuthAmount(SaleorCheckoutSummary);
       checkoutShippingMethodsSort(SaleorCheckoutSummary);
+      addPreAuthInCheckoutResponse(
+        CheckoutPreAuthAmount,
+        SaleorCheckoutSummary,
+      );
       return prepareSuccessResponse({
         MarketplaceCheckoutSummary,
         SaleorCheckoutSummary,

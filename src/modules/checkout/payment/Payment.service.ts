@@ -17,7 +17,6 @@ import {
 } from 'src/graphql/handlers/checkout/payment/payment.saleor';
 import { getCheckoutMetadataHandler } from 'src/graphql/handlers/checkout/checkout';
 import { B2B_CHECKOUT_APP_TOKEN } from 'src/constants';
-import { ShippingService } from '../shipping/Shipping.service';
 import { SaleorCheckoutInterface } from '../Checkout.utils.type';
 
 @Injectable()
@@ -26,7 +25,6 @@ export class PaymentService {
   constructor(
     private stripeService: StripeService,
     private saleorCheckoutService: SaleorCheckoutService,
-    private shippingService: ShippingService,
   ) {
     return;
   }
@@ -62,6 +60,22 @@ export class PaymentService {
   }
 
   /**
+   * @description -- this method parses checkout data of saleor and returns delivery method pre auth amount stored in object metadata
+   */
+  public getDeliveryMethodPreAuth(
+    checkoutData: SaleorCheckoutInterface,
+  ): number {
+    const PRE_AUTH_AMOUNT_KEY = 'pre_auth_price';
+    let preAuthAmount = 0;
+    checkoutData?.deliveryMethod?.metadata?.map((meta) => {
+      if (meta.key == PRE_AUTH_AMOUNT_KEY) {
+        preAuthAmount = Number(meta.value);
+      }
+    });
+    return preAuthAmount;
+  }
+
+  /**
    * @description -- this returns total amount which should be pre authorized for checkout
    */
   public getCheckoutPreAuthAmount(
@@ -69,7 +83,7 @@ export class PaymentService {
   ): number {
     const checkoutTotalGrossAmount = checkoutData?.totalPrice?.gross?.amount;
     const checkoutShippingPreAuthAmount =
-      this.shippingService.getDeliveryMethodPreAuth(checkoutData);
+      this.getDeliveryMethodPreAuth(checkoutData);
     return checkoutTotalGrossAmount + checkoutShippingPreAuthAmount;
   }
 

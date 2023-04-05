@@ -12,6 +12,16 @@ export const checkoutPromoCodeRemoveMutation = (
           discount {
             amount
           }
+          deliveryMethod {
+            ... on ShippingMethod {
+              id
+              name
+              metadata {
+                key
+                value
+              }
+            }
+          }
           shippingPrice {
             gross {
               amount
