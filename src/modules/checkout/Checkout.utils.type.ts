@@ -26,6 +26,11 @@ export interface UnSelectBundlesType {
 
 export interface SaleorCheckoutInterface {
   id: string;
+  preAuth: {
+    gross: {
+      amount: number;
+    };
+  };
   metadata: {
     key: string;
     value: string;

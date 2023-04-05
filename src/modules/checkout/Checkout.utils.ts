@@ -175,3 +175,13 @@ export const checkoutShippingMethodsSort = (
     }
   });
 };
+
+/**
+ * @description -- this function takes checkout response and pre auth amount and adds preauth amount in checkout response
+ */
+export const addPreAuthInCheckoutResponse = (
+  preAuthAmount,
+  checkoutData: SaleorCheckoutInterface,
+) => {
+  checkoutData.preAuth = { gross: { amount: preAuthAmount } };
+};

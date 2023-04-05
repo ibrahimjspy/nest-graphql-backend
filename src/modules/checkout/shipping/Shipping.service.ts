@@ -13,14 +13,18 @@ import {
 import { GetShippingMethodsDto } from './dto/shippingMethods';
 import { AddressDto } from './dto/shippingAddress';
 import { ShippingPromotionService } from './services/Shipping.promotion';
-import { SaleorCheckoutInterface } from '../Checkout.utils.type';
-import { checkoutShippingMethodsSort } from '../Checkout.utils';
+import {
+  addPreAuthInCheckoutResponse,
+  checkoutShippingMethodsSort,
+} from '../Checkout.utils';
+import { PaymentService } from '../payment/Payment.service';
 
 @Injectable()
 export class ShippingService {
   private readonly logger = new Logger(ShippingService.name);
   constructor(
     private readonly shippingPromotionService: ShippingPromotionService,
+    private readonly paymentService: PaymentService,
   ) {
     return;
   }
@@ -101,12 +105,20 @@ export class ShippingService {
         shippingMethodId,
         token,
       );
-      return await this.shippingPromotionService.applyPromoCodeToCheckout(
-        updateDeliveryMethod['checkout'],
-        token,
+      const applyPromotions =
+        await this.shippingPromotionService.applyPromoCodeToCheckout(
+          updateDeliveryMethod['checkout'],
+          token,
+        );
+      const preAuthAmount = this.paymentService.getCheckoutPreAuthAmount(
+        applyPromotions['data']['checkout'],
       );
+      addPreAuthInCheckoutResponse(
+        preAuthAmount,
+        applyPromotions['data']['checkout'],
+      );
+      return applyPromotions;
     } catch (error) {
-      console.log(error);
       this.logger.error(error);
       return graphqlExceptionHandler(error);
     }
@@ -140,21 +152,5 @@ export class ShippingService {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
     }
-  }
-
-  /**
-   * @description -- this method parses checkout data of saleor and returns delivery method pre auth amount stored in object metadata
-   */
-  public getDeliveryMethodPreAuth(
-    checkoutData: SaleorCheckoutInterface,
-  ): number {
-    const PRE_AUTH_AMOUNT_KEY = 'pre_auth_price';
-    let preAuthAmount = 0;
-    checkoutData?.deliveryMethod?.metadata?.map((meta) => {
-      if (meta.key == PRE_AUTH_AMOUNT_KEY) {
-        preAuthAmount = Number(meta.value);
-      }
-    });
-    return preAuthAmount;
   }
 }

@@ -16,6 +16,10 @@ export const checkoutDeliveryMethodUpdateMutation = (
             ... on ShippingMethod {
               id
               name
+              metadata {
+                key
+                value
+              }
             }
           }
           totalPrice {
