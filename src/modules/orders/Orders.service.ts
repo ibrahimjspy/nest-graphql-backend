@@ -220,8 +220,8 @@ export class OrdersService {
         const ordersList = await ordersListHandler(orderFilter, token);
         const response = {
           ...shopOrders,
-          edges: ordersList?.edges || []
-        }
+          edges: ordersList?.edges || [],
+        };
         return prepareSuccessResponse(response);
       }
       return prepareSuccessResponse(shopOrders, 'No order exists against shop');
