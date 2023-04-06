@@ -18,8 +18,14 @@ const b2bQuery = (filter: OrdersListDTO): string => {
           customer: "${filters.customer}"
           created: { gte: "${filters.startDate}", lte: "${filters.endDate}" }
           metadata:[
-            ${filter.userEmail? `{key:"userEmail", value: "${filter.userEmail}"}`:""},
-            ${filter.shopId? `{key:"storeId", value: "${filter.shopId}"}`:""},
+            ${
+              filter.userEmail
+                ? `{key:"userEmail", value: "${filter.userEmail}"}`
+                : ''
+            },
+            ${
+              filter.shopId ? `{key:"storeId", value: "${filter.shopId}"}` : ''
+            },
           ]
         }
       ) {
@@ -80,9 +86,6 @@ const b2bQuery = (filter: OrdersListDTO): string => {
 
 const b2cQuery = b2bQuery;
 
-export const ordersListQuery = (
-  filter: OrdersListDTO,
-  isB2c = false,
-) => {
+export const ordersListQuery = (filter: OrdersListDTO, isB2c = false) => {
   return graphqlQueryCheck(b2bQuery(filter), b2cQuery(filter), isB2c);
 };

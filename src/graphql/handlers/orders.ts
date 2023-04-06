@@ -136,9 +136,9 @@ export const orderActivityHandler = async (token: string): Promise<object> => {
 export const ordersListHandler = async (
   filter: OrdersListDTO,
   token: string,
-): Promise<any> => {
+): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(ordersListQuery(filter, filter.isB2c), token, filter.isB2c),
+    await graphqlCall(ordersListQuery(filter), token),
   );
   if (!response['orders']) {
     throw new RecordNotFound('order details');

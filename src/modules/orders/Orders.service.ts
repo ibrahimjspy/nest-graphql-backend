@@ -206,7 +206,7 @@ export class OrdersService {
     token: string,
   ): Promise<object> {
     try {
-      const ordersList = await ordersListHandler({shopId, ...filter}, token);
+      const ordersList = await ordersListHandler({ shopId, ...filter }, token);
       return prepareSuccessResponse(ordersList);
     } catch (err) {
       this.logger.error(err);
