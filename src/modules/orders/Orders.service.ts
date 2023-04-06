@@ -26,7 +26,6 @@ import {
   shopOrderFulfillmentsByIdHandler,
   shopOrderFulfillmentsDetailsHandler,
   shopOrdersByIdHandler,
-  shopOrdersListHandler,
   updateOrderMetadataHandler,
 } from 'src/graphql/handlers/orders';
 import {
@@ -35,7 +34,6 @@ import {
   getFulFillmentsWithStatusAndBundlesTotal,
   getFulfillmentTotal,
   getOrderIdsFromShopData,
-  getOrderIdsFromShopOrders,
   getPendingOrders,
   getTotalFromBundles,
 } from './Orders.utils';
@@ -47,7 +45,7 @@ import {
   OrderSummaryResponseDto,
   ShopOrderReportResponseDto,
 } from './dto/order-summary.dto';
-import { OrdersListDTO, ShopOrdersListDTO } from './dto/list';
+import { OrdersListDTO } from './dto/list';
 import {
   OrderReturnDTO,
   OrderReturnFilterDTO,
@@ -204,27 +202,12 @@ export class OrdersService {
 
   public async getOrdersListByShopId(
     shopId: string,
-    filter: ShopOrdersListDTO,
+    filter: OrdersListDTO,
     token: string,
   ): Promise<object> {
     try {
-      const shopOrders = await shopOrdersListHandler(
-        shopId,
-        filter,
-        token,
-        filter.isB2c,
-      );
-      const orderFilter: ShopOrdersListDTO = filter;
-      orderFilter.orderIds = getOrderIdsFromShopOrders(shopOrders);
-      if (orderFilter.orderIds.length) {
-        const ordersList = await ordersListHandler(orderFilter, token);
-        const response = {
-          ...shopOrders,
-          edges: ordersList?.edges || [],
-        };
-        return prepareSuccessResponse(response);
-      }
-      return prepareSuccessResponse(shopOrders, 'No order exists against shop');
+      const ordersList = await ordersListHandler({shopId, ...filter}, token);
+      return prepareSuccessResponse(ordersList);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);

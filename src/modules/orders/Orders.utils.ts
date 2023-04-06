@@ -33,15 +33,6 @@ export const getOrderIdsFromShopData = (shopData): string[] => {
 };
 
 /**
- * @description - this function returns saleor orders ids from shop orders list
- * @param shopOrders - this is data fetched from shop service
- * @returns orderIds = in array of strings[]
- */
-export const getOrderIdsFromShopOrders = (shopOrders): string[] => {
-  return shopOrders?.edges?.map(({ node }) => node?.orderId) || [];
-};
-
-/**
  * it validates order list filters and returns string values which can be inserted in gql queries
  * @param filter - ordersList filter such as statuses , paymentStatus, orderIds, customer name
  * @returns object :: orderListInterface

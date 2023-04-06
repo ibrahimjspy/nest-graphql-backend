@@ -26,7 +26,7 @@ import {
   orderLinesTransformer,
 } from '../utils/orders';
 import { addOrderToShopMutation } from '../mutations/order/addOrderToShop';
-import { OrdersListDTO, ShopOrdersListDTO } from 'src/modules/orders/dto/list';
+import { OrdersListDTO } from 'src/modules/orders/dto/list';
 import {
   OrderReturnDTO,
   OrderReturnFilterDTO,
@@ -49,7 +49,6 @@ import { returnOrderDetailsQuery } from '../queries/orders/returnedOrderDetails'
 import { orderAmountRefundMutation } from '../mutations/order/refundOrderAmount';
 import { getOrderEventsQuery } from '../queries/orders/orderEvents';
 import { PaginationDto } from '../dto/pagination.dto';
-import { shopOrdersListQuery } from '../queries/orders/shopOrdersList';
 
 export const dashboardByIdHandler = async (
   id: string,
@@ -82,21 +81,6 @@ export const orderDetailsHandler = async (
     throw new RecordNotFound('Order details');
   }
   return response['order'];
-};
-
-export const shopOrdersListHandler = async (
-  shopId: string,
-  filter: ShopOrdersListDTO,
-  token: string,
-  isB2c = false,
-): Promise<object> => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(shopOrdersListQuery(shopId, filter), token, isB2c),
-  );
-  if (!response['marketplaceOrders']) {
-    throw new RecordNotFound('Shop Orders');
-  }
-  return response['marketplaceOrders'];
 };
 
 export const shopOrdersByIdHandler = async (
@@ -154,7 +138,7 @@ export const ordersListHandler = async (
   token: string,
 ): Promise<any> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(ordersListQuery(filter), token),
+    await graphqlCall(ordersListQuery(filter, filter.isB2c), token, filter.isB2c),
   );
   if (!response['orders']) {
     throw new RecordNotFound('order details');

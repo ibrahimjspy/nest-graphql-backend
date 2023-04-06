@@ -29,7 +29,7 @@ enum ReturnStatusEnum {
   'PARTIALLY_RETURNED',
 }
 
-export class OrdersListDTO extends PaginationDto {
+export class OrdersListDTO extends IntersectionType(b2cDto, PaginationDto) {
   @ApiProperty({ required: false, default: [] })
   @IsOptional()
   orderIds?: string[];
@@ -70,15 +70,13 @@ export class OrdersListDTO extends PaginationDto {
     enum: ReturnStatusEnum,
   })
   returnStatus?: string;
-}
 
-export class ShopOrdersListDTO extends IntersectionType(b2cDto, PaginationDto) {
-  @ApiProperty({ required: false, default: [] })
+  @ApiProperty({ required: false })
   @IsOptional()
-  orderIds?: string[];
+  shopId?: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsOptional()
   @IsEmail()
-  email?: string;
+  userEmail?: string;
 }
