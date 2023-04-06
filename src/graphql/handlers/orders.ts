@@ -26,7 +26,7 @@ import {
   orderLinesTransformer,
 } from '../utils/orders';
 import { addOrderToShopMutation } from '../mutations/order/addOrderToShop';
-import { OrdersListDTO } from 'src/modules/orders/dto/list';
+import { OrdersListFiltersDTO } from 'src/modules/orders/dto/list';
 import {
   OrderReturnDTO,
   OrderReturnFilterDTO,
@@ -134,7 +134,7 @@ export const orderActivityHandler = async (token: string): Promise<object> => {
 };
 
 export const ordersListHandler = async (
-  filter: OrdersListDTO,
+  filter: OrdersListFiltersDTO,
   token: string,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(

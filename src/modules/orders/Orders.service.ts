@@ -201,22 +201,13 @@ export class OrdersService {
   }
 
   public async getOrdersListByShopId(
-    id: string,
+    shopId: string,
     filter: OrdersListDTO,
     token: string,
   ): Promise<object> {
     try {
-      const shopDetails = await shopOrdersByIdHandler(id, token);
-      const orderFilter: OrdersListDTO = filter;
-      orderFilter.orderIds = getOrderIdsFromShopData(shopDetails);
-      if (orderFilter.orderIds.length) {
-        const ordersList = await ordersListHandler(orderFilter, token);
-        return prepareSuccessResponse({ ...shopDetails, ...ordersList });
-      }
-      return prepareSuccessResponse(
-        shopDetails,
-        'No order exists against shop',
-      );
+      const ordersList = await ordersListHandler({ shopId, ...filter }, token);
+      return prepareSuccessResponse(ordersList);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
