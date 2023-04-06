@@ -73,10 +73,14 @@ export class OrdersListDTO extends IntersectionType(b2cDto, PaginationDto) {
 
   @ApiProperty({ required: false })
   @IsOptional()
-  shopId?: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
   @IsEmail()
   userEmail?: string;
+}
+
+export class OrdersListFiltersDTO extends OrdersListDTO {
+  
+  @ApiProperty({ required: false })
+  @IsOptional()
+  shopId?: string;
+
 }
