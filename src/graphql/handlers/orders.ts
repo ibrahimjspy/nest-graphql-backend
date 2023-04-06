@@ -152,7 +152,7 @@ export const orderActivityHandler = async (token: string): Promise<object> => {
 export const ordersListHandler = async (
   filter: OrdersListDTO,
   token: string,
-): Promise<object> => {
+): Promise<any> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(ordersListQuery(filter), token),
   );

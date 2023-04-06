@@ -218,7 +218,11 @@ export class OrdersService {
       orderFilter.orderIds = getOrderIdsFromShopOrders(shopOrders);
       if (orderFilter.orderIds.length) {
         const ordersList = await ordersListHandler(orderFilter, token);
-        return prepareSuccessResponse({ ...shopOrders, ...ordersList });
+        const response = {
+          ...shopOrders,
+          edges: ordersList?.edges || []
+        }
+        return prepareSuccessResponse(response);
       }
       return prepareSuccessResponse(shopOrders, 'No order exists against shop');
     } catch (err) {

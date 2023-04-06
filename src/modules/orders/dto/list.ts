@@ -80,5 +80,5 @@ export class ShopOrdersListDTO extends IntersectionType(b2cDto, PaginationDto) {
   @ApiProperty()
   @IsOptional()
   @IsEmail()
-  email: string;
+  email?: string;
 }
