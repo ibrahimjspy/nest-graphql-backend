@@ -86,6 +86,9 @@ const b2bQuery = (filter: OrdersListFiltersDTO): string => {
 
 const b2cQuery = b2bQuery;
 
-export const ordersListQuery = (filter: OrdersListFiltersDTO, isB2c = false) => {
+export const ordersListQuery = (
+  filter: OrdersListFiltersDTO,
+  isB2c = false,
+) => {
   return graphqlQueryCheck(b2bQuery(filter), b2cQuery(filter), isB2c);
 };
