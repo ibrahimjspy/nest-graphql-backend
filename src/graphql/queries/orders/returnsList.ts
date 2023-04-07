@@ -38,6 +38,14 @@ const b2bQuery = (filter: ReturnOrderListDto): string => {
                   id
                 }
               }
+              metadata {
+                key
+                value
+              }
+              fulfillments {
+                id
+                trackingNumber
+              }
               user {
                 id
                 firstName
@@ -47,6 +55,9 @@ const b2bQuery = (filter: ReturnOrderListDto): string => {
               shippingAddress {
                 streetAddress1
                 streetAddress2
+                city
+                postalCode
+                cityArea
               }
               deliveryMethod {
                 ... on ShippingMethod {

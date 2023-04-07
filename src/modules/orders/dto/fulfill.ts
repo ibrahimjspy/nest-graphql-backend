@@ -38,3 +38,12 @@ export class orderFulfillmentCancelDTO {
   @IsOptional()
   warehouseId: string;
 }
+
+export class FulfillmentUpdateTrackingDto {
+  @ApiProperty({ required: true })
+  @IsString()
+  fulfillmentId: string;
+  @ApiProperty({ required: true })
+  @IsString()
+  trackingNumber: string;
+}

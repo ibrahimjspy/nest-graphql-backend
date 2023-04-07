@@ -34,7 +34,10 @@ import {
 } from 'src/modules/orders/dto/order-returns.dto';
 import { getOrderStatus } from '../queries/orders/getOrderStatuses';
 import { orderFulfillMutation } from '../mutations/order/fulfillOrder';
-import { orderLineDTO } from 'src/modules/orders/dto/fulfill';
+import {
+  FulfillmentUpdateTrackingDto,
+  orderLineDTO,
+} from 'src/modules/orders/dto/fulfill';
 import {
   OrderAmountRefundDto,
   OrderFulfillmentRefundDto,
@@ -49,6 +52,7 @@ import { returnOrderDetailsQuery } from '../queries/orders/returnedOrderDetails'
 import { orderAmountRefundMutation } from '../mutations/order/refundOrderAmount';
 import { getOrderEventsQuery } from '../queries/orders/orderEvents';
 import { PaginationDto } from '../dto/pagination.dto';
+import { orderFulfillmentTrackingMutation } from '../mutations/order/orderFulfillmentTracking';
 
 export const dashboardByIdHandler = async (
   id: string,
@@ -454,4 +458,17 @@ export const orderEventsHandler = async (
     await graphqlCall(getOrderEventsQuery(filter), token),
   );
   return response['homepageEvents'];
+};
+
+export const orderFulfillmentUpdateTrackingHandler = async (
+  fulfillmentUpdateTrackingInput: FulfillmentUpdateTrackingDto,
+  token: string,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      orderFulfillmentTrackingMutation(fulfillmentUpdateTrackingInput),
+      token,
+    ),
+  );
+  return response['orderFulfillmentUpdateTracking'];
 };

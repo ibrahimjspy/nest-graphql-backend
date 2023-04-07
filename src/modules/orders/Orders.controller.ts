@@ -20,7 +20,11 @@ import {
   ReturnsStaffDto,
 } from './dto/order-returns.dto';
 import { IsAuthenticated } from 'src/core/utils/decorators';
-import { OrderFulfillDto, orderFulfillmentCancelDTO } from './dto/fulfill';
+import {
+  FulfillmentUpdateTrackingDto,
+  OrderFulfillDto,
+  orderFulfillmentCancelDTO,
+} from './dto/fulfill';
 import { OrderAmountRefundDto, OrderFulfillmentRefundDto } from './dto/refund';
 import { b2cDto, shopIdDTO } from '../shop/dto/shop';
 import { AddOrderToShopDto } from './dto/addOrderToShop';
@@ -104,6 +108,7 @@ export class OrdersController {
 
   // Returns shop order details
   @Get('orders/detail/:orderId')
+  @ApiBearerAuth('JWT-auth')
   async getOrderDetails(
     @Res() res,
     @Param() orderDto: OrderIdDto,
@@ -410,6 +415,19 @@ export class OrdersController {
     return makeResponse(
       res,
       await this.appService.getOrderEvents(filter, token),
+    );
+  }
+
+  @Post('api/v1/order/fulfillment/tracking/update')
+  @ApiBearerAuth('JWT-auth')
+  async orderFulfillmentUpdateTracking(
+    @Res() res,
+    @Body() body: FulfillmentUpdateTrackingDto,
+    @IsAuthenticated('authorization') token: string,
+  ) {
+    return makeResponse(
+      res,
+      await this.appService.orderFulfillmentUpdateTracking(body, token),
     );
   }
 }
