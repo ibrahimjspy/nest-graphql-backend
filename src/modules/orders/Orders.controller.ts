@@ -108,6 +108,7 @@ export class OrdersController {
 
   // Returns shop order details
   @Get('orders/detail/:orderId')
+  @ApiBearerAuth('JWT-auth')
   async getOrderDetails(
     @Res() res,
     @Param() orderDto: OrderIdDto,

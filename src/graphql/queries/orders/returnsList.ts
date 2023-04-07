@@ -38,6 +38,10 @@ const b2bQuery = (filter: ReturnOrderListDto): string => {
                   id
                 }
               }
+              metadata {
+                key
+                value
+              }
               fulfillments {
                 id
                 trackingNumber
