@@ -18,6 +18,7 @@ import {
   orderFulfillHandler,
   orderFulfillmentCancelHandler,
   orderFulfillmentRefundHandler,
+  orderFulfillmentUpdateTrackingHandler,
   orderReturnDetailHandler,
   orderReturnListHandler,
   ordersListHandler,
@@ -38,7 +39,7 @@ import {
   getTotalFromBundles,
 } from './Orders.utils';
 import { FulfillmentStatusEnum } from 'src/graphql/enums/orders';
-import { B2B_DEVELOPMENT_TOKEN, GQL_EDGES } from 'src/constants';
+import { GQL_EDGES } from 'src/constants';
 import { ShopOrdersFulfillmentsDto, ShopOrdersListDto } from './dto';
 import { mockOrderReporting } from 'src/graphql/mocks/orderSummary.mock';
 import {
@@ -60,7 +61,7 @@ import {
   getReadyToFulfillOrdersCountHandler,
   getTotalEarningsHandler,
 } from 'src/graphql/handlers/orders.reporting';
-import { orderLineDTO } from './dto/fulfill';
+import { FulfillmentUpdateTrackingDto, orderLineDTO } from './dto/fulfill';
 import { OrderAmountRefundDto, OrderFulfillmentRefundDto } from './dto/refund';
 import { AddOrderToShopDto } from './dto/addOrderToShop';
 import { StoreOrderAssigneeDto } from './dto/storeOrderAssignee';
@@ -531,6 +532,22 @@ export class OrdersService {
   ): Promise<object> {
     try {
       const response = await orderEventsHandler(filter, token);
+      return prepareSuccessResponse(response);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async orderFulfillmentUpdateTracking(
+    fulfillmentUpdateTrackingInput: FulfillmentUpdateTrackingDto,
+    token: string,
+  ): Promise<object> {
+    try {
+      const response = await orderFulfillmentUpdateTrackingHandler(
+        fulfillmentUpdateTrackingInput,
+        token,
+      );
       return prepareSuccessResponse(response);
     } catch (error) {
       this.logger.error(error);

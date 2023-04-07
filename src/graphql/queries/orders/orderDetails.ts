@@ -256,8 +256,20 @@ const b2cQuery = (id: string): string => {
             amount
           }
         }
+        transactions {
+          metadata {
+            key
+            value
+          }
+          type
+          chargedAmount {
+            amount
+          }
+        }
         fulfillments {
           status
+          id
+          trackingNumber
           lines {
             id
             quantity
