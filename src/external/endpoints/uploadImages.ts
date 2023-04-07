@@ -5,9 +5,9 @@ const s3 = new AWS.S3({
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 });
 
-export const uploadImages = async (file: any) => {
+export const uploadImages = async (file: any, bucket: string) => {
   const params = {
-    Bucket: process.env.AWS_BUCKET_NAME,
+    Bucket: bucket,
     Key: file.originalname,
     Body: file.buffer,
   };

@@ -119,7 +119,8 @@ export class ProductStoreService {
    */
   public async uploadImages(file: any): Promise<object> {
     try {
-      return prepareSuccessResponse(await uploadImagesHandler(file));
+      const bucket = process.env.AWS_BUCKET_NAME;
+      return prepareSuccessResponse(await uploadImagesHandler(file, bucket));
     } catch (error) {
       return graphqlExceptionHandler(error);
     }
