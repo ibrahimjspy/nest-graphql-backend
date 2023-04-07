@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Headers,
+  Param,
   Put,
   Query,
   Res,
@@ -11,7 +12,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
 import { UserService } from './User.service';
 import { IsAuthenticated } from 'src/core/utils/decorators';
-import { UserInputDTO } from './dto/user.dto';
+import { UserAuth0DTO, UserInputDTO } from './dto/user.dto';
 import { b2cDto } from 'src/modules/shop/dto/shop';
 @ApiTags('user')
 @Controller()
@@ -31,8 +32,9 @@ export class UserController {
     );
   }
 
-  @Put('/api/v1/user/update')
+  @Put('/api/v1/user/update/:userAuth0Id')
   async updateUserInfo(
+    @Param() param: UserAuth0DTO,
     @Res() res,
     @Body() userInput: UserInputDTO,
     @Headers() headers,
@@ -40,7 +42,11 @@ export class UserController {
     const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.updateUserInfo(userInput, Authorization),
+      await this.appService.updateUserInfo(
+        param.userAuth0Id,
+        userInput,
+        Authorization,
+      ),
     );
   }
 }
