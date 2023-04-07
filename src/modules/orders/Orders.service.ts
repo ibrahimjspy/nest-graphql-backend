@@ -67,6 +67,8 @@ import { AddOrderToShopDto } from './dto/addOrderToShop';
 import { StoreOrderAssigneeDto } from './dto/storeOrderAssignee';
 import { OrderMetadataDto } from './dto/metadata';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
+import { uploadImagesHandler } from 'src/external/services/uploadImages';
+
 @Injectable()
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
@@ -551,6 +553,15 @@ export class OrdersService {
       return prepareSuccessResponse(response);
     } catch (error) {
       this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async uploadImages(file: any): Promise<object> {
+    try {
+      const bucket = process.env.AWS_BUCKET_NAME;
+      return prepareSuccessResponse(await uploadImagesHandler(file, bucket));
+    } catch (error) {
       return graphqlExceptionHandler(error);
     }
   }

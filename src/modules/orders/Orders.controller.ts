@@ -7,6 +7,10 @@ import {
   Post,
   Query,
   Res,
+  HttpStatus,
+  UseInterceptors,
+  UploadedFile,
+  ParseFilePipeBuilder,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OrdersService } from './Orders.service';
@@ -31,6 +35,7 @@ import { AddOrderToShopDto } from './dto/addOrderToShop';
 import { StoreOrderAssigneeDto } from './dto/storeOrderAssignee';
 import UpsService from 'src/external/services/Ups.service';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('orders')
 @Controller('')
@@ -429,5 +434,25 @@ export class OrdersController {
       res,
       await this.appService.orderFulfillmentUpdateTracking(body, token),
     );
+  }
+
+  @Post('api/v1/order/returns/image/upload')
+  @UseInterceptors(FileInterceptor('store_img'))
+  getUploadRetailerCertificate(
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: /(jpg|jpeg|png|svg|jfif)$/,
+        })
+        .addMaxSizeValidator({
+          maxSize: 2097152,
+        })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        }),
+    )
+    file: Express.Multer.File,
+  ) {
+    return this.appService.uploadImages(file);
   }
 }
