@@ -33,7 +33,7 @@ export const updateUserInfoHandler = async (
   userInput: UserInputDTO,
   token: string,
   isb2c = false,
-): Promise<object> => {
+): Promise<any> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(updateUserInfoMutation(userInput, isb2c), token, isb2c),
   );

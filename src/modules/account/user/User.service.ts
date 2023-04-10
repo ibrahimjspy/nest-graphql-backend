@@ -8,10 +8,14 @@ import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import * as AccountHandlers from 'src/graphql/handlers/account/user';
 import { ShopService } from '../../shop/Shop.service';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
-import { UserInputDTO } from './dto/user.dto';
+import { Auth0UserInputDTO } from './dto/user.dto';
+import Auth0Service from 'src/external/services/auth0.service';
 @Injectable()
 export class UserService {
-  constructor(private shopService: ShopService) {
+  constructor(
+    private shopService: ShopService,
+    private auth0Service: Auth0Service,
+  ) {
     return;
   }
   private readonly logger = new Logger(UserService.name);
@@ -53,14 +57,19 @@ export class UserService {
   }
 
   public async updateUserInfo(
-    userInput: UserInputDTO,
+    userInput: Auth0UserInputDTO,
     token: string,
   ): Promise<SuccessResponseType> {
     try {
+      const { userAuth0Id, ...userDetail } = userInput;
+      // update user info in saleor
       const response = await AccountHandlers.updateUserInfoHandler(
-        userInput,
+        userDetail,
         token,
       );
+      // update user info in auth0
+      const { firstName, lastName } = response?.user;
+      await this.auth0Service.updateUser({firstName, lastName, ...userInput});
       return prepareSuccessResponse(response);
     } catch (error) {
       this.logger.error(error);

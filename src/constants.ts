@@ -98,3 +98,9 @@ export const PROMOTION_SHIPPING_METHOD_ID = 'U2hpcHBpbmdNZXRob2Q6NzA=';
 export const B2B_CHECKOUT_APP_TOKEN = process.env.B2B_CHECKOUT_APP_TOKEN;
 export const ELASTIC_SEARCH_ENDPOINT = process.env.ELASTIC_SEARCH_ENDPOINT;
 export const AUTO_SYNC_MAPPING_URL = `${ELASTIC_SEARCH_ENDPOINT}/api/as/v1/engines/auto-sync-category-mapping`;
+
+export const AUTH0_DOMAIN = process.env.AUTH0_DOMAIN;
+export const AUTH0_M2M_APP_CLIENT_ID = process.env.AUTH0_M2M_APP_CLIENT_ID;
+export const AUTH0_M2M_APP_CLIENT_SECRET =
+  process.env.AUTH0_M2M_APP_CLIENT_SECRET;
+export const AUTH0_TTL_CACHE_TIME = 72000;
