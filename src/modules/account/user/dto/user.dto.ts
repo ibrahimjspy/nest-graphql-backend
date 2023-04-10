@@ -1,4 +1,4 @@
-import { ApiProperty, IntersectionType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class UserInputDTO {
@@ -11,13 +11,8 @@ export class UserInputDTO {
   lastName: string;
 }
 
-export class UserAuth0DTO {
+export class Auth0UserInputDTO extends UserInputDTO {
   @ApiProperty()
   @IsNotEmpty()
   userAuth0Id: string;
 }
-
-export class Auth0UserInputDTO extends IntersectionType(
-  UserAuth0DTO,
-  UserInputDTO,
-) {}

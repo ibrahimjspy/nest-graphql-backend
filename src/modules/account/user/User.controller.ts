@@ -12,7 +12,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
 import { UserService } from './User.service';
 import { IsAuthenticated } from 'src/core/utils/decorators';
-import { UserAuth0DTO, UserInputDTO } from './dto/user.dto';
+import { Auth0UserInputDTO } from './dto/user.dto';
 import { b2cDto } from 'src/modules/shop/dto/shop';
 @ApiTags('user')
 @Controller()
@@ -32,18 +32,16 @@ export class UserController {
     );
   }
 
-  @Put('/api/v1/user/update/:userAuth0Id')
+  @Put('/api/v1/user/update')
   async updateUserInfo(
-    @Param() param: UserAuth0DTO,
     @Res() res,
-    @Body() userInput: UserInputDTO,
+    @Body() userInput: Auth0UserInputDTO,
     @Headers() headers,
   ): Promise<object> {
     const Authorization: string = headers.authorization;
     return makeResponse(
       res,
       await this.appService.updateUserInfo(
-        param.userAuth0Id,
         userInput,
         Authorization,
       ),
