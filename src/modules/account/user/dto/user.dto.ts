@@ -44,3 +44,9 @@ export class Auth0UserInputDTO extends UserInputDTO {
   @IsOptional()
   stripeCustomerId: string;
 }
+
+export class UserAuth0IdDTO {
+  @ApiProperty()
+  @IsNotEmpty()
+  userAuth0Id: string;
+}

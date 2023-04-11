@@ -32,4 +32,11 @@ export default class Auth0Service {
     );
     return userDetailReponse;
   }
+
+  public async getUser(userAuth0Id: string) {
+    const userDetailReponse = await this.managementClient.getUser({
+      id: userAuth0Id,
+    });
+    return userDetailReponse;
+  }
 }

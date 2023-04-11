@@ -83,4 +83,17 @@ export class UserService {
       return graphqlExceptionHandler(error);
     }
   }
+
+  public async getUserAuth0Detail(
+    userAuth0Id: string,
+  ): Promise<SuccessResponseType> {
+    try {
+      // get user info in auth0
+      const auth0UserDetail = await this.auth0Service.getUser(userAuth0Id);
+      return prepareSuccessResponse(auth0UserDetail);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
 }
