@@ -10,6 +10,7 @@ import { ShopService } from '../../shop/Shop.service';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import { Auth0UserInputDTO } from './dto/user.dto';
 import Auth0Service from 'src/external/services/auth0.service';
+import { validateAuth0UserInput } from './User.utils';
 @Injectable()
 export class UserService {
   constructor(
@@ -61,16 +62,19 @@ export class UserService {
     token: string,
   ): Promise<SuccessResponseType> {
     try {
-      const { userAuth0Id, ...userDetail } = userInput;
+      const saleorUserInput = {
+        firstName: userInput.firstName,
+        lastName: userInput.lastName
+      }
       // update user info in saleor
-      const response = await AccountHandlers.updateUserInfoHandler(
-        userDetail,
+      const saleorUserDetail = await AccountHandlers.updateUserInfoHandler(
+        saleorUserInput,
         token,
       );
       // update user info in auth0
-      const { firstName, lastName } = response?.user;
-      await this.auth0Service.updateUser({firstName, lastName, ...userInput});
-      return prepareSuccessResponse(response);
+      const { firstName, lastName } = saleorUserDetail?.user;
+      const auth0UserDetail = await this.auth0Service.updateUser(userInput.userAuth0Id, validateAuth0UserInput({firstName, lastName, ...userInput}));
+      return prepareSuccessResponse(auth0UserDetail);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

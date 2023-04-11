@@ -6,7 +6,7 @@ import {
   AUTH0_M2M_APP_CLIENT_SECRET,
   AUTH0_TTL_CACHE_TIME,
 } from 'src/constants';
-import { Auth0UserInputDTO } from 'src/modules/account/user/dto/user.dto';
+import { Auth0UserDetail } from 'src/modules/account/user/User.types';
 
 @Injectable()
 export default class Auth0Service {
@@ -25,15 +25,11 @@ export default class Auth0Service {
     });
   }
 
-  public async updateUser(user: Auth0UserInputDTO) {
-    const userDetail = await this.managementClient.updateUser(
-      { id: user.userAuth0Id },
-      {
-        given_name: user.firstName,
-        family_name: user.lastName,
-        name: `${user.firstName} ${user.lastName}`,
-      },
+  public async updateUser(userAuth0Id:string, userDetail: Auth0UserDetail) {
+    const userDetailReponse = await this.managementClient.updateUser(
+      { id: userAuth0Id },
+      userDetail,
     );
-    return userDetail;
+    return userDetailReponse;
   }
 }
