@@ -52,6 +52,8 @@ export const checkoutBundlesByIdQuery = (
                   }
                   product {
                     category {
+                      id
+                      name
                       ancestors(first: 100) {
                         edges {
                           node {

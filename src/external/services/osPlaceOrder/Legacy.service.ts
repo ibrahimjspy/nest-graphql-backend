@@ -292,14 +292,14 @@ export class LegacyService {
   getVariantDetails(variants, shop_id, bundle_name, productId) {
     for (let i = 0; i < variants.length; i++) {
       const product_id = productId;
-      const is_preorder = variants[i]?.productVariant?.preorder;
-      // All variants have same category, So get first one.
-      const category_name =
+      const isPreOrder = variants[i]?.productVariant?.preorder;
+      const categoryNames = this.getCategoryNames(variants[i]);
+      let category_name =
         variants[i]?.productVariant?.product?.category?.ancestors?.edges[0]
           ?.node?.name;
-      // If category is shoes we need to seperately track bundle_name & shop_id
 
-      if (category_name == CATEGORY_SHOES) {
+      if (categoryNames.includes(CATEGORY_SHOES)) {
+        category_name = CATEGORY_SHOES;
         this.shoeSizeNames.push(bundle_name);
         this.shoesVendorIds.push(shop_id);
       }
@@ -308,7 +308,7 @@ export class LegacyService {
         this.productIdList.push(product_id);
 
       if (product_id && !(product_id in this.stockTypeMappingObject))
-        this.stockTypeMappingObject[product_id] = is_preorder
+        this.stockTypeMappingObject[product_id] = isPreOrder
           ? PRE_ORDER
           : IN_STOCK;
       if (
@@ -430,5 +430,19 @@ export class LegacyService {
       }
     });
     return colorId;
+  }
+
+  getCategoryNames(productVariant) {
+    let categoryNames =
+      productVariant?.productVariant?.product?.category?.ancestors?.edges?.map(
+        (category) => {
+          return category.node.name;
+        },
+      );
+    categoryNames = [
+      ...categoryNames,
+      productVariant?.productVariant?.product?.category?.name,
+    ];
+    return categoryNames;
   }
 }
