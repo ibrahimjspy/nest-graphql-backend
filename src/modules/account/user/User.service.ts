@@ -64,8 +64,8 @@ export class UserService {
     try {
       const saleorUserInput = {
         firstName: userInput.firstName,
-        lastName: userInput.lastName
-      }
+        lastName: userInput.lastName,
+      };
       // update user info in saleor
       const saleorUserDetail = await AccountHandlers.updateUserInfoHandler(
         saleorUserInput,
@@ -73,7 +73,10 @@ export class UserService {
       );
       // update user info in auth0
       const { firstName, lastName } = saleorUserDetail?.user;
-      const auth0UserDetail = await this.auth0Service.updateUser(userInput.userAuth0Id, validateAuth0UserInput({firstName, lastName, ...userInput}));
+      const auth0UserDetail = await this.auth0Service.updateUser(
+        userInput.userAuth0Id,
+        validateAuth0UserInput({ firstName, lastName, ...userInput }),
+      );
       return prepareSuccessResponse(auth0UserDetail);
     } catch (error) {
       this.logger.error(error);

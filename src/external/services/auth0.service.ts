@@ -25,7 +25,7 @@ export default class Auth0Service {
     });
   }
 
-  public async updateUser(userAuth0Id:string, userDetail: Auth0UserDetail) {
+  public async updateUser(userAuth0Id: string, userDetail: Auth0UserDetail) {
     const userDetailReponse = await this.managementClient.updateUser(
       { id: userAuth0Id },
       userDetail,
