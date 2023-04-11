@@ -17,7 +17,7 @@ export const GQL_TOTAL_COUNT = 'totalCount';
 
 export const B2BClientPlatform = 'sharove@sharove.com';
 
-export const STRIPE_RETURN_URL = 'http://3.13.238.104:4003/';
+export const STRIPE_RETURN_URL = process.env.B2B_ENDPOINT;
 export const DEFAULT_THUMBNAIL_SIZE = 512;
 export const QUEUE_URL = process.env.SQS_QUEUE_URL;
 export const SQS_ACCESSID = process.env.SQS_ACCESS_ID;
