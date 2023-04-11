@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request';
-import { DEFAULT_CHANNEL } from 'src/constants';
+import { DEFAULT_CHANNEL, DEFAULT_THUMBNAIL_SIZE } from 'src/constants';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
 
@@ -59,7 +59,7 @@ const b2bQuery = ({ categoryId, productIds, ...pagination }): string => {
                 }
               }
             }
-            thumbnail {
+            thumbnail(size: ${DEFAULT_THUMBNAIL_SIZE}) {
               url
             }
             media {
