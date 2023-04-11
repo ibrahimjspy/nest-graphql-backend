@@ -1,4 +1,5 @@
 import { gql } from 'graphql-request';
+import { DEFAULT_THUMBNAIL_SIZE } from 'src/constants';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
 import { myProductsDTO } from 'src/modules/shop/dto/myProducts';
@@ -22,6 +23,9 @@ const b2cQuery = (productIds, filter: myProductsDTO): string => {
           node {
             name
             id
+            thumbnail(size: ${DEFAULT_THUMBNAIL_SIZE}) {
+              url
+            }
             metadata {
               key
               value

@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request';
-import { DEFAULT_CHANNEL } from 'src/constants';
+import { DEFAULT_CHANNEL, DEFAULT_THUMBNAIL_SIZE } from 'src/constants';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
 const federationQuery = (id): string => {
@@ -44,7 +44,7 @@ const federationQuery = (id): string => {
                 }
               }
             }
-            thumbnail {
+            thumbnail(size: ${DEFAULT_THUMBNAIL_SIZE}) {
               url
             }
             media {
