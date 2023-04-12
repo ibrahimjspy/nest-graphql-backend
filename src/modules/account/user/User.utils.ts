@@ -1,5 +1,19 @@
 import { Auth0UserInputDTO } from './dto/user.dto';
 
+/**
+ * Get object keys length
+ * @param {object} obj - paramter of object type
+ * @returns {number} return the length of the object keys.
+ */
+export const objectLength = (obj: object) => {
+  return Object.keys(obj).length;
+};
+
+/**
+ * Validate the user details and user metadata for checking if each key's value exist then its returned
+ * @param {Auth0UserInputDTO} userInput - user details objects
+ * @returns {object} return valid user detail object.
+ */
 export const validateAuth0UserInput = (userInput: Auth0UserInputDTO) => {
   const { firstName, lastName, userAuth0Id, ...userMetadata } = userInput;
   const validatedMetadata = {};
@@ -13,7 +27,7 @@ export const validateAuth0UserInput = (userInput: Auth0UserInputDTO) => {
   return {
     ...(firstName && { given_name: firstName }),
     ...(lastName && { family_name: lastName }),
-    ...(Object.keys(validatedMetadata).length && {
+    ...(objectLength(validatedMetadata) && {
       user_metadata: validatedMetadata,
     }),
   };

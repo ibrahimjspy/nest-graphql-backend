@@ -65,29 +65,22 @@ export class UserService {
   ): Promise<SuccessResponseType> {
     try {
       let checkoutId = null;
-      const saleorUserDetails = await AccountHandlers.getUserDetailsHandler(
-        token,
-      );
-      const auth0UserDetail = await this.auth0Service.getAuth0User(userAuth0Id);
+      const [saleor, auth0] = await Promise.all([
+        AccountHandlers.getUserDetailsHandler(token),
+        this.auth0Service.getUser(userAuth0Id),
+      ]);
       const shopDetails = await this.shopService.getShopDetailsV2({
-        email: saleorUserDetails['email'],
+        email: saleor['email'],
       });
       if (!B2C_ENABLED) {
         checkoutId = await AccountHandlers.getCheckoutIdFromMarketplaceHandler(
-          saleorUserDetails['email'],
+          saleor['email'],
         );
       }
-      if (shopDetails['status'] == 200) {
-        saleorUserDetails['checkoutId'] = checkoutId;
-        return prepareSuccessResponse({
-          ...saleorUserDetails,
-          shopDetails: shopDetails['data'],
-        });
-      }
-      saleorUserDetails['checkoutId'] = checkoutId;
+      saleor['checkoutId'] = checkoutId;
       return prepareSuccessResponse({
-        saleor: saleorUserDetails,
-        auth0: auth0UserDetail,
+        saleor,
+        auth0,
         shopDetails: shopDetails,
       });
     } catch (error) {
@@ -111,7 +104,7 @@ export class UserService {
       // update user info in saleor and auth0
       const [saleor, auth0] = await Promise.all([
         AccountHandlers.updateUserInfoHandler(saleorUserInput, token),
-        this.auth0Service.updateAuth0User(
+        this.auth0Service.updateUser(
           userInput.userAuth0Id,
           validateAuth0UserInput(userInput),
         ),

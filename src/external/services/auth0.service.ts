@@ -7,6 +7,7 @@ import {
   AUTH0_TTL_CACHE_TIME,
 } from 'src/constants';
 import { Auth0UserDetailType } from 'src/modules/account/user/User.types';
+import { objectLength } from 'src/modules/account/user/User.utils';
 
 @Injectable()
 export default class Auth0Service {
@@ -25,11 +26,11 @@ export default class Auth0Service {
     });
   }
 
-  public async updateAuth0User(
+  public async updateUser(
     userAuth0Id: string,
     userDetail: Auth0UserDetailType,
   ) {
-    if (!Object.keys(userDetail).length) {
+    if (!objectLength(userDetail)) {
       return;
     }
     return await this.managementClient.updateUser(
@@ -38,7 +39,7 @@ export default class Auth0Service {
     );
   }
 
-  public async getAuth0User(userAuth0Id: string) {
+  public async getUser(userAuth0Id: string) {
     return await this.managementClient.getUser({
       id: userAuth0Id,
     });
