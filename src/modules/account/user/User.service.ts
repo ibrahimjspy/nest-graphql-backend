@@ -11,6 +11,8 @@ import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import { Auth0UserInputDTO } from './dto/user.dto';
 import Auth0Service from 'src/external/services/auth0.service';
 import { validateAuth0UserInput } from './User.utils';
+import { B2C_ENABLED } from 'src/constants';
+
 @Injectable()
 export class UserService {
   constructor(
@@ -57,6 +59,44 @@ export class UserService {
     }
   }
 
+  public async getUserinfoV2(
+    userAuth0Id: string,
+    token: string,
+  ): Promise<SuccessResponseType> {
+    try {
+      let checkoutId = null;
+      const saleorUserDetails = await AccountHandlers.getUserDetailsHandler(token);
+      const auth0UserDetail = await this.auth0Service.getAuth0User(userAuth0Id);
+      const shopDetails = await this.shopService.getShopDetailsV2({
+        email: saleorUserDetails['email'],
+      });
+      if (!B2C_ENABLED) {
+        checkoutId = await AccountHandlers.getCheckoutIdFromMarketplaceHandler(
+          saleorUserDetails['email'],
+        );
+      }
+      if (shopDetails['status'] == 200) {
+        saleorUserDetails['checkoutId'] = checkoutId;
+        return prepareSuccessResponse({
+          ...saleorUserDetails,
+          shopDetails: shopDetails['data'],
+        });
+      }
+      saleorUserDetails['checkoutId'] = checkoutId;
+      return prepareSuccessResponse({
+        saleor: saleorUserDetails,
+        auth0: auth0UserDetail,
+        shopDetails: shopDetails,
+      });
+    } catch (error) {
+      this.logger.error(error);
+      if (error instanceof RecordNotFound) {
+        return prepareFailedResponse(error.message);
+      }
+      return graphqlExceptionHandler(error);
+    }
+  }
+
   public async updateUserInfo(
     userInput: Auth0UserInputDTO,
     token: string,
@@ -85,16 +125,4 @@ export class UserService {
     }
   }
 
-  public async getUserAuth0Detail(
-    userAuth0Id: string,
-  ): Promise<SuccessResponseType> {
-    try {
-      // get user info in auth0
-      const auth0UserDetail = await this.auth0Service.getAuth0User(userAuth0Id);
-      return prepareSuccessResponse(auth0UserDetail);
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
-  }
 }

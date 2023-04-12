@@ -32,14 +32,16 @@ export class UserController {
     );
   }
 
-  @Get('api/v1/user/detail/:userAuth0Id')
-  async auth0UserDetail(
+  @Get('api/v2/user/whoami/:userAuth0Id')
+  @ApiBearerAuth('JWT-auth')
+  async getUserV2(
     @Res() res,
     @Param() param: UserAuth0IdDTO,
+    @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getUserAuth0Detail(param.userAuth0Id),
+      await this.appService.getUserinfoV2(param.userAuth0Id, token),
     );
   }
 
