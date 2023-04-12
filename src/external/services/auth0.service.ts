@@ -7,7 +7,7 @@ import {
   AUTH0_TTL_CACHE_TIME,
 } from 'src/constants';
 import { Auth0UserDetailType } from 'src/modules/account/user/User.types';
-import { objectLength } from 'src/modules/account/user/User.utils';
+import { validateObjectLength } from 'src/modules/account/user/User.utils';
 
 @Injectable()
 export default class Auth0Service {
@@ -30,7 +30,7 @@ export default class Auth0Service {
     userAuth0Id: string,
     userDetail: Auth0UserDetailType,
   ) {
-    if (!objectLength(userDetail)) {
+    if (!validateObjectLength(userDetail)) {
       return;
     }
     return await this.managementClient.updateUser(

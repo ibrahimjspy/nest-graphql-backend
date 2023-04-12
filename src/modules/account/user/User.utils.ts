@@ -5,7 +5,7 @@ import { Auth0UserInputDTO } from './dto/user.dto';
  * @param {object} obj - paramter of object type
  * @returns {number} return the length of the object keys.
  */
-export const objectLength = (obj: object) => {
+export const validateObjectLength = (obj: object) => {
   return Object.keys(obj).length;
 };
 
@@ -27,7 +27,7 @@ export const validateAuth0UserInput = (userInput: Auth0UserInputDTO) => {
   return {
     ...(firstName && { given_name: firstName }),
     ...(lastName && { family_name: lastName }),
-    ...(objectLength(validatedMetadata) && {
+    ...(validateObjectLength(validatedMetadata) && {
       user_metadata: validatedMetadata,
     }),
   };
