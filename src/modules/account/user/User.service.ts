@@ -9,9 +9,10 @@ import * as AccountHandlers from 'src/graphql/handlers/account/user';
 import { ShopService } from '../../shop/Shop.service';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import { Auth0UserInputDTO } from './dto/user.dto';
-import Auth0Service from 'src/external/services/auth0.service';
+import Auth0Service from './services/auth0.service';
 import { B2C_ENABLED } from 'src/constants';
-import SaleorAuthService from 'src/external/services/saleorAuth.service';
+import SaleorAuthService from './services/saleorAuth.service';
+import { validateAuth0UserInput } from './User.utils';
 
 @Injectable()
 export class UserService {
@@ -98,10 +99,14 @@ export class UserService {
     token: string,
   ): Promise<SuccessResponseType> {
     try {
-      const [saleor, auth0] = await this.saleorAuthService.updateUser(
-        userInput,
-        token,
-      );
+      // update user info in saleor and auth0
+      const [saleor, auth0] = await Promise.all([
+        this.saleorAuthService.updateUser(userInput, token),
+        this.auth0Service.updateUser(
+          userInput.userAuth0Id,
+          validateAuth0UserInput(userInput),
+        ),
+      ]);
       // update user info in auth0
       return prepareSuccessResponse({ saleor, auth0 });
     } catch (error) {

@@ -33,6 +33,7 @@ export default class Auth0Service {
     if (!validateObjectLength(userDetail)) {
       return;
     }
+    console.log('userDetail', userDetail);
     return await this.managementClient.updateUser(
       { id: userAuth0Id },
       userDetail,
