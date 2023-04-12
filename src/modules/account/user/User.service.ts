@@ -10,14 +10,15 @@ import { ShopService } from '../../shop/Shop.service';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import { Auth0UserInputDTO } from './dto/user.dto';
 import Auth0Service from 'src/external/services/auth0.service';
-import { validateAuth0UserInput } from './User.utils';
 import { B2C_ENABLED } from 'src/constants';
+import SaleorAuthService from 'src/external/services/saleorAuth.service';
 
 @Injectable()
 export class UserService {
   constructor(
     private shopService: ShopService,
     private auth0Service: Auth0Service,
+    private saleorAuthService: SaleorAuthService,
   ) {
     return;
   }
@@ -97,18 +98,7 @@ export class UserService {
     token: string,
   ): Promise<SuccessResponseType> {
     try {
-      const saleorUserInput = {
-        firstName: userInput.firstName,
-        lastName: userInput.lastName,
-      };
-      // update user info in saleor and auth0
-      const [saleor, auth0] = await Promise.all([
-        AccountHandlers.updateUserInfoHandler(saleorUserInput, token),
-        this.auth0Service.updateUser(
-          userInput.userAuth0Id,
-          validateAuth0UserInput(userInput),
-        ),
-      ]);
+      const [saleor, auth0] = await this.saleorAuthService.updateUser(userInput, token)
       // update user info in auth0
       return prepareSuccessResponse({ saleor, auth0 });
     } catch (error) {
