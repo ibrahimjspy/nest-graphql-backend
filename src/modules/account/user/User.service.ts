@@ -98,7 +98,10 @@ export class UserService {
     token: string,
   ): Promise<SuccessResponseType> {
     try {
-      const [saleor, auth0] = await this.saleorAuthService.updateUser(userInput, token)
+      const [saleor, auth0] = await this.saleorAuthService.updateUser(
+        userInput,
+        token,
+      );
       // update user info in auth0
       return prepareSuccessResponse({ saleor, auth0 });
     } catch (error) {
