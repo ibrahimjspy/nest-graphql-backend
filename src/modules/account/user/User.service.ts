@@ -65,7 +65,9 @@ export class UserService {
   ): Promise<SuccessResponseType> {
     try {
       let checkoutId = null;
-      const saleorUserDetails = await AccountHandlers.getUserDetailsHandler(token);
+      const saleorUserDetails = await AccountHandlers.getUserDetailsHandler(
+        token,
+      );
       const auth0UserDetail = await this.auth0Service.getAuth0User(userAuth0Id);
       const shopDetails = await this.shopService.getShopDetailsV2({
         email: saleorUserDetails['email'],
@@ -108,21 +110,17 @@ export class UserService {
       };
       // update user info in saleor and auth0
       const [saleor, auth0] = await Promise.all([
-        AccountHandlers.updateUserInfoHandler(
-          saleorUserInput,
-          token,
-        ),
+        AccountHandlers.updateUserInfoHandler(saleorUserInput, token),
         this.auth0Service.updateAuth0User(
           userInput.userAuth0Id,
           validateAuth0UserInput(userInput),
-        )
-      ]) ;
+        ),
+      ]);
       // update user info in auth0
-      return prepareSuccessResponse({saleor, auth0});
+      return prepareSuccessResponse({ saleor, auth0 });
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
     }
   }
-
 }

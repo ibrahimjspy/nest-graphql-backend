@@ -25,8 +25,11 @@ export default class Auth0Service {
     });
   }
 
-  public async updateAuth0User(userAuth0Id: string, userDetail: Auth0UserDetailType) {
-    if(!Object.keys(userDetail).length){
+  public async updateAuth0User(
+    userAuth0Id: string,
+    userDetail: Auth0UserDetailType,
+  ) {
+    if (!Object.keys(userDetail).length) {
       return;
     }
     return await this.managementClient.updateUser(

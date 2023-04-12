@@ -11,8 +11,8 @@ export const validateAuth0UserInput = (userInput: Auth0UserInputDTO) => {
   }
 
   return {
-    ...(firstName && {given_name: firstName}),
-    ...(lastName && {family_name: lastName}),
+    ...(firstName && { given_name: firstName }),
+    ...(lastName && { family_name: lastName }),
     ...(Object.keys(validatedMetadata).length && {
       user_metadata: validatedMetadata,
     }),
