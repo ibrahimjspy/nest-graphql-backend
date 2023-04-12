@@ -9,12 +9,17 @@ import * as AccountHandlers from 'src/graphql/handlers/account/user';
 import { ShopService } from '../../shop/Shop.service';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import { Auth0UserInputDTO } from './dto/user.dto';
-import Auth0Service from 'src/external/services/auth0.service';
+import Auth0Service from './services/auth0.service';
+import { B2C_ENABLED } from 'src/constants';
+import SaleorAuthService from './services/saleorAuth.service';
+import { validateAuth0UserInput } from './User.utils';
+
 @Injectable()
 export class UserService {
   constructor(
     private shopService: ShopService,
     private auth0Service: Auth0Service,
+    private saleorAuthService: SaleorAuthService,
   ) {
     return;
   }
@@ -56,21 +61,54 @@ export class UserService {
     }
   }
 
+  public async getUserinfoV2(
+    userAuth0Id: string,
+    token: string,
+  ): Promise<SuccessResponseType> {
+    try {
+      let checkoutId = null;
+      const [saleor, auth0] = await Promise.all([
+        AccountHandlers.getUserDetailsHandler(token),
+        this.auth0Service.getUser(userAuth0Id),
+      ]);
+      const shopDetails = await this.shopService.getShopDetailsV2({
+        email: saleor['email'],
+      });
+      if (!B2C_ENABLED) {
+        checkoutId = await AccountHandlers.getCheckoutIdFromMarketplaceHandler(
+          saleor['email'],
+        );
+      }
+      saleor['checkoutId'] = checkoutId;
+      return prepareSuccessResponse({
+        saleor,
+        auth0,
+        shopDetails: shopDetails,
+      });
+    } catch (error) {
+      this.logger.error(error);
+      if (error instanceof RecordNotFound) {
+        return prepareFailedResponse(error.message);
+      }
+      return graphqlExceptionHandler(error);
+    }
+  }
+
   public async updateUserInfo(
     userInput: Auth0UserInputDTO,
     token: string,
   ): Promise<SuccessResponseType> {
     try {
-      const { userAuth0Id, ...userDetail } = userInput;
-      // update user info in saleor
-      const response = await AccountHandlers.updateUserInfoHandler(
-        userDetail,
-        token,
-      );
+      // update user info in saleor and auth0
+      const [saleor, auth0] = await Promise.all([
+        this.saleorAuthService.updateUser(userInput, token),
+        this.auth0Service.updateUser(
+          userInput.userAuth0Id,
+          validateAuth0UserInput(userInput),
+        ),
+      ]);
       // update user info in auth0
-      const { firstName, lastName } = response?.user;
-      await this.auth0Service.updateUser({firstName, lastName, ...userInput});
-      return prepareSuccessResponse(response);
+      return prepareSuccessResponse({ saleor, auth0 });
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
