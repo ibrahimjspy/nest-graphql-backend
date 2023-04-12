@@ -66,18 +66,19 @@ export class UserService {
         firstName: userInput.firstName,
         lastName: userInput.lastName,
       };
-      // update user info in saleor
-      const saleorUserDetail = await AccountHandlers.updateUserInfoHandler(
-        saleorUserInput,
-        token,
-      );
+      // update user info in saleor and auth0
+      const [saleor, auth0] = await Promise.all([
+        AccountHandlers.updateUserInfoHandler(
+          saleorUserInput,
+          token,
+        ),
+        this.auth0Service.updateAuth0User(
+          userInput.userAuth0Id,
+          validateAuth0UserInput(userInput),
+        )
+      ]) ;
       // update user info in auth0
-      const { firstName, lastName } = saleorUserDetail?.user;
-      const auth0UserDetail = await this.auth0Service.updateUser(
-        userInput.userAuth0Id,
-        validateAuth0UserInput({ firstName, lastName, ...userInput }),
-      );
-      return prepareSuccessResponse(auth0UserDetail);
+      return prepareSuccessResponse({saleor, auth0});
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -89,7 +90,7 @@ export class UserService {
   ): Promise<SuccessResponseType> {
     try {
       // get user info in auth0
-      const auth0UserDetail = await this.auth0Service.getUser(userAuth0Id);
+      const auth0UserDetail = await this.auth0Service.getAuth0User(userAuth0Id);
       return prepareSuccessResponse(auth0UserDetail);
     } catch (error) {
       this.logger.error(error);

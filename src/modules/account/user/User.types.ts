@@ -1,4 +1,4 @@
-export interface Auth0UserDetail {
+export interface Auth0UserDetailType {
   given_name: string;
   family_name: string;
   user_metadata?: {
