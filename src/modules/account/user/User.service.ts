@@ -8,7 +8,7 @@ import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import * as AccountHandlers from 'src/graphql/handlers/account/user';
 import { ShopService } from '../../shop/Shop.service';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
-import { Auth0UserInputDTO } from './dto/user.dto';
+import { Auth0UserInputDTO, ChangeUserPasswordDTO } from './dto/user.dto';
 import Auth0Service from './services/auth0.service';
 import { B2C_ENABLED } from 'src/constants';
 import SaleorAuthService from './services/saleorAuth.service';
@@ -109,6 +109,26 @@ export class UserService {
       ]);
       // update user info in auth0
       return prepareSuccessResponse({ saleor, auth0 });
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async changeUserPassword(
+    userInput: ChangeUserPasswordDTO,
+    token: string,
+  ): Promise<SuccessResponseType> {
+    try {
+      // update user info in saleor and auth0
+      const [saleor] = await Promise.all([
+        this.auth0Service.changeUserPassword(
+          userInput.userAuth0Id,
+          userInput.newPassword,
+        ),
+      ]);
+      // update user info in auth0
+      return prepareSuccessResponse({ saleor });
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

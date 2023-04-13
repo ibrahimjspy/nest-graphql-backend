@@ -39,6 +39,18 @@ export default class Auth0Service {
     );
   }
 
+  public async changeUserPassword(
+    userAuth0Id: string,
+    newPassword: string,
+  ) {
+    return await this.managementClient.updateUser(
+      { id: userAuth0Id },
+      {
+        password: newPassword
+      },
+    );
+  }
+
   public async getUser(userAuth0Id: string) {
     return await this.managementClient.getUser({
       id: userAuth0Id,

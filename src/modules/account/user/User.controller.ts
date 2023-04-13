@@ -12,7 +12,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
 import { UserService } from './User.service';
 import { IsAuthenticated } from 'src/core/utils/decorators';
-import { Auth0UserInputDTO, UserAuth0IdDTO } from './dto/user.dto';
+import { Auth0UserInputDTO, ChangeUserPasswordDTO, UserAuth0IdDTO } from './dto/user.dto';
 import { b2cDto } from 'src/modules/shop/dto/shop';
 @ApiTags('user')
 @Controller()
@@ -57,4 +57,18 @@ export class UserController {
       await this.appService.updateUserInfo(userInput, Authorization),
     );
   }
+
+  @Put('/api/v1/user/change/password')
+  async changeUserPassword(
+    @Res() res,
+    @Body() userInput: ChangeUserPasswordDTO,
+    @Headers() headers,
+  ): Promise<object> {
+    const Authorization: string = headers.authorization;
+    return makeResponse(
+      res,
+      await this.appService.changeUserPassword(userInput, Authorization),
+    );
+  }
+
 }
