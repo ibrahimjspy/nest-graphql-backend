@@ -44,7 +44,15 @@ export const validateAuth0UserInput = (userInput: Auth0UserInputDTO) => {
   };
 };
 
+/**
+ * Remove Bearer or bearer string from token string
+ * @param {string} token - paramter of string type
+ * @returns {string} return token without bearer text.
+ */
 export const tokenWithoutBearer = (token:string) => {
+    if(!token){
+        return;
+    }
     return token
     .replace('Bearer ', '')
     .replace('bearer ', '');

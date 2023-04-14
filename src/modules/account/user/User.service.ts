@@ -133,7 +133,7 @@ export class UserService {
         userInput.userAuth0Id,
         userInput.newPassword,
       );
-      return prepareSuccessResponse({os: osReponse?.data, auth0});
+      return prepareSuccessResponse({osReponse: osReponse?.data, auth0});
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
