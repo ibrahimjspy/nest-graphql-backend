@@ -27,19 +27,16 @@ export default class Auth0Service {
     });
   }
 
-  public async validateAuth0User(
-    userAuth0Id: string,
-    token: string,
-  ) {
+  public async validateAuth0User(userAuth0Id: string, token: string) {
     const response = await http.get(`https://${AUTH0_DOMAIN}/userinfo`, {
       headers: {
-        "Authorization": token
-      }
+        Authorization: token,
+      },
     });
-    if(response?.data?.sub !== userAuth0Id){
-      throw new Error("Unauthorized");
+    if (response?.data?.sub !== userAuth0Id) {
+      throw new Error('Unauthorized');
     }
-    return response
+    return response;
   }
 
   public async updateUser(
@@ -55,14 +52,11 @@ export default class Auth0Service {
     );
   }
 
-  public async changeUserPassword(
-    userAuth0Id: string,
-    newPassword: string,
-  ) {
+  public async changeUserPassword(userAuth0Id: string, newPassword: string) {
     return await this.managementClient.updateUser(
       { id: userAuth0Id },
       {
-        password: newPassword
+        password: newPassword,
       },
     );
   }

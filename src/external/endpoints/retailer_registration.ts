@@ -44,17 +44,26 @@ export const retailerRegister = async (payload: RetailerRegisterDto) => {
   return response;
 };
 
-export const retailerChangePassword = async (payload: ChangeUserPasswordDTO, token:string) => {
+export const retailerChangePassword = async (
+  payload: ChangeUserPasswordDTO,
+  token: string,
+) => {
   const URL = `${BASE_EXTERNAL_ENDPOINT}/api/v3/user/profile/change-password`;
-  const tokenWithoutBearer = token.replace("Bearer ", "").replace("bearer ","");
-  
+  const tokenWithoutBearer = token
+    .replace('Bearer ', '')
+    .replace('bearer ', '');
+
   const headers = {
     ...ACCEPT_ENCODING_HEADER,
-    "Authorization": tokenWithoutBearer
+    Authorization: tokenWithoutBearer,
   };
-  return await http.post(URL, {
-    "current_pwd": payload.currentPassword,
-    "new_pwd": payload.newPassword,
-    "confirm_new_pwd": payload.newPassword
-  }, { headers })
+  return await http.post(
+    URL,
+    {
+      current_pwd: payload.currentPassword,
+      new_pwd: payload.newPassword,
+      confirm_new_pwd: payload.newPassword,
+    },
+    { headers },
+  );
 };

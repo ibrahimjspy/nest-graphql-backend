@@ -123,16 +123,16 @@ export class UserService {
     try {
       // validate auth0 user token
       await this.auth0Service.validateAuth0User(userInput.userAuth0Id, token);
-      
-      if(!B2C_ENABLED){
+
+      if (!B2C_ENABLED) {
         // change user password in orangeshine
-        await retailerChangePassword(userInput, token)
+        await retailerChangePassword(userInput, token);
       }
       // change user password in auth0
       const response = await this.auth0Service.changeUserPassword(
         userInput.userAuth0Id,
         userInput.newPassword,
-      )
+      );
       return prepareSuccessResponse(response);
     } catch (error) {
       this.logger.error(error);

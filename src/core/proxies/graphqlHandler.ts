@@ -84,8 +84,9 @@ export const graphqlExceptionHandler = (
   // Used to handle all the unexpected errors.
   const response = error?.response;
   const errors = response?.errors || [];
-  const errorMessage = (response?.errors?.length && response?.errors[0]?.message);
-  let message = errorMessage || response?.data?.message || 'Something went wrong.';
+  const errorMessage = response?.errors?.length && response?.errors[0]?.message;
+  const message =
+    errorMessage || response?.data?.message || 'Something went wrong.';
   let error_code: number = error.type ? 500 : response?.status;
   if (status) {
     error_code = status;
