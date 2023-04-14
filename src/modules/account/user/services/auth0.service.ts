@@ -8,6 +8,7 @@ import {
 } from 'src/constants';
 import { Auth0UserDetailType } from 'src/modules/account/user/User.types';
 import { validateObjectLength } from 'src/modules/account/user/User.utils';
+import http from 'src/core/proxies/restHandler';
 
 @Injectable()
 export default class Auth0Service {
@@ -24,6 +25,21 @@ export default class Auth0Service {
         cacheTTLInSeconds: AUTH0_TTL_CACHE_TIME,
       },
     });
+  }
+
+  public async validateAuth0User(
+    userAuth0Id: string,
+    token: string,
+  ) {
+    const response = await http.get(`https://${AUTH0_DOMAIN}/userinfo`, {
+      headers: {
+        "Authorization": token
+      }
+    });
+    if(response?.data?.sub !== userAuth0Id){
+      throw new Error("Unauthorized");
+    }
+    return response
   }
 
   public async updateUser(

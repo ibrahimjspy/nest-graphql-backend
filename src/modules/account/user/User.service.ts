@@ -13,6 +13,7 @@ import Auth0Service from './services/auth0.service';
 import { B2C_ENABLED } from 'src/constants';
 import SaleorAuthService from './services/saleorAuth.service';
 import { validateAuth0UserInput } from './User.utils';
+import { retailerChangePassword } from 'src/external/endpoints/retailer_registration';
 
 @Injectable()
 export class UserService {
@@ -120,14 +121,18 @@ export class UserService {
     token: string,
   ): Promise<SuccessResponseType> {
     try {
-      // update user info in saleor and auth0
-      const [saleor] = await Promise.all([
-        this.auth0Service.changeUserPassword(
-          userInput.userAuth0Id,
-          userInput.newPassword,
-        ),
-      ]);
-      // update user info in auth0
+      // validate auth0 user token
+      await this.auth0Service.validateAuth0User(userInput.userAuth0Id, token);
+      
+      if(!B2C_ENABLED){
+        // change user password in orangeshine
+        await retailerChangePassword(userInput, token)
+      }
+      // change user password in auth0
+      const saleor = await this.auth0Service.changeUserPassword(
+        userInput.userAuth0Id,
+        userInput.newPassword,
+      )
       return prepareSuccessResponse({ saleor });
     } catch (error) {
       this.logger.error(error);

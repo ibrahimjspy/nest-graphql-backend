@@ -4,6 +4,7 @@ import {
   Get,
   Headers,
   Param,
+  Post,
   Put,
   Query,
   Res,
@@ -58,7 +59,7 @@ export class UserController {
     );
   }
 
-  @Put('/api/v1/user/change/password')
+  @Post('/api/v1/user/change-password')
   async changeUserPassword(
     @Res() res,
     @Body() userInput: ChangeUserPasswordDTO,

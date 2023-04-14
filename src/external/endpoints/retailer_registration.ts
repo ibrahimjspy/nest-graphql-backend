@@ -6,6 +6,7 @@ import {
 } from 'src/constants';
 import FormData from 'form-data';
 import { RetailerRegisterDto } from '../../modules/retailer/dto';
+import { ChangeUserPasswordDTO } from 'src/modules/account/user/dto/user.dto';
 
 export const retailerJobTitles = async () => {
   const URL = `${BASE_EXTERNAL_ENDPOINT}/api/v3/app/job-title`;
@@ -41,4 +42,19 @@ export const retailerRegister = async (payload: RetailerRegisterDto) => {
   };
   const response = await http.post(URL, payload, { headers });
   return response;
+};
+
+export const retailerChangePassword = async (payload: ChangeUserPasswordDTO, token:string) => {
+  const URL = `${BASE_EXTERNAL_ENDPOINT}/api/v3/user/profile/change-password`;
+  const tokenWithoutBearer = token.replace("Bearer ", "").replace("bearer ","");
+  
+  const headers = {
+    ...ACCEPT_ENCODING_HEADER,
+    "Authorization": tokenWithoutBearer
+  };
+  return await http.post(URL, {
+    "current_pwd": payload.currentPassword,
+    "new_pwd": payload.newPassword,
+    "confirm_new_pwd": payload.newPassword
+  }, { headers })
 };
