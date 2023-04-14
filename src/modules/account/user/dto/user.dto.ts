@@ -50,3 +50,13 @@ export class UserAuth0IdDTO {
   @IsNotEmpty()
   userAuth0Id: string;
 }
+
+export class ChangeUserPasswordDTO extends UserAuth0IdDTO {
+  @ApiProperty()
+  @IsNotEmpty()
+  currentPassword: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  newPassword: string;
+}

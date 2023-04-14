@@ -8,11 +8,12 @@ import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import * as AccountHandlers from 'src/graphql/handlers/account/user';
 import { ShopService } from '../../shop/Shop.service';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
-import { Auth0UserInputDTO } from './dto/user.dto';
+import { Auth0UserInputDTO, ChangeUserPasswordDTO } from './dto/user.dto';
 import Auth0Service from './services/auth0.service';
 import { B2C_ENABLED } from 'src/constants';
 import SaleorAuthService from './services/saleorAuth.service';
 import { validateAuth0UserInput } from './User.utils';
+import { retailerChangePassword } from 'src/external/endpoints/retailer_registration';
 
 @Injectable()
 export class UserService {
@@ -109,6 +110,30 @@ export class UserService {
       ]);
       // update user info in auth0
       return prepareSuccessResponse({ saleor, auth0 });
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async changeUserPassword(
+    userInput: ChangeUserPasswordDTO,
+    token: string,
+  ): Promise<SuccessResponseType> {
+    try {
+      // validate auth0 user token
+      await this.auth0Service.validateAuth0User(userInput.userAuth0Id, token);
+      let osReponse;
+      if (!B2C_ENABLED) {
+        // change user password in orangeshine
+        osReponse = await retailerChangePassword(userInput, token);
+      }
+      // change user password in auth0
+      const auth0 = await this.auth0Service.changeUserPassword(
+        userInput.userAuth0Id,
+        userInput.newPassword,
+      );
+      return prepareSuccessResponse({ osReponse: osReponse?.data, auth0 });
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
