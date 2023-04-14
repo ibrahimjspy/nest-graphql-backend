@@ -123,17 +123,17 @@ export class UserService {
     try {
       // validate auth0 user token
       await this.auth0Service.validateAuth0User(userInput.userAuth0Id, token);
-
+      let osReponse;
       if (!B2C_ENABLED) {
         // change user password in orangeshine
-        await retailerChangePassword(userInput, token);
+        osReponse = await retailerChangePassword(userInput, token);
       }
       // change user password in auth0
-      const response = await this.auth0Service.changeUserPassword(
+      const auth0 = await this.auth0Service.changeUserPassword(
         userInput.userAuth0Id,
         userInput.newPassword,
       );
-      return prepareSuccessResponse(response);
+      return prepareSuccessResponse({os: osReponse?.data, auth0});
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

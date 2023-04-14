@@ -43,3 +43,9 @@ export const validateAuth0UserInput = (userInput: Auth0UserInputDTO) => {
     }),
   };
 };
+
+export const tokenWithoutBearer = (token:string) => {
+    return token
+    .replace('Bearer ', '')
+    .replace('bearer ', '');
+}
