@@ -129,11 +129,11 @@ export class UserService {
         await retailerChangePassword(userInput, token)
       }
       // change user password in auth0
-      const saleor = await this.auth0Service.changeUserPassword(
+      const response = await this.auth0Service.changeUserPassword(
         userInput.userAuth0Id,
         userInput.newPassword,
       )
-      return prepareSuccessResponse({ saleor });
+      return prepareSuccessResponse(response);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
