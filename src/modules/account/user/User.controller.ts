@@ -59,7 +59,7 @@ export class UserController {
     );
   }
 
-  @Post('/api/v1/user/change-password')
+  @Post('/api/v1/user/change/password')
   async changeUserPassword(
     @Res() res,
     @Body() userInput: ChangeUserPasswordDTO,
