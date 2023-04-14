@@ -50,7 +50,6 @@ export const retailerChangePassword = async (
   token: string,
 ) => {
   const URL = `${BASE_EXTERNAL_ENDPOINT}/api/v3/user/profile/change-password`;
-  
 
   const headers = {
     ...ACCEPT_ENCODING_HEADER,

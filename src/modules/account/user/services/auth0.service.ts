@@ -28,7 +28,7 @@ export default class Auth0Service {
   }
 
   public async validateAuth0User(userAuth0Id: string, token: string) {
-    const response = await validateAuth0Token(token)
+    const response = await validateAuth0Token(token);
     if (response?.data?.sub !== userAuth0Id) {
       throw new Error('Unauthorized');
     }
