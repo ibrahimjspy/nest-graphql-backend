@@ -7,7 +7,7 @@ import {
 import FormData from 'form-data';
 import { RetailerRegisterDto } from '../../modules/retailer/dto';
 import { ChangeUserPasswordDTO } from 'src/modules/account/user/dto/user.dto';
-import { tokenWithoutBearer } from 'src/modules/account/user/User.utils';
+import { getTokenWithoutBearer } from 'src/modules/account/user/User.utils';
 
 export const retailerJobTitles = async () => {
   const URL = `${BASE_EXTERNAL_ENDPOINT}/api/v3/app/job-title`;
@@ -53,7 +53,7 @@ export const retailerChangePassword = async (
 
   const headers = {
     ...ACCEPT_ENCODING_HEADER,
-    Authorization: tokenWithoutBearer(token),
+    Authorization: getTokenWithoutBearer(token),
   };
   return await http.post(
     URL,
