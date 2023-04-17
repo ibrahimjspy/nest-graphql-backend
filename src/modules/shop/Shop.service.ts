@@ -341,10 +341,8 @@ export class ShopService {
 
   public generateStorefrontUrl(storeName: string) {
     try {
-      const uniqueString = (Math.random() + 1).toString(36).substring(7); //e.g ~~ jce4r
-      const validateStoreName = storeName.replace(/\s+/g, '').toLowerCase();
-      const subDomain = `${validateStoreName}${uniqueString}`;
-      const url = `${subDomain}${B2C_STOREFRONT_TLD}`;
+      const validateStoreName = storeName.replace(/[\s.]+/g, '').toLowerCase();
+      const url = `${validateStoreName}${B2C_STOREFRONT_TLD}`;
       return url;
     } catch (error) {
       this.logger.error(error);
