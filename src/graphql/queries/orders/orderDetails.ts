@@ -385,6 +385,9 @@ const b2cQuery = (id: string): string => {
               media {
                 url
               }
+              thumbnail(size: ${DEFAULT_THUMBNAIL_SIZE}) {
+                url
+              }
               metadata {
                 key
                 value
