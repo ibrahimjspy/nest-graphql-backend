@@ -343,26 +343,6 @@ export class OrdersController {
     );
   }
 
-  // Returns shop order details
-  @Get('api/v1/order/return/:orderId')
-  @ApiBearerAuth('JWT-auth')
-  async getReturnedOrderDetails(
-    @Res() res,
-    @Param() orderDto: OrderIdDto,
-    @Query() filter: b2cDto,
-    @Headers() headers,
-  ): Promise<object> {
-    const Authorization: string = headers.authorization;
-    return makeResponse(
-      res,
-      await this.appService.getReturnOrdersDetails(
-        orderDto.orderId,
-        Authorization,
-        filter.isB2c,
-      ),
-    );
-  }
-
   @Post('api/v1/marketplace/order')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({

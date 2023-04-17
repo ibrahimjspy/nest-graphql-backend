@@ -22,7 +22,6 @@ import {
   orderReturnDetailHandler,
   orderReturnListHandler,
   ordersListHandler,
-  returnOrderDetailsHandler,
   returnedOrdersListHandler,
   shopOrderFulfillmentsByIdHandler,
   shopOrderFulfillmentsDetailsHandler,
@@ -182,20 +181,6 @@ export class OrdersService {
   public async getOrderDetailsById(id: string, token: string): Promise<object> {
     try {
       const response = await orderDetailsHandler(id, token);
-      return prepareSuccessResponse(response, '', 200);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
-    }
-  }
-
-  public async getReturnOrdersDetails(
-    id: string,
-    token: string,
-    isB2c = false,
-  ): Promise<object> {
-    try {
-      const response = await returnOrderDetailsHandler(id, token, isB2c);
       return prepareSuccessResponse(response, '', 200);
     } catch (err) {
       this.logger.error(err);

@@ -1,4 +1,5 @@
 import { gql } from 'graphql-request';
+import { DEFAULT_THUMBNAIL_SIZE } from 'src/constants';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
 const b2bQuery = (id: string): string => {
@@ -97,6 +98,9 @@ const b2bQuery = (id: string): string => {
                 }
                 product {
                   id
+                  thumbnail(size: ${DEFAULT_THUMBNAIL_SIZE}) {
+                    url
+                  }
                   name
                   media {
                       url
@@ -303,6 +307,9 @@ const b2cQuery = (id: string): string => {
                 }
                 product {
                   id
+                  thumbnail(size: ${DEFAULT_THUMBNAIL_SIZE}) {
+                    url
+                  }
                   metadata {
                     key
                     value
