@@ -8,7 +8,11 @@ import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import * as AccountHandlers from 'src/graphql/handlers/account/user';
 import { ShopService } from '../../shop/Shop.service';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
-import { Auth0UserInputDTO, ChangeUserPasswordDTO } from './dto/user.dto';
+import {
+  Auth0UserInputDTO,
+  ChangeUserPasswordDTO,
+  UserAuth0IdDTO,
+} from './dto/user.dto';
 import Auth0Service from './services/auth0.service';
 import { B2C_ENABLED } from 'src/constants';
 import SaleorAuthService from './services/saleorAuth.service';
@@ -75,7 +79,7 @@ export class UserService {
       const shopDetails = await this.shopService.getShopDetailsV2({
         email: saleor['email'],
       });
-      if (!B2C_ENABLED) {
+      if (B2C_ENABLED == 'false') {
         checkoutId = await AccountHandlers.getCheckoutIdFromMarketplaceHandler(
           saleor['email'],
         );
@@ -124,7 +128,7 @@ export class UserService {
       // validate auth0 user token
       await this.auth0Service.validateAuth0User(userInput.userAuth0Id, token);
       let osReponse;
-      if (!B2C_ENABLED) {
+      if (B2C_ENABLED == 'false') {
         // change user password in orangeshine
         osReponse = await retailerChangePassword(userInput, token);
       }
@@ -134,6 +138,20 @@ export class UserService {
         userInput.newPassword,
       );
       return prepareSuccessResponse({ osReponse: osReponse?.data, auth0 });
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async sendVerificationEmail(
+    userInput: UserAuth0IdDTO,
+  ): Promise<SuccessResponseType> {
+    try {
+      const auth0 = await this.auth0Service.sendVerificationEmail(
+        userInput.userAuth0Id,
+      );
+      return prepareSuccessResponse(auth0);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

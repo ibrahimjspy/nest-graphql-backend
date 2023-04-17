@@ -62,4 +62,10 @@ export default class Auth0Service {
       id: userAuth0Id,
     });
   }
+
+  public async sendVerificationEmail(userAuth0Id: string) {
+    return await this.managementClient.sendEmailVerification({
+      user_id: userAuth0Id,
+    });
+  }
 }
