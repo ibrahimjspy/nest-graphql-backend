@@ -51,6 +51,7 @@ export class MarketplaceCartService {
     userEmail: string,
     checkoutBundleIds: string[],
     token: string,
+    throwException = true,
   ) {
     const productDetails = false;
     const marketplaceCheckout = await this.getAllCheckoutBundles({
@@ -59,7 +60,7 @@ export class MarketplaceCartService {
       productDetails,
     });
     const checkoutId = marketplaceCheckout['data']['checkoutId'];
-    if (!checkoutId) {
+    if (!checkoutId && throwException) {
       throw new CheckoutIdError(userEmail);
     }
     // TODO replace this with get bundles by checkout bundles id

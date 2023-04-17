@@ -224,11 +224,13 @@ export class CartService {
     try {
       const { userEmail, checkoutBundleIds } = updateBundleState;
       const action = true;
+      const throwCheckoutIdException = false;
       const { checkoutId, checkoutBundlesData } =
         await this.marketplaceService.getCheckoutBundlesByIds(
           userEmail,
           checkoutBundleIds,
           token,
+          throwCheckoutIdException,
         );
       const bundlesList = getBundlesFromCheckout(
         getUnSelectedCheckoutBundles(checkoutBundlesData),
