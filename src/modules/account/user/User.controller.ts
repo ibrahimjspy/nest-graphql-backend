@@ -75,4 +75,15 @@ export class UserController {
       await this.appService.changeUserPassword(userInput, Authorization),
     );
   }
+
+  @Post('/api/v1/user/send/verification-email')
+  async sendVerificationEmail(
+    @Res() res,
+    @Body() userInput: UserAuth0IdDTO,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.sendVerificationEmail(userInput),
+    );
+  }
 }
