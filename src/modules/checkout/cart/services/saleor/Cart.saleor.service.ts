@@ -56,7 +56,7 @@ export class SaleorCartService {
         checkoutLines,
         token,
       );
-      return response;
+      return response['checkout'];
     } catch (error) {
       this.logger.error(error);
       if (throwException) {
