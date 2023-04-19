@@ -8,6 +8,10 @@ const b2bQuery = (slug): string => {
       product(slug: "${slug}", channel: "${DEFAULT_CHANNEL}") {
         name
         id
+        metadata {
+          key
+          value
+        }
         attributes{
           attribute{
             name
