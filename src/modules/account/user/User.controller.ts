@@ -86,4 +86,26 @@ export class UserController {
       await this.appService.sendVerificationEmail(userInput),
     );
   }
+
+  @Post('/api/v1/user/deactivate')
+  async deacticateUser(
+    @Res() res,
+    @Body() userInput: UserAuth0IdDTO,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.deactivateUser(userInput),
+    );
+  }
+
+  @Post('/api/v1/user/activate')
+  async activateUser(
+    @Res() res,
+    @Body() userInput: UserAuth0IdDTO,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.activateUser(userInput),
+    );
+  }
 }

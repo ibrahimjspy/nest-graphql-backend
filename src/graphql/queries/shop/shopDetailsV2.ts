@@ -20,9 +20,6 @@ const b2bQuery = (filter: shopDetailDto): string => {
         madeIn
         minOrder
         url
-        products {
-          id
-        }
         returnPolicy
         storePolicy
         fields {
@@ -52,12 +49,6 @@ const b2cQuery = (filter: shopDetailDto): string => {
         madeIn
         minOrder
         url
-        products {
-          id
-        }
-        productVariants {
-          id
-        }
         returnPolicy
         storePolicy
         fields {

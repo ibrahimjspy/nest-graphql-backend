@@ -68,4 +68,18 @@ export default class Auth0Service {
       user_id: userAuth0Id,
     });
   }
+
+  public async deactivateUser(userAuth0Id: string) {
+    return await this.managementClient.updateUser(
+      { id: userAuth0Id },
+      { blocked: true}
+    );
+  }
+
+  public async activateUser(userAuth0Id: string) {
+    return await this.managementClient.updateUser(
+      { id: userAuth0Id },
+      { blocked: false}
+    );
+  }
 }

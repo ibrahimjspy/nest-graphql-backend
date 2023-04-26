@@ -157,4 +157,32 @@ export class UserService {
       return graphqlExceptionHandler(error);
     }
   }
+
+  public async deactivateUser(
+    userInput: UserAuth0IdDTO,
+  ): Promise<SuccessResponseType> {
+    try {
+      const auth0 = await this.auth0Service.deactivateUser(
+        userInput.userAuth0Id,
+      );
+      return prepareSuccessResponse(auth0);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async activateUser(
+    userInput: UserAuth0IdDTO,
+  ): Promise<SuccessResponseType> {
+    try {
+      const auth0 = await this.auth0Service.activateUser(
+        userInput.userAuth0Id,
+      );
+      return prepareSuccessResponse(auth0);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
 }
