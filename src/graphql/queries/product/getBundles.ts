@@ -28,6 +28,29 @@ export const getBundlesQuery = (filter: GetBundlesDto) => {
               name
               description
               slug
+              product {
+                name
+                id
+                description
+                attributes {
+                  attribute {
+                    name
+                  }
+                  values {
+                    name
+                  }
+                }
+                metadata {
+                  key
+                  value
+                }
+                thumbnail {
+                  url
+                }
+                media {
+                  url
+                }
+              }
               shop {
                 id
                 name
@@ -45,22 +68,15 @@ export const getBundlesQuery = (filter: GetBundlesDto) => {
                 productVariant {
                   id
                   name
+                  media {
+                    url
+                  }
                   attributes {
                     attribute {
                       name
                     }
                     values {
                       name
-                    }
-                  }
-                  product {
-                    name
-                    id
-                    thumbnail {
-                      url
-                    }
-                    media {
-                      url
                     }
                   }
                   pricing {
