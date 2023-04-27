@@ -295,7 +295,7 @@ export class LegacyService {
       spa_id: parseInt(shippingAddressInfo?.data?.user_id),
       sharove_order_id: this.orderId,
       stripe_payment_method_id: this.paymentMethodId,
-      billingInfo: this.transformBillingInformation(),
+      billing: this.transformBillingInformation(),
     };
   }
 
