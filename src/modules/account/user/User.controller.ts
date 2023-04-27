@@ -9,11 +9,12 @@ import {
   Query,
   Res,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
 import { UserService } from './User.service';
 import { IsAuthenticated } from 'src/core/utils/decorators';
 import {
+  AllUsersDTO,
   Auth0UserInputDTO,
   ChangeUserPasswordDTO,
   UserAuth0IdDTO,
@@ -106,6 +107,18 @@ export class UserController {
     return makeResponse(
       res,
       await this.appService.activateUser(userInput),
+    );
+  }
+
+  @ApiOperation({summary: "Get all users from auth0 by auth0 connection with pagination"})
+  @Get('/api/v1/users')
+  async getAllUsers(
+    @Res() res,
+    @Query() param: AllUsersDTO,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.getAllUsers(param),
     );
   }
 }

@@ -9,6 +9,7 @@ import {
 import { validateAuth0Token } from 'src/external/endpoints/auth0';
 import { Auth0UserDetailType } from 'src/modules/account/user/User.types';
 import { validateObjectLength } from 'src/modules/account/user/User.utils';
+import { AllUsersDTO } from '../dto/user.dto';
 
 @Injectable()
 export default class Auth0Service {
@@ -80,6 +81,18 @@ export default class Auth0Service {
     return await this.managementClient.updateUser(
       { id: userAuth0Id },
       { blocked: false}
+    );
+  }
+
+  public async getAllUsers(userInput: AllUsersDTO) {
+    return await this.managementClient.getUsers(
+      { 
+        q: `identities.connection:${userInput.auth0Connection}`,
+        page: userInput.page,
+        per_page: userInput.perPage,
+        search_engine: 'v3',
+        include_totals: true
+      }
     );
   }
 }

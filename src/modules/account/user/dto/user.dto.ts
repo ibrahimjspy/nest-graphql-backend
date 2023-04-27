@@ -60,3 +60,17 @@ export class ChangeUserPasswordDTO extends UserAuth0IdDTO {
   @IsNotEmpty()
   newPassword: string;
 }
+
+export class AllUsersDTO {
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
+  auth0Connection: string;
+
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
+  page: number;
+
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
+  perPage: number;
+}
