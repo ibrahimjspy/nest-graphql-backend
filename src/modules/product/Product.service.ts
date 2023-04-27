@@ -209,18 +209,19 @@ export class ProductService {
     filter: shopProductsDTO,
   ): Promise<object> {
     try {
-      const marketplace:any =
+      const marketplace: any =
         await ProductsHandlers.shopProductIdsByCategoryIdHandler(
           { ...filter, shopId },
           filter.isB2c,
         );
-      const productIds = marketplace?.edges?.map(({node}) => node?.productId) || [];
+      const productIds =
+        marketplace?.edges?.map(({ node }) => node?.productId) || [];
       if (productIds.length) {
         const saleor = await ProductsHandlers.productListPageHandler(
-          { 
+          {
             first: filter.first,
             categoryId: filter.categoryId,
-            productIds 
+            productIds,
           },
           filter.isB2c,
         );

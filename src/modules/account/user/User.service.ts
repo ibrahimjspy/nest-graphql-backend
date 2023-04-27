@@ -177,9 +177,7 @@ export class UserService {
     userInput: UserAuth0IdDTO,
   ): Promise<SuccessResponseType> {
     try {
-      const auth0 = await this.auth0Service.activateUser(
-        userInput.userAuth0Id,
-      );
+      const auth0 = await this.auth0Service.activateUser(userInput.userAuth0Id);
       return prepareSuccessResponse(auth0);
     } catch (error) {
       this.logger.error(error);
@@ -187,10 +185,14 @@ export class UserService {
     }
   }
 
-  public async getAllUsers(userInput:AllUsersDTO): Promise<SuccessResponseType> {
+  /**
+   * Get all users from auth0 based on given auth0 connection name and pagination
+   * @param {AllUsersDTO} userInput - auth0Connection and pagination paramaters
+   * @returns All Users from auth0 based on auth0 connection with pagination.
+   */
+  public async getUsers(userInput: AllUsersDTO): Promise<SuccessResponseType> {
     try {
-      // get all Users from auth0 based on auth0 connection with pagination
-      const auth0 = await this.auth0Service.getAllUsers(userInput);
+      const auth0 = await this.auth0Service.getUsers(userInput);
       return prepareSuccessResponse(auth0);
     } catch (error) {
       this.logger.error(error);
