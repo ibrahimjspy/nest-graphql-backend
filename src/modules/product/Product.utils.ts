@@ -1,4 +1,5 @@
 import { GQL_EDGES } from 'src/constants';
+import { ShopProductIdsReponseType } from './Product.types';
 
 /**
  * returns array of bundle ids
@@ -67,4 +68,27 @@ export const addB2cIdsToProductData = (
  */
 export const makeProductListResponse = (productsList) => {
   return { products: productsList };
+};
+
+/**
+ * @description this function parses shop productIds response and returns unique product ids in an array format
+ * @params productIdsReponse -- exact format as Saleor
+ * @warn please do not remove edges from your productIdsReponse object
+ * @return productIds -- string[]
+ */
+export const getShopProductIds = (
+  productIdsReponse: ShopProductIdsReponseType,
+) => {
+  return [
+    ...new Set(productIdsReponse.edges?.map((edge) => edge?.node?.productId)),
+  ];
+};
+
+/**
+ * Get array length
+ * @param {Array} arr - paramter of object type
+ * @returns {number} return the length of the array.
+ */
+export const isArrayLength = (arr) => {
+  return arr?.length;
 };

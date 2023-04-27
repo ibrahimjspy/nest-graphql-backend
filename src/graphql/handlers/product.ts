@@ -27,6 +27,7 @@ import {
 import { getBundlesQuery } from '../queries/product/getBundles';
 import { getProductSlugQuery } from '../queries/product/productSlug';
 import { getProductDetailsQuery } from '../queries/product/details';
+import { ShopProductIdsReponseType } from 'src/modules/product/Product.types';
 
 export const productListPageHandler = async (
   filter,
@@ -231,7 +232,7 @@ export const getStoredProductListHandler = async (
 export const shopProductIdsByCategoryIdHandler = async (
   filter,
   isb2c = false,
-): Promise<{ productIds: string[] }> => {
+): Promise<ShopProductIdsReponseType> => {
   const userToken = '';
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
