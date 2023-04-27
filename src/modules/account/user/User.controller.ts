@@ -108,7 +108,7 @@ export class UserController {
     summary: 'Get all users from auth0 by auth0 connection with pagination',
   })
   @Get('/api/v1/users')
-  async getUsers(@Res() res, @Query() param: AllUsersDTO): Promise<object> {
-    return makeResponse(res, await this.appService.getUsers(param));
+  async getUsers(@Res() res, @Query() userInput: AllUsersDTO): Promise<object> {
+    return makeResponse(res, await this.appService.getUsers(userInput));
   }
 }

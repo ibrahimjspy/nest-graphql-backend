@@ -192,8 +192,8 @@ export class UserService {
    */
   public async getUsers(userInput: AllUsersDTO): Promise<SuccessResponseType> {
     try {
-      const auth0 = await this.auth0Service.getUsers(userInput);
-      return prepareSuccessResponse(auth0);
+      const users = await this.auth0Service.getUsers(userInput);
+      return prepareSuccessResponse(users);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
