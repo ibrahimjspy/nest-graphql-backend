@@ -9,11 +9,12 @@ import {
   Query,
   Res,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
 import { UserService } from './User.service';
 import { IsAuthenticated } from 'src/core/utils/decorators';
 import {
+  AllUsersDTO,
   Auth0UserInputDTO,
   ChangeUserPasswordDTO,
   UserAuth0IdDTO,
@@ -92,10 +93,7 @@ export class UserController {
     @Res() res,
     @Body() userInput: UserAuth0IdDTO,
   ): Promise<object> {
-    return makeResponse(
-      res,
-      await this.appService.deactivateUser(userInput),
-    );
+    return makeResponse(res, await this.appService.deactivateUser(userInput));
   }
 
   @Post('/api/v1/user/activate')
@@ -103,9 +101,14 @@ export class UserController {
     @Res() res,
     @Body() userInput: UserAuth0IdDTO,
   ): Promise<object> {
-    return makeResponse(
-      res,
-      await this.appService.activateUser(userInput),
-    );
+    return makeResponse(res, await this.appService.activateUser(userInput));
+  }
+
+  @ApiOperation({
+    summary: 'Get all users from auth0 by auth0 connection with pagination',
+  })
+  @Get('/api/v1/users')
+  async getUsers(@Res() res, @Query() userInput: AllUsersDTO): Promise<object> {
+    return makeResponse(res, await this.appService.getUsers(userInput));
   }
 }

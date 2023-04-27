@@ -9,6 +9,7 @@ import {
 import { validateAuth0Token } from 'src/external/endpoints/auth0';
 import { Auth0UserDetailType } from 'src/modules/account/user/User.types';
 import { validateObjectLength } from 'src/modules/account/user/User.utils';
+import { AllUsersDTO } from '../dto/user.dto';
 
 @Injectable()
 export default class Auth0Service {
@@ -72,14 +73,32 @@ export default class Auth0Service {
   public async deactivateUser(userAuth0Id: string) {
     return await this.managementClient.updateUser(
       { id: userAuth0Id },
-      { blocked: true}
+      { blocked: true },
     );
   }
 
   public async activateUser(userAuth0Id: string) {
     return await this.managementClient.updateUser(
       { id: userAuth0Id },
-      { blocked: false}
+      { blocked: false },
     );
+  }
+
+  /**
+   * Get all users from auth0 based on given auth0 connection name and pagination
+   * @param {AllUsersDTO} userInput - auth0Connection and pagination paramaters
+   * @info q - this paramter use for search by user attributes like name,email or connection etc.
+   * @info search_engine - we need to pass auth0 search engine version v3 for query
+   * @info include_totals we need to set this true because we need total counts and pagination
+   * @returns All Users from auth0 based on auth0 connection with pagination.
+   */
+  public async getUsers(userInput: AllUsersDTO) {
+    return await this.managementClient.getUsers({
+      q: `identities.connection:${userInput.auth0Connection}`,
+      page: userInput.page,
+      per_page: userInput.perPage,
+      search_engine: 'v3',
+      include_totals: true,
+    });
   }
 }

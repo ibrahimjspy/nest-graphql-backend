@@ -9,6 +9,7 @@ import * as AccountHandlers from 'src/graphql/handlers/account/user';
 import { ShopService } from '../../shop/Shop.service';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import {
+  AllUsersDTO,
   Auth0UserInputDTO,
   ChangeUserPasswordDTO,
   UserAuth0IdDTO,
@@ -176,10 +177,23 @@ export class UserService {
     userInput: UserAuth0IdDTO,
   ): Promise<SuccessResponseType> {
     try {
-      const auth0 = await this.auth0Service.activateUser(
-        userInput.userAuth0Id,
-      );
+      const auth0 = await this.auth0Service.activateUser(userInput.userAuth0Id);
       return prepareSuccessResponse(auth0);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * Get all users from auth0 based on given auth0 connection name and pagination
+   * @param {AllUsersDTO} userInput - auth0Connection and pagination paramaters
+   * @returns All Users from auth0 based on auth0 connection with pagination.
+   */
+  public async getUsers(userInput: AllUsersDTO): Promise<SuccessResponseType> {
+    try {
+      const users = await this.auth0Service.getUsers(userInput);
+      return prepareSuccessResponse(users);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
