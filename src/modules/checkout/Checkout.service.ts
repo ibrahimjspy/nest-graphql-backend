@@ -75,6 +75,7 @@ export class CheckoutService {
         orderDetails['shippingAddress'],
         orderDetails['number'],
         paymentMethodId,
+        orderDetails['billingAddress'],
         token,
       );
       return await instance.placeExternalOrder();

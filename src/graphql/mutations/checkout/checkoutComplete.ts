@@ -39,6 +39,21 @@ export const orderCreateFromCheckoutMutation = (
               country
             }
           }
+          billingAddress {
+            firstName
+            lastName
+            streetAddress1
+            streetAddress2
+            phone
+            companyName
+            city
+            postalCode
+            countryArea
+            country {
+              code
+              country
+            }
+          }
         }
         errors {
           field
