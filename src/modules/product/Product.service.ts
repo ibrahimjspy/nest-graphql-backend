@@ -14,7 +14,7 @@ import {
   getProductIds,
   getProductIdsByVariants,
   getShopProductIds,
-  isArrayLength,
+  isEmptyArray,
   makeProductListResponse,
   storeB2cMapping,
 } from './Product.utils';
@@ -24,7 +24,7 @@ import {
   ProductListFilterDto,
   shopProductsDTO,
 } from './dto/product.dto';
-import { ShopProductIdsReponseType } from './Product.types';
+import { MarketlaceProductsReponseType } from './Product.types';
 @Injectable()
 export class ProductService {
   private readonly logger = new Logger(ProductService.name);
@@ -213,13 +213,13 @@ export class ProductService {
     filter: shopProductsDTO,
   ): Promise<object> {
     try {
-      const marketplace: ShopProductIdsReponseType =
+      const marketplace: MarketlaceProductsReponseType =
         await ProductsHandlers.shopProductIdsByCategoryIdHandler(
           { ...filter, shopId },
           filter.isB2c,
         );
       const productIds = getShopProductIds(marketplace);
-      if (isArrayLength(productIds)) {
+      if (isEmptyArray(productIds)) {
         const saleor = await ProductsHandlers.productListPageHandler(
           {
             first: filter.first,
