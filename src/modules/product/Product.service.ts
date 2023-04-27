@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import {
-  prepareFailedResponse,
   prepareGQLPaginatedResponse,
   prepareSuccessResponse,
 } from 'src/core/utils/response';

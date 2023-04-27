@@ -73,6 +73,7 @@ export interface shippingAddressType {
   companyName: string;
   city: string;
   postalCode: string;
+  countryArea: string;
   country: {
     code: string;
     country: string;
