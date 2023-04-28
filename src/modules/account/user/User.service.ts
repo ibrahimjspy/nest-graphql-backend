@@ -103,13 +103,20 @@ export class UserService {
     }
   }
 
+  /**
+   * Update user information in Auth0, Saleor and OrangeShine
+   * @param {Auth0UserInputDTO} userInput - user details objects
+   * @param {string} token - paramter of string type
+   * Run the services and handler using Promise.all
+   * @returns {object} return objects of saleor, auth0, orangeshineResponse in one object.
+   */
+
   public async updateUserInfo(
     userInput: Auth0UserInputDTO,
     token: string,
   ): Promise<SuccessResponseType> {
     try {
-      // update user info in saleor, auth0 and orangeshine
-      const [saleor, auth0, os] = await Promise.all([
+      const [saleor, auth0, orangeshineResponse] = await Promise.all([
         this.saleorAuthService.updateUser(userInput, token),
         this.auth0Service.updateUser(
           userInput.userAuth0Id,
@@ -117,7 +124,7 @@ export class UserService {
         ),
         await updateUserInfo(userInput, token),
       ]);
-      return prepareSuccessResponse({ saleor, auth0, os });
+      return prepareSuccessResponse({ saleor, auth0, orangeshineResponse });
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

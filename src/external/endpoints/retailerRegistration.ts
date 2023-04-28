@@ -9,7 +9,7 @@ import { RetailerRegisterDto } from '../../modules/retailer/dto';
 import { ChangeUserPasswordDTO } from 'src/modules/account/user/dto/user.dto';
 import { getTokenWithoutBearer } from 'src/modules/account/user/User.utils';
 import { Auth0UserInputDTO } from 'src/modules/account/user/dto/user.dto';
-import { validateOSUserInput } from 'src/modules/account/user/User.utils';
+import { transformOSUserInput } from 'src/modules/account/user/User.utils';
 
 export const retailerJobTitles = async () => {
   const URL = `${BASE_EXTERNAL_ENDPOINT}/api/v3/app/job-title`;
@@ -73,7 +73,7 @@ export const updateUserInfo = async (
   token: string,
 ) => {
   const URL = `${BASE_EXTERNAL_ENDPOINT}/api/v3/user/profile`;
-  const userDetail = validateOSUserInput(payload);
+  const userDetail = transformOSUserInput(payload);
   const headers = {
     ...ACCEPT_ENCODING_HEADER,
     Authorization: getTokenWithoutBearer(token),
