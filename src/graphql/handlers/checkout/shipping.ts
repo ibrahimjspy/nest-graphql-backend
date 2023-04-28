@@ -2,6 +2,7 @@ import {
   graphqlCall,
   graphqlResultErrorHandler,
 } from 'src/core/proxies/graphqlHandler';
+import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 import { checkoutPromoCodeAddMutation } from 'src/graphql/mutations/checkout/shipping/addShippingPromo';
 import { checkoutPromoCodeRemoveMutation } from 'src/graphql/mutations/checkout/shipping/removeShippingPromo';
 import { getCheckoutShippingAddressQuery } from 'src/graphql/queries/checkout/shipping/getShippingAddress';
@@ -76,3 +77,17 @@ export const getCheckoutShippingAddressHandler = async (
   );
   return response['checkout'];
 };
+
+// export const getShippingZonesHandler = async (
+//   pagination: PaginationDto,
+//   token,
+// ) => {
+//   const response = await graphqlResultErrorHandler(
+//     await graphqlCall(
+//       getCheckoutShippingAddressQuery(checkoutId),
+//       token,
+//       isB2c,
+//     ),
+//   );
+//   return response['checkout'];
+// };

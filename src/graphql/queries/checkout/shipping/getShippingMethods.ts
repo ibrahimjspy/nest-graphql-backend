@@ -1,5 +1,6 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
+import { shippingMethodFragment } from './fragmants/shippingMethod';
 
 const b2bQuery = (checkoutId: string): string => {
   return gql`
@@ -7,14 +8,11 @@ const b2bQuery = (checkoutId: string): string => {
       checkout(id: "${checkoutId}") {
         id
         shippingMethods {
-          id
-          name
-          description
-          maximumDeliveryDays
-          minimumDeliveryDays
+          ... on ShippingMethod
         }
       }
     }
+    ${shippingMethodFragment}
   `;
 };
 
