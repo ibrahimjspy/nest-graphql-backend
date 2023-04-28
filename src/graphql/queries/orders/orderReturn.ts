@@ -14,6 +14,10 @@ const federationQuery = (payload: OrderReturnDTO): string => {
           ...OrderError
           __typename
         }
+        returnFulfillment {
+          id
+          __typename
+        }
         order {
           id
           __typename
