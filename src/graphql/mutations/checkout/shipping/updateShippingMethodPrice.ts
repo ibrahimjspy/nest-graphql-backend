@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request';
-import { stringifyObject } from 'src/core/utils/helpers';
+import { graphqlObjectTransform } from 'src/core/utils/helpers';
 import { shippingMethodFragment } from 'src/graphql/fragments/checkout/shipping/shippingMethod';
 import { UpdateShippingMethodPriceDto } from 'src/modules/checkout/shipping/dto/shippingMethods';
 
@@ -8,7 +8,7 @@ export const updateShippingMethodPriceMutation = (
 ) => {
   const { shippingMethodId, channelListingUpdate } =
     updateShippingMethodPriceInput;
-  const stringifyChannelListing = stringifyObject(channelListingUpdate);
+  const stringifyChannelListing = graphqlObjectTransform(channelListingUpdate);
   return gql`
     mutation {
       shippingMethodChannelListingUpdate(

@@ -37,7 +37,7 @@ export const makeQuantity = (quantity: number): number => {
  * @param {object} obj - The object to be converted to a string.
  * @returns A string with all the keys in the object without quotes.
  */
-export const stringifyObject = (obj: object) => {
+export const graphqlObjectTransform = (obj: object) => {
   if (typeof obj !== 'object')
     throw new Error('`obj` should be a dictionary object');
 

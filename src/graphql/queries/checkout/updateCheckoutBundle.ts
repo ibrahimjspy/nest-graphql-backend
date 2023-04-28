@@ -1,13 +1,13 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
-import { stringifyObject } from 'src/core/utils/helpers';
+import { graphqlObjectTransform } from 'src/core/utils/helpers';
 const federationQuery = (userEmail: string, checkoutBundles: any[]): string => {
   return gql`
     mutation {
       updateCheckoutBundles(
         Input: {
           userEmail: "${userEmail}"
-          checkoutBundles: ${stringifyObject(checkoutBundles)}
+          checkoutBundles: ${graphqlObjectTransform(checkoutBundles)}
         }
       ) {
         __typename
