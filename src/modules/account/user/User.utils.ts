@@ -1,4 +1,4 @@
-import { Auth0UserInputDTO, UserAddressDTO } from './dto/user.dto';
+import { Auth0UserInputDTO } from './dto/user.dto';
 
 /**
  * Get object keys length
@@ -7,6 +7,15 @@ import { Auth0UserInputDTO, UserAddressDTO } from './dto/user.dto';
  */
 export const validateObjectLength = (obj: object) => {
   return Object.keys(obj).length;
+};
+
+/**
+ * Get boolean
+ * @param {object} obj - paramter of object type
+ * @returns {boolean} return the true or false if Object field is all empty.
+ */
+export const validateAddressFields = (obj: object) => {
+  return Object.values(obj).every((value) => !value);
 };
 
 /**
@@ -38,9 +47,12 @@ export const validateAuth0UserInput = (userInput: Auth0UserInputDTO) => {
     sellersPermitId: 'sellers_permit_id',
     website: 'website',
     address: 'address',
+    stripeCustomerId: 'stripe_customer_id',
   };
   const validatedMetadata = {
-    address: JSON.stringify(address),
+    ...(!validateAddressFields(address) && {
+      address: JSON.stringify(address),
+    }),
   };
 
   for (const value in userMetadata) {
