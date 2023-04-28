@@ -43,6 +43,10 @@ export class Auth0UserInputDTO extends UserInputDTO {
   @ApiProperty({ required: false })
   @IsOptional()
   stripeCustomerId: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  website: string;
 }
 
 export class UserAuth0IdDTO {
@@ -59,4 +63,42 @@ export class ChangeUserPasswordDTO extends UserAuth0IdDTO {
   @ApiProperty()
   @IsNotEmpty()
   newPassword: string;
+}
+
+export class UserAddressDTO {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  address1: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  address2: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  zipcode: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  city: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  country: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  state: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  companyName: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  mobileNumber: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  faxNumber: string;
 }

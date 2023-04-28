@@ -3,7 +3,7 @@ import {
   retailerJobTitles,
   retailerRegister,
   uploadRetailerCertificate,
-} from 'src/external/endpoints/retailer_registration';
+} from 'src/external/endpoints/retailerRegistration';
 import {
   prepareFailedResponse,
   prepareSuccessResponse,

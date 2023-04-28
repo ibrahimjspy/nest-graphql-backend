@@ -3,11 +3,14 @@ import {
   ACCEPT_ENCODING_HEADER,
   BASE_EXTERNAL_ENDPOINT,
   COMMON_HEADERS,
+  CONTENT_TYPE,
 } from 'src/constants';
 import FormData from 'form-data';
 import { RetailerRegisterDto } from '../../modules/retailer/dto';
 import { ChangeUserPasswordDTO } from 'src/modules/account/user/dto/user.dto';
 import { getTokenWithoutBearer } from 'src/modules/account/user/User.utils';
+import { Auth0UserInputDTO } from 'src/modules/account/user/dto/user.dto';
+import { validateOSUserInput } from 'src/modules/account/user/User.utils';
 
 export const retailerJobTitles = async () => {
   const URL = `${BASE_EXTERNAL_ENDPOINT}/api/v3/app/job-title`;
@@ -64,4 +67,18 @@ export const retailerChangePassword = async (
     },
     { headers },
   );
+};
+
+export const updateUserInfo = async (
+  payload: Auth0UserInputDTO,
+  token: string,
+) => {
+  const URL = `${BASE_EXTERNAL_ENDPOINT}/api/v3/user/profile`;
+  const userDetail = validateOSUserInput(payload);
+  const headers = {
+    ...ACCEPT_ENCODING_HEADER,
+    Authorization: getTokenWithoutBearer(token),
+  };
+  const response = await http.patch(URL, userDetail, { headers });
+  return response.data?.data;
 };

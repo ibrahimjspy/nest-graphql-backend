@@ -43,6 +43,10 @@ export const ACCEPT_ENCODING_HEADER = {
   'Accept-Encoding': 'application/json',
 };
 
+export const CONTENT_TYPE = {
+  'Content-Type': 'application/json',
+};
+
 // OrangeShine Variables
 export const SHAROVE_EMAIL = process.env.OS_EMAIL;
 export const SHAROVE_PASSWORD = process.env.OS_PASSWORD;

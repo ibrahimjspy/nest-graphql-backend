@@ -17,7 +17,10 @@ import Auth0Service from './services/auth0.service';
 import { B2C_ENABLED } from 'src/constants';
 import SaleorAuthService from './services/saleorAuth.service';
 import { validateAuth0UserInput } from './User.utils';
-import { retailerChangePassword } from 'src/external/endpoints/retailer_registration';
+import {
+  retailerChangePassword,
+  updateUserInfo,
+} from 'src/external/endpoints/retailerRegistration';
 
 @Injectable()
 export class UserService {
@@ -104,16 +107,16 @@ export class UserService {
     token: string,
   ): Promise<SuccessResponseType> {
     try {
-      // update user info in saleor and auth0
-      const [saleor, auth0] = await Promise.all([
+      // update user info in saleor, auth0 and orangeshine
+      const [saleor, auth0, os] = await Promise.all([
         this.saleorAuthService.updateUser(userInput, token),
         this.auth0Service.updateUser(
           userInput.userAuth0Id,
           validateAuth0UserInput(userInput),
         ),
+        await updateUserInfo(userInput, token),
       ]);
-      // update user info in auth0
-      return prepareSuccessResponse({ saleor, auth0 });
+      return prepareSuccessResponse({ saleor, auth0, os });
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -176,9 +179,7 @@ export class UserService {
     userInput: UserAuth0IdDTO,
   ): Promise<SuccessResponseType> {
     try {
-      const auth0 = await this.auth0Service.activateUser(
-        userInput.userAuth0Id,
-      );
+      const auth0 = await this.auth0Service.activateUser(userInput.userAuth0Id);
       return prepareSuccessResponse(auth0);
     } catch (error) {
       this.logger.error(error);

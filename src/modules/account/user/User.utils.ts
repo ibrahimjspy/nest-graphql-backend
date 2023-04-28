@@ -1,4 +1,4 @@
-import { Auth0UserInputDTO } from './dto/user.dto';
+import { Auth0UserInputDTO, UserAddressDTO } from './dto/user.dto';
 
 /**
  * Get object keys length
@@ -24,7 +24,6 @@ export const validateAuth0UserInput = (userInput: Auth0UserInputDTO) => {
     sellersPermitId: 'sellers_permit_id',
     website: 'website',
     address: 'address',
-    stripeCustomerId: 'stripe_customer_id',
   };
   const validatedMetadata = {};
 
@@ -54,4 +53,28 @@ export const getTokenWithoutBearer = (token: string) => {
     return;
   }
   return token.replace('Bearer ', '').replace('bearer ', '');
+};
+
+export const validateOSUserInput = (userInput: Auth0UserInputDTO) => {
+  const address: UserAddressDTO = JSON.parse(userInput.address);
+  const userDetail = {
+    first_name: userInput.firstName,
+    last_name: userInput.lastName,
+    job_title_id: parseInt(userInput.jobTitleId),
+    phone_number: userInput.phoneNumber,
+    website: userInput.website,
+    sellers_permit_id: userInput.sellersPermitId,
+    address1: address.address1,
+    address2: address.address2,
+    city: address.city,
+    country: address.country,
+    state: address.state,
+    zipcode: address.zipcode,
+    company_name: address.companyName,
+    mobile_phone: address.mobileNumber,
+    fax: address.faxNumber,
+    sellers_permit_file: '',
+    seller_permit_image: userInput.sellerPermitImage,
+  };
+  return userDetail;
 };
