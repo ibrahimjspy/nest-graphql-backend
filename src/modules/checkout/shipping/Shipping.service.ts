@@ -9,8 +9,13 @@ import {
 import {
   getCheckoutShippingAddressHandler,
   getCheckoutShippingMethodsHandler,
+  getShippingZonesHandler,
+  updateShippingMethodPriceHandler,
 } from 'src/graphql/handlers/checkout/shipping';
-import { GetShippingMethodsDto } from './dto/shippingMethods';
+import {
+  GetShippingMethodsDto,
+  UpdateShippingMethodPriceDto,
+} from './dto/shippingMethods';
 import { AddressDto } from './dto/shippingAddress';
 import { ShippingPromotionService } from './services/Shipping.promotion';
 import {
@@ -18,6 +23,8 @@ import {
   checkoutShippingMethodsSort,
 } from '../Checkout.utils';
 import { PaymentService } from '../payment/Payment.service';
+import { PaginationDto } from 'src/graphql/dto/pagination.dto';
+import { SuccessResponseType } from 'src/core/utils/response.type';
 
 @Injectable()
 export class ShippingService {
@@ -148,6 +155,45 @@ export class ShippingService {
         'shipping address added against checkout',
         201,
       );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description --this method returns shipping zones that are stored in saleor
+   * @precondition -- you need to provide a token that has MANAGE_SHIPPING permission || it assumes we are using default channel for shipping zones
+   * @post_condition -- this returns shipping zones and their shipping methods
+   */
+  public async getShippingZones(
+    pagination: PaginationDto,
+    token: string,
+  ): Promise<SuccessResponseType> {
+    try {
+      const shippingZones = await getShippingZonesHandler(pagination, token);
+      return prepareSuccessResponse(shippingZones);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description --this method updates shipping method price in saleor
+   * @precondition -- you need to provide a token that has MANAGE_SHIPPING permission || you need to provide valid numerical price with existing channel
+   * @post_condition -- this updates shipping channel listing and returns shipping method new information
+   */
+  public async updateShippingMethodPrice(
+    updateShippingMethodPriceInput: UpdateShippingMethodPriceDto,
+    token: string,
+  ): Promise<SuccessResponseType> {
+    try {
+      const updateShippingMethodPrice = await updateShippingMethodPriceHandler(
+        updateShippingMethodPriceInput,
+        token,
+      );
+      return prepareSuccessResponse(updateShippingMethodPrice);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

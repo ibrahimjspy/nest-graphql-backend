@@ -20,7 +20,9 @@ import { CheckoutIdDto } from '../dto/checkoutId';
 import {
   GetShippingMethodsDto,
   SelectShippingMethodDto,
+  UpdateShippingMethodPriceDto,
 } from './dto/shippingMethods';
+import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 
 @ApiTags('checkout/shipping')
 @Controller('')
@@ -124,6 +126,40 @@ export class ShippingController {
         body?.shippingMethodId,
         Authorization,
       ),
+    );
+  }
+
+  @Get('api/v1/checkout/shipping/zones')
+  @ApiOperation({
+    summary: 'returns shipping zones that include shipping prices',
+  })
+  @ApiBearerAuth('JWT-auth')
+  async getShippingZones(
+    @Res() res,
+    @Headers() headers,
+    @Query() filter: PaginationDto,
+  ): Promise<object> {
+    const Authorization = headers.authorization;
+    return makeResponse(
+      res,
+      await this.appService.getShippingZones(filter, Authorization),
+    );
+  }
+
+  @Put('api/v1/checkout/shipping/method/price')
+  @ApiOperation({
+    summary: 'updates shipping method pricing against a channel',
+  })
+  @ApiBearerAuth('JWT-auth')
+  async updateShippingPrice(
+    @Res() res,
+    @Headers() headers,
+    @Body() body: UpdateShippingMethodPriceDto,
+  ): Promise<object> {
+    const Authorization = headers.authorization;
+    return makeResponse(
+      res,
+      await this.appService.updateShippingMethodPrice(body, Authorization),
     );
   }
 }
