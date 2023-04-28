@@ -1,6 +1,6 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
-import { removeKeysQuoutes } from 'src/core/utils/helpers';
+import { stringifyObject } from 'src/core/utils/helpers';
 const federationQuery = (
   userEmail: string,
   bundles: Array<{
@@ -15,7 +15,7 @@ const federationQuery = (
       addCheckoutBundles(
         Input: {
           userEmail: "${userEmail}"
-          bundles: ${removeKeysQuoutes(bundles)}
+          bundles: ${stringifyObject(bundles)}
         }
       ) {
         ... on CheckoutBundlesType {

@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request';
-import { removeKeysQuoutes } from 'src/core/utils/helpers';
+import { stringifyObject } from 'src/core/utils/helpers';
 import { shippingMethodFragment } from 'src/graphql/fragments/checkout/shipping/shippingMethod';
 import { UpdateShippingMethodPriceDto } from 'src/modules/checkout/shipping/dto/shippingMethods';
 
@@ -8,7 +8,7 @@ export const updateShippingMethodPriceMutation = (
 ) => {
   const { shippingMethodId, channelListingUpdate } =
     updateShippingMethodPriceInput;
-  const stringifyChannelListing = removeKeysQuoutes(channelListingUpdate);
+  const stringifyChannelListing = stringifyObject(channelListingUpdate);
   return gql`
     mutation {
       shippingMethodChannelListingUpdate(

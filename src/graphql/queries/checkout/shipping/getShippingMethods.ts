@@ -2,7 +2,7 @@ import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 import { checkoutShippingMethodFragment } from '../../../fragments/checkout/shipping/shippingMethod';
 
-const checkoutWithShippingFragment = gql`
+const checkoutShippingMethodsFragment = gql`
   fragment Checkout on Checkout {
     id
     shippingMethods {
@@ -21,7 +21,7 @@ const b2bQuery = (checkoutId: string): string => {
         ...Checkout
       }
     }
-   ${checkoutWithShippingFragment}
+   ${checkoutShippingMethodsFragment}
   `;
 };
 
