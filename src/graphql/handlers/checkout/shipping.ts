@@ -5,9 +5,12 @@ import {
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 import { checkoutPromoCodeAddMutation } from 'src/graphql/mutations/checkout/shipping/addShippingPromo';
 import { checkoutPromoCodeRemoveMutation } from 'src/graphql/mutations/checkout/shipping/removeShippingPromo';
+import { updateShippingMethodPriceMutation } from 'src/graphql/mutations/checkout/shipping/updateShippingMethodPrice';
 import { getCheckoutShippingAddressQuery } from 'src/graphql/queries/checkout/shipping/getShippingAddress';
 import { getCheckoutShippingMethodsQuery } from 'src/graphql/queries/checkout/shipping/getShippingMethods';
+import { getShippingZonesQuery } from 'src/graphql/queries/checkout/shipping/getShippingZones';
 import { getShippingVouchersQuery } from 'src/graphql/queries/checkout/shipping/vouchers';
+import { UpdateShippingMethodPriceDto } from 'src/modules/checkout/shipping/dto/shippingMethods';
 
 export const getCheckoutShippingMethodsHandler = async (
   checkoutId: string,
@@ -78,16 +81,25 @@ export const getCheckoutShippingAddressHandler = async (
   return response['checkout'];
 };
 
-// export const getShippingZonesHandler = async (
-//   pagination: PaginationDto,
-//   token,
-// ) => {
-//   const response = await graphqlResultErrorHandler(
-//     await graphqlCall(
-//       getCheckoutShippingAddressQuery(checkoutId),
-//       token,
-//       isB2c,
-//     ),
-//   );
-//   return response['checkout'];
-// };
+export const getShippingZonesHandler = async (
+  pagination: PaginationDto,
+  token: string,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(getShippingZonesQuery(pagination), token),
+  );
+  return response['shippingZones'];
+};
+
+export const updateShippingMethodPriceHandler = async (
+  updateShippingMethodPriceInput: UpdateShippingMethodPriceDto,
+  token: string,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      updateShippingMethodPriceMutation(updateShippingMethodPriceInput),
+      token,
+    ),
+  );
+  return response['shippingMethodChannelListingUpdate'];
+};

@@ -1,18 +1,27 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
-import { shippingMethodFragment } from './fragmants/shippingMethod';
+import { shippingMethodFragment } from '../../../fragments/checkout/shipping/shippingMethod';
+
+const checkoutWithShippingFragment = gql`
+  fragment Checkout on Checkout {
+    id
+    shippingMethods {
+      ...ShippingMethod
+    }
+  }
+  ${shippingMethodFragment}
+`;
 
 const b2bQuery = (checkoutId: string): string => {
   return gql`
-    query {
-      checkout(id: "${checkoutId}") {
-        id
-        shippingMethods {
-          ... on ShippingMethod
-        }
+    query Checkout {
+      checkout(
+        id: "${checkoutId}"
+      ) {
+        ...Checkout
       }
     }
-    ${shippingMethodFragment}
+   ${checkoutWithShippingFragment}
   `;
 };
 
