@@ -23,3 +23,16 @@ export const shippingMethodFragment = gql`
   }
   ${shippingMethodChannelListingFragment}
 `;
+
+export const checkoutShippingMethodFragment = gql`
+  fragment ShippingMethod on ShippingMethod {
+    id
+    name
+    description
+    maximumDeliveryDays
+    minimumDeliveryDays
+    price {
+      amount
+    }
+  }
+`;
