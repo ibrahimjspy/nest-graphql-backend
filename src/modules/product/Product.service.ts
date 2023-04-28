@@ -13,6 +13,8 @@ import {
   addB2cIdsToProductData,
   getProductIds,
   getProductIdsByVariants,
+  getShopProductIds,
+  isEmptyArray,
   makeProductListResponse,
   storeB2cMapping,
 } from './Product.utils';
@@ -22,6 +24,7 @@ import {
   ProductListFilterDto,
   shopProductsDTO,
 } from './dto/product.dto';
+import { MarketlaceProductsReponseType } from './Product.types';
 @Injectable()
 export class ProductService {
   private readonly logger = new Logger(ProductService.name);
@@ -210,18 +213,18 @@ export class ProductService {
     filter: shopProductsDTO,
   ): Promise<object> {
     try {
-      const marketplace:any =
+      const marketplace: MarketlaceProductsReponseType =
         await ProductsHandlers.shopProductIdsByCategoryIdHandler(
           { ...filter, shopId },
           filter.isB2c,
         );
-      const productIds = marketplace?.edges?.map(({node}) => node?.productId) || [];
-      if (productIds.length) {
+      const productIds = getShopProductIds(marketplace);
+      if (isEmptyArray(productIds)) {
         const saleor = await ProductsHandlers.productListPageHandler(
-          { 
+          {
             first: filter.first,
             categoryId: filter.categoryId,
-            productIds 
+            productIds,
           },
           filter.isB2c,
         );

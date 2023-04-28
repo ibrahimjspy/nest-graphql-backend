@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional } from 'class-validator';
+import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 
 export class UserInputDTO {
   @ApiProperty({ required: false })
@@ -101,4 +102,19 @@ export class UserAddressDTO {
   @ApiProperty({ required: false })
   @IsOptional()
   faxNumber: string;
+}
+export class Auth0PaginationDTO {
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
+  page: number;
+
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
+  perPage: number;
+}
+
+export class AllUsersDTO extends Auth0PaginationDTO {
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
+  auth0Connection: string;
 }

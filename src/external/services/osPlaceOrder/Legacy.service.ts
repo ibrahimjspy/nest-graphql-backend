@@ -47,10 +47,19 @@ export class LegacyService {
   token: string;
   paymentMethodId: string;
   colorsByShops: any[];
+  billingInfo: shippingAddressType;
 
-  constructor(selectedBundles, shipping_info, orderId, paymentMethodId, token) {
+  constructor(
+    selectedBundles,
+    shipping_info,
+    orderId,
+    paymentMethodId,
+    billingInfo: shippingAddressType,
+    token,
+  ) {
     this.selectedBundles = selectedBundles;
     this.shipping_info = shipping_info;
+    this.billingInfo = billingInfo;
     this.orderId = orderId;
     this.paymentMethodId = paymentMethodId;
     this.token = token;
@@ -286,6 +295,7 @@ export class LegacyService {
       spa_id: parseInt(shippingAddressInfo?.data?.user_id),
       sharove_order_id: this.orderId,
       stripe_payment_method_id: this.paymentMethodId,
+      billing: this.transformBillingInformation(),
     };
   }
 
@@ -444,5 +454,18 @@ export class LegacyService {
       productVariant?.productVariant?.product?.category?.name,
     ];
     return categoryNames;
+  }
+
+  transformBillingInformation() {
+    return {
+      first_name: this.billingInfo.firstName || null,
+      last_name: this.billingInfo.lastName || null,
+      address1: this.billingInfo.streetAddress1 || null,
+      city: this.billingInfo.city || null,
+      state: this.billingInfo.countryArea || null,
+      zipcode: this.billingInfo.postalCode || null,
+      country: this.billingInfo.country.country || null,
+      phone_number: this.billingInfo.phone || null,
+    };
   }
 }
