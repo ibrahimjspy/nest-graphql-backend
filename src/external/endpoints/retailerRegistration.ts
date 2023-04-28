@@ -3,7 +3,6 @@ import {
   ACCEPT_ENCODING_HEADER,
   BASE_EXTERNAL_ENDPOINT,
   COMMON_HEADERS,
-  CONTENT_TYPE,
 } from 'src/constants';
 import FormData from 'form-data';
 import { RetailerRegisterDto } from '../../modules/retailer/dto';
