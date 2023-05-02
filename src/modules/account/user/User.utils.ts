@@ -20,7 +20,6 @@ export const validateAuth0UserInput = (userInput: Auth0UserInputDTO) => {
   const { firstName, lastName, userAuth0Id, address, ...userMetadata } =
     userInput;
 
-  console.log('address', address);
   const metadataKeyNames = {
     jobTitleId: 'job_title_id',
     phoneNumber: 'phone_number',
