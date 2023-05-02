@@ -161,6 +161,7 @@ export class ShopService {
       );
     } catch (error) {
       this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 

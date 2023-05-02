@@ -3,43 +3,32 @@ import {
   Controller,
   Get,
   HttpStatus,
-  Param,
   ParseFilePipeBuilder,
   Post,
-  Res,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RetailerService } from './Retailer.service';
-import { makeResponse } from '../../core/utils/response';
 import { RetailerEmailDto, RetailerRegisterDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('retailer')
-@Controller('retailer')
+@Controller('')
 export class RetailerController {
   constructor(private readonly appService: RetailerService) {}
 
-  @Get('orders/recent/:email')
-  async getRecentOrdersData(@Res() res, @Param() params): Promise<object> {
-    return makeResponse(
-      res,
-      await this.appService.getRecentOrdersData(params?.email),
-    );
-  }
-
-  @Get('job/title')
+  @Get('api/v1/shop/job/title')
   async getRetailerJobTitle(): Promise<object> {
     return this.appService.getRetailerJobTitle();
   }
 
-  @Post('email-availability')
+  @Post('api/v1/shop/email/availability')
   async getCheckRetailerEmail(@Body() body: RetailerEmailDto): Promise<object> {
     return this.appService.getCheckRetailerEmail(body?.email);
   }
 
-  @Post('resale-certificate')
+  @Post('api/v1/shop/resale/certificate')
   @UseInterceptors(FileInterceptor('permit_img1'))
   getUploadRetailerCertificate(
     @UploadedFile(
@@ -59,7 +48,7 @@ export class RetailerController {
     return this.appService.getUploadRetailerCertificate(file);
   }
 
-  @Post('auth/sign-up')
+  @Post('api/v1/retailer/auth/sign-up')
   async retailerRegister(@Body() body: RetailerRegisterDto): Promise<object> {
     return this.appService.retailerRegister(body);
   }

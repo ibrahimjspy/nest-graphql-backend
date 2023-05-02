@@ -7,12 +7,7 @@ import {
   GetBundlesDto,
   ProductDetailsDto,
   ProductIdDto,
-  ProductListDto,
-  ProductListFilterDto,
-  RetailerIdDto,
   b2cDTO,
-  shopIdDTO,
-  shopProductsDTO,
 } from './dto/product.dto';
 import { IsAuthenticated } from 'src/core/utils/decorators';
 import { ProductVariantStockUpdateDTO } from './dto/variant';
@@ -35,6 +30,13 @@ export class ProductController {
     @Res() res,
     @Query() filter: ProductFilterDto,
   ): Promise<object> {
+    const { storeId } = filter;
+    if (storeId) {
+      return makeResponse(
+        res,
+        await this.appService.getShopProductsByCategoryId(storeId, filter),
+      );
+    }
     const typeMethod =
       {
         [ProductFilterTypeEnum.POPULAR_ITEMS]: this.appService.getPopularItems,
@@ -44,54 +46,12 @@ export class ProductController {
     return makeResponse(res, await typeMethod.call(this.appService, filter));
   }
 
-  /**
-   * DEPRECATED: use `/products` instead
-   * @returns default cards data  <All>
-   */
-  @Get('/product/cards')
-  findDefaultCards(@Query() filter: RetailerIdDto): Promise<object> {
-    return this.appService.getProductCards(filter.retailerId);
-  }
-
-  // Returns cards data relating to category and collection by <id>
-  @Get('/product/cardsByCategoryId/:id')
-  findProductCardsByCategoryId(
-    @Param() params,
-    @Query() filter: RetailerIdDto,
-  ): Promise<object> {
-    return this.appService.getProductsByCategory(params.id, filter.retailerId);
-  }
-
-  // Returns single product details by <slug>
-  @Get('/product/details/:slug')
-  findProductDetailsBySlug(@Param() params): Promise<object> {
-    return this.appService.getProductDetailsBySlug(params.slug);
-  }
-
   @Get('api/v1/product')
   @ApiOperation({
     summary: 'returns detail of product based on id or slug',
   })
   getProductDetails(@Query() filter: ProductDetailsDto): Promise<object> {
     return this.appService.getProductDetails(filter);
-  }
-
-  // Returns product list page data relating to category <slug>
-  @Get('/product/list/:categoryId')
-  async findProductListById(
-    @Param() params: ProductListDto,
-    @Query() filter: ProductListFilterDto,
-  ) {
-    return await this.appService.getProductListPageById(
-      params.categoryId,
-      filter,
-    );
-  }
-
-  // Returns bundles list w.r.t provided <variantIDs>
-  @Post('/product/bundles')
-  findBundlesByVariantIds(@Body() body): Promise<object> {
-    return this.appService.getBundlesByVariantIds(body?.variantIds);
   }
 
   // Returns product images URL
@@ -116,21 +76,6 @@ export class ProductController {
         productVariantDTO.quantity,
         token,
       ),
-    );
-  }
-
-  @Get('/api/v1/products/:shopId')
-  @ApiOperation({
-    summary: 'Get products against given shopId and categoryId',
-  })
-  async getShopProductsByCategoryId(
-    @Res() res,
-    @Param() params: shopIdDTO,
-    @Query() filter: shopProductsDTO,
-  ): Promise<any> {
-    return makeResponse(
-      res,
-      await this.appService.getShopProductsByCategoryId(params.shopId, filter),
     );
   }
 

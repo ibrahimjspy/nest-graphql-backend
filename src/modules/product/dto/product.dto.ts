@@ -29,7 +29,6 @@ export class ProductFilterDto extends PaginationDto {
   @IsEnum(ProductFilterTypeEnum)
   @IsOptional()
   type: ProductFilterTypeEnum;
-  category: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
@@ -38,6 +37,14 @@ export class ProductFilterDto extends PaginationDto {
   @ApiProperty({ required: false, type: Array })
   @IsOptional()
   productIds: string[];
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  storeId: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  category: string;
 }
 
 export class ProductListDto {

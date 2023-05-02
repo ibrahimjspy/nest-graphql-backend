@@ -9,7 +9,7 @@ export const ACCOUNT_ROUTES: Routes = [
     module: AccountModule,
     children: [
       {
-        path: 'account/address',
+        path: '',
         module: AddressModule,
       },
       {

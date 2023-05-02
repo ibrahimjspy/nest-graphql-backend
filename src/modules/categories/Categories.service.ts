@@ -6,12 +6,10 @@ import {
 } from 'src/core/utils/response';
 import {
   categoriesHandler,
-  menuCategoriesHandler,
-  productCardSectionHandler,
   shopCategoryIdsHandler,
   syncCategoriesHandler,
 } from 'src/graphql/handlers/categories';
-import { SyncCategoriesDto, shopCategoriesDTO } from './dto/categories';
+import { CategoriesDto, SyncCategoriesDto } from './dto/categories';
 import { getSyncCategoriesMapping } from 'src/external/endpoints/syncCategoriesMapping';
 import { prepareSyncedCategoriesResponse } from './Categories.utils';
 
@@ -19,18 +17,15 @@ import { prepareSyncedCategoriesResponse } from './Categories.utils';
 export class CategoriesService {
   private readonly logger = new Logger(CategoriesService.name);
 
-  public getMenuCategories(): Promise<object> {
-    // Pre graphQl call actions and validations -->
-    // << -- >>
-    // menuCategories is graphQl promise handler --->
-    return menuCategoriesHandler();
-  }
-
-  public getProductSections(): Promise<object> {
-    // Pre graphQl call actions and validations to get product collection categories  -->
-    // << -- >>
-    // productCardCollectionHandler is graphQl promise handler --->
-    return productCardSectionHandler();
+  public async getCategories(filter: CategoriesDto): Promise<object> {
+    try {
+      return prepareSuccessResponse(
+        await categoriesHandler({ ...filter, categoryIds: [] }),
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
   }
 
   public async getSyncedCategories(
@@ -54,16 +49,13 @@ export class CategoriesService {
 
   public async getShopCategories(
     shopId: string,
-    filter: shopCategoriesDTO,
+    filter: CategoriesDto,
   ): Promise<object> {
     try {
-      const marketplace = await shopCategoryIdsHandler(shopId, filter.isB2c);
+      const marketplace = await shopCategoryIdsHandler(shopId);
       const categoryIds = marketplace?.categoryIds || [];
       if (categoryIds.length) {
-        const saleor = await categoriesHandler(
-          { ...filter, categoryIds },
-          filter.isB2c,
-        );
+        const saleor = await categoriesHandler({ ...filter, categoryIds });
         return prepareSuccessResponse({
           marketplace,
           saleor,

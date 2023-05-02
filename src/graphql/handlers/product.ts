@@ -23,6 +23,7 @@ import { shopProductIdsByCategoryIdQuery } from '../queries/product/shopProductI
 import {
   GetBundlesDto,
   ProductDetailsDto,
+  ProductFilterDto,
 } from 'src/modules/product/dto/product.dto';
 import { getBundlesQuery } from '../queries/product/getBundles';
 import { getProductSlugQuery } from '../queries/product/productSlug';

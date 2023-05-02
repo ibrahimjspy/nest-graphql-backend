@@ -20,7 +20,6 @@ import {
   createStoreDTO,
   shopDetailDto,
   shopIdByProductsDTO,
-  shopIdByVariantsDTO,
   shopIdDTO,
   vendorIdsDTO,
 } from './dto/shop';
@@ -35,24 +34,6 @@ import {
 @Controller('')
 export class ShopController {
   constructor(private readonly appService: ShopService) {}
-  // Returns landing page banner data
-  @Get('shop/carousel')
-  findBanner(@Headers() headers): Promise<object> {
-    const Authorization: string = headers.authorization;
-    return this.appService.getCarouselData(Authorization);
-  }
-
-  @Get('/api/v1/shop/:shopId')
-  async getShopDetails(
-    @Res() res,
-    @Param() params,
-    @Query() filter: b2cDto,
-  ): Promise<object> {
-    return makeResponse(
-      res,
-      await this.appService.getShopDetails(params?.shopId, filter.isB2c),
-    );
-  }
 
   @Get('/api/v2/shop')
   @ApiOperation({
@@ -87,22 +68,6 @@ export class ShopController {
         storeInput,
         Authorization,
       ),
-    );
-  }
-
-  @Get('/api/v1/shop/id')
-  @ApiOperation({
-    summary: 'returns shop id against given variant id or order id',
-  })
-  async getShopId(
-    @Res() res,
-    @Query() filter: shopIdByVariantsDTO,
-  ): Promise<object> {
-    return makeResponse(
-      res,
-      filter.productVariantIds
-        ? await this.appService.getShopIdByVariants(filter.productVariantIds)
-        : await this.appService.getShopIdByOrders(filter.orderIds),
     );
   }
 

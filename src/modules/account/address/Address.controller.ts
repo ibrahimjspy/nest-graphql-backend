@@ -18,8 +18,7 @@ import { AddressDto, AddressIdDto, UserIdDto } from './dto';
 @Controller()
 export class AddressController {
   constructor(private readonly appService: AddressService) {}
-
-  @Get('/:userId')
+  @Get('api/v1/user/address/:userId')
   async addresses(
     @Res() res,
     @Param() userIdDto: UserIdDto,
@@ -32,7 +31,7 @@ export class AddressController {
     );
   }
 
-  @Post('/:userId')
+  @Post('api/v1/user/address/:addressId')
   async createAddress(
     @Res() res,
     @Param() userIdDto: UserIdDto,
@@ -50,7 +49,7 @@ export class AddressController {
     );
   }
 
-  @Delete('/:addressId')
+  @Delete('api/v1/user/address/:addressId')
   async deleteAddress(
     @Res() res,
     @Param() addressIdDto: AddressIdDto,
@@ -66,7 +65,7 @@ export class AddressController {
     );
   }
 
-  @Put('/:addressId/default')
+  @Put('api/v1/user/address/default/:addressId')
   async setDefaultAddress(
     @Res() res,
     @Param() addressIdDto: AddressIdDto,
@@ -84,7 +83,7 @@ export class AddressController {
     );
   }
 
-  @Put('/:addressId')
+  @Put('api/v1/user/address/:userId')
   async updateAddress(
     @Res() res,
     @Param() addressIdDto: AddressIdDto,

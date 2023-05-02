@@ -60,59 +60,9 @@ export class OrdersController {
       ),
     );
   }
-  // Returns all shop orders for orders page
-  @Get('orders/marketplace/all')
-  async findAllShopOrders(@Res() res, @Headers() headers): Promise<object> {
-    const Authorization: string = headers.authorization;
-    return makeResponse(
-      res,
-      await this.appService.getAllShopOrdersData(Authorization),
-    );
-  }
-  // Returns shop orders for orders page
-  @Get('orders/marketplace/shop/:shopId')
-  async findShopOrders(
-    @Res() res,
-    @Param() shopDto: ShopIdDto,
-    @Headers() headers,
-  ): Promise<object> {
-    const Authorization: string = headers.authorization;
-    return makeResponse(
-      res,
-      await this.appService.getShopOrdersDataById(
-        shopDto.shopId,
-        Authorization,
-      ),
-    );
-  }
-  // Returns shop order fulfillments for order page
-  @Get('orders/marketplace/shop/fulfillment/:orderId')
-  async findShopOrderFulfillments(
-    @Res() res,
-    @Param() orderDto: OrderIdDto,
-    @Headers() headers,
-  ): Promise<object> {
-    const Authorization: string = headers.authorization;
-    return makeResponse(
-      res,
-      await this.appService.getShopOrderFulfillmentsDataById(
-        orderDto.orderId,
-        Authorization,
-      ),
-    );
-  }
-  // Returns shop order activities
-  @Get('orders/activity')
-  async getOrderActivity(@Res() res, @Headers() headers): Promise<object> {
-    const Authorization: string = headers.authorization;
-    return makeResponse(
-      res,
-      await this.appService.getOrderActivity(Authorization),
-    );
-  }
 
   // Returns shop order details
-  @Get('orders/detail/:orderId')
+  @Get('api/v1/order/:orderId')
   @ApiBearerAuth('JWT-auth')
   async getOrderDetails(
     @Res() res,
@@ -147,16 +97,6 @@ export class OrdersController {
         filter,
         Authorization,
       ),
-    );
-  }
-
-  // Returns all pending shop orders for orders list page
-  @Get('orders/marketplace/all/pending')
-  async findAllPendingOrders(@Res() res, @Headers() headers): Promise<object> {
-    const Authorization: string = headers.authorization;
-    return makeResponse(
-      res,
-      await this.appService.getAllPendingOrders(Authorization),
     );
   }
 
@@ -195,18 +135,6 @@ export class OrdersController {
     return makeResponse(
       res,
       await this.appService.getOrderReturns(filters, token),
-    );
-  }
-
-  @Get('api/v1/orders/return/:orderId')
-  async getOrderReturnDetails(
-    @Res() res,
-    @Param() orderDto: OrderIdDto,
-    @IsAuthenticated('authorization') token: string,
-  ) {
-    return makeResponse(
-      res,
-      await this.appService.getOrderReturnById(orderDto.orderId, token),
     );
   }
 

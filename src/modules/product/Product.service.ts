@@ -15,12 +15,7 @@ import {
   makeProductListResponse,
   storeB2cMapping,
 } from './Product.utils';
-import {
-  GetBundlesDto,
-  ProductDetailsDto,
-  ProductListFilterDto,
-  shopProductsDTO,
-} from './dto/product.dto';
+import { GetBundlesDto, ProductDetailsDto } from './dto/product.dto';
 @Injectable()
 export class ProductService {
   private readonly logger = new Logger(ProductService.name);
@@ -102,12 +97,6 @@ export class ProductService {
     }
   }
 
-  // Single product details by <slug> {Quick View , SingleProductDetailsPage}
-  // TODO deprecate this api with frontend notice
-  public getProductDetailsBySlug(slug: string): Promise<object> {
-    return ProductsHandlers.singleProductDetailsHandler(slug);
-  }
-
   public async getProductDetails(filter: ProductDetailsDto): Promise<object> {
     try {
       return prepareSuccessResponse(
@@ -117,36 +106,6 @@ export class ProductService {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
     }
-  }
-  // Product list page data relating to category <slug>
-  public async getProductListPageById(
-    categoryId: string,
-    filter: ProductListFilterDto,
-  ): Promise<object> {
-    try {
-      const retailerId = filter.retailerId;
-      const productIds = [];
-      const productsData = await ProductsHandlers.productListPageHandler({
-        ...filter,
-        categoryId,
-        productIds,
-      });
-      return prepareSuccessResponse(
-        makeProductListResponse(
-          await this.addProductsMapping(productsData, retailerId),
-        ),
-      );
-    } catch (error) {
-      this.logger.error(error);
-    }
-  }
-
-  // Bundles list relating to variant ids
-  public getBundlesByVariantIds(variantIds: Array<string>): Promise<object> {
-    return ProductsHandlers.getBundlesHandler({
-      productVariants: variantIds,
-      getProductDetails: true,
-    });
   }
 
   // Return product images downloadable URL.
@@ -206,20 +165,20 @@ export class ProductService {
 
   public async getShopProductsByCategoryId(
     shopId: string,
-    filter: shopProductsDTO,
+    filter: ProductFilterDto,
   ): Promise<object> {
     try {
       const marketplace =
-        await ProductsHandlers.shopProductIdsByCategoryIdHandler(
-          { ...filter, shopId },
-          filter.isB2c,
-        );
+        await ProductsHandlers.shopProductIdsByCategoryIdHandler({
+          ...filter,
+          shopId,
+        });
       const productIds = marketplace?.productIds || [];
       if (productIds.length) {
-        const saleor = await ProductsHandlers.productListPageHandler(
-          { ...filter, productIds },
-          filter.isB2c,
-        );
+        const saleor = await ProductsHandlers.productListPageHandler({
+          ...filter,
+          productIds,
+        });
         return prepareSuccessResponse({
           marketplace,
           saleor,
