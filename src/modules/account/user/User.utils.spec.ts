@@ -12,15 +12,17 @@ describe('User Handler unit test', () => {
       sellersPermitId: '7490327493240',
       phoneNumber: '+13227972978',
       website: '',
-      zipcode: '94118',
-      address1: '14742 BLAINE AVE',
-      address2: '',
-      city: 'LOS ANGELES',
-      country: 'US',
-      state: 'CA',
-      companyName: 'Test Teams Work',
-      faxNumber: '',
-      mobileNumber: '',
+      address: {
+        zipcode: '94118',
+        address1: '14742 BLAINE AVE',
+        address2: '',
+        city: 'LOS ANGELES',
+        country: 'US',
+        state: 'CA',
+        companyName: 'Test Teams Work',
+        faxNumber: '',
+        mobileNumber: '',
+      },
       resaleCertificate: '',
       sellerPermitImage: '',
       stripeCustomerId: '',
@@ -28,6 +30,7 @@ describe('User Handler unit test', () => {
 
     const auth0UserOutput: Auth0UserDetailType =
       validateAuth0UserInput(auth0UserInput);
+
     expect(auth0UserOutput).toBeInstanceOf(Object);
     expect(auth0UserOutput).not.toEqual(auth0UserInput);
     expect(auth0UserOutput.user_metadata.address).toBeDefined();

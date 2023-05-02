@@ -105,7 +105,6 @@ export class UserService {
 
   /**
    * Update user information in Auth0, Saleor and OrangeShine
-   * @param {Auth0UserInputDTO} userInput - user details objects
    * @param {string} token - paramter of string type
    * Run the services and handler using Promise.all
    * @returns {object} return objects of saleor, auth0, orangeshineResponse in one object.

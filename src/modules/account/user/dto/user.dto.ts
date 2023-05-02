@@ -1,6 +1,7 @@
-import { ApiProperty, IntersectionType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional } from 'class-validator';
-import { PaginationDto } from 'src/graphql/dto/pagination.dto';
+import { Type } from 'class-transformer';
+import { ValidateNested } from 'class-validator';
 
 export class UserInputDTO {
   @ApiProperty({ required: false })
@@ -10,6 +11,44 @@ export class UserInputDTO {
   @ApiProperty({ required: false })
   @IsOptional()
   lastName: string;
+}
+
+export class UserAddressDTO {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  address1?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  address2?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  zipcode?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  city?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  country: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  state: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  companyName: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  mobileNumber?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  faxNumber?: string;
 }
 
 export class Auth0UserInputDTO extends UserInputDTO {
@@ -47,39 +86,9 @@ export class Auth0UserInputDTO extends UserInputDTO {
 
   @ApiProperty({ required: false })
   @IsOptional()
-  address1?: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  address2?: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  zipcode?: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  city?: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  country?: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  state?: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  companyName?: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  mobileNumber?: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  faxNumber?: string;
+  @ValidateNested()
+  @Type(() => UserAddressDTO)
+  address?: UserAddressDTO;
 }
 
 export class UserAuth0IdDTO {
@@ -98,43 +107,6 @@ export class ChangeUserPasswordDTO extends UserAuth0IdDTO {
   newPassword: string;
 }
 
-export class UserAddressDTO {
-  @ApiProperty({ required: false })
-  @IsOptional()
-  address1: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  address2: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  zipcode: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  city: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  country: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  state: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  companyName: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  mobileNumber: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  faxNumber: string;
-}
 export class Auth0PaginationDTO {
   @ApiProperty({ required: true })
   @IsNotEmpty()

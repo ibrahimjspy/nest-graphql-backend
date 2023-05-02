@@ -10,15 +10,6 @@ export const validateObjectLength = (obj: object) => {
 };
 
 /**
- * Get boolean
- * @param {object} obj - paramter of object type
- * @returns {boolean} return the true or false if Object field is all empty.
- */
-export const validateAddressFields = (obj: object) => {
-  return Object.values(obj).every((value) => !value);
-};
-
-/**
  * Validate the user details and user metadata for checking if each key's value exist then its returned
  * @param {Auth0UserInputDTO} userInput - user details objects
  * @info metadataKeyNames - Need to transform key names according to auth0 Key names listing in this variables
@@ -26,19 +17,10 @@ export const validateAddressFields = (obj: object) => {
  * @returns {object} return valid user detail object with exact usermetada key names.
  */
 export const validateAuth0UserInput = (userInput: Auth0UserInputDTO) => {
-  const { firstName, lastName, userAuth0Id, ...userMetadata } = userInput;
-  const address = {
-    zipcode: userInput.zipcode,
-    address1: userInput.address1,
-    address2: userInput.address2,
-    city: userInput.city,
-    country: userInput.country,
-    state: userInput.state,
-    companyName: userInput.companyName,
-    faxNumber: userInput.faxNumber,
-    mobileNumber: userInput.mobileNumber,
-  };
+  const { firstName, lastName, userAuth0Id, address, ...userMetadata } =
+    userInput;
 
+  console.log('address', address);
   const metadataKeyNames = {
     jobTitleId: 'job_title_id',
     phoneNumber: 'phone_number',
@@ -50,9 +32,10 @@ export const validateAuth0UserInput = (userInput: Auth0UserInputDTO) => {
     stripeCustomerId: 'stripe_customer_id',
   };
   const validatedMetadata = {
-    ...(!validateAddressFields(address) && {
-      address: JSON.stringify(address),
-    }),
+    ...(address &&
+      validateObjectLength(address) && {
+        address: JSON.stringify(address),
+      }),
   };
 
   for (const value in userMetadata) {
@@ -97,15 +80,15 @@ export const transformOSUserInput = (userInput: Auth0UserInputDTO) => {
     phone_number: userInput.phoneNumber,
     website: userInput.website,
     sellers_permit_id: userInput.sellersPermitId,
-    address1: userInput.address1,
-    address2: userInput.address2,
-    city: userInput.city,
-    country: userInput.country,
-    state: userInput.state,
-    zipcode: userInput.zipcode,
-    company_name: userInput.companyName,
-    mobile_phone: userInput.mobileNumber,
-    fax: userInput.faxNumber,
+    address1: userInput.address.address1,
+    address2: userInput.address.address2,
+    city: userInput.address.city,
+    country: userInput.address.country,
+    state: userInput.address.state,
+    zipcode: userInput.address.zipcode,
+    company_name: userInput.address.companyName,
+    mobile_phone: userInput.address.mobileNumber,
+    fax: userInput.address.faxNumber,
     sellers_permit_file: '',
     seller_permit_image: userInput.sellerPermitImage,
   };
