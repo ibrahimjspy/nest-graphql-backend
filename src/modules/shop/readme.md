@@ -1,4 +1,4 @@
-# Product Module
+# Shop Module
 
 This module contains REST apis for all shop related transactions, such as shop create, update and delete.
 
