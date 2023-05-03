@@ -1,3 +1,4 @@
+import { Auth0UserDetailType, getUserByTokenType } from './User.types';
 import { Auth0UserInputDTO } from './dto/user.dto';
 import jwt_decode from 'jwt-decode';
 
@@ -60,9 +61,9 @@ export const getTokenWithoutBearer = (token: string) => {
 /**
  * Decode and get user details by jwt token
  * @param {string} token - paramter of jwt token
- * @returns {object} return user information object.
+ * @returns {Auth0UserDetailType} return user information object.
  */
-export const getUserByToken = (token: string) => {
-  const decodedToken = jwt_decode(token);
+export const getUserByToken: getUserByTokenType = (token: string) => {
+  const decodedToken: Auth0UserDetailType = jwt_decode(token);
   return decodedToken;
 };

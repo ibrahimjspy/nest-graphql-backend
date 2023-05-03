@@ -19,6 +19,7 @@ import { B2C_ENABLED } from 'src/constants';
 import SaleorAuthService from './services/saleorAuth.service';
 import { getUserByToken, validateAuth0UserInput } from './User.utils';
 import { retailerChangePassword } from 'src/external/endpoints/retailer_registration';
+import { Auth0UserDetailType } from './User.types';
 
 @Injectable()
 export class UserService {
@@ -69,11 +70,11 @@ export class UserService {
 
   public async getUserinfoV2(token: string): Promise<SuccessResponseType> {
     try {
-      const userDetail = getUserByToken(token);
-      const userAuth0Id = userDetail['sub'];
-      const userEmail = userDetail['email'];
-      let checkoutId = null;
-      let shopDetails = null;
+      const userDetail: Auth0UserDetailType = getUserByToken(token);
+      const userAuth0Id = userDetail?.sub;
+      const userEmail = userDetail?.email;
+      let checkoutId: unknown = null;
+      let shopDetails: unknown = null;
 
       const [saleor, auth0] = await Promise.all([
         AccountHandlers.getUserDetailsHandler(token),
@@ -108,8 +109,8 @@ export class UserService {
     token: string,
   ): Promise<SuccessResponseType> {
     try {
-      const userDetail = getUserByToken(token);
-      const userAuth0Id = userDetail['sub'];
+      const userDetail: Auth0UserDetailType = getUserByToken(token);
+      const userAuth0Id = userDetail?.sub;
       // update user info in saleor and auth0
       const [saleor, auth0] = await Promise.all([
         this.saleorAuthService.updateUser(userInput, token),
@@ -126,13 +127,16 @@ export class UserService {
     }
   }
 
+  /**
+   * @deprecated Need to depracted this API in future
+   */
   public async changeUserPassword(
     userInput: ChangeUserPasswordDTO,
     token: string,
   ): Promise<SuccessResponseType> {
     try {
       const userDetail = getUserByToken(token);
-      const userAuth0Id = userDetail['sub'];
+      const userAuth0Id = userDetail?.sub;
 
       // validate auth0 user token
       await this.auth0Service.validateAuth0User(userAuth0Id, token);
@@ -157,7 +161,7 @@ export class UserService {
     token: string,
   ): Promise<SuccessResponseType> {
     const userDetail = getUserByToken(token);
-    const userAuth0Id = userDetail['sub'];
+    const userAuth0Id = userDetail?.sub;
 
     try {
       const auth0 = await this.auth0Service.sendVerificationEmail(userAuth0Id);

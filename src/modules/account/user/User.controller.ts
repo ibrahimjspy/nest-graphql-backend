@@ -57,7 +57,8 @@ export class UserController {
   }
 
   @ApiOperation({
-    summary: 'Change authenticated user password for auth0 and orangeshine',
+    summary:
+      'Change authenticated user password for auth0 and orangeshine and need to deprecated in future',
   })
   @Post('/api/v1/user/change/password')
   @ApiBearerAuth('JWT-auth')
@@ -75,7 +76,7 @@ export class UserController {
   @ApiOperation({
     summary: 'Send verification email for authenticated user',
   })
-  @Post('/api/v1/user/send/verification-email')
+  @Post('/api/v1/user/send/verification/email')
   @ApiBearerAuth('JWT-auth')
   async sendVerificationEmail(
     @Res() res,
