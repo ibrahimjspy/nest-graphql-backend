@@ -18,8 +18,11 @@ import Auth0Service from './services/auth0.service';
 import { B2C_ENABLED } from 'src/constants';
 import SaleorAuthService from './services/saleorAuth.service';
 import { getUserByToken, validateAuth0UserInput } from './User.utils';
-import { retailerChangePassword } from 'src/external/endpoints/retailer_registration';
 import { Auth0UserDetailType } from './User.types';
+import {
+  retailerChangePassword,
+  updateUserInfo,
+} from 'src/external/endpoints/retailerRegistration';
 
 @Injectable()
 export class UserService {
@@ -104,6 +107,13 @@ export class UserService {
     }
   }
 
+  /**
+   * Update user information in Auth0, Saleor and OrangeShine
+   * @param {string} token - paramter of string type
+   * Run the services and handler using Promise.all
+   * @returns {object} return objects of saleor, auth0, orangeshineResponse in one object.
+   */
+
   public async updateUserInfo(
     userInput: Auth0UserInputDTO,
     token: string,
@@ -111,16 +121,15 @@ export class UserService {
     try {
       const userDetail: Auth0UserDetailType = getUserByToken(token);
       const userAuth0Id = userDetail?.sub;
-      // update user info in saleor and auth0
-      const [saleor, auth0] = await Promise.all([
+      const [saleor, auth0, orangeshineResponse] = await Promise.all([
         this.saleorAuthService.updateUser(userInput, token),
         this.auth0Service.updateUser(
           userAuth0Id,
           validateAuth0UserInput(userInput),
         ),
+        await updateUserInfo(userInput, token),
       ]);
-      // update user info in auth0
-      return prepareSuccessResponse({ saleor, auth0 });
+      return prepareSuccessResponse({ saleor, auth0, orangeshineResponse });
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

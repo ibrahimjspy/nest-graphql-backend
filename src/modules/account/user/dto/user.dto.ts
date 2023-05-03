@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ValidateNested } from 'class-validator';
 
 export class UserInputDTO {
   @ApiProperty({ required: false })
@@ -11,34 +13,78 @@ export class UserInputDTO {
   lastName: string;
 }
 
+export class UserAddressDTO {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  address1?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  address2?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  zipcode?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  city?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  country: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  state: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  companyName: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  mobileNumber?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  faxNumber?: string;
+}
+
 export class Auth0UserInputDTO extends UserInputDTO {
   @ApiProperty({ required: false })
   @IsOptional()
-  jobTitleId: string;
+  jobTitleId?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
-  sellersPermitId: string;
+  sellersPermitId?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
-  phoneNumber: string;
+  phoneNumber?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
-  resaleCertificate: string;
+  resaleCertificate?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
-  sellerPermitImage: string;
+  sellerPermitImage?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
-  address: string;
+  stripeCustomerId?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
-  stripeCustomerId: string;
+  website?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => UserAddressDTO)
+  address?: UserAddressDTO;
 }
 
 export class UserAuth0IdDTO {
