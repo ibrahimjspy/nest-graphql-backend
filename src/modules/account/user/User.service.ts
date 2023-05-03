@@ -17,12 +17,10 @@ import {
 import Auth0Service from './services/auth0.service';
 import { B2C_ENABLED } from 'src/constants';
 import SaleorAuthService from './services/saleorAuth.service';
+import OSUserService from 'src/external/services/osUser.service';
 import { getUserByToken, validateAuth0UserInput } from './User.utils';
 import { Auth0UserDetailType } from './User.types';
-import {
-  retailerChangePassword,
-  updateUserInfo,
-} from 'src/external/endpoints/retailerRegistration';
+import { retailerChangePassword } from 'src/external/endpoints/retailer';
 
 @Injectable()
 export class UserService {
@@ -30,6 +28,7 @@ export class UserService {
     private shopService: ShopService,
     private auth0Service: Auth0Service,
     private saleorAuthService: SaleorAuthService,
+    private osUserService: OSUserService,
   ) {
     return;
   }
@@ -129,10 +128,12 @@ export class UserService {
           userAuth0Id,
           validateAuth0UserInput(userInput),
         ),
-        await updateUserInfo(userInput, token),
       ]);
       if (B2C_ENABLED == 'false') {
-        orangeshineResponse = await updateUserInfo(userInput, token);
+        orangeshineResponse = await this.osUserService.updateUser(
+          userInput,
+          token,
+        );
       }
       return prepareSuccessResponse({ saleor, auth0, orangeshineResponse });
     } catch (error) {
