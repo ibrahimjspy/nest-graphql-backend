@@ -28,5 +28,5 @@ export class SyncCategoriesDto extends PaginationDto {
 export class CategoriesDto extends PaginationDto {
   @ApiProperty({ type: String, required: false })
   @IsOptional()
-  shopId: string;
+  shopId?: string;
 }

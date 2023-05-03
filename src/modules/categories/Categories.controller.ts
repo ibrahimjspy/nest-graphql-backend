@@ -42,4 +42,13 @@ export class CategoriesController {
       await this.appService.getSyncedCategories(params.shopId, filter),
     );
   }
+
+  @Get('/categories/menu')
+  @ApiOperation({
+    summary: 'this api will be deprecated',
+  })
+  async findMenuCategories(): Promise<object> {
+    const categoriesData = await this.appService.getCategories({ first: 10 });
+    return categoriesData['data'];
+  }
 }

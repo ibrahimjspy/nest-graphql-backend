@@ -120,4 +120,103 @@ export class AddressController {
       ),
     );
   }
+
+  // deprecated apis
+  @Get('account/address/:userId')
+  @ApiOperation({
+    summary: 'deprecated api ',
+  })
+  async addressesDeprecated(
+    @Res() res,
+    @Param() userIdDto: UserIdDto,
+    @Headers() headers,
+  ): Promise<object> {
+    const Authorization: string = headers.authorization;
+    return makeResponse(
+      res,
+      await this.appService.getAddresses(userIdDto.userId, Authorization),
+    );
+  }
+
+  @Post('account/address/:userId')
+  @ApiOperation({
+    summary: 'deprecated api ',
+  })
+  async createAddressDeprecated(
+    @Res() res,
+    @Param() userIdDto: UserIdDto,
+    @Body() addressDto: AddressDto,
+    @Headers() headers,
+  ): Promise<object> {
+    const Authorization: string = headers.authorization;
+    return makeResponse(
+      res,
+      await this.appService.createAddress(
+        userIdDto.userId,
+        addressDto,
+        Authorization,
+      ),
+    );
+  }
+
+  @Delete('account/address/:addressId')
+  @ApiOperation({
+    summary: 'deprecated api ',
+  })
+  async deleteAddressDeprecated(
+    @Res() res,
+    @Param() addressIdDto: AddressIdDto,
+    @Headers() headers,
+  ): Promise<object> {
+    const Authorization: string = headers.authorization;
+    return makeResponse(
+      res,
+      await this.appService.deleteAddress(
+        addressIdDto.addressId,
+        Authorization,
+      ),
+    );
+  }
+
+  @Put('account/address/:addressId/default')
+  @ApiOperation({
+    summary: 'deprecated api ',
+  })
+  async setDefaultAddressDeprecated(
+    @Res() res,
+    @Param() addressIdDto: AddressIdDto,
+    @Body() userIdDto: UserIdDto,
+    @Headers() headers,
+  ): Promise<object> {
+    const Authorization: string = headers.authorization;
+    return makeResponse(
+      res,
+      await this.appService.setDefaultAddress(
+        userIdDto.userId,
+        addressIdDto.addressId,
+        Authorization,
+      ),
+    );
+  }
+
+  @Put('account/address/:addressId')
+  @ApiOperation({
+    summary: 'deprecated api ',
+  })
+  async updateAddressDeprecated(
+    @Res() res,
+    @Param() addressIdDto: AddressIdDto,
+    @Body() addressDto: AddressDto,
+    @Headers() headers,
+  ): Promise<object> {
+    const Authorization: string = headers.authorization;
+    return makeResponse(
+      res,
+      await this.appService.updateAddress(
+        addressIdDto.addressId,
+        addressDto,
+        Authorization,
+      ),
+    );
+  }
 }
