@@ -68,9 +68,6 @@ export const getBundlesQuery = (filter: GetBundlesDto) => {
                 productVariant {
                   id
                   name
-                  media {
-                    url
-                  }
                   attributes {
                     attribute {
                       name
@@ -78,6 +75,9 @@ export const getBundlesQuery = (filter: GetBundlesDto) => {
                     values {
                       name
                     }
+                  }
+                  media {
+                    url
                   }
                   pricing {
                     price {
