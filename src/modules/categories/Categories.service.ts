@@ -11,7 +11,10 @@ import {
 } from 'src/graphql/handlers/categories';
 import { CategoriesDto, SyncCategoriesDto } from './dto/categories';
 import { getSyncCategoriesMapping } from 'src/external/endpoints/syncCategoriesMapping';
-import { prepareSyncedCategoriesResponse } from './Categories.utils';
+import {
+  prepareSyncedCategoriesResponse,
+  validateCategoriesResponse,
+} from './Categories.utils';
 
 @Injectable()
 export class CategoriesService {
@@ -20,7 +23,9 @@ export class CategoriesService {
   public async getCategories(filter: CategoriesDto): Promise<object> {
     try {
       return prepareSuccessResponse(
-        await categoriesHandler({ ...filter, categoryIds: [] }),
+        validateCategoriesResponse(
+          await categoriesHandler({ ...filter, categoryIds: [] }),
+        ),
       );
     } catch (error) {
       this.logger.error(error);
