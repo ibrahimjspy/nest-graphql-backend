@@ -16,6 +16,9 @@ const b2bQuery = (shopId: string): string => {
         url
         returnPolicy
         storePolicy
+        products {
+          id
+        }
         fields {
           name
           values
@@ -39,6 +42,9 @@ const b2cQuery = (shopId: string): string => {
         url
         returnPolicy
         storePolicy
+        products {
+          id
+        }
         fields {
           name
           values

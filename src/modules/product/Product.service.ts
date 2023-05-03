@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import {
+  prepareFailedResponse,
   prepareGQLPaginatedResponse,
   prepareSuccessResponse,
 } from 'src/core/utils/response';
@@ -13,8 +14,18 @@ import {
   getProductIds,
   getProductIdsByVariants,
   storeB2cMapping,
+  getShopProductIds,
+  isEmptyArray,
+  makeProductListResponse,
+  storeB2cMapping,
 } from './Product.utils';
-import { GetBundlesDto, ProductDetailsDto } from './dto/product.dto';
+import {
+  GetBundlesDto,
+  ProductDetailsDto,
+  ProductListFilterDto,
+  shopProductsDTO,
+} from './dto/product.dto';
+import { MarketlaceProductsReponseType } from './Product.types';
 @Injectable()
 export class ProductService {
   private readonly logger = new Logger(ProductService.name);
@@ -133,17 +144,21 @@ export class ProductService {
     filter: ProductFilterDto,
   ): Promise<object> {
     try {
-      const marketplace =
-        await ProductsHandlers.shopProductIdsByCategoryIdHandler({
-          ...filter,
-          shopId,
-        });
-      const productIds = marketplace?.productIds || [];
-      if (productIds.length) {
-        const saleor = await ProductsHandlers.productsHandler({
-          ...filter,
-          productIds,
-        });
+      const marketplace: MarketlaceProductsReponseType =
+        await ProductsHandlers.shopProductIdsByCategoryIdHandler(
+          { ...filter, shopId },
+          filter.isB2c,
+        );
+      const productIds = getShopProductIds(marketplace);
+      if (isEmptyArray(productIds)) {
+        const saleor = await ProductsHandlers.productListPageHandler(
+          {
+            first: filter.first,
+            categoryId: filter.categoryId,
+            productIds,
+          },
+          filter.isB2c,
+        );
         return prepareSuccessResponse({
           marketplace,
           saleor,

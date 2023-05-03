@@ -11,7 +11,7 @@ import {
   retailerJobTitlesHandler,
   retailerRegisterHandler,
   uploadRetailerCertificateHandler,
-} from 'src/external/services/retailer_registration';
+} from 'src/external/services/retailerRegistration';
 import { RetailerRegisterDto } from './dto';
 
 @Injectable()

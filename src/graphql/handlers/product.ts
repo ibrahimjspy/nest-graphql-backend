@@ -28,6 +28,7 @@ import {
 import { getBundlesQuery } from '../queries/product/getBundles';
 import { getProductSlugQuery } from '../queries/product/productSlug';
 import { getProductDetailsQuery } from '../queries/product/details';
+import { MarketlaceProductsReponseType } from 'src/modules/product/Product.types';
 
 export const productsHandler = async (
   filter: ProductFilterDto,
@@ -166,7 +167,7 @@ export const getStoredProductListHandler = async (
 export const shopProductIdsByCategoryIdHandler = async (
   filter,
   isb2c = false,
-): Promise<{ productIds: string[] }> => {
+): Promise<MarketlaceProductsReponseType> => {
   const userToken = '';
   const response = await graphqlResultErrorHandler(
     await graphqlCall(

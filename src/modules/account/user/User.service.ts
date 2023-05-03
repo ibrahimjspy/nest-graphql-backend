@@ -9,6 +9,7 @@ import * as AccountHandlers from 'src/graphql/handlers/account/user';
 import { ShopService } from '../../shop/Shop.service';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import {
+  AllUsersDTO,
   Auth0UserInputDTO,
   ChangeUserPasswordDTO,
   UserAuth0IdDTO,
@@ -16,8 +17,12 @@ import {
 import Auth0Service from './services/auth0.service';
 import { B2C_ENABLED } from 'src/constants';
 import SaleorAuthService from './services/saleorAuth.service';
-import { validateAuth0UserInput } from './User.utils';
-import { retailerChangePassword } from 'src/external/endpoints/retailer_registration';
+import { getUserByToken, validateAuth0UserInput } from './User.utils';
+import { Auth0UserDetailType } from './User.types';
+import {
+  retailerChangePassword,
+  updateUserInfo,
+} from 'src/external/endpoints/retailerRegistration';
 
 @Injectable()
 export class UserService {
@@ -66,29 +71,32 @@ export class UserService {
     }
   }
 
-  public async getUserinfoV2(
-    userAuth0Id: string,
-    token: string,
-  ): Promise<SuccessResponseType> {
+  public async getUserinfoV2(token: string): Promise<SuccessResponseType> {
     try {
-      let checkoutId = null;
+      const userDetail: Auth0UserDetailType = getUserByToken(token);
+      const userAuth0Id = userDetail?.sub;
+      const userEmail = userDetail?.email;
+      let checkoutId: unknown = null;
+      let shopDetails: unknown = null;
+
       const [saleor, auth0] = await Promise.all([
         AccountHandlers.getUserDetailsHandler(token),
         this.auth0Service.getUser(userAuth0Id),
       ]);
-      const shopDetails = await this.shopService.getShopDetailsV2({
-        email: saleor['email'],
-      });
+
       if (B2C_ENABLED == 'false') {
+        shopDetails = await this.shopService.getShopDetailsV2({
+          email: userEmail,
+        });
         checkoutId = await AccountHandlers.getCheckoutIdFromMarketplaceHandler(
-          saleor['email'],
+          userEmail,
         );
       }
       saleor['checkoutId'] = checkoutId;
       return prepareSuccessResponse({
         saleor,
         auth0,
-        shopDetails: shopDetails,
+        ...(shopDetails && { shopDetails }),
       });
     } catch (error) {
       this.logger.error(error);
@@ -99,34 +107,48 @@ export class UserService {
     }
   }
 
+  /**
+   * Update user information in Auth0, Saleor and OrangeShine
+   * @param {string} token - paramter of string type
+   * Run the services and handler using Promise.all
+   * @returns {object} return objects of saleor, auth0, orangeshineResponse in one object.
+   */
+
   public async updateUserInfo(
     userInput: Auth0UserInputDTO,
     token: string,
   ): Promise<SuccessResponseType> {
     try {
-      // update user info in saleor and auth0
-      const [saleor, auth0] = await Promise.all([
+      const userDetail: Auth0UserDetailType = getUserByToken(token);
+      const userAuth0Id = userDetail?.sub;
+      const [saleor, auth0, orangeshineResponse] = await Promise.all([
         this.saleorAuthService.updateUser(userInput, token),
         this.auth0Service.updateUser(
-          userInput.userAuth0Id,
+          userAuth0Id,
           validateAuth0UserInput(userInput),
         ),
+        await updateUserInfo(userInput, token),
       ]);
-      // update user info in auth0
-      return prepareSuccessResponse({ saleor, auth0 });
+      return prepareSuccessResponse({ saleor, auth0, orangeshineResponse });
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
     }
   }
 
+  /**
+   * @deprecated Need to depracted this API in future
+   */
   public async changeUserPassword(
     userInput: ChangeUserPasswordDTO,
     token: string,
   ): Promise<SuccessResponseType> {
     try {
+      const userDetail = getUserByToken(token);
+      const userAuth0Id = userDetail?.sub;
+
       // validate auth0 user token
-      await this.auth0Service.validateAuth0User(userInput.userAuth0Id, token);
+      await this.auth0Service.validateAuth0User(userAuth0Id, token);
       let osReponse;
       if (B2C_ENABLED == 'false') {
         // change user password in orangeshine
@@ -134,7 +156,7 @@ export class UserService {
       }
       // change user password in auth0
       const auth0 = await this.auth0Service.changeUserPassword(
-        userInput.userAuth0Id,
+        userAuth0Id,
         userInput.newPassword,
       );
       return prepareSuccessResponse({ osReponse: osReponse?.data, auth0 });
@@ -145,13 +167,55 @@ export class UserService {
   }
 
   public async sendVerificationEmail(
+    token: string,
+  ): Promise<SuccessResponseType> {
+    const userDetail = getUserByToken(token);
+    const userAuth0Id = userDetail?.sub;
+
+    try {
+      const auth0 = await this.auth0Service.sendVerificationEmail(userAuth0Id);
+      return prepareSuccessResponse(auth0);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async deactivateUser(
     userInput: UserAuth0IdDTO,
   ): Promise<SuccessResponseType> {
     try {
-      const auth0 = await this.auth0Service.sendVerificationEmail(
+      const auth0 = await this.auth0Service.deactivateUser(
         userInput.userAuth0Id,
       );
       return prepareSuccessResponse(auth0);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async activateUser(
+    userInput: UserAuth0IdDTO,
+  ): Promise<SuccessResponseType> {
+    try {
+      const auth0 = await this.auth0Service.activateUser(userInput.userAuth0Id);
+      return prepareSuccessResponse(auth0);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * Get all users from auth0 based on given auth0 connection name and pagination
+   * @param {AllUsersDTO} userInput - auth0Connection and pagination paramaters
+   * @returns All Users from auth0 based on auth0 connection with pagination.
+   */
+  public async getUsers(userInput: AllUsersDTO): Promise<SuccessResponseType> {
+    try {
+      const users = await this.auth0Service.getUsers(userInput);
+      return prepareSuccessResponse(users);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
