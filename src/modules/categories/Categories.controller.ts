@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Query, Res } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
 import { CategoriesService } from './Categories.service';
 import { CategoriesDto, SyncCategoriesDto, shopIdDTO } from './dto/categories';
@@ -10,6 +10,10 @@ export class CategoriesController {
   constructor(private readonly appService: CategoriesService) {}
 
   @Get('/api/v1/categories')
+  @ApiOperation({
+    summary:
+      'returns saleor categories against various filters , you can also fetch categories against a specific shop as well using shop id filter',
+  })
   async getProductCategories(
     @Res() res,
     @Query() filter: CategoriesDto,
@@ -25,6 +29,9 @@ export class CategoriesController {
   }
 
   @Get('/api/v1/categories/sync/:shopId')
+  @ApiOperation({
+    summary: 'returns categories with status whether they are synced or not',
+  })
   async getSyncedCategories(
     @Res() res,
     @Param() params: shopIdDTO,

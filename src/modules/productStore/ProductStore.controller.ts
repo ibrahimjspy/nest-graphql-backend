@@ -22,6 +22,9 @@ export class ProductStoreController {
   }
 
   @Post('api/v1/store/image/upload')
+  @ApiOperation({
+    summary: 'stores image against a store id',
+  })
   @UseInterceptors(FileInterceptor('store_img'))
   getUploadRetailerCertificate(
     @UploadedFile(
@@ -47,10 +50,6 @@ export class ProductStoreController {
     @Res() res,
     @Body() body: PushToStoreDto,
   ): Promise<object> {
-    const { importList } = body;
-    if (importList) {
-      await this.appService.addBulkProductsToStore(body);
-    }
     return await makeResponse(res, await this.appService.pushToStore(body));
   }
 }

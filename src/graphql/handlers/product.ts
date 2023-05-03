@@ -74,13 +74,6 @@ export const getBundlesHandler = async (
   return response['bundles'];
 };
 
-export const getLegacyMappingHandler = async (productIds, shop_ids) => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(ProductQueries.productMappingQuery(productIds, shop_ids)),
-  );
-  return response;
-};
-
 /**
  * this handler takes variant ids and returns product ids which are unique
  */

@@ -21,6 +21,10 @@ export class ProductController {
    * @returns list of products
    */
   @Get('/api/v1/products')
+  @ApiOperation({
+    summary:
+      'return products list using various filter provided by saleor -- it also can be used to fetch products against shop',
+  })
   public async findProducts(
     @Res() res,
     @Query() filter: ProductFilterDto,
@@ -51,6 +55,9 @@ export class ProductController {
 
   // Returns product images URL
   @Post('/api/v1/product/images')
+  @ApiOperation({
+    summary: 'returns images against a product',
+  })
   downloadProductImages(@Body() body): Promise<object> {
     return this.appService.getDownloadProductImages(body?.urls);
   }

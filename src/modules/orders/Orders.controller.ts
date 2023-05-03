@@ -19,7 +19,6 @@ import { OrderIdDto, ShopIdDto } from './dto';
 import { OrdersListDTO } from './dto/list';
 import {
   OrderReturnDTO,
-  OrderReturnFilterDTO,
   ReturnOrderListDto,
   ReturnsStaffDto,
 } from './dto/order-returns.dto';
@@ -44,8 +43,10 @@ export class OrdersController {
     private readonly appService: OrdersService,
     private readonly upsService: UpsService,
   ) {}
-  // Returns shop order details
   @Get('api/v1/order/:orderId')
+  @ApiOperation({
+    summary: 'returns order details against order id',
+  })
   @ApiBearerAuth('JWT-auth')
   async getOrderDetails(
     @Res() res,
@@ -96,6 +97,9 @@ export class OrdersController {
 
   // Returns all orders list
   @Get('api/v1/orders/list')
+  @ApiOperation({
+    summary: 'returns order list using multiple filters provided by saleor',
+  })
   async findAllOrders(
     @Res() res,
     @Headers() headers,
@@ -108,20 +112,10 @@ export class OrdersController {
     );
   }
 
-  // Return all orders(which are return by end customer)
-  @Get('api/v1/orders/returns')
-  async getOrderReturns(
-    @Res() res,
-    @IsAuthenticated('authorization') token: string,
-    @Query() filters: OrderReturnFilterDTO,
-  ) {
-    return makeResponse(
-      res,
-      await this.appService.getOrderReturns(filters, token),
-    );
-  }
-
   @Post('api/v1/order/return')
+  @ApiOperation({
+    summary: 'creates a return in saleor against order',
+  })
   @ApiBearerAuth('JWT-auth')
   async returnOrder(
     @Res() res,
@@ -136,6 +130,9 @@ export class OrdersController {
   }
 
   @Post('api/v1/order/fulfill')
+  @ApiOperation({
+    summary: 'creates a fulfillment in saleor against order',
+  })
   @ApiBearerAuth('JWT-auth')
   async fulfillOrder(
     @Res() res,
@@ -303,6 +300,9 @@ export class OrdersController {
 
   @Get('api/v1/orders/events')
   @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'returns order events currently only sending create order',
+  })
   async getOrderEvents(
     @Res() res,
     @Query() filter: PaginationDto,
@@ -316,6 +316,9 @@ export class OrdersController {
 
   @Post('api/v1/order/fulfillment/tracking/update')
   @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'updates tracking number against a fulfillment id',
+  })
   async orderFulfillmentUpdateTracking(
     @Res() res,
     @Body() body: FulfillmentUpdateTrackingDto,
@@ -328,6 +331,9 @@ export class OrdersController {
   }
 
   @Post('api/v1/order/returns/image/upload')
+  @ApiOperation({
+    summary: 'uploads image against order return',
+  })
   @UseInterceptors(FileInterceptor('store_img'))
   getUploadRetailerCertificate(
     @UploadedFile(

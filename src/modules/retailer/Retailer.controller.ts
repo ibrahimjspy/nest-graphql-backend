@@ -8,7 +8,7 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RetailerService } from './Retailer.service';
 import { RetailerEmailDto, RetailerRegisterDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -19,18 +19,27 @@ export class RetailerController {
   constructor(private readonly appService: RetailerService) {}
 
   @Get('api/v1/shop/job/title')
+  @ApiOperation({
+    summary: 'returns job title against a retailer',
+  })
   async getRetailerJobTitle(): Promise<object> {
     return this.appService.getRetailerJobTitle();
   }
 
   @Post('api/v1/shop/email/availability')
-  async getCheckRetailerEmail(@Body() body: RetailerEmailDto): Promise<object> {
+  @ApiOperation({
+    summary: 'this api validates retailer email',
+  })
+  async validateRetailerEmail(@Body() body: RetailerEmailDto): Promise<object> {
     return this.appService.getCheckRetailerEmail(body?.email);
   }
 
   @Post('api/v1/shop/resale/certificate')
+  @ApiOperation({
+    summary: 'uploads retailer certificate',
+  })
   @UseInterceptors(FileInterceptor('permit_img1'))
-  getUploadRetailerCertificate(
+  uploadRetailerCertificate(
     @UploadedFile(
       new ParseFilePipeBuilder()
         .addFileTypeValidator({
@@ -49,6 +58,9 @@ export class RetailerController {
   }
 
   @Post('api/v1/retailer/auth/sign-up')
+  @ApiOperation({
+    summary: 'this api registers a retailer',
+  })
   async retailerRegister(@Body() body: RetailerRegisterDto): Promise<object> {
     return this.appService.retailerRegister(body);
   }
