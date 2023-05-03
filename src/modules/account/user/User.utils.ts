@@ -1,5 +1,5 @@
 import { Auth0UserInputDTO } from './dto/user.dto';
-import jwt_decode from "jwt-decode";
+import jwt_decode from 'jwt-decode';
 
 /**
  * Get object keys length

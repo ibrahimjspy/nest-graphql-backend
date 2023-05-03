@@ -67,9 +67,7 @@ export class UserService {
     }
   }
 
-  public async getUserinfoV2(
-    token: string,
-  ): Promise<SuccessResponseType> {
+  public async getUserinfoV2(token: string): Promise<SuccessResponseType> {
     try {
       const userDetail = getUserByToken(token);
       const userAuth0Id = userDetail['sub'];
@@ -79,13 +77,13 @@ export class UserService {
 
       const [saleor, auth0] = await Promise.all([
         AccountHandlers.getUserDetailsHandler(token),
-        this.auth0Service.getUser(userAuth0Id)
+        this.auth0Service.getUser(userAuth0Id),
       ]);
 
       if (B2C_ENABLED == 'false') {
         shopDetails = await this.shopService.getShopDetailsV2({
           email: userEmail,
-        })
+        });
         checkoutId = await AccountHandlers.getCheckoutIdFromMarketplaceHandler(
           userEmail,
         );
@@ -94,7 +92,7 @@ export class UserService {
       return prepareSuccessResponse({
         saleor,
         auth0,
-        ...(shopDetails && {shopDetails}),
+        ...(shopDetails && { shopDetails }),
       });
     } catch (error) {
       this.logger.error(error);
@@ -111,7 +109,7 @@ export class UserService {
   ): Promise<SuccessResponseType> {
     try {
       const userDetail = getUserByToken(token);
-      const userAuth0Id = userDetail["sub"];
+      const userAuth0Id = userDetail['sub'];
       // update user info in saleor and auth0
       const [saleor, auth0] = await Promise.all([
         this.saleorAuthService.updateUser(userInput, token),
@@ -134,7 +132,7 @@ export class UserService {
   ): Promise<SuccessResponseType> {
     try {
       const userDetail = getUserByToken(token);
-      const userAuth0Id = userDetail["sub"];
+      const userAuth0Id = userDetail['sub'];
 
       // validate auth0 user token
       await this.auth0Service.validateAuth0User(userAuth0Id, token);
@@ -156,15 +154,13 @@ export class UserService {
   }
 
   public async sendVerificationEmail(
-    token: string
+    token: string,
   ): Promise<SuccessResponseType> {
     const userDetail = getUserByToken(token);
-    const userAuth0Id = userDetail["sub"];
+    const userAuth0Id = userDetail['sub'];
 
     try {
-      const auth0 = await this.auth0Service.sendVerificationEmail(
-        userAuth0Id,
-      );
+      const auth0 = await this.auth0Service.sendVerificationEmail(userAuth0Id);
       return prepareSuccessResponse(auth0);
     } catch (error) {
       this.logger.error(error);

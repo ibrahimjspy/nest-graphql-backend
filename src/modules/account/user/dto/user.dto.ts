@@ -12,7 +12,6 @@ export class UserInputDTO {
 }
 
 export class Auth0UserInputDTO extends UserInputDTO {
-
   @ApiProperty({ required: false })
   @IsOptional()
   jobTitleId: string;

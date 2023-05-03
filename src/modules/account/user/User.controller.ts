@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Put,
-  Query,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Query, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
 import { UserService } from './User.service';
@@ -36,18 +28,21 @@ export class UserController {
     );
   }
 
+  @ApiOperation({
+    summary: 'Get authenticated user details',
+  })
   @Get('api/v2/user/whoami')
   @ApiBearerAuth('JWT-auth')
   async getUserV2(
     @Res() res,
     @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
-    return makeResponse(
-      res,
-      await this.appService.getUserinfoV2(token),
-    );
+    return makeResponse(res, await this.appService.getUserinfoV2(token));
   }
 
+  @ApiOperation({
+    summary: 'Update authenticated user details',
+  })
   @Put('/api/v1/user/update')
   @ApiBearerAuth('JWT-auth')
   async updateUserInfo(
@@ -61,6 +56,9 @@ export class UserController {
     );
   }
 
+  @ApiOperation({
+    summary: 'Change authenticated user password for auth0 and orangeshine',
+  })
   @Post('/api/v1/user/change/password')
   @ApiBearerAuth('JWT-auth')
   async changeUserPassword(
@@ -74,6 +72,9 @@ export class UserController {
     );
   }
 
+  @ApiOperation({
+    summary: 'Send verification email for authenticated user',
+  })
   @Post('/api/v1/user/send/verification-email')
   @ApiBearerAuth('JWT-auth')
   async sendVerificationEmail(
@@ -86,6 +87,9 @@ export class UserController {
     );
   }
 
+  @ApiOperation({
+    summary: 'Deactive user by auth0 user id',
+  })
   @Post('/api/v1/user/deactivate')
   async deacticateUser(
     @Res() res,
@@ -94,6 +98,9 @@ export class UserController {
     return makeResponse(res, await this.appService.deactivateUser(userInput));
   }
 
+  @ApiOperation({
+    summary: 'Active user by auth0 user id',
+  })
   @Post('/api/v1/user/activate')
   async activateUser(
     @Res() res,
