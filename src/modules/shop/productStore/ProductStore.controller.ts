@@ -14,7 +14,7 @@ import { ProductStoreService } from './ProductStore.service';
 import { PushToStoreDto } from './dto/products';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-@ApiTags('productStore')
+@ApiTags('shop/productStore')
 @Controller()
 export class ProductStoreController {
   constructor(private readonly appService: ProductStoreService) {

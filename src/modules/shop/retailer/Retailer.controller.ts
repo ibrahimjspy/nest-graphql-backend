@@ -13,7 +13,7 @@ import { RetailerService } from './Retailer.service';
 import { RetailerEmailDto, RetailerRegisterDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-@ApiTags('retailer')
+@ApiTags('shop/retailer')
 @Controller('')
 export class RetailerController {
   constructor(private readonly appService: RetailerService) {}

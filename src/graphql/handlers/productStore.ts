@@ -3,7 +3,7 @@ import {
   graphqlExceptionHandler,
   graphqlResultErrorHandler,
 } from 'src/core/proxies/graphqlHandler';
-import { PushToStoreDto } from 'src/modules/productStore/dto/products';
+import { PushToStoreDto } from 'src/modules/shop/productStore/dto/products';
 import { pushToStoreMutation } from '../mutations/productStore/pushtToStore';
 
 export const pushToStoreHandler = async (
