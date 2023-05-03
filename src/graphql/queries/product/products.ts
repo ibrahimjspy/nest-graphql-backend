@@ -1,27 +1,19 @@
 import { gql } from 'graphql-request';
-import { DEFAULT_CHANNEL, DEFAULT_THUMBNAIL_SIZE } from 'src/constants';
+import { DEFAULT_THUMBNAIL_SIZE } from 'src/constants';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
 import { ProductFilterDto } from 'src/modules/product/dto';
 
-export const federationQuery = (filter: ProductFilterDto): string => {
+export const b2bQuery = (filter: ProductFilterDto): string => {
   const pageFilter = validatePageFilter(filter);
   const categoryFilter = filter['category'] ? `"${filter['category']}"` : '';
   return gql`
     query {
       products(
         ${pageFilter}
-        channel: "${DEFAULT_CHANNEL}"
-        sortBy: {
-          direction: DESC
-          field: PUBLISHED_AT
-        }
         filter: {
           ids: ${JSON.stringify(filter.productIds || [])}
-          isPublished: true,
           isAvailable: true,
-          hasCategory: true,
-          stockAvailability: IN_STOCK,
           categories: [${categoryFilter}]
         }
       ) {
@@ -37,15 +29,7 @@ export const federationQuery = (filter: ProductFilterDto): string => {
             id
             slug
             defaultVariant {
-              sku
-              attributes {
-                attribute {
-                  name
-                }
-                values {
-                  name
-                }
-              }
+              id
               pricing {
                 price {
                   gross {
@@ -69,7 +53,65 @@ export const federationQuery = (filter: ProductFilterDto): string => {
             thumbnail(size: ${DEFAULT_THUMBNAIL_SIZE}) {
               url
             }
-            media {
+            name
+            description
+          }
+        }
+      }
+    }
+  `;
+};
+
+export const b2cQuery = (filter: ProductFilterDto): string => {
+  const pageFilter = validatePageFilter(filter);
+  const categoryFilter = filter['category'] ? `"${filter['category']}"` : '';
+  return gql`
+    query {
+      products(
+        ${pageFilter}
+        filter: {
+          ids: ${JSON.stringify(filter.productIds || [])}
+          isAvailable: true,
+          categories: [${categoryFilter}]
+        }
+      ) {
+        pageInfo {
+          hasNextPage
+          hasPreviousPage
+          endCursor
+          startCursor
+        }
+        totalCount
+        edges {
+          node {
+            id
+            slug
+            category {
+              name
+            }
+            defaultVariant {
+              id
+              pricing {
+                price {
+                  gross {
+                    currency
+                    amount
+                  }
+                }
+              }
+            }
+            variants {
+              id
+              attributes {
+                attribute {
+                  name
+                }
+                values {
+                  name
+                }
+              }
+            }
+            thumbnail(size: ${DEFAULT_THUMBNAIL_SIZE}) {
               url
             }
             name
@@ -80,8 +122,6 @@ export const federationQuery = (filter: ProductFilterDto): string => {
     }
   `;
 };
-
 export const productsQuery = (filter: ProductFilterDto) => {
-  const query = federationQuery(filter);
-  return graphqlQueryCheck(query, query);
+  return graphqlQueryCheck(b2bQuery(filter), b2cQuery(filter));
 };
