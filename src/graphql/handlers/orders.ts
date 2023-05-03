@@ -1,5 +1,4 @@
 import {
-  orderActivityQuery,
   orderDetailsQuery,
   orderReturnFulfillmentQuery,
   shopOrdersQuery,
@@ -10,7 +9,6 @@ import {
 } from 'src/core/proxies/graphqlHandler';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import { ordersListQuery } from '../queries/orders/list';
-import { GQL_EDGES } from 'src/constants';
 import {
   filterReturnedOrderIds,
   hasNextPage,
@@ -56,17 +54,6 @@ export const orderDetailsHandler = async (
     throw new RecordNotFound('Order details');
   }
   return response['order'];
-};
-
-export const orderActivityHandler = async (token: string): Promise<object> => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(orderActivityQuery(), token),
-  );
-
-  if (!response['homepageEvents']?.[GQL_EDGES]?.length) {
-    throw new RecordNotFound('Order activity');
-  }
-  return response['homepageEvents'][GQL_EDGES];
 };
 
 export const ordersListHandler = async (

@@ -1,5 +1,5 @@
 import { GQL_EDGES } from 'src/constants';
-import { MarketlaceProductsReponseType } from './Product.types';
+import { MarketplaceProductsResponseType } from './Product.types';
 
 /**
  * returns array of bundle ids
@@ -77,11 +77,11 @@ export const makeProductListResponse = (productsList) => {
  * @return productIds -- string[]
  */
 export const getShopProductIds = (
-  productIdsReponse: MarketlaceProductsReponseType,
-) => {
+  productIdsResponse: MarketplaceProductsResponseType,
+): string[] => {
   return [
-    ...new Set(productIdsReponse.edges?.map((edge) => edge?.node?.productId)),
-  ];
+    ...new Set(productIdsResponse.edges?.map((edge) => edge?.node?.productId)),
+  ] as string[];
 };
 
 /**

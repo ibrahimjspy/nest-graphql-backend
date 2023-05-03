@@ -76,6 +76,16 @@ export const addStoreToShopHandler = async (
   }
 };
 
+export const shopDetailsHandler = async (
+  shopId: string,
+  isb2c = false,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(shopDetailsQuery(shopId, isb2c), '', isb2c),
+  );
+  return response['marketplaceShop'];
+};
+
 export const getShopDetailsV2Handler = async (
   filter: shopDetailDto,
   isb2c = false,

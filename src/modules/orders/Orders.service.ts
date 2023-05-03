@@ -8,7 +8,6 @@ import {
   addOrderToShopHandler,
   createReturnFulfillmentHandler,
   getReturnOrderIdsHandler,
-  orderActivityHandler,
   orderAmountRefundHandler,
   orderCancelHandler,
   orderDetailsHandler,
@@ -62,16 +61,6 @@ export class OrdersService {
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
-    }
-  }
-
-  public async getOrderActivity(token: string): Promise<object> {
-    try {
-      const response = await orderActivityHandler(token);
-      return prepareSuccessResponse(response, '', 201);
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
     }
   }
 
