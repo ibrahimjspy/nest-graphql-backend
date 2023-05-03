@@ -15,7 +15,7 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OrdersService } from './Orders.service';
 import { makeResponse } from '../../core/utils/response';
-import { OrderIdDto, ShopIdDto, UserIdDto } from './dto';
+import { OrderIdDto, ShopIdDto } from './dto';
 import { OrdersListDTO } from './dto/list';
 import {
   OrderReturnDTO,
@@ -44,23 +44,6 @@ export class OrdersController {
     private readonly appService: OrdersService,
     private readonly upsService: UpsService,
   ) {}
-  // Returns orders dashboard data for landing page
-  @Get('orders/history/:userId')
-  async findDashboard(
-    @Res() res,
-    @Param() userDto: UserIdDto,
-    @Headers() headers,
-  ): Promise<object> {
-    const Authorization: string = headers.authorization;
-    return makeResponse(
-      res,
-      await this.appService.getDashboardDataById(
-        userDto?.userId,
-        Authorization,
-      ),
-    );
-  }
-
   // Returns shop order details
   @Get('api/v1/order/:orderId')
   @ApiBearerAuth('JWT-auth')

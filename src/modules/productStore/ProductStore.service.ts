@@ -1,117 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
-import {
-  prepareGQLPaginatedResponse,
-  prepareSuccessResponse,
-} from 'src/core/utils/response';
+import { prepareSuccessResponse } from 'src/core/utils/response';
 import {
   addToProductStoreHandler,
-  deleteFromProductStoreHandler,
-  getStoreInfoHandler,
-  getStoredProductsHandler,
   pushToStoreHandler,
-  updateStoreInfoHandler,
 } from 'src/graphql/handlers/productStore';
-import {
-  PushToStoreDto,
-  addToProductStoreDTO,
-  deleteFromProductStoreDTO,
-  getStoredProductsDTO,
-} from './dto/products';
-import { shopInfoDto } from '../orders/dto';
+import { PushToStoreDto } from './dto/products';
 import { uploadImagesHandler } from 'src/external/services/uploadImages';
-import { getProductIdsByVariants } from '../product/Product.utils';
-import { getStoredProductListHandler } from 'src/graphql/handlers/product';
-import {
-  addProductListToStoredProducts,
-  getIdsFromList,
-} from './ProductStore.utils';
+import { getIdsFromList } from './ProductStore.utils';
 import { ShopService } from '../shop/Shop.service';
 
 @Injectable()
 export class ProductStoreService {
   constructor(private readonly shopService: ShopService) {
     return;
-  }
-  /**
-   * Get stored products against a retailer
-   */
-  public async getStoredProducts(
-    shopId: string,
-    filter: getStoredProductsDTO,
-  ): Promise<object> {
-    try {
-      const storedIds = await getStoredProductsHandler(shopId, filter);
-      const storedProductList = await getStoredProductListHandler(
-        getProductIdsByVariants(storedIds),
-      );
-      return prepareGQLPaginatedResponse(
-        addProductListToStoredProducts(storedIds, storedProductList),
-      );
-    } catch (error) {
-      return graphqlExceptionHandler(error);
-    }
-  }
-  /**
-   * add product and variants against shop in store
-   */
-  public async addToProductStore(
-    productsData: addToProductStoreDTO,
-  ): Promise<object> {
-    try {
-      return prepareSuccessResponse(
-        await addToProductStoreHandler(productsData),
-      );
-    } catch (error) {
-      return graphqlExceptionHandler(error);
-    }
-  }
-
-  /**
-   * deletes product and variants against shop in store
-   */
-  public async deleteFromProductStore(
-    productsData: deleteFromProductStoreDTO,
-  ): Promise<object> {
-    try {
-      return prepareSuccessResponse(
-        await deleteFromProductStoreHandler(productsData),
-      );
-    } catch (error) {
-      return graphqlExceptionHandler(error);
-    }
-  }
-
-  /**
-   * returns store details of the retailer store against shopId
-   */
-  public async getStoreInfo(shopId: string, token: string): Promise<object> {
-    try {
-      const B2C_ENABLED = true;
-      return prepareSuccessResponse(
-        await getStoreInfoHandler(shopId, token, B2C_ENABLED),
-      );
-    } catch (error) {
-      return graphqlExceptionHandler(error);
-    }
-  }
-
-  /**
-   * updates store details of the retailer store against shopId
-   */
-  public async updateStoreInfo(
-    shopId: string,
-    storeDetails: shopInfoDto,
-    token: string,
-  ): Promise<object> {
-    try {
-      const B2C_ENABLED = true;
-      return prepareSuccessResponse(
-        await updateStoreInfoHandler(shopId, storeDetails, token, B2C_ENABLED),
-      );
-    } catch (error) {
-      return graphqlExceptionHandler(error);
-    }
   }
 
   /**
