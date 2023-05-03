@@ -52,10 +52,6 @@ export class UserAddressDTO {
 }
 
 export class Auth0UserInputDTO extends UserInputDTO {
-  @ApiProperty()
-  @IsNotEmpty()
-  userAuth0Id: string;
-
   @ApiProperty({ required: false })
   @IsOptional()
   jobTitleId?: string;
@@ -97,7 +93,7 @@ export class UserAuth0IdDTO {
   userAuth0Id: string;
 }
 
-export class ChangeUserPasswordDTO extends UserAuth0IdDTO {
+export class ChangeUserPasswordDTO {
   @ApiProperty()
   @IsNotEmpty()
   currentPassword: string;

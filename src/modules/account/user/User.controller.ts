@@ -1,14 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Headers,
-  Param,
-  Post,
-  Put,
-  Query,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Query, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
 import { UserService } from './User.service';
@@ -38,56 +28,69 @@ export class UserController {
     );
   }
 
-  @Get('api/v2/user/whoami/:userAuth0Id')
+  @ApiOperation({
+    summary: 'Get authenticated user details',
+  })
+  @Get('api/v2/user/whoami')
   @ApiBearerAuth('JWT-auth')
   async getUserV2(
     @Res() res,
-    @Param() param: UserAuth0IdDTO,
+    @IsAuthenticated('authorization') token: string,
+  ): Promise<object> {
+    return makeResponse(res, await this.appService.getUserinfoV2(token));
+  }
+
+  @ApiOperation({
+    summary: 'Update authenticated user details',
+  })
+  @Put('/api/v1/user/update')
+  @ApiBearerAuth('JWT-auth')
+  async updateUserInfo(
+    @Res() res,
+    @Body() userInput: Auth0UserInputDTO,
     @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getUserinfoV2(param.userAuth0Id, token),
+      await this.appService.updateUserInfo(userInput, token),
     );
   }
 
-  @Put('/api/v1/user/update')
-  async updateUserInfo(
-    @Res() res,
-    @Body() userInput: Auth0UserInputDTO,
-    @Headers() headers,
-  ): Promise<object> {
-    const Authorization: string = headers.authorization;
-    return makeResponse(
-      res,
-      await this.appService.updateUserInfo(userInput, Authorization),
-    );
-  }
-
+  @ApiOperation({
+    summary:
+      'Change authenticated user password for auth0 and orangeshine and need to deprecated in future',
+  })
   @Post('/api/v1/user/change/password')
+  @ApiBearerAuth('JWT-auth')
   async changeUserPassword(
     @Res() res,
     @Body() userInput: ChangeUserPasswordDTO,
-    @Headers() headers,
+    @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
-    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.changeUserPassword(userInput, Authorization),
+      await this.appService.changeUserPassword(userInput, token),
     );
   }
 
-  @Post('/api/v1/user/send/verification-email')
+  @ApiOperation({
+    summary: 'Send verification email for authenticated user',
+  })
+  @Post('/api/v1/user/send/verification/email')
+  @ApiBearerAuth('JWT-auth')
   async sendVerificationEmail(
     @Res() res,
-    @Body() userInput: UserAuth0IdDTO,
+    @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.sendVerificationEmail(userInput),
+      await this.appService.sendVerificationEmail(token),
     );
   }
 
+  @ApiOperation({
+    summary: 'Deactive user by auth0 user id',
+  })
   @Post('/api/v1/user/deactivate')
   async deacticateUser(
     @Res() res,
@@ -96,6 +99,9 @@ export class UserController {
     return makeResponse(res, await this.appService.deactivateUser(userInput));
   }
 
+  @ApiOperation({
+    summary: 'Active user by auth0 user id',
+  })
   @Post('/api/v1/user/activate')
   async activateUser(
     @Res() res,

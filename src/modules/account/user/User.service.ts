@@ -17,7 +17,8 @@ import {
 import Auth0Service from './services/auth0.service';
 import { B2C_ENABLED } from 'src/constants';
 import SaleorAuthService from './services/saleorAuth.service';
-import { validateAuth0UserInput } from './User.utils';
+import { getUserByToken, validateAuth0UserInput } from './User.utils';
+import { Auth0UserDetailType } from './User.types';
 import {
   retailerChangePassword,
   updateUserInfo,
@@ -70,29 +71,32 @@ export class UserService {
     }
   }
 
-  public async getUserinfoV2(
-    userAuth0Id: string,
-    token: string,
-  ): Promise<SuccessResponseType> {
+  public async getUserinfoV2(token: string): Promise<SuccessResponseType> {
     try {
-      let checkoutId = null;
+      const userDetail: Auth0UserDetailType = getUserByToken(token);
+      const userAuth0Id = userDetail?.sub;
+      const userEmail = userDetail?.email;
+      let checkoutId: unknown = null;
+      let shopDetails: unknown = null;
+
       const [saleor, auth0] = await Promise.all([
         AccountHandlers.getUserDetailsHandler(token),
         this.auth0Service.getUser(userAuth0Id),
       ]);
-      const shopDetails = await this.shopService.getShopDetailsV2({
-        email: saleor['email'],
-      });
+
       if (B2C_ENABLED == 'false') {
+        shopDetails = await this.shopService.getShopDetailsV2({
+          email: userEmail,
+        });
         checkoutId = await AccountHandlers.getCheckoutIdFromMarketplaceHandler(
-          saleor['email'],
+          userEmail,
         );
       }
       saleor['checkoutId'] = checkoutId;
       return prepareSuccessResponse({
         saleor,
         auth0,
-        shopDetails: shopDetails,
+        ...(shopDetails && { shopDetails }),
       });
     } catch (error) {
       this.logger.error(error);
@@ -115,10 +119,12 @@ export class UserService {
     token: string,
   ): Promise<SuccessResponseType> {
     try {
+      const userDetail: Auth0UserDetailType = getUserByToken(token);
+      const userAuth0Id = userDetail?.sub;
       const [saleor, auth0, orangeshineResponse] = await Promise.all([
         this.saleorAuthService.updateUser(userInput, token),
         this.auth0Service.updateUser(
-          userInput.userAuth0Id,
+          userAuth0Id,
           validateAuth0UserInput(userInput),
         ),
         await updateUserInfo(userInput, token),
@@ -130,13 +136,19 @@ export class UserService {
     }
   }
 
+  /**
+   * @deprecated Need to depracted this API in future
+   */
   public async changeUserPassword(
     userInput: ChangeUserPasswordDTO,
     token: string,
   ): Promise<SuccessResponseType> {
     try {
+      const userDetail = getUserByToken(token);
+      const userAuth0Id = userDetail?.sub;
+
       // validate auth0 user token
-      await this.auth0Service.validateAuth0User(userInput.userAuth0Id, token);
+      await this.auth0Service.validateAuth0User(userAuth0Id, token);
       let osReponse;
       if (B2C_ENABLED == 'false') {
         // change user password in orangeshine
@@ -144,7 +156,7 @@ export class UserService {
       }
       // change user password in auth0
       const auth0 = await this.auth0Service.changeUserPassword(
-        userInput.userAuth0Id,
+        userAuth0Id,
         userInput.newPassword,
       );
       return prepareSuccessResponse({ osReponse: osReponse?.data, auth0 });
@@ -155,12 +167,13 @@ export class UserService {
   }
 
   public async sendVerificationEmail(
-    userInput: UserAuth0IdDTO,
+    token: string,
   ): Promise<SuccessResponseType> {
+    const userDetail = getUserByToken(token);
+    const userAuth0Id = userDetail?.sub;
+
     try {
-      const auth0 = await this.auth0Service.sendVerificationEmail(
-        userInput.userAuth0Id,
-      );
+      const auth0 = await this.auth0Service.sendVerificationEmail(userAuth0Id);
       return prepareSuccessResponse(auth0);
     } catch (error) {
       this.logger.error(error);
