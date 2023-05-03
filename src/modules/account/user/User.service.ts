@@ -121,7 +121,9 @@ export class UserService {
     try {
       const userDetail: Auth0UserDetailType = getUserByToken(token);
       const userAuth0Id = userDetail?.sub;
-      const [saleor, auth0, orangeshineResponse] = await Promise.all([
+      let orangeshineResponse: unknown = null;
+
+      const [saleor, auth0] = await Promise.all([
         this.saleorAuthService.updateUser(userInput, token),
         this.auth0Service.updateUser(
           userAuth0Id,
@@ -129,6 +131,9 @@ export class UserService {
         ),
         await updateUserInfo(userInput, token),
       ]);
+      if (B2C_ENABLED == 'false') {
+        orangeshineResponse = await updateUserInfo(userInput, token);
+      }
       return prepareSuccessResponse({ saleor, auth0, orangeshineResponse });
     } catch (error) {
       this.logger.error(error);

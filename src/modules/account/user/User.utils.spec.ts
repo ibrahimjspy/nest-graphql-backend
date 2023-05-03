@@ -7,7 +7,6 @@ describe('User Handler unit test', () => {
     const auth0UserInput: Auth0UserInputDTO = {
       firstName: 'Ali',
       lastName: 'Zaib',
-      userAuth0Id: 'auth0|644baddbf56d064ae589bd08',
       jobTitleId: '1',
       sellersPermitId: '7490327493240',
       phoneNumber: '+13227972978',
@@ -40,8 +39,6 @@ describe('User Handler unit test', () => {
     const auth0UserInput: Auth0UserInputDTO = {
       firstName: 'Ali',
       lastName: 'Zaib',
-      userAuth0Id: 'auth0|644baddbf56d064ae589bd08',
-      stripeCustomerId: 'pm-743897483',
     };
 
     const auth0UserOutput: Auth0UserDetailType =
@@ -49,6 +46,6 @@ describe('User Handler unit test', () => {
 
     expect(auth0UserOutput).toBeInstanceOf(Object);
     expect(auth0UserOutput).not.toEqual(auth0UserInput);
-    expect(auth0UserOutput.user_metadata.address).toBeUndefined();
+    expect(auth0UserOutput?.user_metadata?.address).toBeUndefined();
   });
 });
