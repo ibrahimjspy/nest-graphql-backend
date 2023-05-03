@@ -167,13 +167,12 @@ export class UserService {
   }
 
   public async sendVerificationEmail(
-    token: string,
+    userInput: UserAuth0IdDTO,
   ): Promise<SuccessResponseType> {
-    const userDetail = getUserByToken(token);
-    const userAuth0Id = userDetail?.sub;
-
     try {
-      const auth0 = await this.auth0Service.sendVerificationEmail(userAuth0Id);
+      const auth0 = await this.auth0Service.sendVerificationEmail(
+        userInput.userAuth0Id,
+      );
       return prepareSuccessResponse(auth0);
     } catch (error) {
       this.logger.error(error);

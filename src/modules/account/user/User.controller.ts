@@ -74,17 +74,16 @@ export class UserController {
   }
 
   @ApiOperation({
-    summary: 'Send verification email for authenticated user',
+    summary: 'Send verification email for user',
   })
   @Post('/api/v1/user/send/verification/email')
-  @ApiBearerAuth('JWT-auth')
   async sendVerificationEmail(
     @Res() res,
-    @IsAuthenticated('authorization') token: string,
+    @Body() userInput: UserAuth0IdDTO,
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.sendVerificationEmail(token),
+      await this.appService.sendVerificationEmail(userInput),
     );
   }
 
