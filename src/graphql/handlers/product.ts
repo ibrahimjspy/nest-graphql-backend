@@ -47,20 +47,6 @@ export const popularItemsHandler = async (): Promise<object> => {
   return response?.reportProductSales;
 };
 
-export const variantsIdsByProductIdsHandler = async (
-  productIds: Array<string>,
-): Promise<object> => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(ProductQueries.variantsIdsByProductIdsQuery(productIds)),
-  );
-
-  if (!response['products']?.['edges']?.['length']) {
-    throw new RecordNotFound('Products');
-  }
-
-  return response['products'];
-};
-
 export const getBundlesHandler = async (
   filter: GetBundlesDto,
 ): Promise<BundleType[]> => {

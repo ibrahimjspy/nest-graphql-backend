@@ -1,10 +1,7 @@
 import {
   orderActivityQuery,
   orderDetailsQuery,
-  orderReturnDetailQuery,
   orderReturnFulfillmentQuery,
-  orderReturnsQuery,
-  shopOrderFulfillmentDetailsQuery,
   shopOrdersQuery,
 } from 'src/graphql/queries/orders';
 import {
@@ -13,9 +10,8 @@ import {
 } from 'src/core/proxies/graphqlHandler';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import { ordersListQuery } from '../queries/orders/list';
-import { DEFAULT_PAGE_SIZE, GQL_EDGES } from 'src/constants';
+import { GQL_EDGES } from 'src/constants';
 import {
-  filterReturnOrder,
   filterReturnedOrderIds,
   hasNextPage,
   orderBundlesTransformer,
@@ -26,7 +22,6 @@ import { addOrderToShopMutation } from '../mutations/order/addOrderToShop';
 import { OrdersListFiltersDTO } from 'src/modules/orders/dto/list';
 import {
   OrderReturnDTO,
-  OrderReturnFilterDTO,
   ReturnOrderListDto,
 } from 'src/modules/orders/dto/order-returns.dto';
 import { getOrderStatus } from '../queries/orders/getOrderStatuses';
@@ -63,18 +58,6 @@ export const orderDetailsHandler = async (
   return response['order'];
 };
 
-export const shopOrderFulfillmentsDetailsHandler = async (
-  id: string,
-  token: string,
-): Promise<object> => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(shopOrderFulfillmentDetailsQuery(id), token),
-  );
-  if (!response['order']) {
-    throw new RecordNotFound('Shop order fulfillment details');
-  }
-  return response['order'];
-};
 export const orderActivityHandler = async (token: string): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(orderActivityQuery(), token),
@@ -117,113 +100,6 @@ export const addOrderToShopHandler = async (
     ),
   );
   return response['addOrderToShop'];
-};
-
-/**
- * It takes a filter, a token, and an orderReturnsList, and returns an orderReturnsList
- * @param {OrderReturnFilterDTO} filters - OrderReturnFilterDTO
- * @param {string} token - The token that you get from the login mutation.
- * @param {any} orderReturnsList - This is the list of order returns that we will be returning.
- * @warn performance implication || this api parses all of the order which is not idea
- * @returns An array of order returns.
- */
-export const orderReturnListHandler = async (
-  filters: OrderReturnFilterDTO,
-  token: string,
-  orderReturnsList: Array<any>,
-) => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(orderReturnsQuery(filters), token),
-  );
-  const filtered_data = filterReturnOrder(response);
-  orderReturnsList = orderReturnsList.concat(filtered_data);
-
-  let pageInfo = {};
-  const paginationCount = filters.first || filters.last || DEFAULT_PAGE_SIZE;
-  const afterOrBefore = filters.first ? 'after' : 'before';
-  const selectedCursor =
-    afterOrBefore == 'after'
-      ? response?.orders?.pageInfo?.endCursor
-      : response?.orders?.pageInfo?.startCursor;
-  const nextOrReverse =
-    afterOrBefore == 'after'
-      ? response?.orders.pageInfo?.hasNextPage
-      : response?.orders.pageInfo?.hasPreviousPage;
-  pageInfo = response?.orders.pageInfo;
-
-  if (
-    orderReturnsList.length < paginationCount &&
-    nextOrReverse &&
-    selectedCursor != ''
-  ) {
-    const updated_value = {};
-    updated_value[afterOrBefore] = JSON.stringify(selectedCursor);
-
-    const resp = await orderReturnListHandler(
-      { ...filters, ...updated_value },
-      token,
-      orderReturnsList,
-    );
-    pageInfo = resp.orders?.pageInfo;
-    orderReturnsList = orderReturnsList.concat(filterReturnOrder(resp));
-  }
-
-  const return_resp = {
-    orders: {
-      pageInfo: pageInfo,
-      edges:
-        orderReturnsList.length < (paginationCount as number)
-          ? orderReturnsList
-          : orderReturnsList.slice(0, paginationCount as number),
-    },
-  };
-  return return_resp;
-};
-/**
- * I have created my own pagination function because.
- * I want to fetch 100 records and filter user specified number from it.
- * So this feature is not being developed in existing utils.
- */
-export const getReturnPaginationFilters = (filters: OrderReturnFilterDTO) => {
-  if (filters.first) {
-    return {
-      countKey: 'first',
-      cursorKey: 'after',
-      first: filters?.first > 100 ? filters?.first : 100,
-      after: filters?.after || JSON.stringify(''),
-    };
-  } else if (filters.last) {
-    return {
-      countKey: 'last',
-      cursorKey: 'before',
-      last: filters?.last > 100 ? filters?.last : 100,
-      before: filters?.before || JSON.stringify(''),
-    };
-  } else {
-    // If no filter is passed return first by default.
-    return {
-      countKey: 'first',
-      cursorKey: 'after',
-      first: 100,
-      after: JSON.stringify(''),
-    };
-  }
-};
-
-/**
- * It takes an order_id and a token, and returns an object
- * @param {string} order_id - The order ID of the order you want to return.
- * @param {string} token - The token that you get from the login mutation.
- * @returns The order return detail
- */
-export const orderReturnDetailHandler = async (
-  order_id: string,
-  token: string,
-): Promise<object> => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(orderReturnDetailQuery(order_id), token),
-  );
-  return response;
 };
 
 /**

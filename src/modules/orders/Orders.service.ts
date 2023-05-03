@@ -17,7 +17,6 @@ import {
   orderFulfillmentCancelHandler,
   orderFulfillmentRefundHandler,
   orderFulfillmentUpdateTrackingHandler,
-  orderReturnListHandler,
   ordersListHandler,
   returnedOrdersListHandler,
   shopOrdersByIdHandler,
@@ -33,7 +32,6 @@ import {
 import { OrdersListDTO } from './dto/list';
 import {
   OrderReturnDTO,
-  OrderReturnFilterDTO,
   ReturnOrderListDto,
   ReturnsStaffDto,
 } from './dto/order-returns.dto';
@@ -167,31 +165,6 @@ export class OrdersService {
     } catch (error) {
       this.logger.error(error);
       return prepareFailedResponse(error);
-    }
-  }
-
-  /**
-   * It fetches the order returns list from the database and returns it to the client
-   * @param {OrderReturnFilterDTO} filters - OrderReturnFilterDTO,
-   * @param {string} token - The token of the user who is making the request.
-   * @returns An array of order returns
-   */
-  public async getOrderReturns(
-    filters: OrderReturnFilterDTO,
-    token: string,
-  ): Promise<object> {
-    try {
-      // eslint-disable-next-line prefer-const
-      let orderReturnsList = [];
-      const response = await orderReturnListHandler(
-        filters,
-        token,
-        orderReturnsList,
-      );
-      return prepareSuccessResponse(response, '', 200);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
     }
   }
 
