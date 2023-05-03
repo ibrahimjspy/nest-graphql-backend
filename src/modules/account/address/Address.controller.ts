@@ -35,7 +35,7 @@ export class AddressController {
     );
   }
 
-  @Post('api/v1/user/address/:addressId')
+  @Post('api/v1/user/address/:userId')
   @ApiOperation({
     summary: 'creates a new address address against a user id in saleor',
   })
@@ -99,7 +99,7 @@ export class AddressController {
     );
   }
 
-  @Put('api/v1/user/address/:userId')
+  @Put('api/v1/user/address/:addressId')
   @ApiOperation({
     summary: 'updates an existing address against address id ',
   })

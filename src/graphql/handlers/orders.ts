@@ -279,8 +279,5 @@ export const shopOrdersByIdHandler = async (
   const response = await graphqlResultErrorHandler(
     await graphqlCall(shopOrdersQuery(id), token, isB2c),
   );
-  if (!response['marketplaceShop']) {
-    throw new RecordNotFound('Shop details');
-  }
   return response['marketplaceShop'];
 };
