@@ -1,4 +1,5 @@
 import { Auth0UserInputDTO } from './dto/user.dto';
+import jwt_decode from "jwt-decode";
 
 /**
  * Get object keys length
@@ -15,7 +16,7 @@ export const validateObjectLength = (obj: object) => {
  * @returns {object} return valid user detail object with exact usermetada key names.
  */
 export const validateAuth0UserInput = (userInput: Auth0UserInputDTO) => {
-  const { firstName, lastName, userAuth0Id, ...userMetadata } = userInput;
+  const { firstName, lastName, ...userMetadata } = userInput;
   const metadataKeyNames = {
     jobTitleId: 'job_title_id',
     phoneNumber: 'phone_number',
@@ -54,4 +55,14 @@ export const getTokenWithoutBearer = (token: string) => {
     return;
   }
   return token.replace('Bearer ', '').replace('bearer ', '');
+};
+
+/**
+ * Decode and get user details by jwt token
+ * @param {string} token - paramter of jwt token
+ * @returns {object} return user information object.
+ */
+export const getUserByToken = (token: string) => {
+  const decodedToken = jwt_decode(token);
+  return decodedToken;
 };

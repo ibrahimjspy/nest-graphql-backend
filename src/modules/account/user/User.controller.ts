@@ -2,8 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  Headers,
-  Param,
   Post,
   Put,
   Query,
@@ -38,53 +36,53 @@ export class UserController {
     );
   }
 
-  @Get('api/v2/user/whoami/:userAuth0Id')
+  @Get('api/v2/user/whoami')
   @ApiBearerAuth('JWT-auth')
   async getUserV2(
     @Res() res,
-    @Param() param: UserAuth0IdDTO,
     @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getUserinfoV2(param.userAuth0Id, token),
+      await this.appService.getUserinfoV2(token),
     );
   }
 
   @Put('/api/v1/user/update')
+  @ApiBearerAuth('JWT-auth')
   async updateUserInfo(
     @Res() res,
     @Body() userInput: Auth0UserInputDTO,
-    @Headers() headers,
+    @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
-    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.updateUserInfo(userInput, Authorization),
+      await this.appService.updateUserInfo(userInput, token),
     );
   }
 
   @Post('/api/v1/user/change/password')
+  @ApiBearerAuth('JWT-auth')
   async changeUserPassword(
     @Res() res,
     @Body() userInput: ChangeUserPasswordDTO,
-    @Headers() headers,
+    @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
-    const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.changeUserPassword(userInput, Authorization),
+      await this.appService.changeUserPassword(userInput, token),
     );
   }
 
   @Post('/api/v1/user/send/verification-email')
+  @ApiBearerAuth('JWT-auth')
   async sendVerificationEmail(
     @Res() res,
-    @Body() userInput: UserAuth0IdDTO,
+    @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.sendVerificationEmail(userInput),
+      await this.appService.sendVerificationEmail(token),
     );
   }
 
