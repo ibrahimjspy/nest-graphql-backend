@@ -68,7 +68,7 @@ export const retailerChangePassword = async (
   );
 };
 
-export const updateUserInfo = async (
+export const updateOSUserInfo = async (
   payload: Auth0UserInputDTO,
   token: string,
 ) => {

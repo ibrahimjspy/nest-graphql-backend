@@ -19,8 +19,7 @@ export const validateObjectLength = (obj: object) => {
  * @returns {object} return valid user detail object with exact usermetada key names.
  */
 export const validateAuth0UserInput = (userInput: Auth0UserInputDTO) => {
-  const { firstName, lastName, address, ...userMetadata } =
-    userInput;
+  const { firstName, lastName, address, ...userMetadata } = userInput;
 
   const metadataKeyNames = {
     jobTitleId: 'job_title_id',
@@ -75,33 +74,33 @@ export const getTokenWithoutBearer = (token: string) => {
 
 export const transformOSUserInput = (userInput: Auth0UserInputDTO) => {
   const userDetail = {
-    first_name: userInput.firstName,
-    last_name: userInput.lastName,
-    job_title_id: parseInt(userInput.jobTitleId),
-    phone_number: userInput.phoneNumber,
-    website: userInput.website,
-    sellers_permit_id: userInput.sellersPermitId,
-    address1: userInput.address.address1,
-    address2: userInput.address.address2,
-    city: userInput.address.city,
-    country: userInput.address.country,
-    state: userInput.address.state,
-    zipcode: userInput.address.zipcode,
-    company_name: userInput.address.companyName,
-    mobile_phone: userInput.address.mobileNumber,
-    fax: userInput.address.faxNumber,
+    first_name: userInput?.firstName,
+    last_name: userInput?.lastName,
+    job_title_id: parseInt(userInput?.jobTitleId),
+    phone_number: userInput?.phoneNumber,
+    website: userInput?.website,
+    sellers_permit_id: userInput?.sellersPermitId,
+    address1: userInput?.address?.address1,
+    address2: userInput?.address?.address2,
+    city: userInput?.address?.city,
+    country: userInput?.address?.country,
+    state: userInput?.address?.state,
+    zipcode: userInput?.address?.zipcode,
+    company_name: userInput?.address?.companyName,
+    mobile_phone: userInput?.address?.mobileNumber,
+    fax: userInput?.address.faxNumber,
     sellers_permit_file: '',
-    seller_permit_image: userInput.sellerPermitImage,
+    seller_permit_image: userInput?.sellerPermitImage,
   };
   return userDetail;
 };
 
 /**
-* Decode and get user details by jwt token
-* @param {string} token - paramter of jwt token
-* @returns {Auth0UserDetailType} return user information object.
-*/
+ * Decode and get user details by jwt token
+ * @param {string} token - paramter of jwt token
+ * @returns {Auth0UserDetailType} return user information object.
+ */
 export const getUserByToken: getUserByTokenType = (token: string) => {
- const decodedToken: Auth0UserDetailType = jwt_decode(token);
- return decodedToken;
-}
+  const decodedToken: Auth0UserDetailType = jwt_decode(token);
+  return decodedToken;
+};
