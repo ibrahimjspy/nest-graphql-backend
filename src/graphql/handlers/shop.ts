@@ -22,6 +22,8 @@ import { shopIdByProductQuery } from '../queries/shop/shopIdByProductId';
 import { getAllShopsQuery } from '../queries/shop/getAllShops';
 import { shopDetailsV2Query } from '../queries/shop/shopDetailsV2';
 import { removeProductsFromShopMutation } from '../mutations/shop/removeProducts';
+import { shopInfoDto } from 'src/modules/orders/dto';
+import { updateStoreInfoMutation } from '../mutations/shop/updateStore';
 
 export const createStoreHandler = async (
   storeInput: createStoreDTO,
@@ -271,4 +273,24 @@ export const removeProductsFromShopHandler = async (
     ),
   );
   return response['deleteProductsFromShop'];
+};
+
+export const updateStoreInfoHandler = async (
+  shopId: string,
+  storeDetails: shopInfoDto,
+  token: string,
+  isB2c = false,
+): Promise<object> => {
+  try {
+    const response = await graphqlResultErrorHandler(
+      await graphqlCall(
+        updateStoreInfoMutation(shopId, storeDetails),
+        token,
+        isB2c,
+      ),
+    );
+    return response['updateMarketplaceShop'];
+  } catch (error) {
+    return graphqlExceptionHandler(error);
+  }
 };

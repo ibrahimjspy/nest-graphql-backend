@@ -13,6 +13,7 @@ import {
   shopDetailsHandler,
   shopIdByOrderIdHandler,
   shopIdByProductIdHandler,
+  updateStoreInfoHandler,
   vendorDetailsHandler,
 } from 'src/graphql/handlers/shop';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
@@ -43,6 +44,7 @@ import { B2C_DEVELOPMENT_TOKEN, B2C_STOREFRONT_TLD } from 'src/constants';
 import { removeB2cProductMapping } from 'src/external/endpoints/b2cMapping';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 import { getShopProductIds, isEmptyArray } from '../product/Product.utils';
+import { shopInfoDto } from '../orders/dto';
 @Injectable()
 export class ShopService {
   private readonly logger = new Logger(ShopService.name);
@@ -321,6 +323,24 @@ export class ShopService {
       return url;
     } catch (error) {
       this.logger.error(error);
+    }
+  }
+
+  /**
+   * updates store details of the retailer store against shopId
+   */
+  public async updateStoreInfo(
+    shopId: string,
+    storeDetails: shopInfoDto,
+    token: string,
+  ): Promise<object> {
+    try {
+      const B2C_ENABLED = true;
+      return prepareSuccessResponse(
+        await updateStoreInfoHandler(shopId, storeDetails, token, B2C_ENABLED),
+      );
+    } catch (error) {
+      return graphqlExceptionHandler(error);
     }
   }
 }
