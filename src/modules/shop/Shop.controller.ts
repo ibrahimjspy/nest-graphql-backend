@@ -29,6 +29,7 @@ import {
   removeMyProductsDto,
   updateMyProductDTO,
 } from './dto/myProducts';
+import { ShopIdDto, shopInfoDto } from '../orders/dto';
 
 @ApiTags('shop')
 @Controller('')
@@ -46,6 +47,21 @@ export class ShopController {
     return makeResponse(
       res,
       await this.appService.getShopDetailsV2(filter, filter.isB2c),
+    );
+  }
+
+  @Put('/api/v2/shop')
+  @ApiOperation({ summary: 'updates retailer store details' })
+  public async updateStoreInfo(
+    @Res() res,
+    @Param() param: ShopIdDto,
+    @Body() body: shopInfoDto,
+    @Headers() headers,
+  ): Promise<object> {
+    const Authorization: string = headers.authorization;
+    return await makeResponse(
+      res,
+      await this.appService.updateStoreInfo(param.shopId, body, Authorization),
     );
   }
 
