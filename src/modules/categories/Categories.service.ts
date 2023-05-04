@@ -22,11 +22,10 @@ export class CategoriesService {
 
   public async getCategories(filter: CategoriesDto): Promise<object> {
     try {
-      return prepareSuccessResponse(
-        validateCategoriesResponse(
-          await categoriesHandler({ ...filter, categoryIds: [] }),
-        ),
+      const categoriesResponse = validateCategoriesResponse(
+        await categoriesHandler({ ...filter, categoryIds: [] }),
       );
+      return prepareSuccessResponse(categoriesResponse);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
