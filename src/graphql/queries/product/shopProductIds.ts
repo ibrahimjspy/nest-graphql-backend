@@ -6,18 +6,13 @@ import { ProductFilterDto } from 'src/modules/product/dto/product.dto';
 const b2cQuery = (filter: ProductFilterDto): string => {
   const { storeId, category } = filter;
   const pagination = validatePageFilter(filter);
+  const shopFilter = category ? `filter: {categoryId: "${category}"}` : '';
   return gql`
   query {
     getProductsByShop(
       ${pagination}
       shopId: "${storeId}",
-      ${
-        category
-          ? `filter: {
-        'categoryId: "${category}"'
-      }`
-          : ''
-      }
+      ${shopFilter}
     ) {
       ... on ProductsShopType {
         pageInfo {
