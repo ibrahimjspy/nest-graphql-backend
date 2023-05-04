@@ -11,8 +11,12 @@ const b2cQuery = (filter: ProductFilterDto): string => {
     getProductsByShop(
       ${pagination}
       shopId: "${storeId}",
-      filter: {
-        ${category ? `categoryId: "${category}"` : ''}
+      ${
+        category
+          ? `filter: {
+        'categoryId: "${category}"'
+      }`
+          : ''
       }
     ) {
       ... on ProductsShopType {

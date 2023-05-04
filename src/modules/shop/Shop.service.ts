@@ -105,16 +105,20 @@ export class ShopService {
 
   public async getMyProducts(retailerId: string, filter: myProductsDTO) {
     try {
-      let productIds: string[];
+      let productIds: string[] = [];
       const retailer = await getStoreFrontIdHandler(retailerId);
       const storefrontIds = getFieldValues(retailer['fields'], 'storefrontids');
+      const B2C_API = true;
       await Promise.all(
         (storefrontIds || []).map(async (storeId) => {
           const pagination = filter as PaginationDto;
-          const shopProducts = await getShopProductsHandler({
-            ...pagination,
-            storeId,
-          });
+          const shopProducts = await getShopProductsHandler(
+            {
+              ...pagination,
+              storeId,
+            },
+            B2C_API,
+          );
           const shopProductIds = getShopProductIds(shopProducts);
           productIds = productIds.concat(shopProductIds);
         }),
