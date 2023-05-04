@@ -48,7 +48,7 @@ export class CategoriesController {
     summary: 'this api will be deprecated',
   })
   async findMenuCategories(): Promise<object> {
-    const categoriesData = await this.appService.getCategories({ first: 30 });
+    const categoriesData = await this.appService.menuCategoriesDeprecated();
     return categoriesData['data'];
   }
 }

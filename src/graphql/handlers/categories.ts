@@ -7,6 +7,7 @@ import { shopCategoryIdsQuery } from '../queries/categories/shopCategoryIds';
 import { syncCategoriesQuery } from '../queries/categories/syncCategories';
 import { SyncCategoriesDto } from 'src/modules/categories/dto/categories';
 import { CategoryListType } from 'src/modules/categories/Categories.types';
+import { menuCategoriesQuery } from '../queries/categories/menu';
 
 export const shopCategoryIdsHandler = async (
   shopId: string,
@@ -40,6 +41,13 @@ export const syncCategoriesHandler = async (
         syncCategoriesFilter,
       ),
     ),
+  );
+  return response['categories'];
+};
+
+export const menuCategoriesHandler = async (): Promise<CategoryListType> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(menuCategoriesQuery()),
   );
   return response['categories'];
 };

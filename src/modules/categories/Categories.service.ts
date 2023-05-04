@@ -6,6 +6,7 @@ import {
 } from 'src/core/utils/response';
 import {
   categoriesHandler,
+  menuCategoriesHandler,
   shopCategoryIdsHandler,
   syncCategoriesHandler,
 } from 'src/graphql/handlers/categories';
@@ -19,6 +20,18 @@ import {
 @Injectable()
 export class CategoriesService {
   private readonly logger = new Logger(CategoriesService.name);
+
+  public async menuCategoriesDeprecated(): Promise<object> {
+    try {
+      const categoriesResponse = validateCategoriesResponse(
+        await menuCategoriesHandler(),
+      );
+      return prepareSuccessResponse(categoriesResponse);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
 
   public async getCategories(filter: CategoriesDto): Promise<object> {
     try {
