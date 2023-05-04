@@ -19,7 +19,7 @@ import {
 import { updateMyProductMutation } from '../mutations/product/updateMyProducts';
 import { deleteBulkMediaMutation } from '../mutations/product/mediaBulkDelete';
 import { getStoredProductsListQuery } from '../queries/product/storedProductsList';
-import { shopProductIdsByCategoryIdQuery } from '../queries/product/shopProductIdsByCategoryId';
+import { shopProductIdsByCategoryIdQuery } from '../queries/product/shopProductIds';
 import {
   GetBundlesDto,
   ProductDetailsDto,
@@ -164,8 +164,8 @@ export const getStoredProductListHandler = async (
   return response['products'];
 };
 
-export const shopProductIdsByCategoryIdHandler = async (
-  filter,
+export const getShopProductsHandler = async (
+  filter: ProductFilterDto,
   isb2c = false,
 ): Promise<MarketplaceProductsResponseType> => {
   const userToken = '';
