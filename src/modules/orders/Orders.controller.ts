@@ -15,11 +15,10 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OrdersService } from './Orders.service';
 import { makeResponse } from '../../core/utils/response';
-import { OrderIdDto, ShopIdDto, UserIdDto } from './dto';
+import { OrderIdDto, ShopIdDto } from './dto';
 import { OrdersListDTO } from './dto/list';
 import {
   OrderReturnDTO,
-  OrderReturnFilterDTO,
   ReturnOrderListDto,
   ReturnsStaffDto,
 } from './dto/order-returns.dto';
@@ -44,75 +43,10 @@ export class OrdersController {
     private readonly appService: OrdersService,
     private readonly upsService: UpsService,
   ) {}
-  // Returns orders dashboard data for landing page
-  @Get('orders/history/:userId')
-  async findDashboard(
-    @Res() res,
-    @Param() userDto: UserIdDto,
-    @Headers() headers,
-  ): Promise<object> {
-    const Authorization: string = headers.authorization;
-    return makeResponse(
-      res,
-      await this.appService.getDashboardDataById(
-        userDto?.userId,
-        Authorization,
-      ),
-    );
-  }
-  // Returns all shop orders for orders page
-  @Get('orders/marketplace/all')
-  async findAllShopOrders(@Res() res, @Headers() headers): Promise<object> {
-    const Authorization: string = headers.authorization;
-    return makeResponse(
-      res,
-      await this.appService.getAllShopOrdersData(Authorization),
-    );
-  }
-  // Returns shop orders for orders page
-  @Get('orders/marketplace/shop/:shopId')
-  async findShopOrders(
-    @Res() res,
-    @Param() shopDto: ShopIdDto,
-    @Headers() headers,
-  ): Promise<object> {
-    const Authorization: string = headers.authorization;
-    return makeResponse(
-      res,
-      await this.appService.getShopOrdersDataById(
-        shopDto.shopId,
-        Authorization,
-      ),
-    );
-  }
-  // Returns shop order fulfillments for order page
-  @Get('orders/marketplace/shop/fulfillment/:orderId')
-  async findShopOrderFulfillments(
-    @Res() res,
-    @Param() orderDto: OrderIdDto,
-    @Headers() headers,
-  ): Promise<object> {
-    const Authorization: string = headers.authorization;
-    return makeResponse(
-      res,
-      await this.appService.getShopOrderFulfillmentsDataById(
-        orderDto.orderId,
-        Authorization,
-      ),
-    );
-  }
-  // Returns shop order activities
-  @Get('orders/activity')
-  async getOrderActivity(@Res() res, @Headers() headers): Promise<object> {
-    const Authorization: string = headers.authorization;
-    return makeResponse(
-      res,
-      await this.appService.getOrderActivity(Authorization),
-    );
-  }
-
-  // Returns shop order details
-  @Get('orders/detail/:orderId')
+  @Get('api/v1/order/:orderId')
+  @ApiOperation({
+    summary: 'returns order details against order id',
+  })
   @ApiBearerAuth('JWT-auth')
   async getOrderDetails(
     @Res() res,
@@ -150,16 +84,6 @@ export class OrdersController {
     );
   }
 
-  // Returns all pending shop orders for orders list page
-  @Get('orders/marketplace/all/pending')
-  async findAllPendingOrders(@Res() res, @Headers() headers): Promise<object> {
-    const Authorization: string = headers.authorization;
-    return makeResponse(
-      res,
-      await this.appService.getAllPendingOrders(Authorization),
-    );
-  }
-
   // Returns orders summary
   @Get('api/v1/orders/summary')
   @ApiOperation({ summary: 'returns orders summary of all time' })
@@ -173,6 +97,9 @@ export class OrdersController {
 
   // Returns all orders list
   @Get('api/v1/orders/list')
+  @ApiOperation({
+    summary: 'returns order list using multiple filters provided by saleor',
+  })
   async findAllOrders(
     @Res() res,
     @Headers() headers,
@@ -185,32 +112,10 @@ export class OrdersController {
     );
   }
 
-  // Return all orders(which are return by end customer)
-  @Get('api/v1/orders/returns')
-  async getOrderReturns(
-    @Res() res,
-    @IsAuthenticated('authorization') token: string,
-    @Query() filters: OrderReturnFilterDTO,
-  ) {
-    return makeResponse(
-      res,
-      await this.appService.getOrderReturns(filters, token),
-    );
-  }
-
-  @Get('api/v1/orders/return/:orderId')
-  async getOrderReturnDetails(
-    @Res() res,
-    @Param() orderDto: OrderIdDto,
-    @IsAuthenticated('authorization') token: string,
-  ) {
-    return makeResponse(
-      res,
-      await this.appService.getOrderReturnById(orderDto.orderId, token),
-    );
-  }
-
   @Post('api/v1/order/return')
+  @ApiOperation({
+    summary: 'creates a return in saleor against order',
+  })
   @ApiBearerAuth('JWT-auth')
   async returnOrder(
     @Res() res,
@@ -225,6 +130,9 @@ export class OrdersController {
   }
 
   @Post('api/v1/order/fulfill')
+  @ApiOperation({
+    summary: 'creates a fulfillment in saleor against order',
+  })
   @ApiBearerAuth('JWT-auth')
   async fulfillOrder(
     @Res() res,
@@ -392,6 +300,9 @@ export class OrdersController {
 
   @Get('api/v1/orders/events')
   @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'returns order events currently only sending create order',
+  })
   async getOrderEvents(
     @Res() res,
     @Query() filter: PaginationDto,
@@ -405,6 +316,9 @@ export class OrdersController {
 
   @Post('api/v1/order/fulfillment/tracking/update')
   @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'updates tracking number against a fulfillment id',
+  })
   async orderFulfillmentUpdateTracking(
     @Res() res,
     @Body() body: FulfillmentUpdateTrackingDto,
@@ -417,6 +331,9 @@ export class OrdersController {
   }
 
   @Post('api/v1/order/returns/image/upload')
+  @ApiOperation({
+    summary: 'uploads image against order return',
+  })
   @UseInterceptors(FileInterceptor('store_img'))
   getUploadRetailerCertificate(
     @UploadedFile(

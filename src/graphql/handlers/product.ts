@@ -23,46 +23,16 @@ import { shopProductIdsByCategoryIdQuery } from '../queries/product/shopProductI
 import {
   GetBundlesDto,
   ProductDetailsDto,
+  ProductFilterDto,
 } from 'src/modules/product/dto/product.dto';
 import { getBundlesQuery } from '../queries/product/getBundles';
 import { getProductSlugQuery } from '../queries/product/productSlug';
 import { getProductDetailsQuery } from '../queries/product/details';
-import { MarketlaceProductsReponseType } from 'src/modules/product/Product.types';
+import { MarketplaceProductsResponseType } from 'src/modules/product/Product.types';
 
-export const productListPageHandler = async (
-  filter,
-  isb2c = false,
+export const productsHandler = async (
+  filter: ProductFilterDto,
 ): Promise<object> => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(ProductQueries.productListPageQuery(filter, isb2c)),
-  );
-  return response['products'];
-};
-
-export const singleProductDetailsHandler = async (
-  slug: string,
-): Promise<object> => {
-  try {
-    return await graphqlCall(ProductQueries.productDetailsQuery(slug));
-  } catch (error) {
-    return graphqlExceptionHandler(error);
-  }
-};
-
-export const productCardsByCategoriesHandler = async (
-  id: string,
-): Promise<object> => {
-  try {
-    const response = await graphqlCall(
-      ProductQueries.productCardsByListIdQuery(id),
-    );
-    return response['products'];
-  } catch (error) {
-    return graphqlExceptionHandler(error);
-  }
-};
-
-export const productsHandler = async (filter): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(ProductQueries.productsQuery(filter)),
   );
@@ -78,34 +48,6 @@ export const popularItemsHandler = async (): Promise<object> => {
   return response?.reportProductSales;
 };
 
-/**
- * DEPRECATED: use `productsHandler` method instead
- */
-export const productCardHandler = async (): Promise<object> => {
-  try {
-    const response = await graphqlCall(
-      ProductQueries.productCardsDefaultQuery(),
-    );
-    return response['products'];
-  } catch (error) {
-    return graphqlExceptionHandler(error);
-  }
-};
-
-export const variantsIdsByProductIdsHandler = async (
-  productIds: Array<string>,
-): Promise<object> => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(ProductQueries.variantsIdsByProductIdsQuery(productIds)),
-  );
-
-  if (!response['products']?.['edges']?.['length']) {
-    throw new RecordNotFound('Products');
-  }
-
-  return response['products'];
-};
-
 export const getBundlesHandler = async (
   filter: GetBundlesDto,
 ): Promise<BundleType[]> => {
@@ -117,13 +59,6 @@ export const getBundlesHandler = async (
   }
 
   return response['bundles'];
-};
-
-export const getLegacyMappingHandler = async (productIds, shop_ids) => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(ProductQueries.productMappingQuery(productIds, shop_ids)),
-  );
-  return response;
 };
 
 /**
@@ -232,7 +167,7 @@ export const getStoredProductListHandler = async (
 export const shopProductIdsByCategoryIdHandler = async (
   filter,
   isb2c = false,
-): Promise<MarketlaceProductsReponseType> => {
+): Promise<MarketplaceProductsResponseType> => {
   const userToken = '';
   const response = await graphqlResultErrorHandler(
     await graphqlCall(

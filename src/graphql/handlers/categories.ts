@@ -1,30 +1,12 @@
 import {
   graphqlCall,
-  graphqlExceptionHandler,
   graphqlResultErrorHandler,
 } from 'src/core/proxies/graphqlHandler';
-import { menuCategoriesQuery } from 'src/graphql/queries/categories/menu';
 import { categoriesQuery } from '../queries/categories/categories';
 import { shopCategoryIdsQuery } from '../queries/categories/shopCategoryIds';
 import { syncCategoriesQuery } from '../queries/categories/syncCategories';
 import { SyncCategoriesDto } from 'src/modules/categories/dto/categories';
-
-export const menuCategoriesHandler = async (): Promise<object> => {
-  try {
-    const response = await graphqlCall(menuCategoriesQuery());
-    return response?.categories?.edges?.slice(1);
-  } catch (error) {
-    return graphqlExceptionHandler(error);
-  }
-};
-
-export const productCardSectionHandler = async (): Promise<object> => {
-  try {
-    return await graphqlCall(menuCategoriesQuery());
-  } catch (error) {
-    return graphqlExceptionHandler(error);
-  }
-};
+import { CategoryListType } from 'src/modules/categories/Categories.types';
 
 export const shopCategoryIdsHandler = async (
   shopId: string,
@@ -40,7 +22,7 @@ export const shopCategoryIdsHandler = async (
 export const categoriesHandler = async (
   filter,
   isb2c = false,
-): Promise<object> => {
+): Promise<CategoryListType> => {
   const userToken = '';
   const response = await graphqlResultErrorHandler(
     await graphqlCall(categoriesQuery(filter, isb2c), userToken, isb2c),

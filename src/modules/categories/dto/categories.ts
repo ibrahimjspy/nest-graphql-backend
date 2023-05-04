@@ -1,6 +1,6 @@
-import { ApiProperty, IntersectionType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsBoolean } from 'class-validator';
+import { IsBoolean, IsOptional } from 'class-validator';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 
 export class shopIdDTO {
@@ -15,11 +15,6 @@ export class b2cDTO {
   public isB2c: boolean;
 }
 
-export class shopCategoriesDTO extends IntersectionType(
-  b2cDTO,
-  PaginationDto,
-) {}
-
 export class SyncCategoriesDto extends PaginationDto {
   @ApiProperty({
     type: String,
@@ -28,4 +23,10 @@ export class SyncCategoriesDto extends PaginationDto {
     description: 'Filter categories by the nesting level in the category tree.',
   })
   categoryLevel: number;
+}
+
+export class CategoriesDto extends PaginationDto {
+  @ApiProperty({ type: String, required: false })
+  @IsOptional()
+  shopId?: string;
 }

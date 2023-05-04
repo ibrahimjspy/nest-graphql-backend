@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import {
   addStoreToShopHandler,
   addVendorsToShopHandler,
-  carouselHandler,
   createStoreHandler,
   getAllShopsHandler,
   getShopBankDetailsHandler,
@@ -15,7 +14,6 @@ import {
   shopDetailsHandler,
   shopIdByOrderIdHandler,
   shopIdByProductIdHandler,
-  shopIdByVariantIdHandler,
   vendorDetailsHandler,
 } from 'src/graphql/handlers/shop';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
@@ -48,13 +46,6 @@ import { removeB2cProductMapping } from 'src/external/endpoints/b2cMapping';
 export class ShopService {
   private readonly logger = new Logger(ShopService.name);
 
-  public getCarouselData(token: string): Promise<object> {
-    // Pre graphQl call actions and validations -->
-    // << -- >>
-    // menuCategories is graphQl promise handler --->
-    return carouselHandler(token);
-  }
-
   public async createStore(
     shopId: string,
     storeInput: createStoreDTO,
@@ -82,16 +73,6 @@ export class ShopService {
     }
   }
 
-  public async getShopDetails(shopId: string, isb2c = false): Promise<object> {
-    try {
-      const response = await shopDetailsHandler(shopId, isb2c);
-      return prepareSuccessResponse(response, '', 201);
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
-  }
-
   public async getShopDetailsV2(
     filter: shopDetailDto,
     isb2c = false,
@@ -102,22 +83,6 @@ export class ShopService {
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
-    }
-  }
-
-  public async getShopIdByVariants(productVariantIds) {
-    try {
-      const ids = validateArray(productVariantIds);
-      let response = [];
-      await Promise.all(
-        ids.map(async (variantId) => {
-          const shopId = await shopIdByVariantIdHandler(variantId);
-          response = [...response, shopId];
-        }),
-      );
-      return prepareSuccessResponse(response, '', 200);
-    } catch (error) {
-      this.logger.error(error);
     }
   }
 
@@ -161,6 +126,7 @@ export class ShopService {
       );
     } catch (error) {
       this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 

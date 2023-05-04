@@ -69,22 +69,6 @@ export const filterReturnedOrderIds = (
 };
 
 /**
- * It filters out the orders that are not returned and returns the filtered orders, a boolean value
- * indicating if there are more orders to be fetched and the last cursor
- * @param ordersData - The data returned from the GraphQL query.
- * @returns An array of orders that have been returned or partially returned.
- */
-export const filterReturnOrder = (ordersData): [any, any] => {
-  const edges = ordersData?.['orders']?.['edges']?.filter((item) => {
-    return (
-      item['node']['status'] == 'RETURNED' ||
-      item['node']['status'] == 'PARTIALLY_RETURNED'
-    );
-  });
-  return edges;
-};
-
-/**
  *   transforms orderLines from array to valid graphql strings
  *   @params order_lines []
  *   @returns graphql order lines in string format

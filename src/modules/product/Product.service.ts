@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import {
-  prepareFailedResponse,
   prepareGQLPaginatedResponse,
   prepareSuccessResponse,
 } from 'src/core/utils/response';
@@ -15,16 +14,10 @@ import {
   getProductIdsByVariants,
   getShopProductIds,
   isEmptyArray,
-  makeProductListResponse,
   storeB2cMapping,
 } from './Product.utils';
-import {
-  GetBundlesDto,
-  ProductDetailsDto,
-  ProductListFilterDto,
-  shopProductsDTO,
-} from './dto/product.dto';
-import { MarketlaceProductsReponseType } from './Product.types';
+import { GetBundlesDto, ProductDetailsDto } from './dto/product.dto';
+import { MarketplaceProductsResponseType } from './Product.types';
 @Injectable()
 export class ProductService {
   private readonly logger = new Logger(ProductService.name);
@@ -63,53 +56,13 @@ export class ProductService {
       return prepareGQLPaginatedResponse(
         await ProductsHandlers.productsHandler({
           ...filter,
-          ids: uniqueProductIds,
+          productIds: uniqueProductIds,
         }),
       );
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
     }
-  }
-
-  /**
-   * default product cards service
-   * DEPRECATED: use `getProducts` method instead
-   * @returns
-   */
-  public async getProductCards(retailerId): Promise<object> {
-    try {
-      const productsData = await ProductsHandlers.productCardHandler();
-      return makeProductListResponse(
-        await this.addProductsMapping(productsData, retailerId),
-      );
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
-  }
-
-  //Product cards by collection ~ category <id>
-  public async getProductsByCategory(
-    id: string,
-    retailerId: string,
-  ): Promise<object> {
-    try {
-      const productsData =
-        await ProductsHandlers.productCardsByCategoriesHandler(id);
-      return makeProductListResponse(
-        await this.addProductsMapping(productsData, retailerId),
-      );
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
-  }
-
-  // Single product details by <slug> {Quick View , SingleProductDetailsPage}
-  // TODO deprecate this api with frontend notice
-  public getProductDetailsBySlug(slug: string): Promise<object> {
-    return ProductsHandlers.singleProductDetailsHandler(slug);
   }
 
   public async getProductDetails(filter: ProductDetailsDto): Promise<object> {
@@ -121,36 +74,6 @@ export class ProductService {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
     }
-  }
-  // Product list page data relating to category <slug>
-  public async getProductListPageById(
-    categoryId: string,
-    filter: ProductListFilterDto,
-  ): Promise<object> {
-    try {
-      const retailerId = filter.retailerId;
-      const productIds = [];
-      const productsData = await ProductsHandlers.productListPageHandler({
-        ...filter,
-        categoryId,
-        productIds,
-      });
-      return prepareSuccessResponse(
-        makeProductListResponse(
-          await this.addProductsMapping(productsData, retailerId),
-        ),
-      );
-    } catch (error) {
-      this.logger.error(error);
-    }
-  }
-
-  // Bundles list relating to variant ids
-  public getBundlesByVariantIds(variantIds: Array<string>): Promise<object> {
-    return ProductsHandlers.getBundlesHandler({
-      productVariants: variantIds,
-      getProductDetails: true,
-    });
   }
 
   // Return product images downloadable URL.
@@ -208,26 +131,22 @@ export class ProductService {
     }
   }
 
-  public async getShopProductsByCategoryId(
+  public async getShopProducts(
     shopId: string,
-    filter: shopProductsDTO,
+    filter: ProductFilterDto,
   ): Promise<object> {
     try {
-      const marketplace: MarketlaceProductsReponseType =
-        await ProductsHandlers.shopProductIdsByCategoryIdHandler(
-          { ...filter, shopId },
-          filter.isB2c,
-        );
+      const marketplace: MarketplaceProductsResponseType =
+        await ProductsHandlers.shopProductIdsByCategoryIdHandler({
+          ...filter,
+          shopId,
+        });
       const productIds = getShopProductIds(marketplace);
       if (isEmptyArray(productIds)) {
-        const saleor = await ProductsHandlers.productListPageHandler(
-          {
-            first: filter.first,
-            categoryId: filter.categoryId,
-            productIds,
-          },
-          filter.isB2c,
-        );
+        const saleor = await ProductsHandlers.productsHandler({
+          ...filter,
+          productIds: productIds,
+        });
         return prepareSuccessResponse({
           marketplace,
           saleor,
@@ -236,20 +155,6 @@ export class ProductService {
       return prepareSuccessResponse(
         { marketplace },
         'No products exists against shop category',
-      );
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
-  }
-
-  public async getProductSlug(
-    productId: string,
-    isB2c = false,
-  ): Promise<object> {
-    try {
-      return prepareSuccessResponse(
-        await ProductsHandlers.getProductSlugHandler(productId, isB2c),
       );
     } catch (error) {
       this.logger.error(error);

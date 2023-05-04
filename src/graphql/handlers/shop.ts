@@ -3,9 +3,7 @@ import {
   graphqlExceptionHandler,
   graphqlResultErrorHandler,
 } from 'src/core/proxies/graphqlHandler';
-import { carouselQuery } from 'src/graphql/queries/shop/carousel';
 import { shopDetailsQuery } from 'src/graphql/queries/shop/shopDetails';
-import { shopIdByVariantIdQuery } from '../queries/shop/shopIdByVariants';
 import { shopIdByOrderIdQuery } from '../queries/shop/shopIdByOrderId';
 import { shopBankDetailsQuery } from '../queries/shop/shopBankDetailsQuery';
 import { shopBankDetailsMutation } from '../mutations/shop/shopBankDetails';
@@ -24,14 +22,6 @@ import { shopIdByProductQuery } from '../queries/shop/shopIdByProductId';
 import { getAllShopsQuery } from '../queries/shop/getAllShops';
 import { shopDetailsV2Query } from '../queries/shop/shopDetailsV2';
 import { removeProductsFromShopMutation } from '../mutations/shop/removeProducts';
-
-export const carouselHandler = async (token: string): Promise<object> => {
-  try {
-    return await graphqlCall(carouselQuery(), token);
-  } catch (error) {
-    return graphqlExceptionHandler(error);
-  }
-};
 
 export const createStoreHandler = async (
   storeInput: createStoreDTO,
@@ -104,23 +94,6 @@ export const getShopDetailsV2Handler = async (
     await graphqlCall(shopDetailsV2Query(filter, isb2c), '', isb2c),
   );
   return response['marketplaceShop'];
-};
-
-export const shopIdByVariantIdHandler = async (
-  variantId: string,
-): Promise<object> => {
-  try {
-    const response = await graphqlResultErrorHandler(
-      await graphqlCall(shopIdByVariantIdQuery(variantId)),
-    );
-    return response['marketplaceShop'];
-  } catch (error) {
-    const errorMessage = await graphqlExceptionHandler(error);
-    return {
-      message: errorMessage.message,
-      variantId: variantId,
-    };
-  }
 };
 
 export const shopIdByOrderIdHandler = async (

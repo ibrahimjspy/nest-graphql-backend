@@ -1,4 +1,4 @@
-export interface MarketlaceProductsReponseType {
+export interface MarketplaceProductsResponseType {
   edges: Array<{
     node: {
       productId: string;

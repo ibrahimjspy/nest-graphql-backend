@@ -6,11 +6,8 @@ import {
 } from 'src/core/utils/response';
 import {
   addOrderToShopHandler,
-  allShopOrdersHandler,
   createReturnFulfillmentHandler,
-  dashboardByIdHandler,
   getReturnOrderIdsHandler,
-  orderActivityHandler,
   orderAmountRefundHandler,
   orderCancelHandler,
   orderDetailsHandler,
@@ -19,27 +16,13 @@ import {
   orderFulfillmentCancelHandler,
   orderFulfillmentRefundHandler,
   orderFulfillmentUpdateTrackingHandler,
-  orderReturnDetailHandler,
-  orderReturnListHandler,
   ordersListHandler,
   returnedOrdersListHandler,
-  shopOrderFulfillmentsByIdHandler,
-  shopOrderFulfillmentsDetailsHandler,
   shopOrdersByIdHandler,
   updateOrderMetadataHandler,
 } from 'src/graphql/handlers/orders';
-import {
-  addStatusAndTotalToBundles,
-  getCurrency,
-  getFulFillmentsWithStatusAndBundlesTotal,
-  getFulfillmentTotal,
-  getOrderIdsFromShopData,
-  getPendingOrders,
-  getTotalFromBundles,
-} from './Orders.utils';
-import { FulfillmentStatusEnum } from 'src/graphql/enums/orders';
-import { GQL_EDGES } from 'src/constants';
-import { ShopOrdersFulfillmentsDto, ShopOrdersListDto } from './dto';
+import { getOrderIdsFromShopData } from './Orders.utils';
+
 import { mockOrderReporting } from 'src/graphql/mocks/orderSummary.mock';
 import {
   OrderSummaryResponseDto,
@@ -48,7 +31,6 @@ import {
 import { OrdersListDTO } from './dto/list';
 import {
   OrderReturnDTO,
-  OrderReturnFilterDTO,
   ReturnOrderListDto,
   ReturnsStaffDto,
 } from './dto/order-returns.dto';
@@ -72,60 +54,6 @@ import { uploadImagesHandler } from 'src/external/services/uploadImages';
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
 
-  public async getDashboardDataById(id, token: string): Promise<object> {
-    try {
-      const response = await dashboardByIdHandler(id, token);
-      return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
-    }
-  }
-
-  public async getAllShopOrdersData(token: string): Promise<object> {
-    try {
-      const response = await allShopOrdersHandler(token);
-      const shops = (response[GQL_EDGES] || []).map((shop) => shop['node']);
-      const shopOrders: ShopOrdersListDto = { orders: [] };
-
-      await Promise.all(
-        (shops || []).map(async (shop) => {
-          const orders = shop['orders'];
-
-          await Promise.all(
-            orders.map(async (order) => {
-              const orderDetails = await orderDetailsHandler(
-                order['orderId'],
-                token,
-              );
-              const orderBundlesTotal = getTotalFromBundles(
-                order['orderBundles'],
-              );
-              const fulfillmentsTotal = getFulfillmentTotal(
-                order['fulfillments'],
-              );
-              const currency = getCurrency(order['orderBundles']);
-              const { fulfillments, orderBundles, ...otherOrderAttributes } =
-                order;
-              shopOrders.orders.push({
-                ...otherOrderAttributes,
-                ...orderDetails,
-                shopName: shop['name'],
-                shopId: shop['id'],
-                currency: currency,
-                totalAmount: orderBundlesTotal + fulfillmentsTotal,
-              });
-            }),
-          );
-        }),
-      );
-      return prepareSuccessResponse(shopOrders, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
-    }
-  }
-
   public async getShopOrdersDataById(id, token: string): Promise<object> {
     try {
       const response = await shopOrdersByIdHandler(id, token);
@@ -133,48 +61,6 @@ export class OrdersService {
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
-    }
-  }
-
-  public async getShopOrderFulfillmentsDataById(
-    id,
-    token: string,
-  ): Promise<object> {
-    const orderFulfillments = await shopOrderFulfillmentsByIdHandler(id, token);
-
-    const fulfillmentDetails = await shopOrderFulfillmentsDetailsHandler(
-      orderFulfillments['orderId'],
-      token,
-    );
-
-    const orderFulfillmentBundles = addStatusAndTotalToBundles(
-      orderFulfillments['orderBundles'],
-      FulfillmentStatusEnum.UNFULFILLED,
-    );
-    const fulfillments = getFulFillmentsWithStatusAndBundlesTotal(
-      orderFulfillments['fulfillments'],
-      FulfillmentStatusEnum.FULFILLED,
-    );
-    const fulfillmentTotalAmount = getTotalFromBundles(
-      orderFulfillments['orderBundles'],
-    );
-
-    const response: ShopOrdersFulfillmentsDto = {
-      ...fulfillmentDetails,
-      totalAmount: fulfillmentTotalAmount,
-      orderBundles: orderFulfillmentBundles,
-      fulfillments,
-    };
-
-    return response;
-  }
-  public async getOrderActivity(token: string): Promise<object> {
-    try {
-      const response = await orderActivityHandler(token);
-      return prepareSuccessResponse(response, '', 201);
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
     }
   }
 
@@ -201,18 +87,6 @@ export class OrdersService {
       return graphqlExceptionHandler(err);
     }
   }
-  public async getAllPendingOrders(token: string): Promise<object> {
-    try {
-      const allOrders = await this.getAllShopOrdersData(token);
-      const pendingOrders = getPendingOrders(allOrders['data'].orders);
-
-      return prepareSuccessResponse(pendingOrders, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
-    }
-  }
-
   public async getOrdersSummary(token: string): Promise<object> {
     try {
       const [totalOrders, totalReadyToFulfill, ordersReturns] =
@@ -280,50 +154,6 @@ export class OrdersService {
     } catch (error) {
       this.logger.error(error);
       return prepareFailedResponse(error);
-    }
-  }
-
-  /**
-   * It fetches the order returns list from the database and returns it to the client
-   * @param {OrderReturnFilterDTO} filters - OrderReturnFilterDTO,
-   * @param {string} token - The token of the user who is making the request.
-   * @returns An array of order returns
-   */
-  public async getOrderReturns(
-    filters: OrderReturnFilterDTO,
-    token: string,
-  ): Promise<object> {
-    try {
-      // eslint-disable-next-line prefer-const
-      let orderReturnsList = [];
-      const response = await orderReturnListHandler(
-        filters,
-        token,
-        orderReturnsList,
-      );
-      return prepareSuccessResponse(response, '', 200);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
-    }
-  }
-
-  /**
-   * It fetches the order return details by order id
-   * @param {string} order_id - The order id of the order for which the return is being requested.
-   * @param {string} token - The token of the user who is making the request.
-   * @returns An object with the response and the status code.
-   */
-  public async getOrderReturnById(
-    order_id: string,
-    token: string,
-  ): Promise<object> {
-    try {
-      const response = await orderReturnDetailHandler(order_id, token);
-      return prepareSuccessResponse(response, '', 200);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
     }
   }
 
@@ -447,7 +277,6 @@ export class OrdersService {
             storeOrderIds: orderIds,
             isb2c: true,
           }),
-          // TODO replace development token with AUTHO token
           getTotalEarningsHandler(shopId, token, true),
         ]);
       const response: ShopOrderReportResponseDto = {
@@ -476,7 +305,7 @@ export class OrdersService {
       });
       filter.orderIds = returnedOrderIds;
       const response = await returnedOrdersListHandler(filter, token);
-      return prepareSuccessResponse(response, '', 201);
+      return prepareSuccessResponse(response);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
