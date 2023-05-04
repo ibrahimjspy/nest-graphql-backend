@@ -51,17 +51,18 @@ export class ShopController {
   }
 
   @Put('/api/v2/shop')
+  @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'updates retailer store details' })
   public async updateStoreInfo(
     @Res() res,
-    @Param() param: ShopIdDto,
+    @Query() filter: ShopIdDto,
     @Body() body: shopInfoDto,
     @Headers() headers,
   ): Promise<object> {
     const Authorization: string = headers.authorization;
     return await makeResponse(
       res,
-      await this.appService.updateStoreInfo(param.shopId, body, Authorization),
+      await this.appService.updateStoreInfo(filter.shopId, body, Authorization),
     );
   }
 
