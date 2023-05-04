@@ -1,15 +1,18 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
+import { ProductFilterDto } from 'src/modules/product/dto/product.dto';
 
-const b2cQuery = ({ shopId, category, ...pagination }): string => {
+const b2cQuery = (filter: ProductFilterDto): string => {
+  const { storeId, category } = filter;
+  const pagination = validatePageFilter(filter);
   return gql`
   query {
     getProductsByShop(
-      ${validatePageFilter(pagination)}
-      shopId: "${shopId}",
+      ${pagination}
+      shopId: "${storeId}",
       filter: {
-        categoryId: "${category}"
+        ${category ? `categoryId: "${category}"` : ''}
       }
     ) {
       ... on ProductsShopType {

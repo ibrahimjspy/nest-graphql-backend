@@ -7,7 +7,6 @@ import {
   getShopBankDetailsHandler,
   getShopDetailsV2Handler,
   getStoreFrontIdHandler,
-  getStoreProductVariantsHandler,
   removeMyVendorsHandler,
   removeProductsFromShopHandler,
   saveShopBankDetailsHandler,
@@ -24,7 +23,6 @@ import { createStoreDTO, shopDetailDto } from './dto/shop';
 import {
   getFieldValues,
   getMyVendorsFieldValues,
-  getProductIdsFromShop,
   validateArray,
   validateStoreInput,
 } from './Shop.utils';
@@ -32,6 +30,7 @@ import {
   deleteBulkMediaHandler,
   deleteBulkProductHandler,
   getMyProductsHandler,
+  getShopProductsHandler,
   updateMyProductHandler,
 } from 'src/graphql/handlers/product';
 import {
@@ -42,6 +41,8 @@ import {
 import { provisionStoreFront } from 'src/external/endpoints/provisionStorefront';
 import { B2C_DEVELOPMENT_TOKEN, B2C_STOREFRONT_TLD } from 'src/constants';
 import { removeB2cProductMapping } from 'src/external/endpoints/b2cMapping';
+import { PaginationDto } from 'src/graphql/dto/pagination.dto';
+import { getShopProductIds, isEmptyArray } from '../product/Product.utils';
 @Injectable()
 export class ShopService {
   private readonly logger = new Logger(ShopService.name);
@@ -104,17 +105,21 @@ export class ShopService {
 
   public async getMyProducts(retailerId: string, filter: myProductsDTO) {
     try {
-      let productIds = [];
+      let productIds: string[];
       const retailer = await getStoreFrontIdHandler(retailerId);
       const storefrontIds = getFieldValues(retailer['fields'], 'storefrontids');
       await Promise.all(
-        (storefrontIds || []).map(async (id) => {
-          const shopDetails = await getStoreProductVariantsHandler(id);
-          const ids = getProductIdsFromShop(shopDetails['products']);
-          productIds = productIds.concat(ids);
+        (storefrontIds || []).map(async (storeId) => {
+          const pagination = filter as PaginationDto;
+          const shopProducts = await getShopProductsHandler({
+            ...pagination,
+            storeId,
+          });
+          const shopProductIds = getShopProductIds(shopProducts);
+          productIds = productIds.concat(shopProductIds);
         }),
       );
-      if (productIds.length > 0) {
+      if (isEmptyArray(productIds)) {
         return prepareSuccessResponse([
           retailer,
           await getMyProductsHandler(productIds, filter),

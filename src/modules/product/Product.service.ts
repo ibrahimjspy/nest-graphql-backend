@@ -131,15 +131,11 @@ export class ProductService {
     }
   }
 
-  public async getShopProducts(
-    shopId: string,
-    filter: ProductFilterDto,
-  ): Promise<object> {
+  public async getShopProducts(filter: ProductFilterDto): Promise<object> {
     try {
       const marketplace: MarketplaceProductsResponseType =
-        await ProductsHandlers.shopProductIdsByCategoryIdHandler({
+        await ProductsHandlers.getShopProductsHandler({
           ...filter,
-          shopId,
         });
       const productIds = getShopProductIds(marketplace);
       if (isEmptyArray(productIds)) {

@@ -31,10 +31,7 @@ export class ProductController {
   ): Promise<object> {
     const { storeId } = filter;
     if (storeId) {
-      return makeResponse(
-        res,
-        await this.appService.getShopProducts(storeId, filter),
-      );
+      return makeResponse(res, await this.appService.getShopProducts(filter));
     }
     const typeMethod =
       {

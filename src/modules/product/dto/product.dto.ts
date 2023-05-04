@@ -28,23 +28,23 @@ export class ProductFilterDto extends PaginationDto {
   })
   @IsEnum(ProductFilterTypeEnum)
   @IsOptional()
-  type: ProductFilterTypeEnum;
+  type?: ProductFilterTypeEnum;
 
   @ApiProperty({ required: false })
   @IsOptional()
-  retailerId: string;
+  retailerId?: string;
 
   @ApiProperty({ required: false, type: Array })
   @IsOptional()
-  productIds: string[];
+  productIds?: string[];
 
   @ApiProperty({ required: false })
   @IsOptional()
-  storeId: string;
+  storeId?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
-  category: string;
+  category?: string;
 }
 
 export class ProductListDto {
