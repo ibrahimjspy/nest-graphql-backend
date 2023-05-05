@@ -1,6 +1,12 @@
 import { gql } from 'graphql-request';
 import { DEFAULT_CHANNEL } from 'src/constants';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
+import { attributeFragment } from 'src/graphql/fragments/attributes';
+import { categoryFragment } from 'src/graphql/fragments/categories/category';
+import { mediaFragment } from 'src/graphql/fragments/media';
+import { pricingFragment } from 'src/graphql/fragments/pricing';
+import { productDetailsFragment } from 'src/graphql/fragments/product/product';
+import { productVariantDetailsFragment } from 'src/graphql/fragments/product/productVariant';
 import { ProductDetailsDto } from 'src/modules/product/dto/product.dto';
 
 const b2bQuery = (filter: ProductDetailsDto): string => {
@@ -10,76 +16,45 @@ const b2bQuery = (filter: ProductDetailsDto): string => {
   return gql`
     query {
       product(${productIdentifier}, channel: "${DEFAULT_CHANNEL}") {
-        name
-        id
+        ... Product
         category {
-          id
-          name
+          ... Category
         }
         attributes{
-          attribute{
-            name
-          }
-          values{
-            name
-          }
+          ... Attribute
         }
-        slug
         media {
-          url
+          ... Media
         }
-        description
         defaultVariant {
-          sku
-          id
+          ... Variant
           attributes {
-            attribute {
-              name
-            }
-            values {
-              name
-            }
+            ... Attribute
           }
           pricing {
-            price {
-              gross {
-                currency
-                amount
-              }
-            }
+            ... Price
           }
         }
         variants {
+          ... Variant
           media{
-            url
+            ... Media
           }
-          id
           attributes {
-            attribute {
-              name
-            }
-            values {
-              name
-            }
+            ... Attribute
           }
           pricing{
-            price {
-              net {
-                amount
-                currency
-              }
-            }
-            onSale
-            discount{
-              gross{
-                amount
-                currency
-              }
-            }
+            ... Price
           }
         }
       }
     }
+    ${categoryFragment}
+    ${attributeFragment}
+    ${mediaFragment}
+    ${pricingFragment}
+    ${productVariantDetailsFragment}
+    ${productDetailsFragment}
   `;
 };
 

@@ -8,9 +8,7 @@ import {
   CheckoutBundleInputType,
   LineType,
 } from 'src/graphql/handlers/checkout.type';
-import { GQL_EDGES } from 'src/constants';
 import { UpdateBundleStateDto } from 'src/modules/checkout/dto/add-bundle.dto';
-import { getPaymentIntentQuery } from '../../queries/checkout/paymentIntent';
 import { updateCheckoutBundleStateMutation } from '../../mutations/checkout/updateCheckoutBundleState';
 import { createCheckoutMutation } from '../../mutations/checkout/createCheckout';
 import { checkoutBillingAddressUpdateMutation } from '../../mutations/checkout/checkoutBillingAddressUpdate';
@@ -19,16 +17,8 @@ import { checkoutDeliveryMethodUpdateMutation } from '../../mutations/checkout/c
 import { checkoutShippingAddressUpdateMutation } from '../../mutations/checkout/checkoutShippingAddressUpdate';
 import { disableUserCartSessionMutation } from '../../mutations/checkout/disableCheckoutSession';
 import { updateCartBundlesCheckoutIdMutation } from '../../mutations/checkout/updateCartBundlesCheckoutId';
-import { availablePaymentGatewaysQuery } from '../../queries/checkout/availablePaymentGateways';
-import { bundleStatusQuery } from '../../queries/checkout/bundleStatus';
-import { cartAmountQuery } from '../../queries/checkout/cartAmount';
-import { checkoutWithShippingInfoQuery } from '../../queries/checkout/checkoutWithShippingInfo';
 import { checkoutBundlesByIdQuery } from '../../queries/checkout/checkoutBundlesById';
 import { getCheckoutBundleQuery } from '../../queries/checkout/getCheckoutBundle';
-import { getMarketplaceCheckoutQuery } from '../../queries/checkout/marketplaceCheckout';
-import { getMarketplaceCheckoutWithCategoriesQuery } from '../../queries/checkout/marketplaceCheckoutWithCategories';
-import { shippingAndBillingAddressQuery } from '../../queries/checkout/shippingAndBillingAddress';
-import { shippingZonesQuery } from '../../queries/checkout/shippingZones';
 import { updateCheckoutBundleQuery } from '../../queries/checkout/updateCheckoutBundle';
 import { addCheckoutBundleQuery } from '../../queries/checkout/addCheckoutBundles';
 import { checkoutQuery } from 'src/graphql/queries/checkout/checkout';
@@ -43,18 +33,6 @@ import { marketplaceCheckoutSummaryQuery } from 'src/graphql/queries/checkout/ma
 import { saleorCheckoutSummaryQuery } from 'src/graphql/queries/checkout/saleorCheckoutSummary';
 import { saveFailedOrderMutation } from 'src/graphql/mutations/checkout/placeOrder/failedOrder';
 import { SaleorCheckoutInterface } from 'src/modules/checkout/Checkout.utils.type';
-
-export const marketplaceCheckoutHandler = async (
-  id: string,
-  throwException = false,
-  token: string,
-): Promise<object> => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(getMarketplaceCheckoutQuery(id), token),
-    throwException,
-  );
-  return response['marketplaceCheckout'];
-};
 
 export const getCheckoutBundlesHandler = async ({
   userEmail,
@@ -86,19 +64,6 @@ export const getCheckoutBundlesHandler = async ({
   return response['checkoutBundles'];
 };
 
-export const bundleStatusHandler = async (
-  userEmail: string,
-  bundlesIds,
-  token: string,
-) => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(bundleStatusQuery(userEmail, bundlesIds), token),
-    false,
-  );
-
-  return response['bundleStatus'];
-};
-
 export const updateCheckoutBundlesHandler = async (
   userEmail: string,
   checkoutBundles: any[],
@@ -127,17 +92,6 @@ export const addCheckoutBundlesHandler = async (
   return response['addCheckoutBundles'];
 };
 
-export const marketplaceWithCategoriesCheckoutHandler = async (
-  id: string,
-  throwException = false,
-): Promise<object> => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(getMarketplaceCheckoutWithCategoriesQuery(id)),
-    throwException,
-  );
-  return response['marketplaceCheckout'];
-};
-
 export const createCheckoutHandler = async (
   email: string,
   checkoutLines: LineType[],
@@ -148,13 +102,6 @@ export const createCheckoutHandler = async (
   );
 
   return response['checkoutCreate'];
-};
-
-export const checkoutWithShippingInfoHandler = async (
-  checkoutId: string,
-): Promise<object> => {
-  const response = await graphqlCall(checkoutWithShippingInfoQuery(checkoutId));
-  return response['checkout'];
 };
 
 export const shippingAddressUpdateHandler = async (
@@ -195,15 +142,6 @@ export const billingAddressUpdateHandler = async (
   return response['checkoutBillingAddressUpdate']['checkout'];
 };
 
-export const shippingAndBillingAddressHandler = async (
-  checkoutId: string,
-): Promise<object> => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(shippingAndBillingAddressQuery(checkoutId)),
-  );
-  return response['checkout'];
-};
-
 export const updateDeliveryMethodHandler = async (
   checkoutId: string,
   selectedMethodId: string,
@@ -216,26 +154,6 @@ export const updateDeliveryMethodHandler = async (
     ),
   );
   return response['checkoutDeliveryMethodUpdate'];
-};
-
-export const paymentGatewayHandler = async (
-  checkoutId: string,
-  token: string,
-) => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(availablePaymentGatewaysQuery(checkoutId), token),
-  );
-  return response['checkout']['availablePaymentGateways'];
-};
-
-export const getPaymentIntentHandler = async (
-  checkoutId: string,
-  token: string,
-) => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(getPaymentIntentQuery(checkoutId), token),
-  );
-  return response['getPaymentIntentAgainstUserCheckout'];
 };
 
 export const orderCreateFromCheckoutHandler = async (
@@ -262,13 +180,6 @@ export const disableCheckoutSession = async (
   );
 
   return response['disableUserCartSession'];
-};
-
-export const getShippingZonesHandler = async (token: string) => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(shippingZonesQuery(), token),
-  );
-  return response['shippingZones'][GQL_EDGES];
 };
 
 export const updateCheckoutBundleState = async (
@@ -301,17 +212,6 @@ export const updateCartBundlesCheckoutIdHandler = async (
   );
 
   return response;
-};
-
-export const getTotalAmountByCheckoutIdHandler = async (
-  token: string,
-  checkoutId: string,
-) => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(cartAmountQuery(checkoutId), token),
-  );
-
-  return response['getUserCartAmount'];
 };
 
 export const getCheckoutHandler = async (
