@@ -6,15 +6,12 @@ import {
   getAllShopsHandler,
   getShopBankDetailsHandler,
   getShopDetailsV2Handler,
-  getStoreFrontIdHandler,
   removeMyVendorsHandler,
   removeProductsFromShopHandler,
   saveShopBankDetailsHandler,
-  shopDetailsHandler,
   shopIdByOrderIdHandler,
   shopIdByProductIdHandler,
   updateStoreInfoHandler,
-  vendorDetailsHandler,
 } from 'src/graphql/handlers/shop';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
@@ -64,7 +61,7 @@ export class ShopService {
         true,
       );
       // getting shop details by given shop id
-      const shopDetail = await shopDetailsHandler(shopId);
+      const shopDetail = await getShopDetailsV2Handler({ id: shopId });
       // Adding created store in user shop
       await addStoreToShopHandler(response, shopDetail, token);
       // provision storefront against given unique domain
@@ -108,7 +105,7 @@ export class ShopService {
   public async getMyProducts(retailerId: string, filter: myProductsDTO) {
     try {
       let productIds: string[] = [];
-      const retailer = await getStoreFrontIdHandler(retailerId);
+      const retailer = await getShopDetailsV2Handler({ id: retailerId });
       const storefrontIds = getFieldValues(retailer['fields'], 'storefrontids');
       const B2C_API = true;
       await Promise.all(
@@ -213,7 +210,7 @@ export class ShopService {
   ): Promise<SuccessResponseType> {
     try {
       // getting shop details by given shop id
-      const shopDetail = await shopDetailsHandler(shopId);
+      const shopDetail = await getShopDetailsV2Handler({ id: shopId });
       // Adding vendorIds against given shop
       const response = await addVendorsToShopHandler(
         shopId,
@@ -235,7 +232,7 @@ export class ShopService {
   ): Promise<SuccessResponseType> {
     try {
       // getting shop details by given shop id
-      const shopDetail = await shopDetailsHandler(shopId);
+      const shopDetail = await getShopDetailsV2Handler({ id: shopId });
       // Adding vendorIds against given shop
       const response = await removeMyVendorsHandler(
         shopId,
@@ -254,11 +251,11 @@ export class ShopService {
     try {
       const response = [];
       // getting shop details by given shop id
-      const shopDetail = await shopDetailsHandler(shopId);
+      const shopDetail = await getShopDetailsV2Handler({ id: shopId });
       const vendorIds = getMyVendorsFieldValues(shopDetail['fields']);
       await Promise.all(
         (vendorIds || []).map(async (vendorId) => {
-          const vendorDetail = await vendorDetailsHandler(vendorId);
+          const vendorDetail = await getShopDetailsV2Handler({ id: vendorId });
           response.push({ vendorDetail });
         }),
       );

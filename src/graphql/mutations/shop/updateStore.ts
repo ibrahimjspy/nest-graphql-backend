@@ -1,4 +1,5 @@
 import { gql } from 'graphql-request';
+import { shopDetailsFragment } from 'src/graphql/fragments/shop';
 import { shopInfoDto } from 'src/modules/orders/dto';
 
 export const updateStoreInfoMutation = (
@@ -20,17 +21,9 @@ export const updateStoreInfoMutation = (
             .replace(/"newValues"/g, 'newValues')}
         }
       ) {
-        name
-        about
-        description
-        url
-        id
-        fields {
-          id
-          name
-          values
-        }
+        ...Shop
       }
     }
+    ${shopDetailsFragment}
   `;
 };

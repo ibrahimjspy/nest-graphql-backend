@@ -2,11 +2,11 @@ import { gql } from 'graphql-request';
 import { DEFAULT_CHANNEL } from 'src/constants';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 import { attributeFragment } from 'src/graphql/fragments/attributes';
-import { categoryFragment } from 'src/graphql/fragments/categories/category';
+import { categoryFragment } from 'src/graphql/fragments/category';
 import { mediaFragment } from 'src/graphql/fragments/media';
 import { pricingFragment } from 'src/graphql/fragments/pricing';
-import { productDetailsFragment } from 'src/graphql/fragments/product/product';
-import { productVariantDetailsFragment } from 'src/graphql/fragments/product/productVariant';
+import { productDetailsFragment } from 'src/graphql/fragments/product';
+import { productVariantDetailsFragment } from 'src/graphql/fragments/productVariant';
 import { ProductDetailsDto } from 'src/modules/product/dto/product.dto';
 
 const b2bQuery = (filter: ProductDetailsDto): string => {
@@ -27,7 +27,7 @@ const b2bQuery = (filter: ProductDetailsDto): string => {
           ... Media
         }
         defaultVariant {
-          ... Variant
+          ... ProductVariant
           attributes {
             ... Attribute
           }
@@ -36,7 +36,7 @@ const b2bQuery = (filter: ProductDetailsDto): string => {
           }
         }
         variants {
-          ... Variant
+          ... ProductVariant
           media{
             ... Media
           }

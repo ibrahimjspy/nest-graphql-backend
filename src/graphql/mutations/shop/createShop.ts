@@ -1,5 +1,6 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
+import { shopDetailsFragment } from 'src/graphql/fragments/shop';
 import { createStoreDTO } from 'src/modules/shop/dto/shop';
 
 const federationMutation = (storeInput: createStoreDTO) => {
@@ -28,18 +29,10 @@ const federationMutation = (storeInput: createStoreDTO) => {
         }
       )
       {
-        id
-        name
-        url
-        description
-        about
-        fields{
-          id
-          name
-          values
-        }
+        ...Shop
       }
     }
+    ${shopDetailsFragment}
   `;
 };
 

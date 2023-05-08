@@ -1,6 +1,11 @@
 import { gql } from 'graphql-request';
 import { DEFAULT_THUMBNAIL_SIZE } from 'src/constants';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
+import { attributeFragment } from 'src/graphql/fragments/attributes';
+import { categoryFragment } from 'src/graphql/fragments/category';
+import { pageInfoFragment } from 'src/graphql/fragments/pageInfo';
+import { pricingFragment } from 'src/graphql/fragments/pricing';
+import { productDetailsFragment } from 'src/graphql/fragments/product';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
 import { myProductsDTO } from 'src/modules/shop/dto/myProducts';
 
@@ -14,25 +19,19 @@ const b2cQuery = (productIds, filter: myProductsDTO): string => {
   )} search:"${filter.search || ''}" }) {
         totalCount
         pageInfo {
-          hasNextPage
-          endCursor
-          startCursor
-          hasPreviousPage
+          ... PageInfo
         }
         edges {
           node {
-            name
-            id
+            ... Product
             thumbnail(size: ${DEFAULT_THUMBNAIL_SIZE}) {
               url
             }
             metadata {
-              key
-              value
+              ... Metadata
             }
             category {
-              id
-              name
+              ... Category
               ancestors(first: 5) {
                 edges {
                   node {
@@ -42,35 +41,27 @@ const b2cQuery = (productIds, filter: myProductsDTO): string => {
                 }
               }
             }
-            description
-            slug
-            id
             media {
-              id
-              url
+              ... Media
             }
             variants {
               id
               attributes {
-                attribute {
-                  name
-                }
-                values {
-                  name
-                }
+                ... Attribute
               }
               pricing {
-                price {
-                  gross {
-                    amount
-                  }
-                }
+                ... Price
               }
             }
           }
         }
       }
     }
+    ${productDetailsFragment}
+    ${attributeFragment}
+    ${pricingFragment}
+    ${pageInfoFragment}
+    ${categoryFragment}
   `;
 };
 const b2bQuery = b2cQuery;

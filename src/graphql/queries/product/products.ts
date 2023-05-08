@@ -1,6 +1,11 @@
 import { gql } from 'graphql-request';
 import { DEFAULT_THUMBNAIL_SIZE } from 'src/constants';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
+import { attributeFragment } from 'src/graphql/fragments/attributes';
+import { categoryFragment } from 'src/graphql/fragments/category';
+import { pageInfoFragment } from 'src/graphql/fragments/pageInfo';
+import { pricingFragment } from 'src/graphql/fragments/pricing';
+import { productDetailsFragment } from 'src/graphql/fragments/product';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
 import { ProductFilterDto } from 'src/modules/product/dto';
 
@@ -18,47 +23,35 @@ export const b2bQuery = (filter: ProductFilterDto): string => {
         }
       ) {
         pageInfo {
-          hasNextPage
-          hasPreviousPage
-          endCursor
-          startCursor
+          ... PageInfo
         }
         totalCount
         edges {
           node {
-            id
-            slug
+            ... Product
             defaultVariant {
               id
               pricing {
-                price {
-                  gross {
-                    currency
-                    amount
-                  }
-                }
+                ... Price
               }
             }
             variants {
               id
               attributes {
-                attribute {
-                  name
-                }
-                values {
-                  name
-                }
+                ... Attribute
               }
             }
             thumbnail(size: ${DEFAULT_THUMBNAIL_SIZE}) {
               url
             }
-            name
-            description
           }
         }
       }
     }
+    ${productDetailsFragment}
+    ${pricingFragment}
+    ${attributeFragment}
+    ${pageInfoFragment}
   `;
 };
 
@@ -76,50 +69,39 @@ export const b2cQuery = (filter: ProductFilterDto): string => {
         }
       ) {
         pageInfo {
-          hasNextPage
-          hasPreviousPage
-          endCursor
-          startCursor
+          ... PageInfo
         }
         totalCount
         edges {
           node {
-            id
-            slug
+            ... Product
             category {
-              name
+              ... Category
             }
             defaultVariant {
               id
               pricing {
-                price {
-                  gross {
-                    currency
-                    amount
-                  }
-                }
+                ... Price
               }
             }
             variants {
               id
               attributes {
-                attribute {
-                  name
-                }
-                values {
-                  name
-                }
+                ... Attribute
               }
             }
             thumbnail(size: ${DEFAULT_THUMBNAIL_SIZE}) {
               url
             }
-            name
-            description
           }
         }
       }
     }
+    ${productDetailsFragment}
+    ${attributeFragment}
+    ${pricingFragment}
+    ${pageInfoFragment}
+    ${categoryFragment}
   `;
 };
 export const productsQuery = (filter: ProductFilterDto) => {

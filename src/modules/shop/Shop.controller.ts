@@ -103,6 +103,7 @@ export class ShopController {
   }
 
   @Get('/api/v1/shop/bank/:shopId')
+  @ApiBearerAuth('JWT-auth')
   @ApiOperation({
     summary: 'returns shop bank details',
   })
@@ -119,6 +120,7 @@ export class ShopController {
   }
 
   @Post('/api/v1/shop/bank/:shopId')
+  @ApiBearerAuth('JWT-auth')
   @ApiOperation({
     summary: 'saves account Id of account linked with retailer shop',
   })
@@ -187,6 +189,7 @@ export class ShopController {
   }
 
   @Post('/api/v1/shop/my/vendors/:shopId')
+  @ApiBearerAuth('JWT-auth')
   @ApiOperation({
     summary: 'Add my vendors Ids against given user shop id',
   })
@@ -219,6 +222,7 @@ export class ShopController {
   }
 
   @Delete('/api/v1/shop/my/vendors/:shopId')
+  @ApiBearerAuth('JWT-auth')
   @ApiOperation({
     summary: 'Delete my vendors Ids against given user shop id',
   })

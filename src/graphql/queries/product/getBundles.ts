@@ -1,4 +1,15 @@
 import { gql } from 'graphql-request';
+import {
+  attributeFragment,
+  metadataFragment,
+} from 'src/graphql/fragments/attributes';
+import { bundleDetailsFragment } from 'src/graphql/fragments/bundle';
+import { resultErrorFragment } from 'src/graphql/fragments/errors';
+import { mediaFragment } from 'src/graphql/fragments/media';
+import { pricingFragment } from 'src/graphql/fragments/pricing';
+import { productDetailsFragment } from 'src/graphql/fragments/product';
+import { productVariantDetailsFragment } from 'src/graphql/fragments/productVariant';
+import { shopDetailsFragment } from 'src/graphql/fragments/shop';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
 import { GetBundlesDto } from 'src/modules/product/dto/product.dto';
 
@@ -23,76 +34,37 @@ export const getBundlesQuery = (filter: GetBundlesDto) => {
         ... on BundleConnectionType {
           edges {
             node {
-              __typename
-              id
-              name
-              description
-              slug
+              ... Bundle
               product {
-                name
-                id
-                description
+                ... Product
                 attributes {
-                  attribute {
-                    name
-                  }
-                  values {
-                    name
-                  }
+                  ... Attribute
                 }
                 metadata {
-                  key
-                  value
+                  ... Metadata
                 }
                 thumbnail {
                   url
                 }
                 media {
-                  url
+                  ... Media
                 }
               }
               shop {
-                id
-                name
-                email
-                url
-                madeIn
-                minOrder
-                description
-                about
-                returnPolicy
-                storePolicy
+                ... Shop
               }
               productVariants {
                 quantity
                 productVariant {
-                  id
-                  name
+                  ... ProductVariant
                   attributes {
-                    attribute {
-                      name
-                    }
-                    values {
-                      name
-                    }
+                    ... Attribute
                   }
                   media {
-                    url
+                    ... Media
                   }
                   pricing {
-                    price {
-                      net {
-                        amount
-                        currency
-                      }
-                    }
-                    onSale
-                    discount {
-                      gross {
-                        amount
-                        currency
-                      }
-                    }
+                    ... Price
                   }
                 }
               }
@@ -100,12 +72,19 @@ export const getBundlesQuery = (filter: GetBundlesDto) => {
           }
         }
         ... on ResultError {
-          __typename
-          errors
-          message
+          ... ResultError
         }
       }
     }
+    ${resultErrorFragment}
+    ${shopDetailsFragment}
+    ${attributeFragment}
+    ${mediaFragment}
+    ${productDetailsFragment}
+    ${productVariantDetailsFragment}
+    ${pricingFragment}
+    ${bundleDetailsFragment}
+    ${metadataFragment}
   `;
   }
   return gql`
@@ -136,11 +115,10 @@ export const getBundlesQuery = (filter: GetBundlesDto) => {
           }
         }
         ... on ResultError {
-          __typename
-          errors
-          message
+          ... ResultError
         }
       }
     }
+    ${resultErrorFragment}
   `;
 };

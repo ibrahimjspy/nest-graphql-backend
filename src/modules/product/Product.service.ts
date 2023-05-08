@@ -6,7 +6,7 @@ import {
 } from 'src/core/utils/response';
 import { ProductFilterDto } from './dto';
 import * as ProductsHandlers from 'src/graphql/handlers/product';
-import { downloadProductImagesHandler } from 'src/external/services/download_images';
+import { downloadProductImagesHandler } from 'src/external/services/downloadImages';
 import { getB2cProductMapping } from 'src/external/endpoints/b2cMapping';
 import {
   addB2cIdsToProductData,

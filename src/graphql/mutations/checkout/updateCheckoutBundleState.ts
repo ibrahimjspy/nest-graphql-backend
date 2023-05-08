@@ -1,4 +1,6 @@
 import { gql } from 'graphql-request';
+import { checkoutBundlesFragment } from 'src/graphql/fragments/checkout/checkoutBundles';
+import { resultErrorFragment } from 'src/graphql/fragments/errors';
 
 export const updateCheckoutBundleStateMutation = (
   action: boolean,
@@ -17,93 +19,14 @@ export const updateCheckoutBundleStateMutation = (
         __typename
         ... on ResultError {
           __typename
-          errors
-          message
+          ... ResultError
         }
         ... on CheckoutBundlesType {
-          __typename
-          totalAmount
-          subTotal
-          taxes
-          discounts
-          checkoutId
-          checkoutBundles {
-            checkoutBundleId
-            isSelected
-            quantity
-            price
-            bundle {
-              id
-              name
-              description
-              slug
-                 product {
-                    name
-                    id
-                    thumbnail {
-                      url
-                    }
-                    media {
-                      url
-                    }
-                  }
-              productVariants {
-                quantity
-                productVariant {
-                  id
-                  name
-                  sku
-                  attributes {
-                    attribute {
-                      name
-                    }
-                    values {
-                      name
-                    }
-                  }
-               
-                  pricing {
-                    price {
-                      net {
-                        amount
-                        currency
-                      }
-                    }
-                    onSale
-                    discount {
-                      gross {
-                        amount
-                        currency
-                      }
-                    }
-                  }
-                }
-              }
-              shop {
-                id
-                name
-                madeIn
-                shippingMethods {
-                  id
-                  shippingMethodId
-                  shippingMethodTypeId
-                }
-              }
-            }
-          }
-          selectedMethods {
-            method {
-              id
-              shippingMethodId
-              shippingMethodTypeId
-            }
-            shop {
-              id
-              name
-            }
-          }
+          ... CheckoutBundles
         }
       }
     }
+    ${checkoutBundlesFragment}
+    ${resultErrorFragment}
   `;
 };

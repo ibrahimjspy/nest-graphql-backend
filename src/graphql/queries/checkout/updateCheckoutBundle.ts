@@ -1,6 +1,8 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 import { graphqlObjectTransform } from 'src/core/utils/helpers';
+import { checkoutBundlesFragment } from 'src/graphql/fragments/checkout/checkoutBundles';
+import { resultErrorFragment } from 'src/graphql/fragments/errors';
 const federationQuery = (userEmail: string, checkoutBundles: any[]): string => {
   return gql`
     mutation {
@@ -12,96 +14,17 @@ const federationQuery = (userEmail: string, checkoutBundles: any[]): string => {
       ) {
         __typename
         ... on CheckoutBundlesType {
-          __typename
-          totalAmount
-          subTotal
-          taxes
-          discounts
-          checkoutId
-          checkoutBundles {
-            checkoutBundleId
-            isSelected
-            quantity
-            price
-            bundle {
-              id
-              name
-              description
-              slug
-                 product {
-                    name
-                    id
-                    thumbnail {
-                      url
-                    }
-                    media {
-                      url
-                    }
-                  }
-              productVariants {
-                quantity
-                productVariant {
-                  id
-                  name
-                  sku
-                  attributes {
-                    attribute {
-                      name
-                    }
-                    values {
-                      name
-                    }
-                  }
-               
-                  pricing {
-                    price {
-                      net {
-                        amount
-                        currency
-                      }
-                    }
-                    onSale
-                    discount {
-                      gross {
-                        amount
-                        currency
-                      }
-                    }
-                  }
-                }
-              }
-              shop {
-                id
-                name
-                madeIn
-                shippingMethods {
-                  id
-                  shippingMethodId
-                  shippingMethodTypeId
-                }
-              }
-            }
-          }
-          selectedMethods {
-            method {
-              id
-              shippingMethodId
-              shippingMethodTypeId
-            }
-            shop {
-              id
-              name
-            }
-          }
+          ...CheckoutBundles
         }
 
         ... on ResultError {
           __typename
-          errors
-          message
+          ...ResultError
         }
       }
     }
+    ${checkoutBundlesFragment}
+    ${resultErrorFragment}
   `;
 };
 
