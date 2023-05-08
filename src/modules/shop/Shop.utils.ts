@@ -79,3 +79,11 @@ export const validateStoreInput = (storeInput) => {
     twitter: storeInput['twitter'] || '',
   };
 };
+
+/**
+ * this function adds shop total products count to our response
+ */
+export const updateMyProductsCount = (productsData, totalCount: number) => {
+  productsData.totalCount = totalCount;
+  return productsData;
+};
