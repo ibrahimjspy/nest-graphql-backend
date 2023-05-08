@@ -5,7 +5,7 @@ import { MarketplaceProductsResponseType } from './Product.types';
  * returns array of bundle ids
  * @params bundles: array with full bundle objects
  */
-export const getBundleIds = (bundles) => {
+export const getBundleIds = (bundles: Array<{ bundleId: string }>) => {
   return (bundles || []).map((bundle) => bundle?.bundleId);
 };
 
@@ -25,7 +25,9 @@ export const getProductIdsByVariants = (variants) => {
  * @warn please do not remove edges from your productsData object
  * @return productIds -- string[]
  */
-export const getProductIds = (productsData) => {
+export const getProductIds = (productsData: {
+  edges: Array<{ node: { id: string } }>;
+}) => {
   return [...new Set(productsData.edges?.map((edge) => edge?.node?.id))];
 };
 
@@ -35,7 +37,12 @@ export const getProductIds = (productsData) => {
  * @warn please send data without parsing it
  * @return idsMapping - returns hasp map with b2b id as key and b2c id as value-- Map<string, string>
  */
-export const storeB2cMapping = (elasticSearchData): Map<string, string> => {
+export const storeB2cMapping = (
+  elasticSearchData: Array<{
+    shr_b2b_product_id: { raw: string };
+    shr_b2c_product_id: { raw: string };
+  }>,
+): Map<string, string> => {
   const idsMapping: Map<string, string> = new Map();
   elasticSearchData?.map((mapping) => {
     const b2bId = mapping?.shr_b2b_product_id?.raw;
@@ -60,14 +67,6 @@ export const addB2cIdsToProductData = (
     product.node.b2cProductId = idsMapping.get(product.node.id) || null;
   });
   return productsData;
-};
-
-/**
- * to comply with frontend contract this functon returns an object that has product as key and products list as value
- * @params productsList: array of products
- */
-export const makeProductListResponse = (productsList) => {
-  return { products: productsList };
 };
 
 /**

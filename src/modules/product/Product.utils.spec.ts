@@ -2,9 +2,21 @@ import {
   mockElasticSearchResponse,
   mockProductData,
 } from '../../../test/mock/product';
-import { getProductIds, storeB2cMapping } from './Product.utils';
+import {
+  getBundleIds,
+  getProductIds,
+  getShopProductIds,
+  storeB2cMapping,
+} from './Product.utils';
 
 describe('Product utility tests', () => {
+  it('bundle ids are correctly getting parsed', () => {
+    const response = getBundleIds([{ bundleId: '123' }]);
+    expect(response).toBeDefined();
+    expect(response).toStrictEqual(['123']);
+    expect(response).toBeTruthy();
+  });
+
   it('product data is parsing and product ids are returning', () => {
     const response = getProductIds(mockProductData);
     const productId = 'UHJvZHVjdDo4NzA0';
@@ -22,5 +34,14 @@ describe('Product utility tests', () => {
     expect(response).toBeDefined();
     expect(response.get(b2bId)).toContain(b2cId);
     expect(response).toBeTruthy();
+  });
+
+  it('shop product ids are correctly getting parsed from shop products list', () => {
+    const shopProducts = getShopProductIds({
+      edges: [{ node: { productId: '123' } }],
+    });
+    expect(shopProducts).toBeDefined();
+    expect(shopProducts).toBeTruthy();
+    expect(shopProducts).toStrictEqual(['123']);
   });
 });
