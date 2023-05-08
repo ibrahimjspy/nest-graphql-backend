@@ -15,6 +15,7 @@ const b2cQuery = (filter: ProductFilterDto): string => {
       ${shopFilter}
     ) {
       ... on ProductsShopType {
+        totalCount
         pageInfo {
           hasPreviousPage
           hasNextPage

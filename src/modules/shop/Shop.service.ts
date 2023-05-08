@@ -24,6 +24,7 @@ import { createStoreDTO, shopDetailDto } from './dto/shop';
 import {
   getFieldValues,
   getMyVendorsFieldValues,
+  updateMyProductsCount,
   validateArray,
   validateStoreInput,
 } from './Shop.utils';
@@ -111,6 +112,7 @@ export class ShopService {
       const retailer = await getStoreFrontIdHandler(retailerId);
       const storefrontIds = getFieldValues(retailer['fields'], 'storefrontids');
       const B2C_API = true;
+      let totalCount = 0;
       await Promise.all(
         (storefrontIds || []).map(async (storeId) => {
           const pagination = filter as PaginationDto;
@@ -121,15 +123,17 @@ export class ShopService {
             },
             B2C_API,
           );
+          totalCount = totalCount + shopProducts.totalCount;
           const shopProductIds = getShopProductIds(shopProducts);
           productIds = productIds.concat(shopProductIds);
         }),
       );
       if (isEmptyArray(productIds)) {
-        return prepareSuccessResponse([
-          retailer,
+        const productsList = updateMyProductsCount(
           await getMyProductsHandler(productIds, filter),
-        ]);
+          totalCount,
+        );
+        return prepareSuccessResponse([retailer, productsList]);
       }
       return prepareSuccessResponse(
         [retailer, []],
