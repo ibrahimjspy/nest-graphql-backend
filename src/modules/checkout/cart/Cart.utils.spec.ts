@@ -56,7 +56,6 @@ describe('Cart utility tests', () => {
     it('testing whether bundle ids are getting parsed from bundles list', async () => {
       const bundleList: any = [{ bundleId: 'test' }];
       const bundleIds = getBundleIds(bundleList);
-      console.log(bundleIds);
       expect(bundleIds).toBeDefined();
       expect(bundleIds).toStrictEqual(['test']);
     });
@@ -64,7 +63,6 @@ describe('Cart utility tests', () => {
     it('testing whether bundles are getting parsed from checkout bundles list', async () => {
       const checkoutBundleList: any = [{ bundle: { id: 'test' }, quantity: 3 }];
       const bundles = getBundlesFromCheckout(checkoutBundleList);
-      console.log(bundles);
       expect(bundles).toBeDefined();
       expect(bundles).toStrictEqual([{ bundleId: 'test', quantity: 3 }]);
     });
@@ -72,7 +70,6 @@ describe('Cart utility tests', () => {
     it('testing whether bundles length is correctly validated', async () => {
       const checkoutBundleList: any = [{ bundle: { id: 'test' }, quantity: 3 }];
       const validateBundleLength = validateBundlesLength(checkoutBundleList);
-      console.log(validateBundleLength);
       expect(validateBundleLength).toBeDefined();
       expect(validateBundleLength).toStrictEqual(true);
     });
@@ -82,7 +79,6 @@ describe('Cart utility tests', () => {
         checkoutBundleList,
         targetBundles,
       );
-      console.log(updateBundleLines);
       expect(updateBundleLines).toBeDefined();
       expect(updateBundleLines).toStrictEqual([
         { quantity: 20, variantId: 'test' },
@@ -95,11 +91,11 @@ describe('Cart utility tests', () => {
           bundleId: 'test',
         },
       ]);
-      console.dir(targetBundle, { depth: null });
       expect(targetBundle).toBeDefined();
       expect(targetBundle).toStrictEqual([
         {
           checkoutBundleId: 'test',
+          isSelected: false,
           bundle: {
             id: 'test',
             productVariants: [{ productVariant: { id: 'test' }, quantity: 2 }],
@@ -117,7 +113,6 @@ describe('Cart utility tests', () => {
 
     it('testing whether bundle lines are correctly getting parsed from checkout bundles', async () => {
       const bundleLines = getLinesFromBundles(checkoutBundleList);
-      console.log(bundleLines);
       expect(bundleLines).toBeDefined();
       expect(bundleLines).toStrictEqual([{ quantity: 6, variantId: 'test' }]);
     });
@@ -127,7 +122,6 @@ describe('Cart utility tests', () => {
         checkoutBundleList,
         ['test'],
       );
-      console.log(targetCheckoutBundles);
       expect(targetCheckoutBundles).toBeDefined();
       expect(targetCheckoutBundles).toStrictEqual(checkoutBundleList);
     });
@@ -137,7 +131,6 @@ describe('Cart utility tests', () => {
         lines,
         checkoutBundleList,
       );
-      console.log(deleteBundleLines);
       expect(deleteBundleLines).toBeDefined();
       expect(deleteBundleLines).toStrictEqual([
         { lineId: 'test', quantity: -3 },
@@ -149,7 +142,6 @@ describe('Cart utility tests', () => {
         bundlesList,
         targetBundles,
       );
-      console.log(addBundleLines);
       expect(addBundleLines).toBeDefined();
       expect(addBundleLines).toStrictEqual([
         { quantity: 20, variantId: 'test' },
@@ -158,14 +150,12 @@ describe('Cart utility tests', () => {
 
     it('testing whether new bundles object are correctly created', async () => {
       const newBundles = getNewBundlesToAdd(checkoutBundleList, 'bundleId');
-      console.log(newBundles);
       expect(newBundles).toBeDefined();
       expect(newBundles).toStrictEqual([{ bundleId: 'bundleId', quantity: 3 }]);
     });
 
     it('testing whether selected bundles are getting parsed from all checkout bundles', async () => {
       const selectedBundles = getSelectedCheckoutBundles(checkoutBundleList);
-      console.log(selectedBundles);
       expect(selectedBundles).toBeDefined();
       expect(selectedBundles).toStrictEqual([]);
     });
@@ -173,13 +163,15 @@ describe('Cart utility tests', () => {
     it('testing whether un selected bundles are getting parsed from all checkout bundles', async () => {
       const unSelectedBundles =
         getUnSelectedCheckoutBundles(checkoutBundleList);
-      console.log(unSelectedBundles);
       expect(unSelectedBundles).toBeDefined();
       expect(unSelectedBundles).toStrictEqual([
         {
           checkoutBundleId: 'test',
           isSelected: false,
-          bundle: { id: 'test', productVariants: [Array] },
+          bundle: {
+            id: 'test',
+            productVariants: [{ productVariant: { id: 'test' }, quantity: 2 }],
+          },
           quantity: 3,
         },
       ]);
