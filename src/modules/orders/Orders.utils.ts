@@ -1,4 +1,3 @@
-import { roundNumber } from 'src/core/utils/helpers';
 import { OrdersListDTO } from './dto/list';
 import {
   checkoutBundleInterface,
@@ -52,23 +51,6 @@ export const orderListFilterValidation = (
     : `${new Date().toISOString().slice(0, 10)}`;
 
   return ordersListFilters;
-};
-
-/**
- * It takes a list of variants from a bundle and bundle quantity and returns a total price of all the variants in the bundle
- * @param variants - The variants array from a bundle.
- * @param quantity - quantity of the bundle.
- * @returns total price
- */
-export const getTotalFromVariants = (variants, quantity) => {
-  return (variants || []).reduce(
-    (prev, curr) =>
-      prev +
-      parseFloat(curr?.variant?.pricing?.price?.gross?.amount) *
-        parseInt(curr?.quantity) *
-        parseInt(quantity),
-    0,
-  );
 };
 
 /**
