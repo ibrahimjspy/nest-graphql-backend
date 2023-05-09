@@ -5,5 +5,6 @@ export const productDetailsFragment = gql`
     id
     description
     name
+    slug
   }
 `;
