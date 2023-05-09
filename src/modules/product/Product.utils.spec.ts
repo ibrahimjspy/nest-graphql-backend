@@ -38,6 +38,7 @@ describe('Product utility tests', () => {
 
   it('shop product ids are correctly getting parsed from shop products list', () => {
     const shopProducts = getShopProductIds({
+      totalCount: 20,
       edges: [{ node: { productId: '123' } }],
     });
     expect(shopProducts).toBeDefined();
