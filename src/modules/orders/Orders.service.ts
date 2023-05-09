@@ -55,16 +55,6 @@ import { uploadImagesHandler } from 'src/external/services/uploadImages';
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
 
-  public async getShopOrdersDataById(id, token: string): Promise<object> {
-    try {
-      const response = await shopOrdersByIdHandler(id, token);
-      return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
-    }
-  }
-
   public async getOrderDetailsById(id: string, token: string): Promise<object> {
     try {
       const response = await orderDetailsHandler(id, token);
@@ -117,7 +107,7 @@ export class OrdersService {
   ): Promise<object> {
     try {
       const response = await ordersListHandler(filter, token);
-      return prepareSuccessResponse(response, '', 201);
+      return prepareSuccessResponse(response);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
@@ -173,7 +163,7 @@ export class OrdersService {
         b2cEnabled,
       );
       await updateOrderMetadataHandler(payload.id, metadata, token, b2cEnabled);
-      return prepareSuccessResponse(response, '', 200);
+      return prepareSuccessResponse(response, 'order return placed', 201);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
@@ -212,7 +202,11 @@ export class OrdersService {
   ): Promise<object> {
     try {
       const response = await orderFulfillmentRefundHandler(refundObject, token);
-      return prepareSuccessResponse(response, '', 201);
+      return prepareSuccessResponse(
+        response,
+        'order fulfillment is refunded',
+        201,
+      );
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -225,7 +219,7 @@ export class OrdersService {
   ): Promise<object> {
     try {
       const response = await orderAmountRefundHandler(refundObject, token);
-      return prepareSuccessResponse(response, '', 201);
+      return prepareSuccessResponse(response, 'order amount is refunded', 201);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -235,7 +229,7 @@ export class OrdersService {
   public async orderCancel(orderId: string, token: string): Promise<object> {
     try {
       const response = await orderCancelHandler(orderId, token);
-      return prepareSuccessResponse(response, '', 201);
+      return prepareSuccessResponse(response, 'order is cancelled', 201);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -265,7 +259,7 @@ export class OrdersService {
     token: string,
   ): Promise<object> {
     try {
-      const shopDetails = await shopOrdersByIdHandler(shopId, token, true);
+      const shopDetails: any = await shopOrdersByIdHandler(shopId, token, true);
       const orderIds: string[] = getOrderIdsFromShopData(shopDetails);
       const [processing, shipped, cancelled, returned, totalEarnings] =
         await Promise.all([
@@ -365,7 +359,11 @@ export class OrdersService {
         fulfillmentUpdateTrackingInput,
         token,
       );
-      return prepareSuccessResponse(response);
+      return prepareSuccessResponse(
+        response,
+        'fulfillment tracking updated',
+        201,
+      );
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
