@@ -17,6 +17,7 @@ import {
   orderFulfillmentRefundHandler,
   orderFulfillmentUpdateTrackingHandler,
   ordersListHandler,
+  returnOrderDetailsHandler,
   returnedOrdersListHandler,
   shopOrdersByIdHandler,
   updateOrderMetadataHandler,
@@ -377,6 +378,20 @@ export class OrdersService {
       return prepareSuccessResponse(await uploadImagesHandler(file, bucket));
     } catch (error) {
       return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async getReturnOrdersDetails(
+    id: string,
+    token: string,
+    isB2c = false,
+  ): Promise<object> {
+    try {
+      const response = await returnOrderDetailsHandler(id, token, isB2c);
+      return prepareSuccessResponse(response, '', 200);
+    } catch (err) {
+      this.logger.error(err);
+      return graphqlExceptionHandler(err);
     }
   }
 }

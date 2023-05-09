@@ -42,6 +42,7 @@ import { orderAmountRefundMutation } from '../mutations/order/refundOrderAmount'
 import { getOrderEventsQuery } from '../queries/orders/orderEvents';
 import { PaginationDto } from '../dto/pagination.dto';
 import { orderFulfillmentTrackingMutation } from '../mutations/order/orderFulfillmentTracking';
+import { returnOrderDetailsQuery } from '../queries/orders/returnOrderDetails';
 
 export const orderDetailsHandler = async (
   id: string,
@@ -280,4 +281,15 @@ export const shopOrdersByIdHandler = async (
     await graphqlCall(shopOrdersQuery(id), token, isB2c),
   );
   return response['marketplaceShop'];
+};
+
+export const returnOrderDetailsHandler = async (
+  id: string,
+  token: string,
+  isB2c = false,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(returnOrderDetailsQuery(id), token, isB2c),
+  );
+  return response['order'];
 };
