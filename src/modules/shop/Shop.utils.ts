@@ -8,7 +8,10 @@ export const validateArray = (input) => {
 /**
  * @description : take shop fields and returns values of that field in shop
  */
-export const getFieldValues = (fields, fieldName: string) => {
+export const getFieldValues = (
+  fields: Array<{ name: string; values: string[] }>,
+  fieldName: string,
+): string[] => {
   let fieldValues = [];
   if (fields.map) {
     fields.map((field) => {
@@ -34,29 +37,6 @@ export const getMyVendorsFieldValues = (fields) => {
   }
   return myVendorIds;
 };
-
-/**
- * parses product variant array from shop and returns an array with variant ids
- */
-export const getProductVariantIds = (variantsInput) => {
-  const variantIds = [];
-  (variantsInput || []).map((variant) => {
-    variantIds.push(variant.id);
-  });
-  return variantIds;
-};
-
-/**
- * parses product ids array from shop and returns an array with product ids
- */
-export const getProductIdsFromShop = (productIdsInput) => {
-  const productIds = [];
-  (productIdsInput || []).map((productId) => {
-    productIds.push(productId.id);
-  });
-  return productIds;
-};
-
 /**
  * returns with fields array
  * @params shop: information for shop creation
@@ -83,7 +63,8 @@ export const validateStoreInput = (storeInput) => {
 /**
  * this function adds shop total products count to our response
  */
-export const updateMyProductsCount = (productsData, totalCount: number) => {
-  productsData.totalCount = totalCount;
+export const makeMyProductsResponse = (productsData, storeFrontDetails) => {
+  productsData.totalCount = storeFrontDetails.totalCount;
+  productsData.pageInfo = storeFrontDetails.pageInfo;
   return productsData;
 };

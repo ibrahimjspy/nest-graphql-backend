@@ -14,55 +14,55 @@ export class createStoreDTO {
 
   @ApiProperty({ required: false })
   @IsOptional()
-  url: string;
+  url?: string;
 
   @ApiProperty({ required: false, default: '' })
   @IsOptional()
-  description: string;
+  description?: string;
 
   @ApiProperty({ required: false, default: '' })
   @IsOptional()
-  about: string;
+  about?: string;
 
   @ApiProperty({ required: false, default: '' })
   @IsOptional()
-  madeIn: string;
+  madeIn?: string;
 
   @ApiProperty({ required: false, default: 0 })
   @IsOptional()
-  minOrder: number;
+  minOrder?: number;
 
   @ApiProperty({ required: false, default: '' })
   @IsOptional()
-  returnPolicy: string;
+  returnPolicy?: string;
 
   @ApiProperty({ required: false, default: '' })
   @IsOptional()
-  storePolicy: string;
+  storePolicy?: string;
 
   @ApiProperty({ required: false, default: '' })
   @IsOptional()
-  logo: string;
+  logo?: string;
 
   @ApiProperty({ required: false, default: '' })
   @IsOptional()
-  banner: string;
+  banner?: string;
 
   @ApiProperty({ required: false, default: '' })
   @IsOptional()
-  facebook: string;
+  facebook?: string;
 
   @ApiProperty({ required: false, default: '' })
   @IsOptional()
-  pinterest: string;
+  pinterest?: string;
 
   @ApiProperty({ required: false, default: '' })
   @IsOptional()
-  instagram: string;
+  instagram?: string;
 
   @ApiProperty({ required: false, default: '' })
   @IsOptional()
-  twitter: string;
+  twitter?: string;
 }
 
 export class shopIdByVariantsDTO {

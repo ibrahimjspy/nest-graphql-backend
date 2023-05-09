@@ -38,5 +38,5 @@ export class updateMyProductDTO {
 
 export class myProductsDTO extends PaginationDto {
   @ApiProperty({ required: false, default: '' })
-  search: string;
+  search?: string;
 }
