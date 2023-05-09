@@ -2,6 +2,7 @@ import { gql } from 'graphql-request';
 
 export const addressFragment = gql`
   fragment Address on Address {
+    id
     firstName
     lastName
     streetAddress1
