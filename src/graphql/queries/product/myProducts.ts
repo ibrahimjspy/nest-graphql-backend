@@ -28,7 +28,8 @@ const b2cQuery = (productIds, filter: myProductsDTO): string => {
               url
             }
             metadata {
-              ... Metadata
+              key
+              value
             }
             category {
               ... Category

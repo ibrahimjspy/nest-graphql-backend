@@ -37,7 +37,8 @@ const b2bQuery = (filter: OrdersListFiltersDTO): string => {
         edges {
           node {
             metadata {
-              ... Metadata
+              key
+              value
             }
             id
             token
