@@ -21,7 +21,7 @@ import { createStoreDTO, shopDetailDto } from './dto/shop';
 import {
   getFieldValues,
   getMyVendorsFieldValues,
-  updateMyProductsCount,
+  makeMyProductsResponse,
   validateArray,
   validateStoreInput,
 } from './Shop.utils';
@@ -47,6 +47,12 @@ import { shopInfoDto } from '../orders/dto';
 export class ShopService {
   private readonly logger = new Logger(ShopService.name);
 
+  /**
+   * @description -- this method creates a new storefront in b2c against a b2b shop
+   * @pre_condition -- you should provide valid create shop input
+   * @post_condition -- it creates a new store in b2c database, provisions a new storefront using github actions and adds store
+   * information against b2b shop as well
+   */
   public async createStore(
     shopId: string,
     storeInput: createStoreDTO,
@@ -55,19 +61,23 @@ export class ShopService {
     try {
       const storeUrl = this.generateStorefrontUrl(storeInput.name);
       storeInput.url = storeUrl;
-      const response = await createStoreHandler(
-        validateStoreInput(storeInput),
-        // TODO replace development token with AUTHO token
-        B2C_DEVELOPMENT_TOKEN,
-        true,
+      const [createStore, shopDetails] = await Promise.all([
+        createStoreHandler(
+          validateStoreInput(storeInput),
+          B2C_DEVELOPMENT_TOKEN,
+          true,
+        ),
+        getShopDetailsV2Handler({ id: shopId }),
+      ]);
+      await Promise.all([
+        addStoreToShopHandler(createStore, shopDetails, token),
+        provisionStoreFront(storeInput.url),
+      ]);
+      return prepareSuccessResponse(
+        createStore,
+        'new storefront provisioned',
+        201,
       );
-      // getting shop details by given shop id
-      const shopDetail = await getShopDetailsV2Handler({ id: shopId });
-      // Adding created store in user shop
-      await addStoreToShopHandler(response, shopDetail, token);
-      // provision storefront against given unique domain
-      await provisionStoreFront(storeInput.url);
-      return prepareSuccessResponse(response, '', 201);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -109,7 +119,7 @@ export class ShopService {
       const retailer = await getShopDetailsV2Handler({ id: retailerId });
       const storefrontIds = getFieldValues(retailer['fields'], 'storefrontids');
       const B2C_API = true;
-      let totalCount = 0;
+      let storeDetails;
       await Promise.all(
         (storefrontIds || []).map(async (storeId) => {
           const pagination = filter as PaginationDto;
@@ -120,15 +130,15 @@ export class ShopService {
             },
             B2C_API,
           );
-          totalCount = totalCount + shopProducts.totalCount;
+          storeDetails = shopProducts;
           const shopProductIds = getShopProductIds(shopProducts);
           productIds = productIds.concat(shopProductIds);
         }),
       );
       if (isEmptyArray(productIds)) {
-        const productsList = updateMyProductsCount(
-          await getMyProductsHandler(productIds, filter),
-          totalCount,
+        const productsList = makeMyProductsResponse(
+          await getMyProductsHandler(productIds, { first: 10 }),
+          storeDetails,
         );
         return prepareSuccessResponse([retailer, productsList]);
       }
