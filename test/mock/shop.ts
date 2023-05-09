@@ -1390,4 +1390,37 @@ export const shopIntegrationMocks = {
       },
     ],
   },
+  expectedMyVendors: {
+    status: 201,
+    data: [
+      {
+        vendorDetail: {
+          id: '1031',
+          name: 'Wakefa Soomb',
+          email: 'wakefa4212@soombo.com',
+          url: 'https://wakefaj6la6.com',
+          madeIn: '',
+          minOrder: 0,
+          description: '',
+          about: '',
+          returnPolicy: '',
+          storePolicy: '',
+          fields: [
+            { name: 'logo', values: [''] },
+            { name: 'banner', values: [''] },
+            { name: 'facebook', values: [''] },
+            { name: 'pinterest', values: [''] },
+            { name: 'instagram', values: [''] },
+            { name: 'twitter', values: [''] },
+            { name: 'storefrontids', values: ['169'] },
+            {
+              name: 'storefronturls',
+              values: ['wakefasoomb.sharove.co'],
+            },
+            { name: 'myvendors', values: ['610'] },
+          ],
+        },
+      },
+    ],
+  },
 };
