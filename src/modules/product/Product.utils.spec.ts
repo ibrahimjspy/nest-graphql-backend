@@ -22,7 +22,7 @@ describe('Product utility tests', () => {
     const productId = 'UHJvZHVjdDo4NzA0';
 
     expect(response).toBeDefined();
-    expect(response).not.toContain(productId);
+    expect(response).toContain(productId);
     expect(response).toBeTruthy();
   });
 
