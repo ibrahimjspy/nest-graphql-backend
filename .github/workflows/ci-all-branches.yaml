@@ -1,4 +1,4 @@
-name: Kafka CI
+name: Marketplace Middleware CI
 on: 
   push:
     branches: 
@@ -31,4 +31,4 @@ jobs:
         run: npm run format
 
       - name: Test code
-        run: npm run test
+        run: npm test
