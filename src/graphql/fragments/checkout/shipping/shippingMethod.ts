@@ -36,3 +36,17 @@ export const checkoutShippingMethodFragment = gql`
     }
   }
 `;
+
+export const selectedShippingMethodsFragment = gql`
+  fragment CheckoutShippingMethods on CheckoutShippingMethodType {
+    method {
+      id
+      shippingMethodId
+      shippingMethodTypeId
+    }
+    shop {
+      id
+      name
+    }
+  }
+`;

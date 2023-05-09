@@ -29,7 +29,6 @@ describe('Cart Rollbacks utility test', () => {
   describe('add to cart rollback util unit tests', () => {
     it('testing whether new updated lines are getting parsed correctly for add to cart rollbacks', async () => {
       const updatedLines = getUpdatedLinesRollback(saleorResponse, newLines);
-      console.log(updatedLines);
 
       expect(updatedLines).toBeDefined();
       expect(updatedLines).toStrictEqual([

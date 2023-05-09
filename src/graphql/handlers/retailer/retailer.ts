@@ -2,7 +2,7 @@ import {
   graphqlCall,
   graphqlResultErrorHandler,
 } from 'src/core/proxies/graphqlHandler';
-import * as RetailerQueries from 'src/graphql/queries/retailer';
+import * as RetailerQueries from 'src/graphql/queries/shop/retailer';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import { GQL_EDGES } from 'src/constants';
 

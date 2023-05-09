@@ -1,5 +1,7 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
+import { mediaFragment } from 'src/graphql/fragments/media';
+import { productDetailsFragment } from 'src/graphql/fragments/product';
 import { updateMyProductDTO } from 'src/modules/shop/dto/myProducts';
 
 const b2bMutation = (productUpdateInput: updateMyProductDTO) => {
@@ -13,15 +15,15 @@ const b2bMutation = (productUpdateInput: updateMyProductDTO) => {
               .replace(/"category"/g, 'category')}
         ) {
             product {
-            id
-            description
+            ... Product
             media {
-              id
-              url
+              ... Media
             }
           }
         }
       }
+      ${productDetailsFragment}
+      ${mediaFragment}
   `;
 };
 

@@ -1,5 +1,6 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
+import { shopDetailsFragment } from 'src/graphql/fragments/shop';
 
 const b2bMutation = (shopId: string, vendorIds: string[]) => {
   return gql`
@@ -12,18 +13,10 @@ const b2bMutation = (shopId: string, vendorIds: string[]) => {
           )} }]
         }
       ) {
-        id
-        name
-        email
-        url
-        about
-        description
-        fields{
-          name
-          values
-        }
+        ... Shop
       }
     }
+    ${shopDetailsFragment}
   `;
 };
 

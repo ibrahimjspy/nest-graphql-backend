@@ -8,7 +8,7 @@ import {
   getPurchaseHistoryQuery,
   getSalesReportQuery,
   getTransactionHistoryQuery,
-} from 'src/graphql/queries/retailer';
+} from 'src/graphql/queries/shop/retailer';
 
 export const getSalesReportHandler = async (
   shopId: string,

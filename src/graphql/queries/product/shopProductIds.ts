@@ -1,5 +1,6 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
+import { pageInfoFragment } from 'src/graphql/fragments/pageInfo';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
 import { ProductFilterDto } from 'src/modules/product/dto/product.dto';
 
@@ -17,10 +18,7 @@ const b2cQuery = (filter: ProductFilterDto): string => {
       ... on ProductsShopType {
         totalCount
         pageInfo {
-          hasPreviousPage
-          hasNextPage
-          startCursor
-          endCursor
+         ... PageInfo
         }
         edges {
           cursor
@@ -34,7 +32,9 @@ const b2cQuery = (filter: ProductFilterDto): string => {
         message
       }
     }
-  }`;
+  }
+  ${pageInfoFragment}
+  `;
 };
 
 const b2bQuery = b2cQuery;

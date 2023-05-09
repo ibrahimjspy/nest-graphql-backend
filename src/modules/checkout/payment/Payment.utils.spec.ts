@@ -10,7 +10,6 @@ describe('Payment utilities unit test', () => {
       { key: 'paymentIntentId', value: 'testIntentId' },
     ];
     const paymentIntentId = getPaymentDataFromMetadata(checkoutMetadata);
-    console.log(paymentIntentId);
     expect(paymentIntentId).toBeDefined();
     expect(paymentIntentId).toStrictEqual({
       paymentIntentId: 'testIntentId',
@@ -25,7 +24,6 @@ describe('Payment utilities unit test', () => {
       checkoutAmount,
       paymentIntentAmount,
     );
-    console.log(isAmountNew);
     expect(isAmountNew).toBeDefined();
     expect(isAmountNew).toStrictEqual(false);
   });

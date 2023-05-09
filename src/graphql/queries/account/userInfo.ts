@@ -1,5 +1,7 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
+import { metadataFragment } from 'src/graphql/fragments/attributes';
+import { addressFragment } from 'src/graphql/fragments/checkout/shipping/shippingAddress';
 
 const b2bQuery = () => {
   return gql`
@@ -29,62 +31,21 @@ const b2cQuery = () => {
         email
         checkoutIds
         metadata {
-          key
-          value
+          ...Metadata
         }
         addresses {
-          id
-          firstName
-          lastName
-          city
-          phone
-          postalCode
-          companyName
-          cityArea
-          streetAddress1
-          streetAddress2
-          countryArea
-          country {
-            country
-            code
-          }
+          ...Address
         }
         defaultBillingAddress {
-          id
-          firstName
-          lastName
-          city
-          phone
-          postalCode
-          companyName
-          cityArea
-          streetAddress1
-          streetAddress2
-          countryArea
-          country {
-            country
-            code
-          }
+          ...Address
         }
         defaultShippingAddress {
-          id
-          firstName
-          lastName
-          city
-          phone
-          postalCode
-          companyName
-          cityArea
-          streetAddress1
-          streetAddress2
-          countryArea
-          country {
-            country
-            code
-          }
+          ...Address
         }
       }
     }
+    ${addressFragment}
+    ${metadataFragment}
   `;
 };
 

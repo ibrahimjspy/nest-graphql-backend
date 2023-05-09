@@ -42,7 +42,9 @@ describe('AddressService', () => {
       status: 200,
       data: fd.addresses,
     };
-    expect(await service.getAddresses(fd.userId)).toEqual(expected);
+    const getAddress = await service.getAddresses(fd.userId, '');
+    expect(getAddress).toEqual(expected);
+    expect(getAddress).toBeDefined();
   });
 
   it('should not get addresses', async () => {
@@ -56,7 +58,7 @@ describe('AddressService', () => {
       status: 400,
       message: 'Something went wrong.',
     };
-    expect(await service.getAddresses(fd.userId)).toEqual(expected);
+    expect(await service.getAddresses(fd.userId, '')).toEqual(expected);
   });
 
   it('should create address', async () => {
@@ -68,7 +70,7 @@ describe('AddressService', () => {
       status: 200,
       data: fd.addresses[0],
     };
-    expect(await service.createAddress(fd.userId, fd.addressInput)).toEqual(
+    expect(await service.createAddress(fd.userId, fd.addressInput, '')).toEqual(
       expected,
     );
   });
@@ -84,7 +86,7 @@ describe('AddressService', () => {
       status: 400,
       message: 'Something went wrong.',
     };
-    expect(await service.createAddress(fd.userId, fd.addressInput)).toEqual(
+    expect(await service.createAddress(fd.userId, fd.addressInput, '')).toEqual(
       expected,
     );
   });
@@ -100,7 +102,7 @@ describe('AddressService', () => {
       status: 400,
       message: 'User not found',
     };
-    expect(await service.createAddress(fd.userId, fd.addressInput)).toEqual(
+    expect(await service.createAddress(fd.userId, fd.addressInput, '')).toEqual(
       expected,
     );
   });
@@ -112,7 +114,7 @@ describe('AddressService', () => {
       status: 200,
       message: 'Address is deleted successfully.',
     };
-    expect(await service.deleteAddress(fd.addressId)).toEqual(expected);
+    expect(await service.deleteAddress(fd.addressId, '')).toEqual(expected);
   });
 
   it('should not delete address', async () => {
@@ -126,7 +128,7 @@ describe('AddressService', () => {
       status: 400,
       message: 'Something went wrong.',
     };
-    expect(await service.deleteAddress(fd.addressId)).toEqual(expected);
+    expect(await service.deleteAddress(fd.addressId, '')).toEqual(expected);
   });
 
   it('should set default address', async () => {
@@ -138,9 +140,9 @@ describe('AddressService', () => {
       status: 200,
       data: fd.addresses,
     };
-    expect(await service.setDefaultAddress(fd.userId, fd.addressId)).toEqual(
-      expected,
-    );
+    expect(
+      await service.setDefaultAddress(fd.userId, fd.addressId, ''),
+    ).toEqual(expected);
   });
 
   it('should not set default address if API failed', async () => {
@@ -154,9 +156,9 @@ describe('AddressService', () => {
       status: 400,
       message: 'Something went wrong.',
     };
-    expect(await service.setDefaultAddress(fd.userId, fd.addressId)).toEqual(
-      expected,
-    );
+    expect(
+      await service.setDefaultAddress(fd.userId, fd.addressId, ''),
+    ).toEqual(expected);
   });
 
   it('should not set default address if address not found', async () => {
@@ -170,9 +172,9 @@ describe('AddressService', () => {
       status: 400,
       message: 'Address not found',
     };
-    expect(await service.setDefaultAddress(fd.userId, fd.addressId)).toEqual(
-      expected,
-    );
+    expect(
+      await service.setDefaultAddress(fd.userId, fd.addressId, ''),
+    ).toEqual(expected);
   });
 
   it('should update address', async () => {
@@ -184,9 +186,9 @@ describe('AddressService', () => {
       status: 200,
       data: fd.addresses[0],
     };
-    expect(await service.updateAddress(fd.addressId, fd.addressInput)).toEqual(
-      expected,
-    );
+    expect(
+      await service.updateAddress(fd.addressId, fd.addressInput, ''),
+    ).toEqual(expected);
   });
 
   it('should update address if API failed', async () => {
@@ -200,9 +202,9 @@ describe('AddressService', () => {
       status: 400,
       message: 'Something went wrong.',
     };
-    expect(await service.updateAddress(fd.addressId, fd.addressInput)).toEqual(
-      expected,
-    );
+    expect(
+      await service.updateAddress(fd.addressId, fd.addressInput, ''),
+    ).toEqual(expected);
   });
 
   it('should update address if Address not found', async () => {
@@ -216,8 +218,8 @@ describe('AddressService', () => {
       status: 400,
       message: 'Address not found',
     };
-    expect(await service.updateAddress(fd.addressId, fd.addressInput)).toEqual(
-      expected,
-    );
+    expect(
+      await service.updateAddress(fd.addressId, fd.addressInput, ''),
+    ).toEqual(expected);
   });
 });

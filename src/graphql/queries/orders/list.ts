@@ -3,6 +3,7 @@ import { validatePageFilter } from 'src/graphql/utils/pagination';
 import { orderListFilterValidation } from 'src/modules/orders/Orders.utils';
 import { OrdersListFiltersDTO } from 'src/modules/orders/dto/list';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
+import { pageInfoFragment } from 'src/graphql/fragments/pageInfo';
 
 const b2bQuery = (filter: OrdersListFiltersDTO): string => {
   const filters = orderListFilterValidation(filter);
@@ -31,16 +32,12 @@ const b2bQuery = (filter: OrdersListFiltersDTO): string => {
       ) {
         totalCount
         pageInfo {
-          hasNextPage
-          endCursor
-          startCursor
-          hasPreviousPage
+          ... PageInfo
         }
         edges {
           node {
             metadata {
-              key
-              value
+              ... Metadata
             }
             id
             token
@@ -81,6 +78,7 @@ const b2bQuery = (filter: OrdersListFiltersDTO): string => {
         }
       }
     }
+    ${pageInfoFragment}
   `;
 };
 

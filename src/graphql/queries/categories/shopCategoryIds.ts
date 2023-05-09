@@ -1,5 +1,6 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
+import { resultErrorFragment } from 'src/graphql/fragments/errors';
 
 const b2cQuery = (shopId: string): string => {
   return gql`
@@ -10,11 +11,12 @@ const b2cQuery = (shopId: string): string => {
       }
       ... on ResultError {
         __typename
-        errors
-        message
+        ... ResultError
       }
     }
-  }`;
+  }
+  ${resultErrorFragment}
+  `;
 };
 
 const b2bQuery = b2cQuery;

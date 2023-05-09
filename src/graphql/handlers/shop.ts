@@ -3,7 +3,6 @@ import {
   graphqlExceptionHandler,
   graphqlResultErrorHandler,
 } from 'src/core/proxies/graphqlHandler';
-import { shopDetailsQuery } from 'src/graphql/queries/shop/shopDetails';
 import { shopIdByOrderIdQuery } from '../queries/shop/shopIdByOrderId';
 import { shopBankDetailsQuery } from '../queries/shop/shopBankDetailsQuery';
 import { shopBankDetailsMutation } from '../mutations/shop/shopBankDetails';
@@ -17,7 +16,6 @@ import {
   getMyVendorsFieldValues,
 } from 'src/modules/shop/Shop.utils';
 import { updateMyVendorsMutation } from '../mutations/shop/updateMyVendors';
-import { vendorDetailsQuery } from '../queries/shop/vendorDetails';
 import { shopIdByProductQuery } from '../queries/shop/shopIdByProductId';
 import { getAllShopsQuery } from '../queries/shop/getAllShops';
 import { shopDetailsV2Query } from '../queries/shop/shopDetailsV2';
@@ -78,16 +76,6 @@ export const addStoreToShopHandler = async (
   }
 };
 
-export const shopDetailsHandler = async (
-  shopId: string,
-  isb2c = false,
-): Promise<object> => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(shopDetailsQuery(shopId, isb2c), '', isb2c),
-  );
-  return response['marketplaceShop'];
-};
-
 export const getShopDetailsV2Handler = async (
   filter: shopDetailDto,
   isb2c = false,
@@ -146,24 +134,6 @@ export const saveShopBankDetailsHandler = async (
   }
 };
 
-export const getStoreFrontIdHandler = async (
-  retailerId: string,
-): Promise<object> => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(shopDetailsQuery(retailerId)),
-  );
-  return response['marketplaceShop'];
-};
-
-export const getStoreProductVariantsHandler = async (
-  retailerId: string,
-): Promise<object> => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(shopDetailsQuery(retailerId, true), '', true),
-  );
-  return response['marketplaceShop'];
-};
-
 export const addVendorsToShopHandler = async (
   shopId: string,
   vendorIds: number[],
@@ -214,15 +184,6 @@ export const removeMyVendorsHandler = async (
     const errorMessage = await graphqlExceptionHandler(error);
     return errorMessage;
   }
-};
-
-export const vendorDetailsHandler = async (
-  vendorId: string,
-): Promise<object> => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(vendorDetailsQuery(vendorId)),
-  );
-  return response['marketplaceShop'];
 };
 
 export const shopIdByProductIdHandler = async (

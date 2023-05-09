@@ -1,4 +1,5 @@
 import { gql } from 'graphql-request';
+import { addressFragment } from 'src/graphql/fragments/checkout/shipping/shippingAddress';
 
 export const orderCreateFromCheckoutMutation = (
   checkoutId: string,
@@ -26,33 +27,10 @@ export const orderCreateFromCheckoutMutation = (
             }
           }
           shippingAddress {
-            firstName
-            lastName
-            streetAddress1
-            streetAddress2
-            phone
-            companyName
-            city
-            postalCode
-            country {
-              code
-              country
-            }
+            ... Address
           }
           billingAddress {
-            firstName
-            lastName
-            streetAddress1
-            streetAddress2
-            phone
-            companyName
-            city
-            postalCode
-            countryArea
-            country {
-              code
-              country
-            }
+            ... Address
           }
         }
         errors {
@@ -61,5 +39,6 @@ export const orderCreateFromCheckoutMutation = (
         }
       }
     }
+    ${addressFragment}
   `;
 };

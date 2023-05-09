@@ -1,5 +1,6 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
+import { addressFragment } from 'src/graphql/fragments/checkout/shipping/shippingAddress';
 
 const federationQuery = (userId: string) => {
   return gql`
@@ -10,25 +11,11 @@ const federationQuery = (userId: string) => {
         id
         email
         addresses {
-          id
-          firstName
-          lastName
-          companyName
-          streetAddress1
-          streetAddress2
-          city
-          cityArea
-          postalCode
-          country {
-            code
-            country
-          }
-          countryArea
-          phone
-          isDefaultShippingAddress
+          ... Address
         }
       }
     }
+    ${addressFragment}
   `;
 };
 
