@@ -19,10 +19,8 @@ import {
   ordersListHandler,
   returnOrderDetailsHandler,
   returnedOrdersListHandler,
-  shopOrdersByIdHandler,
   updateOrderMetadataHandler,
 } from 'src/graphql/handlers/orders';
-import { getOrderIdsFromShopData } from './Orders.utils';
 
 import { mockOrderReporting } from 'src/graphql/mocks/orderSummary.mock';
 import {
@@ -54,16 +52,6 @@ import { uploadImagesHandler } from 'src/external/services/uploadImages';
 @Injectable()
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
-
-  public async getShopOrdersDataById(id, token: string): Promise<object> {
-    try {
-      const response = await shopOrdersByIdHandler(id, token);
-      return prepareSuccessResponse(response, '', 201);
-    } catch (err) {
-      this.logger.error(err);
-      return graphqlExceptionHandler(err);
-    }
-  }
 
   public async getOrderDetailsById(id: string, token: string): Promise<object> {
     try {
@@ -117,7 +105,7 @@ export class OrdersService {
   ): Promise<object> {
     try {
       const response = await ordersListHandler(filter, token);
-      return prepareSuccessResponse(response, '', 201);
+      return prepareSuccessResponse(response);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
@@ -173,7 +161,7 @@ export class OrdersService {
         b2cEnabled,
       );
       await updateOrderMetadataHandler(payload.id, metadata, token, b2cEnabled);
-      return prepareSuccessResponse(response, '', 200);
+      return prepareSuccessResponse(response, 'order return placed', 201);
     } catch (err) {
       this.logger.error(err);
       return graphqlExceptionHandler(err);
@@ -212,7 +200,11 @@ export class OrdersService {
   ): Promise<object> {
     try {
       const response = await orderFulfillmentRefundHandler(refundObject, token);
-      return prepareSuccessResponse(response, '', 201);
+      return prepareSuccessResponse(
+        response,
+        'order fulfillment is refunded',
+        201,
+      );
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -225,7 +217,7 @@ export class OrdersService {
   ): Promise<object> {
     try {
       const response = await orderAmountRefundHandler(refundObject, token);
-      return prepareSuccessResponse(response, '', 201);
+      return prepareSuccessResponse(response, 'order amount is refunded', 201);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -235,7 +227,7 @@ export class OrdersService {
   public async orderCancel(orderId: string, token: string): Promise<object> {
     try {
       const response = await orderCancelHandler(orderId, token);
-      return prepareSuccessResponse(response, '', 201);
+      return prepareSuccessResponse(response, 'order is cancelled', 201);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -265,17 +257,16 @@ export class OrdersService {
     token: string,
   ): Promise<object> {
     try {
-      const shopDetails = await shopOrdersByIdHandler(shopId, token, true);
-      const orderIds: string[] = getOrderIdsFromShopData(shopDetails);
+      const shopOrderMetadata = [{ key: 'storeId', value: shopId }];
       const [processing, shipped, cancelled, returned, totalEarnings] =
         await Promise.all([
-          getProcessingOrdersCountHandler(token, orderIds, true),
-          getFulfilledOrdersCountHandler(token, orderIds, true),
-          getCancelledOrdersCountHandler(token, orderIds, true),
+          getProcessingOrdersCountHandler(token, shopOrderMetadata, true),
+          getFulfilledOrdersCountHandler(token, shopOrderMetadata, true),
+          getCancelledOrdersCountHandler(token, shopOrderMetadata, true),
           getReturnOrderIdsHandler({
             token,
             after: '',
-            storeOrderIds: orderIds,
+            metadata: shopOrderMetadata,
             isb2c: true,
           }),
           getTotalEarningsHandler(shopId, token, true),
@@ -365,7 +356,11 @@ export class OrdersService {
         fulfillmentUpdateTrackingInput,
         token,
       );
-      return prepareSuccessResponse(response);
+      return prepareSuccessResponse(
+        response,
+        'fulfillment tracking updated',
+        201,
+      );
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

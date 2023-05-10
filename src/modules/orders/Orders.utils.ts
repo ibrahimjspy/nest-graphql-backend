@@ -11,7 +11,9 @@ import { ShopOrderDto } from './dto/addOrderToShop';
  * @param shopData - this is data fetched from shop service
  * @returns orderIds = in array of strings[]
  */
-export const getOrderIdsFromShopData = (shopData): string[] => {
+export const getOrderIdsFromShopData = (shopData: {
+  orders: Array<{ orderId: string }>;
+}): string[] => {
   const shopOrders = shopData['orders'];
   return shopOrders.map((orderData) => orderData.orderId);
 };

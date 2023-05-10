@@ -1,7 +1,6 @@
 import {
   orderDetailsQuery,
   orderReturnFulfillmentQuery,
-  shopOrdersQuery,
 } from 'src/graphql/queries/orders';
 import {
   graphqlCall,
@@ -98,17 +97,13 @@ export const addOrderToShopHandler = async (
 export const getReturnOrderIdsHandler = async ({
   token,
   after = '',
-  storeOrderIds = [],
+  metadata = [],
   isb2c = false,
   returnStatus = null,
 }): Promise<string[]> => {
   let returnedOrderIds = [];
   const orderStatuses = await graphqlResultErrorHandler(
-    await graphqlCall(
-      getOrderStatus(after, storeOrderIds, isb2c),
-      token,
-      isb2c,
-    ),
+    await graphqlCall(getOrderStatus(after, metadata, isb2c), token, isb2c),
   );
   const orderIds = filterReturnedOrderIds(
     orderStatuses['orders'].edges,
@@ -121,7 +116,7 @@ export const getReturnOrderIdsHandler = async ({
     const nextPageOrderIds = await getReturnOrderIdsHandler({
       token,
       after: nextPage,
-      storeOrderIds,
+      metadata,
       isb2c,
       returnStatus,
     });
@@ -270,17 +265,6 @@ export const orderFulfillmentUpdateTrackingHandler = async (
     ),
   );
   return response['orderFulfillmentUpdateTracking'];
-};
-
-export const shopOrdersByIdHandler = async (
-  id: string,
-  token: string,
-  isB2c = false,
-): Promise<object> => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(shopOrdersQuery(id), token, isB2c),
-  );
-  return response['marketplaceShop'];
 };
 
 export const returnOrderDetailsHandler = async (

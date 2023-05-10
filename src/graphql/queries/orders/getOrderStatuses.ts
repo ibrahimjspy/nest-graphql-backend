@@ -1,11 +1,12 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
+import { graphqlObjectTransform } from 'src/core/utils/helpers';
 
-const b2bQuery = (after: string, storeOrderIds: string[]): string => {
+const b2bQuery = (after: string, metadata = []): string => {
   return gql`
     query {
-      orders(first: 100, after: "${after}", filter: { ids: ${JSON.stringify(
-    storeOrderIds,
+      orders(first: 100, after: "${after}", filter: { metadata: ${graphqlObjectTransform(
+    metadata,
   )} status: [] }) {
         totalCount
         pageInfo {
@@ -25,14 +26,10 @@ const b2bQuery = (after: string, storeOrderIds: string[]): string => {
 
 const b2cQuery = b2bQuery;
 
-export const getOrderStatus = (
-  after = '',
-  storeOrderIds = [],
-  isB2C = false,
-) => {
+export const getOrderStatus = (after = '', metadata = [], isB2C = false) => {
   return graphqlQueryCheck(
-    b2bQuery(after, storeOrderIds),
-    b2cQuery(after, storeOrderIds),
+    b2bQuery(after, metadata),
+    b2cQuery(after, metadata),
     isB2C,
   );
 };

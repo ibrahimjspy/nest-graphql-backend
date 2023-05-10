@@ -12,6 +12,7 @@ import { getReadyToFulfillOrdersCountQuery } from '../queries/orders/reporting/r
 import { getCancelledOrdersCountQuery } from '../queries/orders/reporting/cancelled';
 import { getProcessingOrdersCountQuery } from '../queries/orders/reporting/processing';
 import { getTotalEarningsQuery } from '../queries/orders/reporting/totalEarnings';
+import { metadataType } from '../types/order.type';
 
 export const dailySalesHandler = async (
   reportingTime = 'TODAY',
@@ -38,12 +39,12 @@ export const getOrdersCountHandler = async (token: string) => {
 
 export const getFulfilledOrdersCountHandler = async (
   token: string,
-  storeOrderIds = [],
+  metadata = [],
   isb2c = false,
 ) => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
-      getFulfilledOrdersCountQuery(storeOrderIds, isb2c),
+      getFulfilledOrdersCountQuery(metadata as unknown as metadataType, isb2c),
       token,
       isb2c,
     ),
@@ -69,12 +70,12 @@ export const getReadyToFulfillOrdersCountHandler = async (token: string) => {
 
 export const getCancelledOrdersCountHandler = async (
   token: string,
-  storeOrderIds = [],
+  metadata = [],
   isb2c = false,
 ) => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
-      getCancelledOrdersCountQuery(storeOrderIds, isb2c),
+      getCancelledOrdersCountQuery(metadata as unknown as metadataType, isb2c),
       token,
       isb2c,
     ),
@@ -84,12 +85,12 @@ export const getCancelledOrdersCountHandler = async (
 
 export const getProcessingOrdersCountHandler = async (
   token: string,
-  storeOrderIds = [],
+  metadata = [],
   isb2c = false,
 ) => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
-      getProcessingOrdersCountQuery(storeOrderIds, isb2c),
+      getProcessingOrdersCountQuery(metadata as unknown as metadataType, isb2c),
       token,
       isb2c,
     ),
