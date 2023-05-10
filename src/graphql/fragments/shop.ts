@@ -32,6 +32,7 @@ export const checkoutShopDetailsFragment = gql`
     id
     name
     madeIn
+    minOrder
     shippingMethods {
       id
       shippingMethodId

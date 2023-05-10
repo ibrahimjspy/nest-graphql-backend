@@ -1,4 +1,5 @@
 import { gql } from 'graphql-request';
+import { checkoutShopDetailsFragment } from 'src/graphql/fragments/shop';
 
 export const checkoutBundlesByIdQuery = (
   checkoutId: string,
@@ -82,14 +83,7 @@ export const checkoutBundlesByIdQuery = (
                 }
               }
               shop {
-                id
-                name
-                madeIn
-                shippingMethods {
-                  id
-                  shippingMethodId
-                  shippingMethodTypeId
-                }
+                ... Shop
               }
             }
           }
@@ -112,5 +106,6 @@ export const checkoutBundlesByIdQuery = (
         }
       }
     }
+    ${checkoutShopDetailsFragment}
   `;
 };
