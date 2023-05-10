@@ -9,7 +9,7 @@ import {
   prepareSuccessResponse,
 } from 'src/core/utils/response';
 import { getHttpErrorMessage } from 'src/external/utils/httpHelper';
-import { RetailerRegisterDto } from '../../modules/shop/retailer/dto';
+import { RetailerRegisterDto } from '../../modules/shop/modules/retailer/dto';
 
 export const retailerJobTitlesHandler = async () => {
   try {

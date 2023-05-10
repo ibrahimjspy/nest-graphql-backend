@@ -5,7 +5,7 @@ import {
   COMMON_HEADERS,
 } from 'src/constants';
 import FormData from 'form-data';
-import { RetailerRegisterDto } from '../../modules/shop/retailer/dto';
+import { RetailerRegisterDto } from '../../modules/shop/modules/retailer/dto';
 import { ChangeUserPasswordDTO } from 'src/modules/account/user/dto/user.dto';
 import { getTokenWithoutBearer } from 'src/modules/account/user/User.utils';
 import { Auth0UserInputDTO } from 'src/modules/account/user/dto/user.dto';

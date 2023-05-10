@@ -6,7 +6,7 @@ import {
 import { SuccessResponseType } from 'src/core/utils/response.type';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import * as AccountHandlers from 'src/graphql/handlers/account/user';
-import { ShopService } from '../../shop/Shop.service';
+import { ShopService } from '../../shop/services.ts/shop/Shop.service';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import {
   AllUsersDTO,

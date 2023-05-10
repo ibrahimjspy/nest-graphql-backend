@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { makeResponse } from '../../core/utils/response';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ShopService } from './Shop.service';
+import { ShopService } from './services.ts/shop/Shop.service';
 import {
   accountIdDTO,
   allShopIdsDTO,
@@ -30,11 +30,17 @@ import {
   updateMyProductDTO,
 } from './dto/myProducts';
 import { ShopIdDto, shopInfoDto } from '../orders/dto';
+import { MyProductsService } from './services.ts/myProducts/MyProducts.service.ts';
+import { MyVendorsService } from './services.ts/myVendors/MyVendors.service';
 
 @ApiTags('shop')
 @Controller('')
 export class ShopController {
-  constructor(private readonly appService: ShopService) {}
+  constructor(
+    private readonly shopService: ShopService,
+    private readonly myProductsService: MyProductsService,
+    private readonly myVendorsService: MyVendorsService,
+  ) {}
 
   @Get('/api/v2/shop')
   @ApiOperation({
@@ -46,7 +52,7 @@ export class ShopController {
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getShopDetailsV2(filter, filter.isB2c),
+      await this.shopService.getShopDetailsV2(filter, filter.isB2c),
     );
   }
 
@@ -62,7 +68,11 @@ export class ShopController {
     const Authorization: string = headers.authorization;
     return await makeResponse(
       res,
-      await this.appService.updateStoreInfo(filter.shopId, body, Authorization),
+      await this.shopService.updateStoreInfo(
+        filter.shopId,
+        body,
+        Authorization,
+      ),
     );
   }
 
@@ -80,7 +90,7 @@ export class ShopController {
     const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.createStore(
+      await this.shopService.createStore(
         params.shopId,
         storeInput,
         Authorization,
@@ -98,7 +108,7 @@ export class ShopController {
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getShopIdByProductIds(filter.productIds),
+      await this.shopService.getShopIdByProductIds(filter.productIds),
     );
   }
 
@@ -115,7 +125,7 @@ export class ShopController {
     const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.getShopBankDetails(params.shopId, Authorization),
+      await this.shopService.getShopBankDetails(params.shopId, Authorization),
     );
   }
 
@@ -133,7 +143,7 @@ export class ShopController {
     const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.saveShopBankDetails(
+      await this.shopService.saveShopBankDetails(
         params.shopId,
         body?.accountId,
         Authorization,
@@ -152,7 +162,7 @@ export class ShopController {
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getMyProducts(params.shopId, filter),
+      await this.myProductsService.getMyProducts(params.shopId, filter),
     );
   }
 
@@ -169,7 +179,10 @@ export class ShopController {
     const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.removeProductsFromMyProducts(body, Authorization),
+      await this.myProductsService.removeProductsFromMyProducts(
+        body,
+        Authorization,
+      ),
     );
   }
 
@@ -184,7 +197,7 @@ export class ShopController {
   ): Promise<any> {
     return makeResponse(
       res,
-      await this.appService.updateMyProduct(body, token),
+      await this.myProductsService.updateMyProduct(body, token),
     );
   }
 
@@ -202,7 +215,7 @@ export class ShopController {
     const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.addVendorsToShop(
+      await this.myVendorsService.addVendorsToShop(
         params.shopId,
         body.vendorIds,
         Authorization,
@@ -218,7 +231,10 @@ export class ShopController {
     @Res() res,
     @Param() params: shopIdDTO,
   ): Promise<any> {
-    return makeResponse(res, await this.appService.getMyVendors(params.shopId));
+    return makeResponse(
+      res,
+      await this.myVendorsService.getMyVendors(params.shopId),
+    );
   }
 
   @Delete('/api/v1/shop/my/vendors/:shopId')
@@ -235,7 +251,7 @@ export class ShopController {
     const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.removeMyVendorsToShop(
+      await this.myVendorsService.removeMyVendorsToShop(
         params.shopId,
         body.vendorIds,
         Authorization,
@@ -250,7 +266,7 @@ export class ShopController {
   async getAllShops(@Res() res, @Query() filter: allShopIdsDTO): Promise<any> {
     return makeResponse(
       res,
-      await this.appService.getAllShops(filter.quantity),
+      await this.shopService.getAllShops(filter.quantity),
     );
   }
 
@@ -268,7 +284,7 @@ export class ShopController {
     const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.createMarketplaceShop(
+      await this.shopService.createMarketplaceShop(
         shopInput,
         Authorization,
         filter.isB2c,

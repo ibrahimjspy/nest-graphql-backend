@@ -2,7 +2,7 @@ import { Controller, Get, Headers, Param, Query, Res } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PaymentsService } from './Payments.service';
 import { makeResponse } from 'src/core/utils/response';
-import { dateDto, shopIdDto } from 'src/modules/shop/retailer/dto';
+import { dateDto, shopIdDto } from 'src/modules/shop/modules/retailer/dto';
 
 @ApiTags('shop/payments')
 @Controller()
