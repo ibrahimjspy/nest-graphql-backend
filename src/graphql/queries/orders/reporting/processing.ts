@@ -1,12 +1,13 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
-
-const b2bQuery = (): string => {
+import { graphqlObjectTransform } from 'src/core/utils/helpers';
+import { metadataType } from 'src/graphql/types/order.type';
+const b2cQuery = (metadata: metadataType): string => {
   return gql`
     query {
       orders(
         filter: {
-          ids: []
+          metadata: ${graphqlObjectTransform(metadata)}
           status: [
             READY_TO_FULFILL
             READY_TO_CAPTURE
@@ -21,29 +22,11 @@ const b2bQuery = (): string => {
   `;
 };
 
-const b2cQuery = (storeOrderIds: string[]): string => {
-  return gql`
-    query {
-      orders(
-        filter: {
-          ids: ${JSON.stringify(storeOrderIds)}
-          status: [
-            READY_TO_FULFILL
-            READY_TO_CAPTURE
-            PARTIALLY_FULFILLED
-            UNFULFILLED
-          ]
-        }
-      ) {
-        totalCount
-      }
-    }
-  `;
-};
+const b2bQuery = b2cQuery;
 
 export const getProcessingOrdersCountQuery = (
-  storeOrderIds = [],
+  metadata: metadataType,
   isB2C = false,
 ) => {
-  return graphqlQueryCheck(b2bQuery(), b2cQuery(storeOrderIds), isB2C);
+  return graphqlQueryCheck(b2bQuery(metadata), b2cQuery(metadata), isB2C);
 };

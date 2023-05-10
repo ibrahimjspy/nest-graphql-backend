@@ -19,10 +19,8 @@ import {
   ordersListHandler,
   returnOrderDetailsHandler,
   returnedOrdersListHandler,
-  shopOrdersByIdHandler,
   updateOrderMetadataHandler,
 } from 'src/graphql/handlers/orders';
-import { getOrderIdsFromShopData } from './Orders.utils';
 
 import { mockOrderReporting } from 'src/graphql/mocks/orderSummary.mock';
 import {
@@ -259,17 +257,16 @@ export class OrdersService {
     token: string,
   ): Promise<object> {
     try {
-      const shopDetails: any = await shopOrdersByIdHandler(shopId, token, true);
-      const orderIds: string[] = getOrderIdsFromShopData(shopDetails);
+      const shopOrderMetadata = [{ key: 'storeId', value: shopId }];
       const [processing, shipped, cancelled, returned, totalEarnings] =
         await Promise.all([
-          getProcessingOrdersCountHandler(token, orderIds, true),
-          getFulfilledOrdersCountHandler(token, orderIds, true),
-          getCancelledOrdersCountHandler(token, orderIds, true),
+          getProcessingOrdersCountHandler(token, shopOrderMetadata, true),
+          getFulfilledOrdersCountHandler(token, shopOrderMetadata, true),
+          getCancelledOrdersCountHandler(token, shopOrderMetadata, true),
           getReturnOrderIdsHandler({
             token,
             after: '',
-            storeOrderIds: orderIds,
+            metadata: shopOrderMetadata,
             isb2c: true,
           }),
           getTotalEarningsHandler(shopId, token, true),

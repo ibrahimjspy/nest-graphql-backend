@@ -102,11 +102,6 @@ describe('Shop Service Integration test', () => {
 
   it('shop order report is correctly getting made', async () => {
     jest
-      .spyOn(OrderHandlers, 'shopOrdersByIdHandler')
-      .mockImplementation(async () => {
-        return { orders: [{ orderId: '123' }] };
-      });
-    jest
       .spyOn(OrderReporting, 'getProcessingOrdersCountHandler')
       .mockImplementation(async () => {
         return 2;

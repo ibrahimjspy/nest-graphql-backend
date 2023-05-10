@@ -4,3 +4,9 @@ export interface OrderRefundInputInterface {
   fulfillmentLines: string;
   amountToRefund: number;
 }
+
+export interface metadataType {
+  key: string;
+  value: string;
+}
+[];

@@ -86,6 +86,7 @@ export class OrdersController {
 
   // Returns orders summary
   @Get('api/v1/orders/summary')
+  @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'returns orders summary of all time' })
   async findOrdersSummary(@Res() res, @Headers() headers): Promise<object> {
     const Authorization: string = headers.authorization;
