@@ -1,5 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { SelectBundleError, UnSelectBundleError } from '../../Checkout.errors';
+import {
+  NoBundleFoundError,
+  SelectBundleError,
+  UnSelectBundleError,
+} from '../../Checkout.errors';
 
 @Injectable()
 export class CartValidationService {
@@ -42,5 +46,19 @@ export class CartValidationService {
    */
   public isEmptyList(saleorLines) {
     return saleorLines.length;
+  }
+
+  /**
+   * @description -- it validates get bundles response that is fetched from product service
+   */
+  public validateBundlesByStatus(
+    bundles: { status: 200 | 400 | 500 },
+    throwException = true,
+  ) {
+    if (bundles.status !== 200) {
+      if (throwException) throw new NoBundleFoundError();
+      return false;
+    }
+    return true;
   }
 }

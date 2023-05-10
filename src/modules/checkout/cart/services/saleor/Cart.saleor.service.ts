@@ -4,7 +4,10 @@ import {
   deleteLinesHandler,
   updateLinesHandler,
 } from 'src/graphql/handlers/checkout/cart/cart.saleor';
-import { CheckoutLinesInterface } from './Cart.saleor.types';
+import {
+  CheckoutLinesInterface,
+  ProductBundlesResponseInterface,
+} from './Cart.saleor.types';
 import { MarketplaceCartService } from '../marketplace/Cart.marketplace.service';
 import {
   getAddBundleToCartLines,
@@ -105,10 +108,13 @@ export class SaleorCartService {
     token: string,
   ) {
     const bundleIds = getBundleIds(checkoutBundleLines);
-    const bundlesData = await this.productService.getProductBundles({
+    const bundlesData: unknown = await this.productService.getProductBundles({
       bundleIds: bundleIds,
       first: 100,
     });
+    this.cartValidationService.validateBundlesByStatus(
+      bundlesData as ProductBundlesResponseInterface,
+    );
     const saleorLines: CheckoutLinesInterface = getAddBundleToCartLines(
       bundlesData['data'],
       checkoutBundleLines,

@@ -59,3 +59,10 @@ export class MinimumOrderAmountError extends Error {
     this.name = 'MinimumOrderAmountError';
   }
 }
+
+export class NoBundleFoundError extends Error {
+  constructor() {
+    super('Some of checkout bundles do not exist or it is not valid uuid');
+    this.name = 'NoBundleFoundError';
+  }
+}
