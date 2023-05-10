@@ -6,7 +6,6 @@ import {
 } from 'src/core/utils/response';
 import * as CheckoutHandlers from 'src/graphql/handlers/checkout/checkout';
 import { orderCreateFromCheckoutHandler } from 'src/graphql/handlers/checkout/checkout';
-import SqsService from 'src/external/endpoints/sqsMessage';
 import { NoPaymentIntentError } from './Checkout.errors';
 import { MarketplaceCartService } from './cart/services/marketplace/Cart.marketplace.service';
 import { PaymentService } from './payment/Payment.service';
@@ -25,7 +24,6 @@ import {
 export class CheckoutService {
   private readonly logger = new Logger(CheckoutService.name);
   constructor(
-    private sqsService: SqsService,
     private paymentService: PaymentService,
     private marketplaceCartService: MarketplaceCartService,
     private ordersService: OrdersService,
