@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { makeResponse } from '../../core/utils/response';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ShopService } from './services.ts/shop/Shop.service';
+import { ShopService } from './services/shop/Shop.service';
 import {
   accountIdDTO,
   allShopIdsDTO,
@@ -30,8 +30,8 @@ import {
   updateMyProductDTO,
 } from './dto/myProducts';
 import { ShopIdDto, shopInfoDto } from '../orders/dto';
-import { MyProductsService } from './services.ts/myProducts/MyProducts.service.ts';
-import { MyVendorsService } from './services.ts/myVendors/MyVendors.service';
+import { MyProductsService } from './services/myProducts/MyProducts.service.ts';
+import { MyVendorsService } from './services/myVendors/MyVendors.service';
 
 @ApiTags('shop')
 @Controller('')
