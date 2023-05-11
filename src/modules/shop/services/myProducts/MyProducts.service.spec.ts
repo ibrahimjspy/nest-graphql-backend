@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as ShopHandlers from 'src/graphql/handlers/shop';
 import * as ProductHandlers from 'src/graphql/handlers/product';
-import { shopIntegrationMocks } from '../../../../../test/mock/shop.js';
+import { shopIntegrationMocks } from '../../../../../test/mock/shop';
 import { MyProductsService } from './MyProducts.service';
 
 describe('My Products Service Integration test', () => {
