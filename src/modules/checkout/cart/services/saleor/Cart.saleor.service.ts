@@ -6,7 +6,7 @@ import {
 } from 'src/graphql/handlers/checkout/cart/cart.saleor';
 import {
   CheckoutLinesInterface,
-  ProductBundlesResponseInterface,
+  ProductBundlesResponseType,
 } from './Cart.saleor.types';
 import { MarketplaceCartService } from '../marketplace/Cart.marketplace.service';
 import {
@@ -113,7 +113,7 @@ export class SaleorCartService {
       first: 100,
     });
     this.cartValidationService.validateBundlesByStatus(
-      bundlesData as ProductBundlesResponseInterface,
+      bundlesData as ProductBundlesResponseType,
     );
     const saleorLines: CheckoutLinesInterface = getAddBundleToCartLines(
       bundlesData['data'],

@@ -4,6 +4,6 @@ export interface CheckoutLinesInterface {
 }
 [];
 
-export interface ProductBundlesResponseInterface {
+export interface ProductBundlesResponseType {
   status: 200 | 400 | 500;
 }

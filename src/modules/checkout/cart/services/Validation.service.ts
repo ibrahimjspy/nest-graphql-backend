@@ -4,6 +4,7 @@ import {
   SelectBundleError,
   UnSelectBundleError,
 } from '../../Checkout.errors';
+import { ProductBundlesResponseType } from './saleor/Cart.saleor.types';
 
 @Injectable()
 export class CartValidationService {
@@ -52,7 +53,7 @@ export class CartValidationService {
    * @description -- it validates get bundles response that is fetched from product service
    */
   public validateBundlesByStatus(
-    bundles: { status: 200 | 400 | 500 },
+    bundles: ProductBundlesResponseType,
     throwException = true,
   ) {
     if (bundles.status !== 200) {
