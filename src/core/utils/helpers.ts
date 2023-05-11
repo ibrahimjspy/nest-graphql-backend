@@ -22,17 +22,6 @@ export function hash<Type>(list: Array<Type>, key: string | any) {
 }
 
 /**
- * If the quantity is a number and greater than 0, return the quantity, otherwise return 0.
- * @param {number} quantity - number
- * @returns A function that takes a number and returns a number.
- */
-export const makeQuantity = (quantity: number): number => {
-  if (typeof quantity !== 'number')
-    throw new Error('Quantity should be a number.');
-  return quantity > 0 ? quantity : 0;
-};
-
-/**
  * It removes the quotes from the keys of a dictionary object
  * @param {object} obj - The object to be converted to a string.
  * @returns A string with all the keys in the object without quotes.
@@ -45,15 +34,6 @@ export const graphqlObjectTransform = (obj: object) => {
   const json_str = JSON.stringify(obj);
 
   return json_str.replace(re, (match: string) => match.replaceAll(/"/gi, ''));
-};
-
-/**
- * It makes the number to 2 decimal places
- * @param number - The number to be converted.
- * @returns A number with precision to 2 decimal places
- */
-export const roundNumber = (number: number) => {
-  return Number(number.toFixed(2));
 };
 
 /**

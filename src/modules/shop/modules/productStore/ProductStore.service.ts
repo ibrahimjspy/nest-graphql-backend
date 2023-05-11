@@ -3,7 +3,7 @@ import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
 import { PushToStoreDto } from './dto/products';
 import { uploadImagesHandler } from 'src/external/services/uploadImages';
-import { ShopService } from '../Shop.service';
+import { ShopService } from '../../services/shop/Shop.service';
 import { pushToStoreHandler } from 'src/graphql/handlers/productStore';
 
 @Injectable()

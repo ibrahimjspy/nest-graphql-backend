@@ -3,3 +3,7 @@ export interface CheckoutLinesInterface {
   variantId?: string;
 }
 [];
+
+export interface ProductBundlesResponseType {
+  status: 200 | 400 | 500;
+}

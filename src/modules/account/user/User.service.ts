@@ -6,7 +6,6 @@ import {
 import { SuccessResponseType } from 'src/core/utils/response.type';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import * as AccountHandlers from 'src/graphql/handlers/account/user';
-import { ShopService } from '../../shop/Shop.service';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import {
   AllUsersDTO,
@@ -21,6 +20,7 @@ import OSUserService from 'src/external/services/osUser.service';
 import { getUserByToken, validateAuth0UserInput } from './User.utils';
 import { Auth0UserDetailType } from './User.types';
 import { retailerChangePassword } from 'src/external/endpoints/retailer';
+import { ShopService } from 'src/modules/shop/services/shop/Shop.service';
 
 @Injectable()
 export class UserService {
