@@ -30,7 +30,7 @@ import {
   updateMyProductDTO,
 } from './dto/myProducts';
 import { ShopIdDto, shopInfoDto } from '../orders/dto';
-import { MyProductsService } from './services/myProducts/MyProducts.service.ts';
+import { MyProductsService } from './services/myProducts/MyProducts.service';
 import { MyVendorsService } from './services/myVendors/MyVendors.service';
 
 @ApiTags('shop')
