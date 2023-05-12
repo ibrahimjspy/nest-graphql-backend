@@ -335,7 +335,6 @@ export class CartService {
         token,
       );
       checkoutId = saleor.id;
-      console.log(checkoutId);
       const marketplace = await this.marketplaceService.addCheckoutBundlesV2(
         { userEmail, checkoutId, bundles },
         token,
