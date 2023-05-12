@@ -235,4 +235,45 @@ describe('Cart Service', () => {
     });
     expect(cart).toBeDefined();
   });
+
+  it('should add bundles v2 to cart when there is checkout id', async () => {
+    jest
+      .spyOn(SaleorCartHandlers, 'addLinesHandler')
+      .mockImplementation(async () => {
+        return { id: 'checkout', status: 'done' };
+      });
+    jest
+      .spyOn(MarketplaceCheckoutHandler, 'addCheckoutBundlesV2Handler')
+      .mockImplementation(async () => {
+        return { status: 'done' } as any;
+      });
+    jest
+      .spyOn(ProductHandlers, 'getBundlesHandler')
+      .mockImplementation(async () => mocks.mockProductBundles as any);
+
+    jest
+      .spyOn(MarketplaceCartHandlers, 'updateCartBundlesCheckoutIdHandler')
+      .mockImplementation(async () => mocks.mockProductBundles);
+
+    const addToCart = await service.addToCartV2(
+      {
+        userEmail: 'testMail@gmail.com',
+        checkoutId: 'checkoutId',
+        bundles: [
+          { bundleId: '19c88ba8-7429-45f7-87dd-a9999803d955', quantity: 3 },
+        ],
+      },
+      'token',
+    );
+
+    expect(addToCart).toEqual({
+      status: 201,
+      data: {
+        saleor: { id: 'checkout', status: 'done' },
+        marketplace: { status: 'done' },
+      },
+      message: 'bundles added to cart',
+    });
+    expect(addToCart).toBeDefined();
+  });
 });
