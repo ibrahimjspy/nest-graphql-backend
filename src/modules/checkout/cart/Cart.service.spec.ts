@@ -268,7 +268,10 @@ describe('Cart Service', () => {
 
     expect(addToCart).toEqual({
       status: 201,
-      data: { saleor: { status: 'done' }, marketplace: { status: 'done' } },
+      data: {
+        saleor: { id: 'checkout', status: 'done' },
+        marketplace: { status: 'done' },
+      },
       message: 'bundles added to cart',
     });
     expect(addToCart).toBeDefined();
