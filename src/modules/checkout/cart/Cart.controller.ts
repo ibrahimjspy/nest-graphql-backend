@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Res,
 } from '@nestjs/common';
 import { CartService } from './Cart.service';
@@ -15,6 +16,7 @@ import { makeResponse } from 'src/core/utils/response';
 import { AddBundleDto, UserIdDto } from '../dto';
 import { UpdateBundleStateDto, UpdateBundlesDto } from '../dto/add-bundle.dto';
 import { DeleteBundlesDto, ReplaceBundleDto } from './dto/cart';
+import { GetCartDto } from './dto/common.dto';
 
 @ApiTags('checkout/cart')
 @Controller('')
@@ -134,6 +136,26 @@ export class CartController {
     return makeResponse(
       res,
       await this.appService.replaceCheckoutBundle(replaceBundleData, token),
+    );
+  }
+
+  @Get('api/v2/cart')
+  @ApiOperation({
+    summary: 'returns shopping cart data against an checkout id',
+  })
+  @ApiBearerAuth('JWT-auth')
+  async getCartV2(
+    @Res() res,
+    @Query() filter: GetCartDto,
+    @IsAuthenticated('authorization') token: string,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.getCartV2(
+        filter.checkoutId,
+        filter.isSelected,
+        token,
+      ),
     );
   }
 }

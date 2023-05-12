@@ -46,3 +46,12 @@ export const isObject = (obj) => {
     return true;
   return false;
 };
+
+/**
+ * checks if the value is boolean or not
+ * @param val - could be of any type
+ * @returns true if it is boolean or not
+ */
+export const isBoolean = (val) => {
+  return val === false || val === true;
+};
