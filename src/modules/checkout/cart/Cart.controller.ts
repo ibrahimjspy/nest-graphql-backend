@@ -144,7 +144,7 @@ export class CartController {
     summary: 'returns shopping cart data against an checkout id',
   })
   @ApiBearerAuth('JWT-auth')
-  async getShoppingCartV2(
+  async getCartV2(
     @Res() res,
     @Query() filter: GetCartDto,
     @IsAuthenticated('authorization') token: string,
