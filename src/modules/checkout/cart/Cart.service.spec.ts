@@ -195,11 +195,7 @@ describe('Cart Service', () => {
         };
       });
 
-    const cart = await service.getShoppingCartDataV2(
-      'testMail@gmail.com',
-      null,
-      'token',
-    );
+    const cart = await service.getCartV2('checkoutId', null, 'token');
     expect(cart).toEqual({
       status: 200,
       data: {
@@ -226,11 +222,7 @@ describe('Cart Service', () => {
         };
       });
 
-    const cart = await service.getShoppingCartDataV2(
-      'testMail@gmail.com',
-      true,
-      'token',
-    );
+    const cart = await service.getCartV2('checkoutId', true, 'token');
     expect(cart).toEqual({
       status: 200,
       data: {

@@ -300,7 +300,7 @@ export class CartService {
   /**
    * @description -- fetches shopping cart data from bundle service against checkoutId
    */
-  public async getShoppingCartDataV2(
+  public async getCartV2(
     checkoutId: string,
     isSelected: boolean | null,
     token: string,

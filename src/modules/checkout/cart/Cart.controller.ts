@@ -151,7 +151,7 @@ export class CartController {
   ): Promise<object> {
     return makeResponse(
       res,
-      await this.appService.getShoppingCartDataV2(
+      await this.appService.getCartV2(
         filter.checkoutId,
         filter.isSelected,
         token,
