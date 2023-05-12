@@ -6,7 +6,7 @@ import {
 } from 'src/core/utils/response';
 import { updateCheckoutBundleState } from 'src/graphql/handlers/checkout/checkout';
 import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
-import { UpdateBundleStateDto } from '../dto/add-bundle.dto';
+import { AddBundleDto, UpdateBundleStateDto } from '../dto/add-bundle.dto';
 import { SaleorCartService } from './services/saleor/Cart.saleor.service';
 import { MarketplaceCartService } from './services/marketplace/Cart.marketplace.service';
 import {
@@ -24,6 +24,7 @@ import {
 } from '../Checkout.errors';
 import { ReplaceBundleDto } from './dto/cart';
 import { CartValidationService } from './services/Validation.service';
+import { SuccessResponseType } from 'src/core/utils/response.type';
 
 @Injectable()
 export class CartService {
@@ -311,6 +312,65 @@ export class CartService {
         token,
         isSelected,
       });
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description -- fetches shopping cart data from bundle service against checkoutId
+   */
+  public async createCartSession(
+    checkoutBundles: AddBundleDto,
+    token: string,
+  ): Promise<SuccessResponseType> {
+    try {
+      const { userEmail, bundles } = checkoutBundles;
+      let { checkoutId } = checkoutBundles;
+      const saleor = await this.saleorService.addBundleLines(
+        userEmail,
+        checkoutId,
+        bundles,
+        token,
+      );
+      checkoutId = saleor.id;
+      console.log(checkoutId);
+      const marketplace = await this.marketplaceService.addCheckoutBundlesV2(
+        { userEmail, checkoutId, bundles },
+        token,
+      );
+      return this.cartResponseBuilder.addToCartV2(saleor, marketplace);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description -- adds to cart against existing cart id
+   * @pre_condition -- cart id should be valid and a cart session should be active against it
+   */
+  public async addToCartV2(
+    checkoutBundles: AddBundleDto,
+    token: string,
+  ): Promise<SuccessResponseType> {
+    try {
+      const { userEmail, checkoutId, bundles } = checkoutBundles;
+
+      const [saleor, marketplace] = await Promise.all([
+        await this.saleorService.addBundleLines(
+          userEmail,
+          checkoutId,
+          bundles,
+          token,
+        ),
+        await this.marketplaceService.addCheckoutBundlesV2(
+          { userEmail, checkoutId, bundles },
+          token,
+        ),
+      ]);
+      return this.cartResponseBuilder.addToCartV2(saleor, marketplace);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

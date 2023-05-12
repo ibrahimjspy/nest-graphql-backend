@@ -275,4 +275,17 @@ export class CartResponseService {
       return graphqlExceptionHandler(error);
     }
   }
+
+  public async addToCartV2(saleor, marketplace) {
+    try {
+      return prepareSuccessResponse(
+        { saleor, marketplace },
+        'bundles added to cart',
+        201,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
 }

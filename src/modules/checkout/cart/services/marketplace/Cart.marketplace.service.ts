@@ -9,14 +9,19 @@ import {
   updateCheckoutBundlesHandler,
 } from 'src/graphql/handlers/checkout/checkout';
 import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
-import { UpdateBundleStateDto } from 'src/modules/checkout/dto/add-bundle.dto';
 import {
+  AddBundleDto,
+  UpdateBundleStateDto,
+} from 'src/modules/checkout/dto/add-bundle.dto';
+import {
+  addCheckoutBundlesV2Handler,
   deleteCheckoutBundlesHandler,
   getCartV2Handler,
 } from 'src/graphql/handlers/checkout/cart/cart.marketplace';
 import { getTargetBundleByCheckoutBundleId } from '../../Cart.utils';
 import { CheckoutIdError } from 'src/modules/checkout/Checkout.errors';
 import { CheckoutBundlesDto } from 'src/graphql/types/checkout.type';
+import { MarketplaceBundlesType } from './Cart.marketplace.types';
 
 @Injectable()
 export class MarketplaceCartService {
@@ -203,6 +208,25 @@ export class MarketplaceCartService {
         isSelected,
       );
       return prepareSuccessResponse(checkoutData);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description -- add bundles to cart against a checkout id and email
+   */
+  public async addCheckoutBundlesV2(
+    checkoutBundles: AddBundleDto,
+    token: string,
+  ): Promise<MarketplaceBundlesType> {
+    try {
+      const addCheckoutBundles = await addCheckoutBundlesV2Handler(
+        checkoutBundles,
+        token,
+      );
+      return addCheckoutBundles;
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

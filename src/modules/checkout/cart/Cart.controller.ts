@@ -158,4 +158,28 @@ export class CartController {
       ),
     );
   }
+
+  @Post('api/v2/cart')
+  @ApiOperation({
+    summary:
+      'adds bundles to cart, creates a new checkout session based on whether a checkout is given or not',
+  })
+  @ApiBearerAuth('JWT-auth')
+  async addBundlesToCartV2(
+    @Res() res,
+    @Body() addBundleDto: AddBundleDto,
+    @IsAuthenticated('authorization') token: string,
+  ): Promise<object> {
+    const { checkoutId } = addBundleDto;
+    if (!checkoutId) {
+      return makeResponse(
+        res,
+        await this.appService.createCartSession(addBundleDto, token),
+      );
+    }
+    return makeResponse(
+      res,
+      await this.appService.addToCartV2(addBundleDto, token),
+    );
+  }
 }
