@@ -296,4 +296,24 @@ export class CartService {
       return graphqlExceptionHandler(error);
     }
   }
+
+  /**
+   * @description -- fetches shopping cart data from bundle service against checkoutId
+   */
+  public async getShoppingCartDataV2(
+    checkoutId: string,
+    isSelected: boolean | null,
+    token: string,
+  ): Promise<object> {
+    try {
+      return await this.marketplaceService.getCheckoutBundlesV2({
+        checkoutId,
+        token,
+        isSelected,
+      });
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
 }

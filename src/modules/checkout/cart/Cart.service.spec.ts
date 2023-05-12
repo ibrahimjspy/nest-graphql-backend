@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as SaleorCartHandlers from 'src/graphql/handlers/checkout/cart/cart.saleor';
 import * as MarketplaceCartHandlers from 'src/graphql/handlers/checkout/checkout';
 import * as ProductHandlers from 'src/graphql/handlers/product';
-import * as MarketplaceDeleteBundles from 'src/graphql/handlers/checkout/cart/cart.marketplace';
+import * as MarketplaceCheckoutHandler from 'src/graphql/handlers/checkout/cart/cart.marketplace';
 import { CartService } from './Cart.service';
 import { CartResponseService } from './services/Response.service';
 import { CartValidationService } from './services/Validation.service';
@@ -126,7 +126,7 @@ describe('Cart Service', () => {
       .mockImplementation(async () => mocks.mockProductBundles);
 
     jest
-      .spyOn(MarketplaceDeleteBundles, 'deleteCheckoutBundlesHandler')
+      .spyOn(MarketplaceCheckoutHandler, 'deleteCheckoutBundlesHandler')
       .mockImplementation(async () => {
         return { done: 'successfully rolled back' };
       });
@@ -180,5 +180,67 @@ describe('Cart Service', () => {
       message: 'Adding bundle lines to Marketplace failed',
     });
     expect(addToCart).toBeDefined();
+  });
+
+  it('should get cart without isSelected', async () => {
+    jest
+      .spyOn(MarketplaceCheckoutHandler, 'getCartV2Handler')
+      .mockImplementation(async () => {
+        return {
+          checkoutId: null,
+          validations: null,
+          userEmail: null,
+          totalPrice: null,
+          shops: [],
+        };
+      });
+
+    const cart = await service.getShoppingCartDataV2(
+      'testMail@gmail.com',
+      null,
+      'token',
+    );
+    expect(cart).toEqual({
+      status: 200,
+      data: {
+        checkoutId: null,
+        validations: null,
+        userEmail: null,
+        totalPrice: null,
+        shops: [],
+      },
+    });
+    expect(cart).toBeDefined();
+  });
+
+  it('should get cart with isSelected', async () => {
+    jest
+      .spyOn(MarketplaceCheckoutHandler, 'getCartV2Handler')
+      .mockImplementation(async () => {
+        return {
+          checkoutId: null,
+          validations: null,
+          userEmail: null,
+          totalPrice: null,
+          shops: [],
+        };
+      });
+
+    const cart = await service.getShoppingCartDataV2(
+      'testMail@gmail.com',
+      true,
+      'token',
+    );
+    expect(cart).toEqual({
+      status: 200,
+      data: {
+        checkoutId: null,
+        validations: null,
+        userEmail: null,
+        totalPrice: null,
+        shops: [],
+      },
+    });
+    expect(cart).toBeDefined();
   });
 });

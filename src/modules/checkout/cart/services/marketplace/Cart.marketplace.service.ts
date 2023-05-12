@@ -10,7 +10,10 @@ import {
 } from 'src/graphql/handlers/checkout/checkout';
 import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
 import { UpdateBundleStateDto } from 'src/modules/checkout/dto/add-bundle.dto';
-import { deleteCheckoutBundlesHandler } from 'src/graphql/handlers/checkout/cart/cart.marketplace';
+import {
+  deleteCheckoutBundlesHandler,
+  getCartV2Handler,
+} from 'src/graphql/handlers/checkout/cart/cart.marketplace';
 import { getTargetBundleByCheckoutBundleId } from '../../Cart.utils';
 import { CheckoutIdError } from 'src/modules/checkout/Checkout.errors';
 import { CheckoutBundlesDto } from 'src/graphql/types/checkout.type';
@@ -179,6 +182,27 @@ export class MarketplaceCartService {
       );
 
       return response;
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description -- fetches shopping cart data from bundle service against checkoutId
+   */
+  public async getCheckoutBundlesV2({
+    checkoutId,
+    token,
+    isSelected = null,
+  }: CheckoutBundlesDto): Promise<object> {
+    try {
+      const checkoutData = await getCartV2Handler(
+        checkoutId,
+        token,
+        isSelected,
+      );
+      return prepareSuccessResponse(checkoutData);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

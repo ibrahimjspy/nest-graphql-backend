@@ -32,3 +32,34 @@ export const checkoutPricingFragment = gql`
     }
   }
 `;
+
+export const checkoutPricingFragmentV2 = gql`
+  fragment VariantPrice on VariantPricingInfo {
+    price {
+      net {
+        amount
+        currency
+      }
+      gross {
+        currency
+        amount
+      }
+    }
+    onSale
+  }
+`;
+
+export const taxedPricingFragment = gql`
+  fragment Price on TaxedMoney {
+    tax {
+      amount
+    }
+    currency
+    gross {
+      amount
+    }
+    net {
+      amount
+    }
+  }
+`;
