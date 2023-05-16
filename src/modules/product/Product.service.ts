@@ -18,6 +18,7 @@ import {
 } from './Product.utils';
 import { GetBundlesDto, ProductDetailsDto } from './dto/product.dto';
 import { MarketplaceProductsResponseType } from './Product.types';
+import { BundleCreateDto } from './dto/bundle';
 @Injectable()
 export class ProductService {
   private readonly logger = new Logger(ProductService.name);
@@ -151,6 +152,19 @@ export class ProductService {
       return prepareSuccessResponse(
         { marketplace },
         'No products exists against shop category',
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async createBundle(
+    bundleCreateInput: BundleCreateDto,
+  ): Promise<object> {
+    try {
+      return prepareSuccessResponse(
+        await ProductsHandlers.createBundleHandler(bundleCreateInput),
       );
     } catch (error) {
       this.logger.error(error);

@@ -22,7 +22,7 @@ import {
   SelectBundleError,
   UnSelectBundleError,
 } from '../Checkout.errors';
-import { ReplaceBundleDto } from './dto/cart';
+import { AddOpenPackDTO, ReplaceBundleDto } from './dto/cart';
 import { CartValidationService } from './services/Validation.service';
 import { SuccessResponseType } from 'src/core/utils/response.type';
 
@@ -356,6 +356,36 @@ export class CartService {
   ): Promise<SuccessResponseType> {
     try {
       const { userEmail, checkoutId, bundles } = checkoutBundles;
+
+      const [saleor, marketplace] = await Promise.all([
+        await this.saleorService.addBundleLines(
+          userEmail,
+          checkoutId,
+          bundles,
+          token,
+        ),
+        await this.marketplaceService.addCheckoutBundlesV2(
+          { userEmail, checkoutId, bundles },
+          token,
+        ),
+      ]);
+      return this.cartResponseBuilder.addToCartV2(saleor, marketplace);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description -- adds to cart against existing cart id
+   * @pre_condition -- cart id should be valid and a cart session should be active against it
+   */
+  public async addOpenPackToCart(
+    openPac: AddOpenPackDTO,
+    token: string,
+  ): Promise<SuccessResponseType> {
+    try {
+      const { userEmail, checkoutId } = checkoutBundles;
 
       const [saleor, marketplace] = await Promise.all([
         await this.saleorService.addBundleLines(

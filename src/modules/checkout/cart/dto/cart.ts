@@ -1,5 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ArrayMinSize, IsArray, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { BundleCreateDto } from 'src/modules/product/dto/bundle';
 
 export class DeleteBundlesDto {
   @ApiProperty()
@@ -24,4 +33,22 @@ export class ReplaceBundleDto {
   @ApiProperty()
   @IsString()
   newBundleId: string;
+}
+
+export class AddOpenPackDTO {
+  @ApiProperty()
+  @IsNotEmpty()
+  userEmail: string;
+
+  @ApiProperty({ required: true })
+  @IsOptional()
+  checkoutId: string;
+
+  @ApiProperty({
+    required: true,
+    type: BundleCreateDto,
+  })
+  @ValidateNested({ each: true })
+  @Type(() => BundleCreateDto)
+  bundle: BundleCreateDto;
 }

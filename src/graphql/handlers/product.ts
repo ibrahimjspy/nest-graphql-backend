@@ -25,6 +25,8 @@ import { getProductDetailsQuery } from '../queries/product/details';
 import { MarketplaceProductsResponseType } from 'src/modules/product/Product.types';
 import { popularItemsQuery } from '../queries/product/popularItems';
 import { productsQuery } from '../queries/product/products';
+import { BundleCreateDto } from 'src/modules/product/dto/bundle';
+import { bundleCreateMutation } from '../mutations/product/bundleCreate';
 
 export const productsHandler = async (
   filter: ProductFilterDto,
@@ -148,4 +150,11 @@ export const getProductDetailsHandler = async (
   } catch (error) {
     return graphqlExceptionHandler(error);
   }
+};
+
+export const createBundleHandler = async (
+  bundleCreateInput: BundleCreateDto,
+): Promise<object> => {
+  const response = await graphqlCall(bundleCreateMutation(bundleCreateInput));
+  return response['createBundle'];
 };
