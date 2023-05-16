@@ -237,11 +237,12 @@ export class CheckoutService {
       console.log('osColorIds', osColorIds);
 
       const ordersPayload: OsOrderItem[] = [];
-      b2cProducts.forEach(({ productId, productVendorId }) => {
+      b2cProducts.forEach(({ productId, productVendorId, variantColor }) => {
         const osProductId = osProductIdsMapping[b2bIdsMapping[productId]];
         const osVendorId = osVendorMapping[productVendorId];
         const osColorId = osColorIds.find(
-          (colorItem) => colorItem.brand === osVendorId,
+          (colorItem) =>
+            colorItem.brand === osVendorId && colorItem.name === variantColor,
         ).id;
         ordersPayload.push({
           item_id: osProductId,
@@ -260,9 +261,9 @@ export class CheckoutService {
       console.log('ordersPayload', ordersPayload);
 
       const osOrderPayload: OsOrderPayloadType = {
-        orders: [],
-        sharove_order_id: '',
-        stripe_payment_method_id: '',
+        orders: ordersPayload,
+        sharove_order_id: '000',
+        stripe_payment_method_id: 'pm_1N8M28Gr7zGKk44AORqD8OHh',
         spa_id: 162187,
         payment_type: PAYMENT_TYPE,
         billing: {
@@ -280,9 +281,8 @@ export class CheckoutService {
         osOrderPayload,
         token,
       );
-      console.log('orderDetail', orderDetail);
       return prepareSuccessResponse(
-        { order: orderDetail },
+        { response },
         'order created on orangeshine',
         201,
       );

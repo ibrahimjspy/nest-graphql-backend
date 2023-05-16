@@ -44,7 +44,7 @@ export default class OsOrderService {
   async getOsColorMappingIDs(colorObject) {
     const URL = `${this.API_URI}/product/details?color-mapping=${JSON.stringify(
       colorObject,
-    )}`;
+    ).replaceAll('#', '')}`;
     console.log('URL', URL);
     const response = await axios.get(URL);
     const colorsData = response?.data?.data;
