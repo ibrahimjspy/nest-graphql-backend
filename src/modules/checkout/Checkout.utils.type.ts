@@ -66,3 +66,10 @@ export interface SaleorCheckoutInterface {
     };
   }[];
 }
+
+export interface LessInventoryProductType {
+  productId: string;
+  productVendorId: string;
+  variantColor: string;
+  quantity: number;
+}

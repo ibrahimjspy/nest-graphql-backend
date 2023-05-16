@@ -4,7 +4,7 @@ import { CheckoutService } from './Checkout.service';
 import { makeResponse } from '../../core/utils/response';
 import { IsAuthenticated } from 'src/core/utils/decorators';
 import { B2BClientPlatform } from 'src/constants';
-import { CheckoutIdDto } from './dto/checkoutId';
+import { CheckoutIdDto, OsPlaceOrderDto } from './dto/checkoutId';
 import { CreateCheckoutDto } from './dto/createCheckout';
 
 @ApiTags('checkout')
@@ -66,6 +66,23 @@ export class CheckoutController {
     return makeResponse(
       res,
       await this.appService.checkoutComplete(token, checkoutId),
+    );
+  }
+
+  @Post('api/v1/os/order/place')
+  @ApiOperation({
+    summary: 'Place order on orangeshine as sharove against B2C order',
+  })
+  @ApiBearerAuth('JWT-auth')
+  async osPlaceOrder(
+    @Res() res,
+    @Body() body: OsPlaceOrderDto,
+    @IsAuthenticated('authorization') token: string,
+  ): Promise<object> {
+    const { orderId } = body;
+    return makeResponse(
+      res,
+      await this.appService.osPlaceOrder(orderId, token),
     );
   }
 }

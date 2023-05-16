@@ -10,7 +10,13 @@ import { NoPaymentIntentError } from './Checkout.errors';
 import { MarketplaceCartService } from './cart/services/marketplace/Cart.marketplace.service';
 import { PaymentService } from './payment/Payment.service';
 import { CreateCheckoutDto } from './dto/createCheckout';
-import { B2B_CHECKOUT_APP_TOKEN } from 'src/constants';
+import {
+  B2B_CHECKOUT_APP_TOKEN,
+  PAYMENT_TYPE,
+  SIGNATURE_REQUESTED,
+  SMS_NUMBER,
+  STORE_CREDIT,
+} from 'src/constants';
 import { getOrdersByShopId } from '../orders/Orders.utils';
 import { OrdersService } from '../orders/Orders.service';
 import { LegacyService } from 'src/external/services/osPlaceOrder/Legacy.service';
@@ -18,7 +24,19 @@ import { preparePromotionResponse } from './shipping/services/Shipping.response'
 import {
   addPreAuthInCheckoutResponse,
   checkoutShippingMethodsSort,
+  getLessInventoryProducts,
 } from './Checkout.utils';
+import OsOrderService from 'src/external/services/osOrder/osOrder.service';
+import { LessInventoryProductType } from './Checkout.utils.type';
+import { getB2bProductMapping } from 'src/external/endpoints/b2cMapping';
+import {
+  getOsProductMapping,
+  getOsShopMapping,
+} from 'src/external/endpoints/b2bMapping';
+import {
+  OsOrderItem,
+  OsOrderPayloadType,
+} from 'src/external/services/osOrder/osOrder.types';
 
 @Injectable()
 export class CheckoutService {
@@ -27,6 +45,7 @@ export class CheckoutService {
     private paymentService: PaymentService,
     private marketplaceCartService: MarketplaceCartService,
     private ordersService: OrdersService,
+    private osOrderService: OsOrderService,
   ) {
     return;
   }
@@ -167,6 +186,113 @@ export class CheckoutService {
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description -- this method place order on orangeshine as sharove against B2C order
+   */
+  public async osPlaceOrder(orderId: string, token: string): Promise<object> {
+    try {
+      const orderDetail = await this.ordersService.getOrderDetailsById(
+        orderId,
+        token,
+      );
+      // const b2bProductsMapping:string
+      const b2cProducts: LessInventoryProductType[] =
+        getLessInventoryProducts(orderDetail);
+      console.log('b2cProducts', b2cProducts);
+      const b2cProductIds: string[] = b2cProducts.map(
+        (product) => product.productId,
+      );
+      console.log('b2cProductIds', b2cProductIds);
+      const b2bIdsMapping: object = await getB2bProductMapping(b2cProductIds);
+      const b2bProductIds = Object.values(b2bIdsMapping);
+      console.log('b2bIdsMapping', b2bIdsMapping);
+      const osProductIdsMapping: object = await getOsProductMapping(
+        b2bProductIds,
+      );
+      console.log('osProductIdsMapping', osProductIdsMapping);
+      const b2bShopIds = b2cProducts.map((product) => product.productVendorId);
+      const osVendorMapping: object = await getOsShopMapping(b2bShopIds);
+      console.log('osVendorMapping', osVendorMapping);
+      const vendorColorsObj = {};
+      b2cProducts.forEach(({ productVendorId, variantColor }) => {
+        if (
+          osVendorMapping[productVendorId] &&
+          vendorColorsObj[osVendorMapping[productVendorId]]
+        ) {
+          vendorColorsObj[osVendorMapping[productVendorId]] = [
+            ...vendorColorsObj[osVendorMapping[productVendorId]],
+            variantColor,
+          ];
+        } else {
+          vendorColorsObj[osVendorMapping[productVendorId]] = [variantColor];
+        }
+      });
+      console.log('vendorColorsObj', vendorColorsObj);
+      const osColorIds = await this.osOrderService.getOsColorMappingIDs(
+        vendorColorsObj,
+      );
+      console.log('osColorIds', osColorIds);
+
+      const ordersPayload: OsOrderItem[] = [];
+      b2cProducts.forEach(({ productId, productVendorId }) => {
+        const osProductId = osProductIdsMapping[b2bIdsMapping[productId]];
+        const osVendorId = osVendorMapping[productVendorId];
+        const osColorId = osColorIds.find(
+          (colorItem) => colorItem.brand === osVendorId,
+        ).id;
+        ordersPayload.push({
+          item_id: osProductId,
+          color_id: osColorId,
+          pack_qty: 1,
+          stock_type: 'in_stock',
+          memo: '',
+          sms_number: SMS_NUMBER,
+          spa_id: 162187,
+          spm_name: 'UPS',
+          store_credit: STORE_CREDIT,
+          signature_requested: SIGNATURE_REQUESTED,
+        });
+      });
+
+      console.log('ordersPayload', ordersPayload);
+
+      const osOrderPayload: OsOrderPayloadType = {
+        orders: [],
+        sharove_order_id: '',
+        stripe_payment_method_id: '',
+        spa_id: 162187,
+        payment_type: PAYMENT_TYPE,
+        billing: {
+          first_name: 'Touqeer',
+          last_name: 'Ahmad',
+          address1: 'Street Address 1',
+          city: 'New York',
+          state: 'AL',
+          zipcode: '35013',
+          country: 'US',
+        },
+      };
+
+      const response = await this.osOrderService.placeOrder(
+        osOrderPayload,
+        token,
+      );
+      console.log('orderDetail', orderDetail);
+      return prepareSuccessResponse(
+        { order: orderDetail },
+        'order created on orangeshine',
+        201,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      if (error instanceof NoPaymentIntentError) {
+        return prepareFailedResponse(error.message);
+      } else {
+        return graphqlExceptionHandler(error);
+      }
     }
   }
 }

@@ -6,3 +6,9 @@ export class CheckoutIdDto {
   @IsString()
   checkoutId: string;
 }
+
+export class OsPlaceOrderDto {
+  @ApiProperty()
+  @IsString()
+  orderId: string;
+}
