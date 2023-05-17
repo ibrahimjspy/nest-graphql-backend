@@ -318,19 +318,21 @@ describe('Cart Service', () => {
       {
         userEmail: 'azhariqbal100@mailinator.com',
         checkoutId: '123',
-        bundle: {
-          isOpenBundle: true,
-          shopId: '610',
-          productId: 'UHJvZHVjdDoxMjUxNQ==',
-          description: 'string',
-          name: 'string',
-          productVariants: [
-            {
-              productVariantId: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI2',
-              quantity: 2,
-            },
-          ],
-        },
+        bundles: [
+          {
+            isOpenBundle: true,
+            shopId: '610',
+            productId: 'UHJvZHVjdDoxMjUxNQ==',
+            description: 'string',
+            name: 'string',
+            productVariants: [
+              {
+                productVariantId: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI2',
+                quantity: 2,
+              },
+            ],
+          },
+        ],
       },
       '',
     );
