@@ -5,9 +5,9 @@ export const categoryWithAncestors = gql`
     id
     name
     slug
-    ancestors(first: 10){
-      edges{
-        node{
+    ancestors(first: 10) {
+      edges {
+        node {
           id
           name
           slug
