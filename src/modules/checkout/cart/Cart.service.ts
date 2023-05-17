@@ -78,6 +78,7 @@ export class CartService {
         ),
         this.marketplaceService.addBundles(userEmail, bundlesList, token),
       ]);
+      console.log(saleor);
       return await this.cartResponseBuilder.addBundlesToCart(
         saleor,
         marketplace,
@@ -378,7 +379,7 @@ export class CartService {
   }
 
   /**
-   * @description -- adds to cart against existing cart id
+   * @description -- creates a new bundle for open pack and adds to cart against existing cart id or userEmail
    * @pre_condition -- cart id should be valid and a cart session should be active against it
    */
   public async addOpenPackToCart(
