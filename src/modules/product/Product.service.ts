@@ -140,7 +140,7 @@ export class ProductService {
       const productIds = getShopProductIds(marketplace);
       if (isEmptyArray(productIds)) {
         const saleor = await ProductsHandlers.productsHandler({
-          ...filter,
+          first: filter.first,
           productIds: productIds,
         });
         return prepareSuccessResponse({
