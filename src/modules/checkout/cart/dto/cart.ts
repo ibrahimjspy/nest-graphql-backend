@@ -47,8 +47,9 @@ export class AddOpenPackDTO {
   @ApiProperty({
     required: true,
     type: BundleCreateDto,
+    isArray: true,
   })
   @ValidateNested({ each: true })
   @Type(() => BundleCreateDto)
-  bundle: BundleCreateDto;
+  bundles: BundleCreateDto[];
 }

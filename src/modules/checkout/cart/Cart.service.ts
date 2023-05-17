@@ -386,15 +386,21 @@ export class CartService {
     token: string,
   ): Promise<object> {
     try {
-      const { userEmail, checkoutId, bundle } = addOpenPackToCart;
-      const bundleCreate = await this.productService.createBundle(bundle);
-      const addCheckoutBundles = [
-        { bundleId: getBundleIdFromBundleCreate(bundleCreate), quantity: 1 },
-      ];
+      const { userEmail, checkoutId, bundles } = addOpenPackToCart;
+      const [...checkoutBundles] = await Promise.all(
+        bundles.map(async (bundle) => {
+          const bundleCreate = await this.productService.createBundle(bundle);
+          const checkoutBundle = {
+            bundleId: getBundleIdFromBundleCreate(bundleCreate),
+            quantity: 1,
+          };
+          return checkoutBundle;
+        }),
+      );
       return await this.addBundlesToCart(
         userEmail,
         checkoutId,
-        addCheckoutBundles,
+        checkoutBundles,
         token,
       );
     } catch (error) {
