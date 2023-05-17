@@ -78,7 +78,6 @@ export class CartService {
         ),
         this.marketplaceService.addBundles(userEmail, bundlesList, token),
       ]);
-      console.log(saleor);
       return await this.cartResponseBuilder.addBundlesToCart(
         saleor,
         marketplace,
