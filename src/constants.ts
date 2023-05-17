@@ -104,3 +104,10 @@ export const AUTH0_M2M_APP_CLIENT_ID = process.env.AUTH0_M2M_APP_CLIENT_ID;
 export const AUTH0_M2M_APP_CLIENT_SECRET =
   process.env.AUTH0_M2M_APP_CLIENT_SECRET;
 export const AUTH0_TTL_CACHE_TIME = 72000;
+export const UPS_TRACKING_HEADERS = {
+  headers: {
+    'Content-Type': 'application/json',
+    transId: process.env.UPS_TRANSACTION_ID || 'test',
+    transactionSrc: process.env.UPS_TRANSACTION_SOURCE || 'test',
+  },
+};
