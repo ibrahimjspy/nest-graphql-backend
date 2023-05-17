@@ -1,7 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
+import axios from 'axios';
 import qs from 'qs';
-import { UPS_CONFIGURATIONS, UPS_URL } from 'src/constants';
+import {
+  UPS_CONFIGURATIONS,
+  UPS_TRACKING_HEADERS,
+  UPS_URL,
+} from 'src/constants';
 import http from 'src/core/proxies/restHandler';
+import {
+  prepareFailedResponse,
+  prepareSuccessResponse,
+} from 'src/core/utils/response';
 
 @Injectable()
 export default class UpsService {
@@ -40,6 +49,30 @@ export default class UpsService {
       return response?.data;
     } catch (error) {
       this.logger.error(error);
+    }
+  }
+
+  public async getOrderTracking(inquiryNumber: string) {
+    try {
+      const query = new URLSearchParams({
+        locale: 'en_US',
+        returnSignature: 'false',
+      }).toString();
+
+      const response = await axios(
+        `${UPS_URL}/api/track/v1/details/${inquiryNumber}?${query}`,
+        {
+          method: 'GET',
+          headers: {
+            ...UPS_TRACKING_HEADERS.headers,
+            Authorization: `Bearer ${await this.getAccessToken()}`,
+          },
+        },
+      );
+      return prepareSuccessResponse(response.data);
+    } catch (error) {
+      this.logger.error(error);
+      return prepareFailedResponse(error.response.data.response);
     }
   }
 }
