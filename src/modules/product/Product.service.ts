@@ -17,7 +17,10 @@ import {
   storeB2cMapping,
 } from './Product.utils';
 import { GetBundlesDto, ProductDetailsDto } from './dto/product.dto';
-import { MarketplaceProductsResponseType } from './Product.types';
+import {
+  BundleCreateResponseType,
+  MarketplaceProductsResponseType,
+} from './Product.types';
 import { BundleCreateDto } from './dto/bundle';
 @Injectable()
 export class ProductService {
@@ -161,11 +164,11 @@ export class ProductService {
 
   public async createBundle(
     bundleCreateInput: BundleCreateDto,
-  ): Promise<object> {
+  ): Promise<BundleCreateResponseType> {
     try {
       return prepareSuccessResponse(
         await ProductsHandlers.createBundleHandler(bundleCreateInput),
-      );
+      ) as unknown as BundleCreateResponseType;
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

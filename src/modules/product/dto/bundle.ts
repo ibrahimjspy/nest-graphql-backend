@@ -1,6 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsOptional, IsString, ValidateNested } from 'class-validator';
+import {
+  IsBoolean,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 
 export class BundlesDto {
   @ApiProperty({ required: false })
@@ -9,13 +14,13 @@ export class BundlesDto {
 
   @ApiProperty({ required: false })
   @IsOptional()
-  quantity: string;
+  quantity: number;
 }
 
 export class BundleCreateDto {
-  @ApiProperty({ required: true })
-  @IsString()
-  cartId: string;
+  @ApiProperty({ required: false, type: Boolean, default: false })
+  @IsBoolean()
+  isOpenBundle: boolean;
 
   @ApiProperty({ required: true })
   @IsString()

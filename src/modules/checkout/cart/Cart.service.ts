@@ -10,6 +10,7 @@ import { AddBundleDto, UpdateBundleStateDto } from '../dto/add-bundle.dto';
 import { SaleorCartService } from './services/saleor/Cart.saleor.service';
 import { MarketplaceCartService } from './services/marketplace/Cart.marketplace.service';
 import {
+  getBundleIdFromBundleCreate,
   getBundlesFromCheckout,
   getCheckoutBundleIds,
   getNewBundlesToAdd,
@@ -23,8 +24,8 @@ import {
   UnSelectBundleError,
 } from '../Checkout.errors';
 import { AddOpenPackDTO, ReplaceBundleDto } from './dto/cart';
-import { CartValidationService } from './services/Validation.service';
 import { SuccessResponseType } from 'src/core/utils/response.type';
+import { ProductService } from 'src/modules/product/Product.service';
 
 @Injectable()
 export class CartService {
@@ -33,7 +34,7 @@ export class CartService {
     private saleorService: SaleorCartService,
     private marketplaceService: MarketplaceCartService,
     private cartResponseBuilder: CartResponseService,
-    private cartValidationService: CartValidationService,
+    private productService: ProductService,
   ) {}
 
   /**
@@ -381,25 +382,21 @@ export class CartService {
    * @pre_condition -- cart id should be valid and a cart session should be active against it
    */
   public async addOpenPackToCart(
-    openPac: AddOpenPackDTO,
+    addOpenPackToCart: AddOpenPackDTO,
     token: string,
-  ): Promise<SuccessResponseType> {
+  ): Promise<object> {
     try {
-      const { userEmail, checkoutId } = checkoutBundles;
-
-      const [saleor, marketplace] = await Promise.all([
-        await this.saleorService.addBundleLines(
-          userEmail,
-          checkoutId,
-          bundles,
-          token,
-        ),
-        await this.marketplaceService.addCheckoutBundlesV2(
-          { userEmail, checkoutId, bundles },
-          token,
-        ),
-      ]);
-      return this.cartResponseBuilder.addToCartV2(saleor, marketplace);
+      const { userEmail, checkoutId, bundle } = addOpenPackToCart;
+      const bundleCreate = await this.productService.createBundle(bundle);
+      const addCheckoutBundles = [
+        { bundleId: getBundleIdFromBundleCreate(bundleCreate), quantity: 1 },
+      ];
+      return await this.addBundlesToCart(
+        userEmail,
+        checkoutId,
+        addCheckoutBundles,
+        token,
+      );
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
