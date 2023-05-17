@@ -15,7 +15,7 @@ import { IsAuthenticated } from 'src/core/utils/decorators';
 import { makeResponse } from 'src/core/utils/response';
 import { AddBundleDto, UserIdDto } from '../dto';
 import { UpdateBundleStateDto, UpdateBundlesDto } from '../dto/add-bundle.dto';
-import { DeleteBundlesDto, ReplaceBundleDto } from './dto/cart';
+import { AddOpenPackDTO, DeleteBundlesDto, ReplaceBundleDto } from './dto/cart';
 import { GetCartDto } from './dto/common.dto';
 
 @ApiTags('checkout/cart')
@@ -180,6 +180,22 @@ export class CartController {
     return makeResponse(
       res,
       await this.appService.addToCartV2(addBundleDto, token),
+    );
+  }
+
+  @ApiOperation({
+    summary: 'adds bundles against user email in cart',
+  })
+  @Post('api/v1/cart/open/pack')
+  @ApiBearerAuth('JWT-auth')
+  async addOpenPackToCart(
+    @Res() res,
+    @Body() openPackData: AddOpenPackDTO,
+    @IsAuthenticated('authorization') token: string,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.addOpenPackToCart(openPackData, token),
     );
   }
 }

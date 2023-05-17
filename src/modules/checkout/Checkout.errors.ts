@@ -66,3 +66,10 @@ export class NoBundleFoundError extends Error {
     this.name = 'NoBundleFoundError';
   }
 }
+
+export class NoBundleCreatedError extends Error {
+  constructor() {
+    super('bundle could not be created');
+    this.name = 'NoBundleCreateError';
+  }
+}

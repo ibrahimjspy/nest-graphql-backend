@@ -276,4 +276,81 @@ describe('Cart Service', () => {
     });
     expect(addToCart).toBeDefined();
   });
+
+  it('should add open bundle to cart', async () => {
+    jest
+      .spyOn(ProductHandlers, 'createBundleHandler')
+      .mockImplementation(async () => {
+        const bundleCreate = {
+          id: '19c88ba8-7429-45f7-87dd-a9999803d955',
+          name: 'bundleId',
+        };
+        return bundleCreate;
+      });
+    jest
+      .spyOn(ProductHandlers, 'getBundlesHandler')
+      .mockImplementation(async () => mocks.mockProductBundles as any);
+    jest
+      .spyOn(SaleorCartHandlers, 'addLinesHandler')
+      .mockImplementation(async () => {
+        return {
+          id: 'Q2hlY2tvdXQ6NDQ4NTE3M2UtNDkzOC00NDZhLWIyNjgtMzAyZDE1N2IyMTg3',
+          lines: [
+            {
+              id: 'Q2hlY2tvdXRMaW5lOmFiMzFhZDI1LWFmNmMtNDdhOC1iNTc4LWIzMTc4Y2YzMjJkMg==',
+              quantity: 4,
+              variant: { id: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI2' },
+            },
+          ],
+        };
+      });
+    jest
+      .spyOn(MarketplaceCartHandlers, 'addCheckoutBundlesHandler')
+      .mockImplementation(async () => {
+        return { status: 'done' };
+      });
+
+    jest
+      .spyOn(MarketplaceCartHandlers, 'updateCartBundlesCheckoutIdHandler')
+      .mockImplementation(async () => mocks.mockProductBundles);
+
+    const addToCart = await service.addOpenPackToCart(
+      {
+        userEmail: 'azhariqbal100@mailinator.com',
+        checkoutId: '123',
+        bundle: {
+          isOpenBundle: true,
+          shopId: '610',
+          productId: 'UHJvZHVjdDoxMjUxNQ==',
+          description: 'string',
+          name: 'string',
+          productVariants: [
+            {
+              productVariantId: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI2',
+              quantity: 2,
+            },
+          ],
+        },
+      },
+      '',
+    );
+    expect(addToCart).toEqual({
+      status: 201,
+      data: {
+        saleor: {
+          id: 'Q2hlY2tvdXQ6NDQ4NTE3M2UtNDkzOC00NDZhLWIyNjgtMzAyZDE1N2IyMTg3',
+          lines: [
+            {
+              id: 'Q2hlY2tvdXRMaW5lOmFiMzFhZDI1LWFmNmMtNDdhOC1iNTc4LWIzMTc4Y2YzMjJkMg==',
+              quantity: 4,
+              variant: { id: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI2' },
+            },
+          ],
+        },
+        marketplace: { status: 'done' },
+      },
+      message: 'bundles added to cart',
+    });
+    expect(addToCart).toBeDefined();
+  });
 });

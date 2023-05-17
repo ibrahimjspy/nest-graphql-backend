@@ -6,3 +6,12 @@ export interface MarketplaceProductsResponseType {
     };
   }>;
 }
+export interface BundleCreateResponseType {
+  status: number;
+  data: {
+    id: string;
+    name: string;
+    description: string;
+    slug: string;
+  };
+}

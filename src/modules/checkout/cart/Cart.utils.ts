@@ -1,5 +1,7 @@
 import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
 import { CheckoutLinesInterface } from './services/saleor/Cart.saleor.types';
+import { BundleCreateResponseType } from 'src/modules/product/Product.types';
+import { NoBundleCreatedError } from '../Checkout.errors';
 
 /**
  * parses checkout bundles object and returns bundle ids
@@ -234,4 +236,17 @@ export const getUnSelectedCheckoutBundles = (checkoutBundles) => {
   return checkoutBundles.filter(
     (checkoutBundle) => checkoutBundle.isSelected == false,
   );
+};
+
+/**
+ * @description - returns bundle id from bundle create response
+ */
+export const getBundleIdFromBundleCreate = (
+  bundleCreate: BundleCreateResponseType,
+) => {
+  const bundleId = bundleCreate.data?.id;
+  if (bundleId) {
+    return bundleId;
+  }
+  throw new NoBundleCreatedError();
 };
