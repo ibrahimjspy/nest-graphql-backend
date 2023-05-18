@@ -61,11 +61,11 @@ export class UpdateBundleDto {
 
   @ApiProperty({ required: false })
   @IsOptional()
-  newVariantId: string;
+  newVariantId?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
-  quantity: number;
+  quantity?: number;
 }
 
 export class UpdateOpenPackDto {
