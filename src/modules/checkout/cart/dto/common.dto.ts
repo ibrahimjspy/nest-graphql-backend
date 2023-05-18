@@ -16,3 +16,14 @@ export class GetCartDto {
   @Transform(({ obj, key }) => obj[key] === 'true')
   isSelected: boolean;
 }
+
+export enum OpenPackTransactionTypeEnum {
+  /**
+   * @description - whether we are replacing an open pack with another bundle with new variants
+   */
+  REPLACE = 'REPLACE',
+  /**
+   * @description - whether we are only updating quantity of bundle id
+   */
+  UPDATE = 'UPDATE',
+}

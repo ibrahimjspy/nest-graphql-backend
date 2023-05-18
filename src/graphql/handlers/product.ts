@@ -27,6 +27,12 @@ import { popularItemsQuery } from '../queries/product/popularItems';
 import { productsQuery } from '../queries/product/products';
 import { BundleCreateDto } from 'src/modules/product/dto/bundle';
 import { bundleCreateMutation } from '../mutations/product/bundleCreate';
+import { UpdateOpenPackDto } from 'src/modules/checkout/cart/dto/cart';
+import {
+  bundleUpdateMutation,
+  updateBundlePricingMutation,
+} from '../mutations/product/bundleUpdate';
+import { getBundleQuery } from '../queries/product/getBundle';
 
 export const productsHandler = async (
   filter: ProductFilterDto,
@@ -157,4 +163,23 @@ export const createBundleHandler = async (
 ): Promise<object> => {
   const response = await graphqlCall(bundleCreateMutation(bundleCreateInput));
   return response['createBundle'];
+};
+
+export const updateBundleHandler = async (
+  bundleUpdate: UpdateOpenPackDto,
+): Promise<object> => {
+  const response = await graphqlCall(bundleUpdateMutation(bundleUpdate));
+  return response['updateBundle'];
+};
+
+export const getBundleHandler = async (id: string): Promise<object> => {
+  const response = await graphqlCall(getBundleQuery(id));
+  return response['bundle'];
+};
+
+export const updateBundlePricingHandler = async (
+  id: string,
+): Promise<object> => {
+  const response = await graphqlCall(updateBundlePricingMutation(id));
+  return response['updateBundlesPricing'];
 };
