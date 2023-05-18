@@ -355,4 +355,136 @@ describe('Cart Service', () => {
     });
     expect(addToCart).toBeDefined();
   });
+
+  it('should update open pack from cart', async () => {
+    jest
+      .spyOn(ProductHandlers, 'getBundleHandler')
+      .mockImplementation(async () => {
+        return {
+          id: '62129625-7675-428a-a3ef-db82a7e72262',
+          name: 'string',
+          description: 'string',
+          slug: 'string',
+          productVariants: [
+            {
+              quantity: 5,
+              productVariant: {
+                id: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI5',
+                sku: '001-GRE-O-16796618463',
+              },
+            },
+          ],
+        };
+      });
+    jest
+      .spyOn(MarketplaceCartHandlers, 'getCheckoutHandler')
+      .mockImplementation(async () => {
+        return {
+          id: 'Q2hlY2tvdXQ6NjM4NzRkNjEtMTBlZC00N2E2LThlMzItMzlkMjNkOWI0NzJh',
+          metadata: [],
+          totalPrice: { gross: { amount: 80 } },
+          shippingMethods: [],
+          deliveryMethod: null,
+          lines: [
+            {
+              id: 'Q2hlY2tvdXRMaW5lOjI5NmU2N2IyLTkxNTItNDY3Yy1hOTUzLTQ4NzY1NjgyODI5MQ==',
+              quantity: 15,
+              variant: { id: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI2' },
+            },
+            {
+              id: 'Q2hlY2tvdXRMaW5lOmY4NGU0ZTg5LWVlMWQtNDljYS04NGEyLWQ0YzI3Zjg1ZmJmNA==',
+              quantity: 5,
+              variant: { id: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI5' },
+            },
+          ],
+        } as any;
+      });
+    jest
+      .spyOn(ProductHandlers, 'updateBundleHandler')
+      .mockImplementation(async () => {
+        return {
+          id: '62129625-7675-428a-a3ef-db82a7e72262',
+          name: 'string',
+          description: 'string',
+          slug: 'string',
+          productVariants: [],
+        };
+      });
+
+    jest
+      .spyOn(SaleorCartHandlers, 'updateLinesHandler')
+      .mockImplementation(async () => {
+        return {
+          checkout: {
+            id: '62129625-7675-428a-a3ef-db82a7e72262',
+            name: 'string',
+            description: 'string',
+            slug: 'string',
+            productVariants: [],
+          },
+        };
+      });
+
+    jest
+      .spyOn(MarketplaceCartHandlers, 'getCheckoutBundlesHandler')
+      .mockImplementation(async () => {
+        return {
+          checkout: {
+            id: '62129625-7675-428a-a3ef-db82a7e72262',
+            name: 'string',
+            description: 'string',
+            slug: 'string',
+            productVariants: [],
+          },
+        };
+      });
+
+    const updateOpenPack = await service.updateOpenPack(
+      {
+        checkoutId:
+          'Q2hlY2tvdXQ6NjM4NzRkNjEtMTBlZC00N2E2LThlMzItMzlkMjNkOWI0NzJh',
+        bundleId: '62129625-7675-428a-a3ef-db82a7e72262',
+        variants: [
+          {
+            oldVariantId: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI5',
+            quantity: 5,
+          },
+        ],
+      },
+      '',
+    );
+
+    expect(updateOpenPack).toEqual({
+      saleor: {
+        id: '62129625-7675-428a-a3ef-db82a7e72262',
+        name: 'string',
+        description: 'string',
+        slug: 'string',
+        productVariants: [],
+      },
+      updateBundle: {
+        status: 200,
+        data: {
+          id: '62129625-7675-428a-a3ef-db82a7e72262',
+          name: 'string',
+          description: 'string',
+          slug: 'string',
+          productVariants: [],
+        },
+      },
+      marketplace: {
+        status: 200,
+        data: {
+          checkout: {
+            id: '62129625-7675-428a-a3ef-db82a7e72262',
+            name: 'string',
+            description: 'string',
+            slug: 'string',
+            productVariants: [],
+          },
+        },
+      },
+    });
+    expect(updateOpenPack).toBeDefined();
+  });
 });

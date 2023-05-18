@@ -23,7 +23,11 @@ import {
   SelectBundleError,
   UnSelectBundleError,
 } from '../Checkout.errors';
-import { AddOpenPackDTO, ReplaceBundleDto } from './dto/cart';
+import {
+  AddOpenPackDTO,
+  ReplaceBundleDto,
+  UpdateOpenPackDto,
+} from './dto/cart';
 import { SuccessResponseType } from 'src/core/utils/response.type';
 import { ProductService } from 'src/modules/product/Product.service';
 
@@ -403,6 +407,33 @@ export class CartService {
         checkoutBundles,
         token,
       );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description -- updates open pack directly in bundle service, it also maintains state in saleor
+   * @pre_condition -- bundle variants should all ready be added in saleor, it works on following condition on syncing with saleor
+   * @condition -- if you want to replace variant with new variant the quantity should should be same as last variant so we can replace it be removing
+   * old variant
+   */
+  public async updateOpenPack(
+    updateOpenPack: UpdateOpenPackDto,
+    token: string,
+  ): Promise<object> {
+    try {
+      const { checkoutId } = updateOpenPack;
+      const saleor = await this.saleorService.handleOpenPackUpdates(
+        updateOpenPack,
+        token,
+      );
+      const [updateBundle, marketplace] = await Promise.all([
+        this.productService.updateBundle(updateOpenPack),
+        this.marketplaceService.getAllCheckoutBundles({ checkoutId, token }),
+      ]);
+      return { saleor, updateBundle, marketplace };
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

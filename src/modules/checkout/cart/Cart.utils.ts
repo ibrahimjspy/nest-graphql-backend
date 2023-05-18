@@ -1,7 +1,13 @@
 import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
 import { CheckoutLinesInterface } from './services/saleor/Cart.saleor.types';
-import { BundleCreateResponseType } from 'src/modules/product/Product.types';
+import {
+  BundleCreateResponseType,
+  GetBundleResponseType,
+} from 'src/modules/product/Product.types';
 import { NoBundleCreatedError } from '../Checkout.errors';
+import { OpenPackTransactionTypeEnum } from './dto/common.dto';
+import { UpdateBundleDto, UpdateOpenPackDto } from './dto/cart';
+import { SaleorCheckoutInterface } from '../Checkout.utils.type';
 
 /**
  * parses checkout bundles object and returns bundle ids
@@ -249,4 +255,103 @@ export const getBundleIdFromBundleCreate = (
     return bundleId;
   }
   throw new NoBundleCreatedError();
+};
+
+/**
+ * @description - returns whether open pack update type is replace or quantity update
+ * @pre_condition - every variant provided in bundles list should have same event, which is why we are only checking on first variant
+ */
+export const getOpenPackTransactionType = (
+  updateOpenPack: UpdateOpenPackDto,
+) => {
+  const firstVariant = updateOpenPack.variants[0];
+  if (firstVariant.newVariantId) return OpenPackTransactionTypeEnum.REPLACE;
+  return OpenPackTransactionTypeEnum.UPDATE;
+};
+
+/**
+ * @description - returns lines which should be updated in saleor in case if an open pack bundle variants quantity is updated
+ * @pre_condition - every variant provided in bundles list should have same event
+ */
+export const getOpenPackLinesUpdate = (
+  openPackVariants: UpdateBundleDto[],
+  bundle: GetBundleResponseType,
+  saleor: SaleorCheckoutInterface,
+): CheckoutLinesInterface => {
+  const checkoutLines = [];
+  const bundleVariantMapping = getBundleProductVariantsMapping(bundle);
+  const saleorVariantsMapping = getSaleorProductVariantsMapping(saleor);
+
+  openPackVariants.map((variant) => {
+    const saleorQuantity = saleorVariantsMapping.get(variant.oldVariantId);
+    const bundleQuantity =
+      variant.quantity - bundleVariantMapping.get(variant.oldVariantId);
+    const quantity = saleorQuantity + bundleQuantity;
+    checkoutLines.push({
+      variantId: variant.oldVariantId,
+      quantity: quantity,
+    });
+  });
+  return checkoutLines as CheckoutLinesInterface;
+};
+
+/**
+ * @description - returns lines which should be updated in saleor in case if an open pack bundle variants quantity is replace with new variants
+ * @pre_condition - every variant provided in bundles list should have same event
+ */
+export const getOpenPackLinesReplace = (
+  openPackUpdates: UpdateOpenPackDto,
+  bundle: GetBundleResponseType,
+  saleor: SaleorCheckoutInterface,
+) => {
+  const updatedLines = [];
+  const saleorVariantsMapping = getSaleorProductVariantsMapping(saleor);
+  const bundleVariantMapping = getBundleProductVariantsMapping(bundle);
+
+  openPackUpdates.variants.map((variant) => {
+    const newVariantQuantity =
+      bundleVariantMapping.get(variant.oldVariantId) +
+      (saleorVariantsMapping.get(variant.newVariantId) || 0);
+    const oldVariantQuantity =
+      saleorVariantsMapping.get(variant.oldVariantId) -
+      bundleVariantMapping.get(variant.oldVariantId);
+
+    updatedLines.push(
+      {
+        variantId: variant.newVariantId,
+        quantity: newVariantQuantity,
+      },
+      {
+        variantId: variant.oldVariantId,
+        quantity: oldVariantQuantity,
+      },
+    );
+  });
+  return updatedLines as CheckoutLinesInterface;
+};
+
+/**
+ * @description - this returns mapping of each bundle variant with its quantity
+ */
+export const getBundleProductVariantsMapping = (
+  bundle: GetBundleResponseType,
+) => {
+  const quantityMapping: Map<string, number> = new Map();
+  bundle.data.productVariants.map((variant) => {
+    quantityMapping.set(variant.productVariant.id, variant.quantity);
+  });
+  return quantityMapping;
+};
+
+/**
+ * @description - this returns mapping of each saleor variant with its quantity
+ */
+export const getSaleorProductVariantsMapping = (
+  saleor: SaleorCheckoutInterface,
+) => {
+  const quantityMapping: Map<string, number> = new Map();
+  saleor.lines.map((line) => {
+    quantityMapping.set(line.variant.id, line.quantity);
+  });
+  return quantityMapping;
 };

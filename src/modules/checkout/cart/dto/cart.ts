@@ -53,3 +53,32 @@ export class AddOpenPackDTO {
   @Type(() => BundleCreateDto)
   bundles: BundleCreateDto[];
 }
+
+export class UpdateBundleDto {
+  @ApiProperty()
+  @IsString()
+  oldVariantId: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  newVariantId?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  quantity?: number;
+}
+
+export class UpdateOpenPackDto {
+  @ApiProperty()
+  @IsString()
+  checkoutId: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  bundleId: string;
+
+  @ApiProperty({ isArray: true, type: UpdateBundleDto })
+  @ValidateNested({ each: true })
+  @Type(() => UpdateBundleDto)
+  variants: UpdateBundleDto[];
+}

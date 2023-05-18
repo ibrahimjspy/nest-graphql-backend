@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Logger,
   Param,
   Post,
   Put,
@@ -15,13 +16,19 @@ import { IsAuthenticated } from 'src/core/utils/decorators';
 import { makeResponse } from 'src/core/utils/response';
 import { AddBundleDto, UserIdDto } from '../dto';
 import { UpdateBundleStateDto, UpdateBundlesDto } from '../dto/add-bundle.dto';
-import { AddOpenPackDTO, DeleteBundlesDto, ReplaceBundleDto } from './dto/cart';
+import {
+  AddOpenPackDTO,
+  DeleteBundlesDto,
+  ReplaceBundleDto,
+  UpdateOpenPackDto,
+} from './dto/cart';
 import { GetCartDto } from './dto/common.dto';
 
 @ApiTags('checkout/cart')
 @Controller('')
 @ApiBearerAuth('JWT-auth')
 export class CartController {
+  private readonly logger = new Logger(CartService.name);
   constructor(private readonly appService: CartService) {}
   @ApiOperation({
     summary: 'returns shopping cart data against a user email',
@@ -196,6 +203,23 @@ export class CartController {
     return makeResponse(
       res,
       await this.appService.addOpenPackToCart(openPackData, token),
+    );
+  }
+
+  @ApiOperation({
+    summary: 'updates open pack against a checkout session',
+  })
+  @Put('api/v1/cart/open/pack')
+  @ApiBearerAuth('JWT-auth')
+  async updateOpenPack(
+    @Res() res,
+    @Body() updateOpenPackData: UpdateOpenPackDto,
+    @IsAuthenticated('authorization') token: string,
+  ): Promise<object> {
+    this.logger.log(updateOpenPackData.variants);
+    return makeResponse(
+      res,
+      await this.appService.updateOpenPack(updateOpenPackData, token),
     );
   }
 }
