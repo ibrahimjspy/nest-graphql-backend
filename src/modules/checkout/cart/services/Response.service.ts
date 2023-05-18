@@ -288,4 +288,20 @@ export class CartResponseService {
       return graphqlExceptionHandler(error);
     }
   }
+
+  public async updateOpenPack(saleor, updateBundle, marketplace) {
+    try {
+      const updateBundleResponse = updateBundle.data;
+      const marketplaceResponse = marketplace.data;
+
+      return prepareSuccessResponse(
+        { saleor, updateBundleResponse, marketplaceResponse },
+        'open pack updated',
+        201,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
 }
