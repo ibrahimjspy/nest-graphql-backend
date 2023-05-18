@@ -279,7 +279,7 @@ export const getOpenPackLinesUpdate = (
   saleor: SaleorCheckoutInterface,
 ): CheckoutLinesInterface => {
   const checkoutLines = [];
-  const bundleVariantMapping = getBundleProductVariantsQuantity(bundle);
+  const bundleVariantMapping = getBundleProductVariantsMapping(bundle);
   const saleorVariantsMapping = getSaleorProductVariantsMapping(saleor);
 
   openPackVariants.map((variant) => {
@@ -306,7 +306,7 @@ export const getOpenPackLinesReplace = (
 ) => {
   const updatedLines = [];
   const saleorVariantsMapping = getSaleorProductVariantsMapping(saleor);
-  const bundleVariantMapping = getBundleProductVariantsQuantity(bundle);
+  const bundleVariantMapping = getBundleProductVariantsMapping(bundle);
 
   openPackUpdates.variants.map((variant) => {
     const newVariantQuantity =
@@ -333,7 +333,7 @@ export const getOpenPackLinesReplace = (
 /**
  * @description - this returns mapping of each bundle variant with its quantity
  */
-export const getBundleProductVariantsQuantity = (
+export const getBundleProductVariantsMapping = (
   bundle: GetBundleResponseType,
 ) => {
   const quantityMapping: Map<string, number> = new Map();
