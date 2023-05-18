@@ -213,8 +213,7 @@ export class CartController {
     @Res() res,
     @Body() updateOpenPackData: UpdateOpenPackDto,
     @IsAuthenticated('authorization') token: string,
-  ): Promise<any> {
-    console.log(updateOpenPackData);
+  ): Promise<object> {
     return makeResponse(
       res,
       await this.appService.updateOpenPack(updateOpenPackData, token),
