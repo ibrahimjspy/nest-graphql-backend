@@ -433,7 +433,11 @@ export class CartService {
         this.productService.updateBundle(updateOpenPack),
         this.marketplaceService.getAllCheckoutBundles({ checkoutId, token }),
       ]);
-      return { saleor, updateBundle, marketplace };
+      return this.cartResponseBuilder.updateOpenPack(
+        saleor,
+        updateBundle,
+        marketplace,
+      );
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

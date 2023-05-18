@@ -455,26 +455,22 @@ describe('Cart Service', () => {
     );
 
     expect(updateOpenPack).toEqual({
-      saleor: {
-        id: '62129625-7675-428a-a3ef-db82a7e72262',
-        name: 'string',
-        description: 'string',
-        slug: 'string',
-        productVariants: [],
-      },
-      updateBundle: {
-        status: 200,
-        data: {
+      data: {
+        saleor: {
           id: '62129625-7675-428a-a3ef-db82a7e72262',
           name: 'string',
           description: 'string',
           slug: 'string',
           productVariants: [],
         },
-      },
-      marketplace: {
-        status: 200,
-        data: {
+        updateBundle: {
+          id: '62129625-7675-428a-a3ef-db82a7e72262',
+          name: 'string',
+          description: 'string',
+          slug: 'string',
+          productVariants: [],
+        },
+        marketplace: {
           checkout: {
             id: '62129625-7675-428a-a3ef-db82a7e72262',
             name: 'string',
@@ -484,6 +480,8 @@ describe('Cart Service', () => {
           },
         },
       },
+      message: 'open pack updated',
+      status: 201,
     });
     expect(updateOpenPack).toBeDefined();
   });
