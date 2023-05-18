@@ -289,13 +289,17 @@ export class CartResponseService {
     }
   }
 
-  public async updateOpenPack(saleor, updateBundle, marketplace) {
+  public async updateOpenPack(
+    saleor,
+    updateBundleResponse,
+    marketplaceResponse,
+  ) {
     try {
-      const updateBundleResponse = updateBundle.data;
-      const marketplaceResponse = marketplace.data;
+      const updateBundle = updateBundleResponse.data;
+      const marketplace = marketplaceResponse.data;
 
       return prepareSuccessResponse(
-        { saleor, updateBundleResponse, marketplaceResponse },
+        { saleor, updateBundle, marketplace },
         'open pack updated',
         201,
       );
