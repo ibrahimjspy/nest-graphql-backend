@@ -69,7 +69,6 @@ export class CartValidationService {
    */
   public validateApisByStatus(responses, throwException = true) {
     let isValid = true;
-    console.log(responses);
     responses.map((response) => {
       if (response.status !== 200) {
         if (throwException) throw new NoBundleFoundError();

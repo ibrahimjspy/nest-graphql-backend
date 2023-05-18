@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Logger,
   Param,
   Post,
   Put,
@@ -27,6 +28,7 @@ import { GetCartDto } from './dto/common.dto';
 @Controller('')
 @ApiBearerAuth('JWT-auth')
 export class CartController {
+  private readonly logger = new Logger(CartService.name);
   constructor(private readonly appService: CartService) {}
   @ApiOperation({
     summary: 'returns shopping cart data against a user email',
@@ -214,6 +216,7 @@ export class CartController {
     @Body() updateOpenPackData: UpdateOpenPackDto,
     @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
+    this.logger.log(updateOpenPackData.variants);
     return makeResponse(
       res,
       await this.appService.updateOpenPack(updateOpenPackData, token),
