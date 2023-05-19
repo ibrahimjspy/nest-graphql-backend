@@ -71,7 +71,7 @@ export class CartService {
     checkoutId: string,
     bundlesList: CheckoutBundleInputType[],
     token: string,
-  ): Promise<object> {
+  ): Promise<SuccessResponseType> {
     try {
       const [saleor, marketplace] = await Promise.allSettled([
         this.saleorService.addBundleLines(
@@ -391,9 +391,11 @@ export class CartService {
   ): Promise<object> {
     try {
       const { userEmail, checkoutId, bundles } = addOpenPackToCart;
+      const bundlesResponse = [];
       const [...checkoutBundles] = await Promise.all(
         bundles.map(async (bundle) => {
           const bundleCreate = await this.productService.createBundle(bundle);
+          bundlesResponse.push(bundleCreate.data);
           const checkoutBundle = {
             bundleId: getBundleIdFromBundleCreate(bundleCreate),
             quantity: 1,
@@ -401,11 +403,15 @@ export class CartService {
           return checkoutBundle;
         }),
       );
-      return await this.addBundlesToCart(
+      const addToCart = await this.addBundlesToCart(
         userEmail,
         checkoutId,
         checkoutBundles,
         token,
+      );
+      return this.cartResponseBuilder.addOpenPackToCart(
+        addToCart,
+        bundlesResponse,
       );
     } catch (error) {
       this.logger.error(error);

@@ -308,4 +308,18 @@ export class CartResponseService {
       return graphqlExceptionHandler(error);
     }
   }
+
+  public async addOpenPackToCart(addToCart, bundlesResponse) {
+    try {
+      const response = addToCart.data;
+      return prepareSuccessResponse(
+        { ...response, bundlesResponse },
+        'open pack added to cart',
+        201,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
 }

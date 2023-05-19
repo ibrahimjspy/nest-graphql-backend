@@ -33,6 +33,7 @@ const federationQuery = (
             price
             bundle {
               id
+              isOpenBundle
               name
               description
               slug
