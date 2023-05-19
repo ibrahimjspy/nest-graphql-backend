@@ -5,6 +5,7 @@ export const bundleDetailsFragment = gql`
   fragment Bundle on BundleViewType {
     id
     name
+    isOpenBundle
     description
     slug
   }

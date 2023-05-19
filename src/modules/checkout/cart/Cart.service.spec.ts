@@ -350,8 +350,11 @@ describe('Cart Service', () => {
           ],
         },
         marketplace: { status: 'done' },
+        bundlesResponse: [
+          { id: '19c88ba8-7429-45f7-87dd-a9999803d955', name: 'bundleId' },
+        ],
       },
-      message: 'bundles added to cart',
+      message: 'open pack added to cart',
     });
     expect(addToCart).toBeDefined();
   });
