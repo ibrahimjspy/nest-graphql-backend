@@ -1,10 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { OsOrderPayloadType } from './osOrder.types';
+import { OsOrderPayloadType, OsShippingAddressType } from './osOrder.types';
 import { BASE_EXTERNAL_ENDPOINT } from 'src/constants';
 import { saveFailedOrderHandler } from 'src/graphql/handlers/checkout/checkout';
 import { prepareFailedResponse } from 'src/core/utils/response';
 import { getTokenWithoutBearer } from 'src/modules/account/user/User.utils';
 import axios from 'axios';
+import { addShippingAddressInfo } from 'src/external/endpoints/checkout';
 
 @Injectable()
 export default class OsOrderService {
@@ -21,9 +22,7 @@ export default class OsOrderService {
         headers: { Authorization: getTokenWithoutBearer(token) },
       };
       console.log('payload', payload);
-      console.log('header', header);
       const response = await axios.post(URL, payload, header);
-      console.log('response', response);
       return response?.data;
     } catch (err) {
       this.logger.error(err);
@@ -41,13 +40,34 @@ export default class OsOrderService {
     }
   }
 
-  async getOsColorMappingIDs(colorObject) {
+  async getProductColorIDs(colorObject) {
     const URL = `${this.API_URI}/product/details?color-mapping=${JSON.stringify(
       colorObject,
-    ).replaceAll('#', '')}`;
-    console.log('URL', URL);
+    ).replaceAll('#', '')}`; // Todo need to resolve # including colors
     const response = await axios.get(URL);
-    const colorsData = response?.data?.data;
-    return colorsData;
+    return response?.data?.data;
+  }
+
+  async getShoeSizeIDs(vendorNameList: string[], shoeSizeNameList: string[]) {
+    const URL = `${
+      this.API_URI
+    }/product/shoe-sizes?vendor_name_list=${JSON.stringify(
+      vendorNameList,
+    )}&shoe_size_name_list=${JSON.stringify(shoeSizeNameList)}`;
+    const response = await axios.get(URL);
+    return response?.data?.data;
+  }
+
+  async createShippingAddress(shippingAddressInfo: OsShippingAddressType) {
+    const response = await addShippingAddressInfo(shippingAddressInfo);
+    return response;
+  }
+
+  async getBundles(productIds: string[]) {
+    const URL = `${this.API_URI}/styles/details?pids=${JSON.stringify(
+      productIds,
+    )}`;
+    const response = await axios.get(URL);
+    return response?.data;
   }
 }

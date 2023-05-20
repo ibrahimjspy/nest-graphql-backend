@@ -10,13 +10,7 @@ import { NoPaymentIntentError } from './Checkout.errors';
 import { MarketplaceCartService } from './cart/services/marketplace/Cart.marketplace.service';
 import { PaymentService } from './payment/Payment.service';
 import { CreateCheckoutDto } from './dto/createCheckout';
-import {
-  B2B_CHECKOUT_APP_TOKEN,
-  PAYMENT_TYPE,
-  SIGNATURE_REQUESTED,
-  SMS_NUMBER,
-  STORE_CREDIT,
-} from 'src/constants';
+import { B2B_CHECKOUT_APP_TOKEN, SHAROVE_BILLING_ADDRESS } from 'src/constants';
 import { getOrdersByShopId } from '../orders/Orders.utils';
 import { OrdersService } from '../orders/Orders.service';
 import { LegacyService } from 'src/external/services/osPlaceOrder/Legacy.service';
@@ -25,6 +19,8 @@ import {
   addPreAuthInCheckoutResponse,
   checkoutShippingMethodsSort,
   getLessInventoryProducts,
+  transformOsOrderPayload,
+  transformOsShopMapping,
 } from './Checkout.utils';
 import OsOrderService from 'src/external/services/osOrder/osOrder.service';
 import { LessInventoryProductType } from './Checkout.utils.type';
@@ -33,10 +29,8 @@ import {
   getOsProductMapping,
   getOsShopMapping,
 } from 'src/external/endpoints/b2bMapping';
-import {
-  OsOrderItem,
-  OsOrderPayloadType,
-} from 'src/external/services/osOrder/osOrder.types';
+import { getAuth0Tokens } from 'src/external/endpoints/auth0';
+import jwt_decode from 'jwt-decode';
 
 @Injectable()
 export class CheckoutService {
@@ -194,92 +188,58 @@ export class CheckoutService {
    */
   public async osPlaceOrder(orderId: string, token: string): Promise<object> {
     try {
+      const auth0Tokens = await getAuth0Tokens(
+        'touqeerahmad2023@mailinator.com',
+        'Password123',
+      );
+      const accessToken = auth0Tokens?.access_token;
+      const decodedToken = jwt_decode(accessToken);
+      const os_user_id = decodedToken['os_user_id'];
       const orderDetail = await this.ordersService.getOrderDetailsById(
         orderId,
         token,
       );
-      // const b2bProductsMapping:string
-      const b2cProducts: LessInventoryProductType[] =
+      const lessInventoryProducts: LessInventoryProductType[] =
         getLessInventoryProducts(orderDetail);
-      console.log('b2cProducts', b2cProducts);
-      const b2cProductIds: string[] = b2cProducts.map(
+      const b2cProductIds: string[] = lessInventoryProducts.map(
         (product) => product.productId,
       );
-      console.log('b2cProductIds', b2cProductIds);
-      const b2bIdsMapping: object = await getB2bProductMapping(b2cProductIds);
-      const b2bProductIds = Object.values(b2bIdsMapping);
-      console.log('b2bIdsMapping', b2bIdsMapping);
-      const osProductIdsMapping: object = await getOsProductMapping(
-        b2bProductIds,
+      const b2bProductMapping: object = await getB2bProductMapping(
+        b2cProductIds,
       );
-      console.log('osProductIdsMapping', osProductIdsMapping);
-      const b2bShopIds = b2cProducts.map((product) => product.productVendorId);
-      const osVendorMapping: object = await getOsShopMapping(b2bShopIds);
-      console.log('osVendorMapping', osVendorMapping);
-      const vendorColorsObj = {};
-      b2cProducts.forEach(({ productVendorId, variantColor }) => {
-        if (
-          osVendorMapping[productVendorId] &&
-          vendorColorsObj[osVendorMapping[productVendorId]]
-        ) {
-          vendorColorsObj[osVendorMapping[productVendorId]] = [
-            ...vendorColorsObj[osVendorMapping[productVendorId]],
-            variantColor,
-          ];
-        } else {
-          vendorColorsObj[osVendorMapping[productVendorId]] = [variantColor];
-        }
-      });
-      console.log('vendorColorsObj', vendorColorsObj);
-      const osColorIds = await this.osOrderService.getOsColorMappingIDs(
-        vendorColorsObj,
+      const b2bProductIds = Object.values(b2bProductMapping);
+      const osProductMapping: object = await getOsProductMapping(b2bProductIds);
+      const osProductIds = Object.values(osProductMapping);
+      const b2bShopIds = lessInventoryProducts.map(
+        (product) => product.productShopId,
       );
-      console.log('osColorIds', osColorIds);
-
-      const ordersPayload: OsOrderItem[] = [];
-      b2cProducts.forEach(({ productId, productVendorId, variantColor }) => {
-        const osProductId = osProductIdsMapping[b2bIdsMapping[productId]];
-        const osVendorId = osVendorMapping[productVendorId];
-        const osColorId = osColorIds.find(
-          (colorItem) =>
-            colorItem.brand === osVendorId && colorItem.name === variantColor,
-        ).id;
-        ordersPayload.push({
-          item_id: osProductId,
-          color_id: osColorId,
-          pack_qty: 1,
-          stock_type: 'in_stock',
-          memo: '',
-          sms_number: SMS_NUMBER,
-          spa_id: 162187,
-          spm_name: 'UPS',
-          store_credit: STORE_CREDIT,
-          signature_requested: SIGNATURE_REQUESTED,
+      const osShopMapping: object = await getOsShopMapping(b2bShopIds);
+      const osShopColors = transformOsShopMapping(
+        osShopMapping,
+        lessInventoryProducts,
+      );
+      const osProductColorIDs = await this.osOrderService.getProductColorIDs(
+        osShopColors,
+      );
+      const osShippingAddress: any =
+        await this.osOrderService.createShippingAddress({
+          ...SHAROVE_BILLING_ADDRESS,
+          user_id: os_user_id,
         });
-      });
-
-      console.log('ordersPayload', ordersPayload);
-
-      const osOrderPayload: OsOrderPayloadType = {
-        orders: ordersPayload,
-        sharove_order_id: '000',
-        stripe_payment_method_id: 'pm_1N8M28Gr7zGKk44AORqD8OHh',
-        spa_id: 162187,
-        payment_type: PAYMENT_TYPE,
-        billing: {
-          first_name: 'Touqeer',
-          last_name: 'Ahmad',
-          address1: 'Street Address 1',
-          city: 'New York',
-          state: 'AL',
-          zipcode: '35013',
-          country: 'US',
-        },
-      };
-
+      const osBundles: any = await this.osOrderService.getBundles(osProductIds);
+      const OsShippingAddressId = osShippingAddress?.data?.user_id;
+      const osOrderPayload = transformOsOrderPayload(
+        osShopMapping,
+        lessInventoryProducts,
+        osProductMapping,
+        b2bProductMapping,
+        osProductColorIDs,
+        OsShippingAddressId,
+        osBundles,
+      );
       const response = await this.osOrderService.placeOrder(
         osOrderPayload,
-        token,
+        accessToken,
       );
       return prepareSuccessResponse(
         { response },

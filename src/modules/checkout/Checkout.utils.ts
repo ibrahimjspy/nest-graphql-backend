@@ -1,8 +1,20 @@
 import {
+  OsOrderItem,
+  OsOrderPayloadType,
+} from 'src/external/services/osOrder/osOrder.types';
+import {
   LessInventoryProductType,
   SaleorCheckoutInterface,
 } from './Checkout.utils.type';
-import { PROMOTION_SHIPPING_METHOD_ID } from 'src/constants';
+import {
+  PAYMENT_TYPE,
+  PROMOTION_SHIPPING_METHOD_ID,
+  SHAROVE_BILLING_ADDRESS,
+  SIGNATURE_REQUESTED,
+  SMS_NUMBER,
+  STORE_CREDIT,
+} from 'src/constants';
+import { hash } from 'src/core/utils/helpers';
 
 export const toCents = (amount: number) => {
   return Math.round(amount * 100);
@@ -82,17 +94,142 @@ export const getLessInventoryProducts = (orderDetailResponse) => {
         line.variant.attributes,
         'color',
       );
+      const variantSizes = getAttributeValues(line.variant.attributes, 'size');
       products.push({
         productId: line.variant.product.id,
-        productVendorId: getMetadataValue(
+        productShopId: getMetadataValue(
           line.variant.product.metadata,
           'vendorId',
         ),
         variantColor: variantColors?.length && variantColors[0],
+        variantSize: variantSizes?.length && variantSizes[0],
         quantity: line.quantity,
       });
       // }
     });
   }
   return products;
+};
+
+/**
+ * @description -- this function takes oranshine shop ids mapping and shop colors to
+ * map color against matching os shop id
+ * @param {object} osShopMapping - orangeshine shop ids mapping
+ * @param {LessInventoryProductType[]} products - orangeshine shop ids mapping
+ * @return {object} colors mapping against os shop id
+ */
+export const transformOsShopMapping = (
+  osShopMapping: object,
+  products: LessInventoryProductType[],
+) => {
+  const shopColors = {};
+  products.forEach(({ productShopId, variantColor }) => {
+    if (
+      osShopMapping[productShopId] &&
+      shopColors[osShopMapping[productShopId]]
+    ) {
+      shopColors[osShopMapping[productShopId]] = [
+        ...shopColors[osShopMapping[productShopId]],
+        variantColor,
+      ];
+    } else {
+      shopColors[osShopMapping[productShopId]] = [variantColor];
+    }
+  });
+  return shopColors;
+};
+
+const getPackQuantity = (osBundles, productId, productSize, quantity) => {
+  let finalPackQuantity = 1;
+  const bundles = hash(osBundles, 'id');
+  if (bundles[productId].is_shoes) {
+    return 3;
+  }
+  const productQuanityInPack =
+    bundles[productId]?.size_chart?.size_chart[productSize];
+
+  if (productQuanityInPack && quantity > productQuanityInPack) {
+    finalPackQuantity = Math.ceil(Math.round(quantity / productQuanityInPack));
+  }
+  if (!productQuanityInPack) {
+    finalPackQuantity = 0;
+  }
+  return finalPackQuantity;
+};
+
+/**
+ * @description -- this function takes orangeshine order details and transform data
+ * for orangeshine order payload
+ * @param {object} osShopMapping - orangeshine shop ids mapping
+ * @param {LessInventoryProductType[]} products - orangeshine shop ids mapping
+ * @param {object} osProductMapping - orangeshine product ids against b2b product ids
+ * @param {object} b2bProductMapping - b2b product ids against b2c product ids
+ * @param osColorIds - orangeshine color ids against orangeshine shop ids
+ * @return {object} payload for orangeshine order
+ */
+export const transformOsOrderPayload = (
+  osShopMapping: object,
+  products: LessInventoryProductType[],
+  osProductMapping: object,
+  b2bProductMapping: object,
+  osColorIds,
+  OsShippingAddressId: number,
+  osBundles,
+) => {
+  const osOrderItems: OsOrderItem[] = [];
+  products.forEach(
+    ({ productId, productShopId, variantColor, variantSize, quantity }) => {
+      const osProductId = osProductMapping[b2bProductMapping[productId]];
+      const osShopId = osShopMapping[productShopId];
+      const osColorId = osColorIds.find(
+        (color) => color.brand === osShopId && color.name === variantColor,
+      ).id;
+      osOrderItems.push({
+        item_id: osProductId,
+        color_id: osColorId,
+        pack_qty: getPackQuantity(
+          osBundles,
+          osProductId,
+          variantSize,
+          quantity,
+        ),
+        stock_type: 'in_stock',
+        memo: '',
+        sms_number: SMS_NUMBER,
+        spa_id: OsShippingAddressId,
+        spm_name: 'UPS',
+        store_credit: STORE_CREDIT,
+        signature_requested: SIGNATURE_REQUESTED,
+      });
+    },
+  );
+  const uniqueOrderItems: OsOrderItem[] = [];
+  osOrderItems.forEach((orderItem) => {
+    const isAlreadyExist = uniqueOrderItems.find(
+      (item) => item.color_id === orderItem.color_id,
+    );
+    if (isAlreadyExist) {
+      console.log(orderItem.color_id, isAlreadyExist);
+      uniqueOrderItems.forEach((item) => {
+        if (
+          item.color_id === orderItem.color_id &&
+          orderItem.pack_qty > item.pack_qty
+        ) {
+          item.pack_qty = orderItem.pack_qty;
+        }
+      });
+    } else {
+      uniqueOrderItems.push(orderItem);
+    }
+  });
+  const osOrderPayload: OsOrderPayloadType = {
+    orders: uniqueOrderItems,
+    sharove_order_id: '000',
+    stripe_payment_method_id: 'pm_1N8M28Gr7zGKk44AORqD8OHh',
+    spa_id: 162187,
+    payment_type: PAYMENT_TYPE,
+    billing: SHAROVE_BILLING_ADDRESS,
+  };
+
+  return osOrderPayload;
 };

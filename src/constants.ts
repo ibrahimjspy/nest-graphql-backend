@@ -94,6 +94,20 @@ export const preAuthTransactionInput = {
   eventName: 'Authorized credit card',
   availableActions: '[VOID, CHARGE]',
 };
+export const SHAROVE_BILLING_ADDRESS = {
+  first_name: 'Touqeer',
+  last_name: 'Ahmad',
+  address1: 'Street Address 1',
+  city: 'New York',
+  state: 'AL',
+  zipcode: '35013',
+  country: 'US',
+  phone_number: '+1234567',
+  nick_name: 'Sharove',
+  address2: '',
+  company_name: 'Sharove',
+};
+
 export const PROMOTION_SHIPPING_METHOD_ID = 'U2hpcHBpbmdNZXRob2Q6NzA=';
 export const B2B_CHECKOUT_APP_TOKEN = process.env.B2B_CHECKOUT_APP_TOKEN;
 export const ELASTIC_SEARCH_ENDPOINT = process.env.ELASTIC_SEARCH_ENDPOINT;
@@ -104,3 +118,9 @@ export const AUTH0_M2M_APP_CLIENT_ID = process.env.AUTH0_M2M_APP_CLIENT_ID;
 export const AUTH0_M2M_APP_CLIENT_SECRET =
   process.env.AUTH0_M2M_APP_CLIENT_SECRET;
 export const AUTH0_TTL_CACHE_TIME = 72000;
+
+export const AUTH0_B2B_CONNECTION = 'Username-Password-Authentication';
+export const AUTH0_SPA_CLIENT_ID = 'NHDmV7IkVh8s8zX1d5waoPolBAwwLSzT';
+export const AUTH0_SPA_SCOPE = 'openid profile email offline_access';
+export const AUTH0_GRANT_TYPE =
+  'http://auth0.com/oauth/grant-type/password-realm';

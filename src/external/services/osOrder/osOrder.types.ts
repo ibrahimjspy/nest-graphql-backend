@@ -30,3 +30,18 @@ export interface OsOrderPayloadType {
   stripe_payment_method_id: string;
   billing: OsBillingAddressType;
 }
+
+export interface OsShippingAddressType {
+  address1: string;
+  address2: string;
+  city: string;
+  state: string;
+  zipcode: string;
+  user_id: string;
+  company_name: string;
+  country: string;
+  first_name: string;
+  last_name: string;
+  nick_name: string;
+  phone_number: string;
+}
