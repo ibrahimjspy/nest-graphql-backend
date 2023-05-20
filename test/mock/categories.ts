@@ -14,6 +14,9 @@ export const mockCategoriesData = {
           name: 'Women',
           id: 'Q2F0ZWdvcnk6MTg=',
           slug: 'women',
+          products: {
+            totalCount: 10000,
+          },
           children: {
             edges: [
               {
@@ -78,6 +81,9 @@ export const mockCategoriesData = {
         name: 'Women',
         id: 'Q2F0ZWdvcnk6MTg=',
         slug: 'women',
+        products: {
+          totalCount: 10000,
+        },
         children: {
           edges: [
             {
@@ -173,6 +179,9 @@ export const mockCategoriesData = {
           name: 'Women',
           id: 'Q2F0ZWdvcnk6MTg=',
           slug: 'women',
+          products: {
+            totalCount: 100,
+          },
           children: {
             edges: [
               {
