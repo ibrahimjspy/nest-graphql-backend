@@ -1,5 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 import { FailedResponseType, SuccessResponseType } from './response.type';
+import { isObject } from './helpers';
+import { GQL_EDGES } from 'src/constants';
 
 /**
  * It returns a response object with a status code and a JSON object
@@ -32,9 +34,6 @@ export const prepareSuccessResponse = async (
   message = '',
   status: HttpStatus = HttpStatus.OK,
 ): Promise<SuccessResponseType> => {
-  // removing typename from graphQL object
-  delete data?.__typename;
-
   const response: SuccessResponseType = {
     status: status ? status : HttpStatus.OK,
   };
@@ -67,4 +66,32 @@ export const prepareFailedResponse = async (
     response['errors'] = errors;
   }
   return response;
+};
+
+/**
+ * Remove edges, node and __typename from graphql response
+ * @param {Object} input - The graphql response
+ * @returns {Object} Clean graphql response
+ */
+export const prepareGQLPaginatedResponse = async (input): Promise<any> => {
+  if (!input) return null;
+  const output = {};
+
+  await Promise.all(
+    Object.keys(input).map(async (key) => {
+      if (input[key] && key === GQL_EDGES) {
+        output['data'] = await Promise.all(
+          input[key].map(
+            async (edge) => await prepareGQLPaginatedResponse(edge.node),
+          ),
+        );
+      } else if (isObject(input[key])) {
+        output[key] = await prepareGQLPaginatedResponse(input[key]);
+      } else if (key !== '__typename') {
+        output[key] = input[key];
+      }
+    }),
+  );
+
+  return output;
 };

@@ -4,15 +4,18 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './core/exceptions/filters';
 import packageInfo from '../package.json';
+// import tracer from './tracer';
 
-const corsOrigins = async () => process.env.CORS_ORIGINS.split(',');
+// const corsOrigins = async () => process.env.CORS_ORIGINS.split(',');
 
-const corsMethods = async () =>
-  (process.env.CORS_METHODS || 'GET,PATCH,POST,PUT,DELETE,OPTIONS')
-    .split(',')
-    .map((method) => method.trim().toUpperCase());
+// const corsMethods = async () =>
+//   (process.env.CORS_METHODS || 'GET,PATCH,POST,PUT,DELETE,OPTIONS')
+//     .split(',')
+//     .map((method) => method.trim().toUpperCase());
 
 const bootstrap = async () => {
+  // TODO connect tracing to deployed signoz
+  // await tracer.start();
   const app = await NestFactory.create(AppModule);
 
   // cores configuration
@@ -30,6 +33,17 @@ const bootstrap = async () => {
     .setTitle(packageInfo.name)
     .setDescription(packageInfo.description)
     .setVersion(packageInfo.version)
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      'JWT-auth', // This name here is important for matching up with @ApiBearerAuth() in your controller!
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
@@ -38,7 +52,7 @@ const bootstrap = async () => {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   // enable auto validation
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   // app configuration
   await app.listen(process.env.PORT || 5000);

@@ -1,7 +1,6 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
-const federationQuery = (): string => {
+export const menuCategoriesQuery = (): string => {
   return gql`
     query {
       categories(first: 20, level: 0) {
@@ -33,34 +32,4 @@ const federationQuery = (): string => {
       }
     }
   `;
-};
-
-const mockQuery = (): string => {
-  return gql`
-    query {
-      main_categories {
-        name
-        id
-        slug
-        images {
-          url
-          label
-        }
-        sub_categories {
-          id
-          name
-          slug
-          sub_sub_categories {
-            id
-            name
-            slug
-          }
-        }
-      }
-    }
-  `;
-};
-
-export const menuCategoriesQuery = () => {
-  return graphqlQueryCheck(federationQuery(), mockQuery());
 };

@@ -9,9 +9,10 @@ import { Address } from '../../types/address.type';
 
 export const addressesByUserIdHandler = async (
   userId: string,
+  token: string,
 ): Promise<Address[]> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(AccountQueries.userAddressesByIdQuery(userId)),
+    await graphqlCall(AccountQueries.userAddressesByIdQuery(userId), token),
   );
 
   return response?.user?.addresses || [];
@@ -20,9 +21,13 @@ export const addressesByUserIdHandler = async (
 export const createAddressHandler = async (
   userId: string,
   address: AccountMutations.AddressInput,
+  token: string,
 ): Promise<Address> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(AccountMutations.addressCreateMutation(userId, address)),
+    await graphqlCall(
+      AccountMutations.addressCreateMutation(userId, address),
+      token,
+    ),
   );
 
   if (!response?.addressCreate?.address) throw new RecordNotFound('Address');
@@ -31,19 +36,22 @@ export const createAddressHandler = async (
 
 export const deleteAddressHandler = async (
   addressId: string,
+  token: string,
 ): Promise<void> => {
   await graphqlResultErrorHandler(
-    await graphqlCall(AccountMutations.addressDeleteMutation(addressId)),
+    await graphqlCall(AccountMutations.addressDeleteMutation(addressId), token),
   );
 };
 
 export const setDefaultAddressHandler = async (
   userId: string,
   addressId: string,
+  token: string,
 ): Promise<Address[]> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
       AccountMutations.addressSetDefaultMutation(userId, addressId),
+      token,
     ),
   );
 
@@ -54,10 +62,12 @@ export const setDefaultAddressHandler = async (
 export const updateAddressHandler = async (
   addressId: string,
   address: AccountMutations.AddressInput,
+  token: string,
 ): Promise<Address> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
       AccountMutations.addressUpdateMutation(addressId, address),
+      token,
     ),
   );
 

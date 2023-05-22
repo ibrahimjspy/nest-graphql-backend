@@ -1,8 +1,7 @@
 import { gql } from 'graphql-request';
 import { DEFAULT_CHANNEL } from 'src/constants';
-import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
-const federationQuery = (
+export const createCheckoutMutation = (
   email: string,
   bundles: Array<{ quantity: number; variantId: string }>,
 ) => {
@@ -20,6 +19,7 @@ const federationQuery = (
         checkout {
           id
           lines {
+            quantity
             id
             variant{
               id
@@ -29,14 +29,4 @@ const federationQuery = (
       }
     }
   `;
-};
-
-export const createCheckoutMutation = (
-  email: string,
-  bundles: Array<{ quantity: number; variantId: string }>,
-) => {
-  return graphqlQueryCheck(
-    federationQuery(email, bundles),
-    federationQuery(email, bundles),
-  );
 };

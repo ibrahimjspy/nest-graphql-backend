@@ -1,25 +1,38 @@
-import { request } from 'graphql-request';
+import { GraphQLClient } from 'graphql-request';
 import { graphqlEndpoint } from './graphqlEndpointToggle';
 import { ResultErrorType } from 'src/graphql/exceptions/resultError.type';
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus, Logger } from '@nestjs/common';
 import ResultError from 'src/graphql/exceptions/resultError';
 import { prepareFailedResponse } from 'src/core/utils/response';
-
 /**
  * This is top level function which handles graphql requests , exceptions and logic
  * @params Query ,  It must be in string format and no query based
  * logic should be transferred to graphqlHandler
- * @params Mock , it is an optional parameter to allow specific functions to call mock server while other
- * keep calling federation services
+ * @params isB2c , it is an optional parameter to allow specific functions to call b2c server while other
+ * keep calling b2b services
  * @note This function determines its endpoint logic through another public method graphqlHandler() which
  * is based on env files content .
  * @returns an object with data or graphql error
  */
+
 export const graphqlCall = async (
   Query: string,
-  Mock?: string,
+  Token?: string,
+  isB2c?: boolean,
 ): Promise<any> => {
-  return await request(graphqlEndpoint(Mock ? Mock : ''), Query);
+  const startTime = new Date().getTime();
+  const endpoint = graphqlEndpoint(isB2c ? isB2c : false);
+  const logger = new Logger('Graphql client');
+  const request = { endpoint: endpoint, queryName: Query.split('(')[0] };
+  const graphQLClient = new GraphQLClient(endpoint, {
+    headers: {
+      authorization: `${Token}`,
+    },
+  });
+  const response = await graphQLClient.request(Query);
+  const endTime = new Date().getTime();
+  logger.log('Request took ' + (endTime - startTime) + 'ms', { request });
+  return response;
 };
 
 /**
@@ -71,9 +84,9 @@ export const graphqlExceptionHandler = (
   // Used to handle all the unexpected errors.
   const response = error?.response;
   const errors = response?.errors || [];
-  const message = response?.errors[0].message
-    ? response?.errors[0].message
-    : 'Something went wrong.';
+  const errorMessage = response?.errors?.length && response?.errors[0]?.message;
+  const message =
+    errorMessage || response?.data?.message || 'Something went wrong.';
   let error_code: number = error.type ? 500 : response?.status;
   if (status) {
     error_code = status;

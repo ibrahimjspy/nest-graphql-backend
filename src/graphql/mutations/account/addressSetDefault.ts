@@ -1,6 +1,7 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 import { AddressTypeEnum } from 'src/graphql/enums/address';
+import { addressFragment } from 'src/graphql/fragments/checkout/shipping/shippingAddress';
 
 const federationQuery = (
   userId: string,
@@ -17,22 +18,7 @@ const federationQuery = (
         user {
           id
           addresses {
-            id
-            firstName
-            lastName
-            companyName
-            streetAddress1
-            streetAddress2
-            city
-            cityArea
-            postalCode
-            country {
-              code
-              country
-            }
-            countryArea
-            phone
-            isDefaultShippingAddress
+            ... Address
           }
         }
         errors {
@@ -42,6 +28,7 @@ const federationQuery = (
         }
       }
     }
+    ${addressFragment}
   `;
 };
 

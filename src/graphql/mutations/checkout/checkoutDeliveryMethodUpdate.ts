@@ -1,7 +1,9 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
-const federationQuery = (checkoutId: string, deliveryMethodId: string) => {
+export const checkoutDeliveryMethodUpdateMutation = (
+  checkoutId: string,
+  deliveryMethodId: string,
+) => {
   return gql`
     mutation {
       checkoutDeliveryMethodUpdate(
@@ -10,6 +12,26 @@ const federationQuery = (checkoutId: string, deliveryMethodId: string) => {
       ) {
         checkout {
           id
+          deliveryMethod {
+            ... on ShippingMethod {
+              id
+              name
+              metadata {
+                key
+                value
+              }
+            }
+          }
+          totalPrice {
+            gross {
+              amount
+            }
+          }
+          subtotalPrice {
+            gross {
+              amount
+            }
+          }
         }
         errors {
           message
@@ -17,14 +39,4 @@ const federationQuery = (checkoutId: string, deliveryMethodId: string) => {
       }
     }
   `;
-};
-
-export const checkoutDeliveryMethodUpdateMutation = (
-  checkoutId: string,
-  deliveryMethodId: string,
-) => {
-  return graphqlQueryCheck(
-    federationQuery(checkoutId, deliveryMethodId),
-    federationQuery(checkoutId, deliveryMethodId),
-  );
 };

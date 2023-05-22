@@ -1,440 +1,169 @@
 import { Injectable, Logger } from '@nestjs/common';
-import RecordNotFound from 'src/core/exceptions/recordNotFound';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import {
   prepareFailedResponse,
   prepareSuccessResponse,
 } from 'src/core/utils/response';
-
-import * as CheckoutHandlers from 'src/graphql/handlers/checkout';
-import * as ProductHandlers from 'src/graphql/handlers/product';
-import * as AccountHandlers from 'src/graphql/handlers/account';
-import * as CheckoutUtils from './Checkout.utils';
-
+import * as CheckoutHandlers from 'src/graphql/handlers/checkout/checkout';
+import { orderCreateFromCheckoutHandler } from 'src/graphql/handlers/checkout/checkout';
+import { NoPaymentIntentError } from './Checkout.errors';
+import { MarketplaceCartService } from './cart/services/marketplace/Cart.marketplace.service';
+import { PaymentService } from './payment/Payment.service';
+import { CreateCheckoutDto } from './dto/createCheckout';
+import { B2B_CHECKOUT_APP_TOKEN } from 'src/constants';
+import { getOrdersByShopId } from '../orders/Orders.utils';
+import { OrdersService } from '../orders/Orders.service';
+import { LegacyService } from 'src/external/services/osPlaceOrder/Legacy.service';
+import { preparePromotionResponse } from './shipping/services/Shipping.response';
 import {
-  AddressDetailType,
-  CheckoutBundleInputType,
-} from 'src/graphql/handlers/checkout.type';
-import { BundleType } from 'src/graphql/types/bundle.type';
+  addPreAuthInCheckoutResponse,
+  checkoutShippingMethodsSort,
+} from './Checkout.utils';
 
 @Injectable()
 export class CheckoutService {
   private readonly logger = new Logger(CheckoutService.name);
+  constructor(
+    private paymentService: PaymentService,
+    private marketplaceCartService: MarketplaceCartService,
+    private ordersService: OrdersService,
+  ) {
+    return;
+  }
 
-  public async getShoppingCartData(id: string): Promise<object> {
+  public async getCheckoutSummary(checkoutId: string, token: string) {
     try {
-      const checkoutBundles = await CheckoutHandlers.marketplaceCheckoutHandler(
-        id,
-        true,
+      const [MarketplaceCheckoutSummary, SaleorCheckoutSummary] =
+        await Promise.all([
+          CheckoutHandlers.marketplaceCheckoutSummaryHandler(checkoutId, token),
+          CheckoutHandlers.saleorCheckoutSummaryHandler(checkoutId, token),
+        ]);
+      preparePromotionResponse({
+        checkout: SaleorCheckoutSummary,
+      });
+      const CheckoutPreAuthAmount =
+        this.paymentService.getCheckoutPreAuthAmount(SaleorCheckoutSummary);
+      checkoutShippingMethodsSort(SaleorCheckoutSummary);
+      addPreAuthInCheckoutResponse(
+        CheckoutPreAuthAmount,
+        SaleorCheckoutSummary,
       );
-      const productIds = CheckoutUtils.getProductIdsByCheckoutBundles(
-        checkoutBundles['bundles'],
-      );
-      const variantIds = CheckoutUtils.getVariantsIdsByProducts(
-        await ProductHandlers.variantsIdsByProductIdsHandler(productIds),
-      );
-      const allBundles = await ProductHandlers.bundlesByVariantsIdsHandler(
-        variantIds,
-      );
-
-      checkoutBundles['bundles'] = checkoutBundles['bundles']?.concat(
-        CheckoutUtils.getBundlesNotInCheckout(
-          checkoutBundles['bundles'],
-          allBundles,
-        ),
-      );
-
-      return prepareSuccessResponse(checkoutBundles);
+      return prepareSuccessResponse({
+        MarketplaceCheckoutSummary,
+        SaleorCheckoutSummary,
+        CheckoutPreAuthAmount,
+      });
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
     }
   }
-
-  private async addToCartWhenCheckoutExists(
-    userId,
-    checkoutData,
-    bundlesList: BundleType[],
-    bundlesForCart: CheckoutBundleInputType[],
-  ) {
-    const { checkoutId, bundles } = checkoutData;
-    const [bundlesWithUpdatedQuantity, checkoutLines] = await Promise.all([
-      CheckoutUtils.updateBundlesQuantity(bundles, bundlesForCart),
-      CheckoutUtils.getLineItems(bundlesList, bundlesForCart),
-    ]);
-
-    const checkoutWithLines = await CheckoutHandlers.addLinesHandler(
-      checkoutId,
-      checkoutLines,
-    );
-
-    bundlesForCart = CheckoutUtils.getBundlesWithLineIds(
-      bundlesList,
-      bundlesWithUpdatedQuantity,
-      checkoutWithLines,
-    );
-
-    return await CheckoutHandlers.addBundlesHandler(
-      checkoutId,
-      userId,
-      bundlesForCart,
-    );
-  }
-
-  private async addToCartWhenCheckoutNotExists(
-    userData,
-    bundlesList: BundleType[],
-    bundlesForCart: CheckoutBundleInputType[],
-  ) {
-    const checkoutLines = await CheckoutUtils.getLineItems(
-      bundlesList,
-      bundlesForCart,
-    );
-
-    const newCheckout: any = await CheckoutHandlers.createCheckoutHandler(
-      userData?.email,
-      checkoutLines,
-    );
-
-    bundlesForCart = CheckoutUtils.getBundlesWithLineIds(
-      bundlesList,
-      bundlesForCart,
-      newCheckout,
-    );
-
-    return await CheckoutHandlers.addBundlesHandler(
-      newCheckout?.checkout?.id,
-      userData?.id,
-      bundlesForCart,
-    );
-  }
-
-  public async addToCart(
-    userId: string,
-    bundlesForCart: CheckoutBundleInputType[],
+  /**
+   * @description -- this method is called at the end of order placement in sharove to place order in OS
+   */
+  protected async placeOrderOs(
+    checkoutBundles: string,
+    orderDetails: object,
+    paymentMethodId: string,
+    token: string,
   ): Promise<object> {
     try {
-      const [userData, bundlesList, checkoutData] = await Promise.all([
-        AccountHandlers.userEmailByIdHandler(userId),
-        ProductHandlers.bundlesByBundleIdsHandler(bundlesForCart),
-        CheckoutHandlers.marketplaceCheckoutHandler(userId),
-      ]);
-
-      let response = {};
-      if (checkoutData['checkoutId']) {
-        response = await this.addToCartWhenCheckoutExists(
-          userId,
-          checkoutData,
-          bundlesList,
-          bundlesForCart,
-        );
-      } else {
-        response = await this.addToCartWhenCheckoutNotExists(
-          userData,
-          bundlesList,
-          bundlesForCart,
-        );
-      }
-      return prepareSuccessResponse(response, '', 201);
+      const instance = new LegacyService(
+        checkoutBundles,
+        orderDetails['shippingAddress'],
+        orderDetails['number'],
+        paymentMethodId,
+        orderDetails['billingAddress'],
+        token,
+      );
+      return await instance.placeExternalOrder();
     } catch (error) {
       this.logger.error(error);
-      if (error instanceof RecordNotFound) {
+      return prepareFailedResponse(error.me);
+    }
+  }
+
+  /**
+   * @description -- this method is called after shipping methods and payment methods assignment with Checkout to create an order
+   * at the end of process
+   * @step - it validates if payment intent is created using preAuth method in payment service
+   * @step - it then creates order by just giving checkout id and Auth token
+   * @step - it triggers an sqs event to add that order to shop
+   * @step - disables checkout session from shop service checkout
+   * @step - it takes order and bundle information and then store that order to shop using addOrderToShop
+   */
+  public async checkoutComplete(
+    token: string,
+    checkoutId: string,
+  ): Promise<object> {
+    try {
+      const [checkoutBundles, paymentData] = await Promise.all([
+        this.marketplaceCartService.getAllCheckoutBundles({
+          checkoutId,
+          token,
+          isSelected: true,
+        }),
+        this.paymentService.getPaymentDataFromMetadata(checkoutId, token),
+      ]);
+      const { paymentIntentId, paymentMethodId } = paymentData;
+      if (!paymentIntentId || !paymentMethodId)
+        throw new NoPaymentIntentError(checkoutId);
+      const createOrder = await orderCreateFromCheckoutHandler(
+        checkoutId,
+        B2B_CHECKOUT_APP_TOKEN,
+      );
+      const ordersByShop = {
+        userEmail: checkoutBundles['data']['userEmail'],
+        marketplaceOrders: getOrdersByShopId(
+          checkoutBundles['data'],
+          createOrder['order'],
+        ),
+      };
+      const [osOrderResponse] = await Promise.all([
+        this.placeOrderOs(
+          checkoutBundles['data']['checkoutBundles'],
+          createOrder['order'],
+          paymentMethodId,
+          token,
+        ),
+        this.ordersService.addOrderToShop(ordersByShop, token),
+        CheckoutHandlers.disableCheckoutSession(checkoutId, token),
+      ]);
+      return prepareSuccessResponse(
+        { createOrder, osOrderResponse },
+        'order created against checkout',
+        201,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      if (error instanceof NoPaymentIntentError) {
         return prepareFailedResponse(error.message);
+      } else {
+        return graphqlExceptionHandler(error);
       }
-      return graphqlExceptionHandler(error);
     }
   }
 
-  public async deleteBundleFromCart(
-    userId: string,
-    checkoutBundleIds: string[],
-  ): Promise<object> {
-    try {
-      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
-        userId,
-        true,
-      );
-
-      const saleorCheckout = await CheckoutHandlers.checkoutHandler(
-        checkoutData['checkoutId'],
-      );
-
-      const checkoutLines = CheckoutUtils.getCheckoutLineItemsForDelete(
-        saleorCheckout['lines'],
-        checkoutData['bundles'],
-        checkoutBundleIds,
-      );
-      const checkoutLineIds = CheckoutUtils.getCheckoutLineIds(checkoutLines);
-      await CheckoutHandlers.deleteLinesHandler(
-        checkoutLineIds,
-        saleorCheckout['id'],
-      );
-      const response = await CheckoutHandlers.deleteBundlesHandler(
-        checkoutBundleIds,
-        checkoutData['checkoutId'],
-      );
-      return prepareSuccessResponse(response, '', 201);
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
+  /**
+   * @description -- this method is called when create checkout is hit by admin,
+   * @step - it bypasses shipping and payment apis to use all ready predefined methods to place an order directly
+   */
+  public async createAdminCheckout(userEmail: string, token: string) {
+    return { userEmail, token };
   }
 
-  public async updateBundleFromCart(
-    userId: string,
-    bundlesFromCart: CheckoutBundleInputType[],
-  ): Promise<object> {
+  /**
+   * @description -- this method is called when create checkout is hit by end consumer
+   * @step - it validates whether checkout is valid for processing
+   */
+  public async createCheckout(checkoutData: CreateCheckoutDto, token: string) {
     try {
-      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
-        userId,
-        true,
-      );
-
-      const saleorCheckout = await CheckoutHandlers.checkoutHandler(
-        checkoutData['checkoutId'],
-      );
-
-      const updatedLinesWithQuantity =
-        CheckoutUtils.getUpdatedLinesWithQuantity(
-          saleorCheckout['lines'],
-          checkoutData['bundles'],
-          bundlesFromCart,
-        );
-
-      await CheckoutHandlers.updateLinesHandler(
-        checkoutData['checkoutId'],
-        updatedLinesWithQuantity,
-      );
-      const response = await CheckoutHandlers.addBundlesHandler(
-        checkoutData['checkoutId'],
-        userId,
-        bundlesFromCart,
-      );
-      return prepareSuccessResponse(response, '', 201);
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
-  }
-
-  public async setBundleAsSelected(
-    userId: string,
-    bundleIds: string[],
-  ): Promise<object> {
-    try {
-      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
-        userId,
-      );
-      const saleorCheckout = await CheckoutHandlers.checkoutHandler(
-        checkoutData['checkoutId'],
-      );
-      const checkoutLines = CheckoutUtils.getCheckoutLineItems(
-        saleorCheckout['lines'],
-        checkoutData['bundles'],
-        bundleIds,
-      );
-      await CheckoutHandlers.addLinesHandler(
-        checkoutData['checkoutId'],
-        checkoutLines,
-      );
-      const selectedBundles = CheckoutUtils.selectOrUnselectBundle(
-        checkoutData['bundles'],
-        bundleIds,
-        true,
-      );
-      const response = await CheckoutHandlers.addBundlesHandler(
-        checkoutData['checkoutId'],
-        userId,
-        selectedBundles,
-      );
-      return prepareSuccessResponse(response, '', 201);
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
-  }
-
-  public async setBundleAsUnselected(
-    userId: string,
-    bundleIds: string[],
-    checkoutBundleIds: string[],
-  ): Promise<object> {
-    try {
-      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
-        userId,
-      );
-      const saleorCheckout = await CheckoutHandlers.checkoutHandler(
-        checkoutData['checkoutId'],
-      );
-      const checkoutLines = CheckoutUtils.getCheckoutLineItemsForDelete(
-        saleorCheckout['lines'],
-        checkoutData['bundles'],
-        checkoutBundleIds,
-      );
-
-      const checkoutLineIds = CheckoutUtils.getCheckoutLineIds(checkoutLines);
-
-      await CheckoutHandlers.deleteLinesHandler(
-        checkoutLineIds,
-        saleorCheckout['id'],
-      );
-      const updatedBundle = CheckoutUtils.selectOrUnselectBundle(
-        checkoutData['bundles'],
-        bundleIds,
-        false,
-      );
-      const response = await CheckoutHandlers.addBundlesHandler(
-        checkoutData['checkoutId'],
-        userId,
-        updatedBundle,
-      );
-      return prepareSuccessResponse(response, '', 201);
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
-  }
-
-  public async addShippingAddress(
-    checkoutId: string,
-    addressDetails: AddressDetailType,
-  ): Promise<object> {
-    try {
-      const response = await CheckoutHandlers.shippingAddressUpdateHandler(
+      const checkoutId = checkoutData.checkoutId;
+      const validateCheckout = await CheckoutHandlers.validateCheckoutHandler(
         checkoutId,
-        addressDetails,
+        token,
       );
-      return prepareSuccessResponse(response, '', 201);
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
-  }
-
-  public async addBillingAddress(
-    checkoutId: string,
-    addressDetails: AddressDetailType,
-  ): Promise<object> {
-    try {
-      const response = await CheckoutHandlers.billingAddressUpdateHandler(
-        checkoutId,
-        addressDetails,
-      );
-      return prepareSuccessResponse(response, '', 201);
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
-  }
-
-  public async getShippingAndBillingAddress(
-    checkoutId: string,
-  ): Promise<object> {
-    try {
-      const response = await CheckoutHandlers.shippingAndBillingAddressHandler(
-        checkoutId,
-      );
-      return prepareSuccessResponse(response, '', 201);
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
-  }
-
-  public async getShippingMethods(userId: string): Promise<object> {
-    try {
-      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
-        userId,
-        false,
-      );
-
-      const saleorCheckout = await CheckoutHandlers.checkoutHandler(
-        checkoutData['checkoutId'],
-      );
-      const methodsListFromShopService = CheckoutUtils.getShippingMethods(
-        checkoutData['bundles'],
-      );
-      const methodsListFromSaleor = CheckoutUtils.getShippingMethodsWithUUID(
-        saleorCheckout['shippingMethods'],
-        methodsListFromShopService,
-        checkoutData['selectedMethods'],
-      );
-
-      return prepareSuccessResponse(methodsListFromSaleor, '', 201);
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
-  }
-
-  public async selectShippingMethods(
-    userId: string,
-    shippingIds: string[],
-  ): Promise<object> {
-    try {
-      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
-        userId,
-        true,
-      );
-      await Promise.all([
-        CheckoutHandlers.addShippingMethodHandler(
-          checkoutData['checkoutId'],
-          shippingIds,
-          true,
-        ),
-        CheckoutHandlers.updateDeliveryMethodHandler(
-          checkoutData['checkoutId'],
-          checkoutData['selectedMethods'],
-        ),
-      ]);
-      const response = await this.getShippingMethods(userId);
-      return prepareSuccessResponse(response, '', 201);
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
-  }
-
-  public async createPayment(userId: string): Promise<object> {
-    try {
-      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
-        userId,
-      );
-
-      const paymentGateways = await CheckoutHandlers.paymentGatewayHandler(
-        checkoutData['checkoutId'],
-      );
-      const dummyGatewayId = CheckoutUtils.getDummyGateway(paymentGateways);
-      const response = await CheckoutHandlers.createPaymentHandler(
-        checkoutData['checkoutId'],
-        dummyGatewayId,
-      );
-      return prepareSuccessResponse(response, '', 201);
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
-  }
-
-  public async checkoutComplete(userId: string): Promise<object> {
-    try {
-      const checkoutData = await CheckoutHandlers.marketplaceCheckoutHandler(
-        userId,
-      );
-      const selectedBundles = CheckoutUtils.getSelectedBundles(
-        checkoutData['bundles'],
-      );
-      const checkoutBundleIds =
-        CheckoutUtils.getCheckoutBundleIds(selectedBundles);
-      await CheckoutHandlers.deleteBundlesHandler(
-        checkoutBundleIds,
-        checkoutData['checkoutId'],
-        true,
-      );
-      const response = await CheckoutHandlers.completeCheckoutHandler(
-        checkoutData['checkoutId'],
-      );
-      return prepareSuccessResponse(response, '', 201);
+      return prepareSuccessResponse(validateCheckout);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

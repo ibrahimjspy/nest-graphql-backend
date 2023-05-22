@@ -1,37 +1,30 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
-
-const federationQuery = (
-  checkoutBundleIds: Array<string>,
-  checkoutId: string,
-) => {
-  return gql`
-  mutation {
-    deleteCheckoutBundles(
-      Input: {
-        checkoutBundleIds: ${JSON.stringify(checkoutBundleIds)},
-        checkoutId: "${checkoutId}"
-      }
-    ) {
-      __typename
-      ... on ResultData {
-        message
-      }
-      ... on ResultError {
-        errors
-        message
-      }
-    }
-  }
-  `;
-};
+import { checkoutBundlesFragment } from 'src/graphql/fragments/checkout/checkoutBundles';
+import { resultErrorFragment } from 'src/graphql/fragments/errors';
 
 export const deleteCheckoutBundlesMutation = (
   checkoutBundleIds: Array<string>,
-  checkoutId: string,
+  userEmail: string,
 ) => {
-  return graphqlQueryCheck(
-    federationQuery(checkoutBundleIds, checkoutId),
-    federationQuery(checkoutBundleIds, checkoutId),
-  );
+  return gql`
+    mutation {
+      deleteCheckoutBundles(
+        Input: {
+          userEmail: "${userEmail}"
+          checkoutBundleIds: ${JSON.stringify(checkoutBundleIds)}
+        }
+      ) {
+        ... on CheckoutBundlesType {
+          ... CheckoutBundles
+        }
+        __typename
+        ... on ResultError {
+          __typename
+          ... ResultError
+        }
+      }
+    }
+    ${checkoutBundlesFragment}
+    ${resultErrorFragment}
+  `;
 };

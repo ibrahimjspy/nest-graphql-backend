@@ -1,30 +1,44 @@
 import { gql } from 'graphql-request';
-import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
+import { addressFragment } from 'src/graphql/fragments/checkout/shipping/shippingAddress';
 
-const federationQuery = (checkoutId: string) => {
+export const orderCreateFromCheckoutMutation = (
+  checkoutId: string,
+  disableCheckout = true,
+) => {
   return gql`
     mutation {
-      checkoutComplete (
-      id: "${checkoutId}",
+      orderCreateFromCheckout(
+        id: "${checkoutId}"
+        removeCheckout: ${disableCheckout}
       ) {
-      order {
-        id
-        lines {
-        id,
-        quantity
+        order {
+          id
+          number
+          deliveryMethod {
+            ... on ShippingMethod {
+              id
+              name
+            }
+          }
+          lines {
+            id
+            variant {
+              id
+            }
+          }
+          shippingAddress {
+            ... Address
+          }
+          billingAddress {
+            ... Address
+          }
+        }
+        errors {
+          field
+          code
         }
       }
-      errors {
-        message
-      }
-      }
     }
+    ${addressFragment}
   `;
-};
-
-export const checkoutCompleteMutation = (checkoutId: string) => {
-  return graphqlQueryCheck(
-    federationQuery(checkoutId),
-    federationQuery(checkoutId),
-  );
 };

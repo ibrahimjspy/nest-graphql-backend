@@ -1,6 +1,11 @@
+export interface FieldsType {
+  name: string;
+  values: string[];
+}
 export interface ShopType {
   id: string;
   name: string;
+  user?: string;
   email?: string;
   url?: string;
   madeIn: string;
@@ -10,6 +15,7 @@ export interface ShopType {
   returnPolicy: string;
   storePolicy: string;
   shippingMethods: ShopShippingMethodType[];
+  fields?: FieldsType[];
 }
 
 export interface ShopShippingMethodType {
