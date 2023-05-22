@@ -6,10 +6,11 @@ import {
 } from 'src/core/utils/response';
 import { updateCheckoutBundleState } from 'src/graphql/handlers/checkout/checkout';
 import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
-import { UpdateBundleStateDto } from '../dto/add-bundle.dto';
+import { AddBundleDto, UpdateBundleStateDto } from '../dto/add-bundle.dto';
 import { SaleorCartService } from './services/saleor/Cart.saleor.service';
 import { MarketplaceCartService } from './services/marketplace/Cart.marketplace.service';
 import {
+  getBundleIdFromBundleCreate,
   getBundlesFromCheckout,
   getCheckoutBundleIds,
   getNewBundlesToAdd,
@@ -22,8 +23,13 @@ import {
   SelectBundleError,
   UnSelectBundleError,
 } from '../Checkout.errors';
-import { ReplaceBundleDto } from './dto/cart';
-import { CartValidationService } from './services/Validation.service';
+import {
+  AddOpenPackDTO,
+  ReplaceBundleDto,
+  UpdateOpenPackDto,
+} from './dto/cart';
+import { SuccessResponseType } from 'src/core/utils/response.type';
+import { ProductService } from 'src/modules/product/Product.service';
 
 @Injectable()
 export class CartService {
@@ -32,7 +38,7 @@ export class CartService {
     private saleorService: SaleorCartService,
     private marketplaceService: MarketplaceCartService,
     private cartResponseBuilder: CartResponseService,
-    private cartValidationService: CartValidationService,
+    private productService: ProductService,
   ) {}
 
   /**
@@ -65,7 +71,7 @@ export class CartService {
     checkoutId: string,
     bundlesList: CheckoutBundleInputType[],
     token: string,
-  ): Promise<object> {
+  ): Promise<SuccessResponseType> {
     try {
       const [saleor, marketplace] = await Promise.allSettled([
         this.saleorService.addBundleLines(
@@ -293,6 +299,153 @@ export class CartService {
       if (error instanceof CheckoutIdError) {
         return prepareFailedResponse(error.message);
       }
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description -- fetches shopping cart data from bundle service against checkoutId
+   */
+  public async getCartV2(
+    checkoutId: string,
+    isSelected: boolean | null,
+    token: string,
+  ): Promise<object> {
+    try {
+      return await this.marketplaceService.getCheckoutBundlesV2({
+        checkoutId,
+        token,
+        isSelected,
+      });
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description -- fetches shopping cart data from bundle service against checkoutId
+   */
+  public async createCartSession(
+    checkoutBundles: AddBundleDto,
+    token: string,
+  ): Promise<SuccessResponseType> {
+    try {
+      const { userEmail, bundles } = checkoutBundles;
+      let { checkoutId } = checkoutBundles;
+      const saleor = await this.saleorService.addBundleLines(
+        userEmail,
+        checkoutId,
+        bundles,
+        token,
+      );
+      checkoutId = saleor.id;
+      const marketplace = await this.marketplaceService.addCheckoutBundlesV2(
+        { userEmail, checkoutId, bundles },
+        token,
+      );
+      return this.cartResponseBuilder.addToCartV2(saleor, marketplace);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description -- adds to cart against existing cart id
+   * @pre_condition -- cart id should be valid and a cart session should be active against it
+   */
+  public async addToCartV2(
+    checkoutBundles: AddBundleDto,
+    token: string,
+  ): Promise<SuccessResponseType> {
+    try {
+      const { userEmail, checkoutId, bundles } = checkoutBundles;
+
+      const [saleor, marketplace] = await Promise.all([
+        await this.saleorService.addBundleLines(
+          userEmail,
+          checkoutId,
+          bundles,
+          token,
+        ),
+        await this.marketplaceService.addCheckoutBundlesV2(
+          { userEmail, checkoutId, bundles },
+          token,
+        ),
+      ]);
+      return this.cartResponseBuilder.addToCartV2(saleor, marketplace);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description -- creates a new bundle for open pack and adds to cart against existing cart id or userEmail
+   * @pre_condition -- cart id should be valid and a cart session should be active against it
+   */
+  public async addOpenPackToCart(
+    addOpenPackToCart: AddOpenPackDTO,
+    token: string,
+  ): Promise<object> {
+    try {
+      const { userEmail, checkoutId, bundles } = addOpenPackToCart;
+      const bundlesResponse = [];
+      const [...checkoutBundles] = await Promise.all(
+        bundles.map(async (bundle) => {
+          const bundleCreate = await this.productService.createBundle(bundle);
+          bundlesResponse.push(bundleCreate.data);
+          const checkoutBundle = {
+            bundleId: getBundleIdFromBundleCreate(bundleCreate),
+            quantity: 1,
+          };
+          return checkoutBundle;
+        }),
+      );
+      const addToCart = await this.addBundlesToCart(
+        userEmail,
+        checkoutId,
+        checkoutBundles,
+        token,
+      );
+      return this.cartResponseBuilder.addOpenPackToCart(
+        addToCart,
+        bundlesResponse,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description -- updates open pack directly in bundle service, it also maintains state in saleor
+   * @pre_condition -- bundle variants should all ready be added in saleor, it works on following condition on syncing with saleor
+   * @condition -- if you want to replace variant with new variant the quantity should should be same as last variant so we can replace it be removing
+   * old variant
+   */
+  public async updateOpenPack(
+    updateOpenPack: UpdateOpenPackDto,
+    token: string,
+  ): Promise<object> {
+    try {
+      const { checkoutId } = updateOpenPack;
+      const saleor = await this.saleorService.handleOpenPackUpdates(
+        updateOpenPack,
+        token,
+      );
+      const [updateBundle, marketplace] = await Promise.all([
+        this.productService.updateBundle(updateOpenPack),
+        this.marketplaceService.getAllCheckoutBundles({ checkoutId, token }),
+      ]);
+      return this.cartResponseBuilder.updateOpenPack(
+        saleor,
+        updateBundle,
+        marketplace,
+      );
+    } catch (error) {
+      this.logger.error(error);
       return graphqlExceptionHandler(error);
     }
   }

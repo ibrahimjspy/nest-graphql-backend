@@ -275,4 +275,51 @@ export class CartResponseService {
       return graphqlExceptionHandler(error);
     }
   }
+
+  public async addToCartV2(saleor, marketplace) {
+    try {
+      return prepareSuccessResponse(
+        { saleor, marketplace },
+        'bundles added to cart',
+        201,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async updateOpenPack(
+    saleor,
+    updateBundleResponse,
+    marketplaceResponse,
+  ) {
+    try {
+      const updateBundle = updateBundleResponse.data;
+      const marketplace = marketplaceResponse.data;
+
+      return prepareSuccessResponse(
+        { saleor, updateBundle, marketplace },
+        'open pack updated',
+        201,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async addOpenPackToCart(addToCart, bundlesResponse) {
+    try {
+      const response = addToCart.data;
+      return prepareSuccessResponse(
+        { ...response, bundlesResponse },
+        'open pack added to cart',
+        201,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
 }

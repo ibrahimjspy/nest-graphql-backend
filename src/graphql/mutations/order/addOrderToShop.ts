@@ -17,9 +17,7 @@ export const addOrderToShopMutation = (
           orderlineIds: ${JSON.stringify(orderlineIds) || null} 
         }
       ) {
-        orders{
-          orderId
-        }
+        id
       }
     }
   `;

@@ -13,12 +13,18 @@ import {
   getAddBundleToCartLines,
   getBundleIds,
   getDeleteBundlesLines,
+  getOpenPackLinesReplace,
+  getOpenPackLinesUpdate,
+  getOpenPackTransactionType,
   getUpdateCartBundleLines,
 } from '../../Cart.utils';
 import { SaleorCheckoutService } from 'src/modules/checkout/services/Checkout.saleor';
 import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
 import { ProductService } from 'src/modules/product/Product.service';
 import { CartValidationService } from '../Validation.service';
+import { SaleorCheckoutInterface } from 'src/modules/checkout/Checkout.utils.type';
+import { UpdateOpenPackDto } from '../../dto/cart';
+import { OpenPackTransactionTypeEnum } from '../../dto/common.dto';
 
 @Injectable()
 export class SaleorCartService {
@@ -106,7 +112,7 @@ export class SaleorCartService {
     checkoutId: string,
     checkoutBundleLines: CheckoutBundleInputType[],
     token: string,
-  ) {
+  ): Promise<SaleorCheckoutInterface> {
     const bundleIds = getBundleIds(checkoutBundleLines);
     const bundlesData: unknown = await this.productService.getProductBundles({
       bundleIds: bundleIds,
@@ -136,7 +142,7 @@ export class SaleorCartService {
       token,
       checkoutId,
     );
-    return response;
+    return response as SaleorCheckoutInterface;
   }
 
   public async updateBundleLines(
@@ -178,5 +184,32 @@ export class SaleorCartService {
       return;
     }
     return this.updateLines(checkoutId, updatedSaleorLines, token);
+  }
+
+  public async handleOpenPackUpdates(
+    openPackUpdates: UpdateOpenPackDto,
+    token: string,
+  ) {
+    const { checkoutId, variants, bundleId } = openPackUpdates;
+    const [bundle, saleor] = await Promise.all([
+      this.productService.getBundle(bundleId),
+      this.saleorCheckoutService.getCheckout(checkoutId, token),
+    ]);
+    this.cartValidationService.validateApisByStatus([bundle]);
+    const openPackTransactionType = getOpenPackTransactionType(openPackUpdates);
+    if (openPackTransactionType === OpenPackTransactionTypeEnum.UPDATE) {
+      return await this.updateLines(
+        checkoutId,
+        getOpenPackLinesUpdate(variants, bundle, saleor),
+        token,
+        true,
+      );
+    }
+    return await this.updateLines(
+      checkoutId,
+      getOpenPackLinesReplace(openPackUpdates, bundle, saleor),
+      token,
+      true,
+    );
   }
 }

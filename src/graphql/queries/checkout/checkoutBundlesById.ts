@@ -25,6 +25,7 @@ export const checkoutBundlesByIdQuery = (
             bundle {
               id
               name
+              isOpenBundle
               description
               slug
               product {

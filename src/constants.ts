@@ -124,3 +124,11 @@ export const AUTH0_SPA_CLIENT_ID = 'NHDmV7IkVh8s8zX1d5waoPolBAwwLSzT';
 export const AUTH0_SPA_SCOPE = 'openid profile email offline_access';
 export const AUTH0_GRANT_TYPE =
   'http://auth0.com/oauth/grant-type/password-realm';
+
+export const UPS_TRACKING_HEADERS = {
+  headers: {
+    'Content-Type': 'application/json',
+    transId: process.env.UPS_TRANSACTION_ID || 'test',
+    transactionSrc: process.env.UPS_TRANSACTION_SOURCE || 'test',
+  },
+};

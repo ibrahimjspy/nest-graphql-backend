@@ -39,6 +39,7 @@ export const getCheckoutBundleQuery = (
             quantity
             bundle {
               id
+              isOpenBundle
               productVariants {
                 quantity
                 productVariant {

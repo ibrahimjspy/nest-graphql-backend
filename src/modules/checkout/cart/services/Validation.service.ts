@@ -62,4 +62,20 @@ export class CartValidationService {
     }
     return true;
   }
+
+  /**
+   * @description -- it validates  multiple responses to check if there are positive or not
+   * @pre_condition -- currently this method only supports get methods which uses 200 status as ok
+   */
+  public validateApisByStatus(responses, throwException = true) {
+    let isValid = true;
+    responses.map((response) => {
+      if (response.status !== 200) {
+        if (throwException) throw new NoBundleFoundError();
+        isValid = false;
+      }
+      isValid = true;
+    });
+    return isValid;
+  }
 }

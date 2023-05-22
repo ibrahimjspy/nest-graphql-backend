@@ -17,7 +17,13 @@ import {
   storeB2cMapping,
 } from './Product.utils';
 import { GetBundlesDto, ProductDetailsDto } from './dto/product.dto';
-import { MarketplaceProductsResponseType } from './Product.types';
+import {
+  BundleCreateResponseType,
+  GetBundleResponseType,
+  MarketplaceProductsResponseType,
+} from './Product.types';
+import { BundleCreateDto } from './dto/bundle';
+import { UpdateOpenPackDto } from '../checkout/cart/dto/cart';
 @Injectable()
 export class ProductService {
   private readonly logger = new Logger(ProductService.name);
@@ -140,7 +146,7 @@ export class ProductService {
       const productIds = getShopProductIds(marketplace);
       if (isEmptyArray(productIds)) {
         const saleor = await ProductsHandlers.productsHandler({
-          ...filter,
+          first: filter.first,
           productIds: productIds,
         });
         return prepareSuccessResponse({
@@ -152,6 +158,47 @@ export class ProductService {
         { marketplace },
         'No products exists against shop category',
       );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async createBundle(
+    bundleCreateInput: BundleCreateDto,
+  ): Promise<BundleCreateResponseType> {
+    try {
+      return prepareSuccessResponse(
+        await ProductsHandlers.createBundleHandler(bundleCreateInput),
+      ) as unknown as BundleCreateResponseType;
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async updateBundle(
+    bundleUpdateInput: UpdateOpenPackDto,
+  ): Promise<BundleCreateResponseType> {
+    try {
+      const updateBundle = await ProductsHandlers.updateBundleHandler(
+        bundleUpdateInput,
+      );
+      ProductsHandlers.updateBundlePricingHandler(bundleUpdateInput.bundleId);
+      return prepareSuccessResponse(
+        updateBundle,
+      ) as unknown as BundleCreateResponseType;
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async getBundle(id: string): Promise<GetBundleResponseType> {
+    try {
+      return prepareSuccessResponse(
+        await ProductsHandlers.getBundleHandler(id),
+      ) as unknown as GetBundleResponseType;
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

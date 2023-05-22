@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as SaleorCartHandlers from 'src/graphql/handlers/checkout/cart/cart.saleor';
 import * as MarketplaceCartHandlers from 'src/graphql/handlers/checkout/checkout';
 import * as ProductHandlers from 'src/graphql/handlers/product';
-import * as MarketplaceDeleteBundles from 'src/graphql/handlers/checkout/cart/cart.marketplace';
+import * as MarketplaceCheckoutHandler from 'src/graphql/handlers/checkout/cart/cart.marketplace';
 import { CartService } from './Cart.service';
 import { CartResponseService } from './services/Response.service';
 import { CartValidationService } from './services/Validation.service';
@@ -126,7 +126,7 @@ describe('Cart Service', () => {
       .mockImplementation(async () => mocks.mockProductBundles);
 
     jest
-      .spyOn(MarketplaceDeleteBundles, 'deleteCheckoutBundlesHandler')
+      .spyOn(MarketplaceCheckoutHandler, 'deleteCheckoutBundlesHandler')
       .mockImplementation(async () => {
         return { done: 'successfully rolled back' };
       });
@@ -180,5 +180,312 @@ describe('Cart Service', () => {
       message: 'Adding bundle lines to Marketplace failed',
     });
     expect(addToCart).toBeDefined();
+  });
+
+  it('should get cart without isSelected', async () => {
+    jest
+      .spyOn(MarketplaceCheckoutHandler, 'getCartV2Handler')
+      .mockImplementation(async () => {
+        return {
+          checkoutId: null,
+          validations: null,
+          userEmail: null,
+          totalPrice: null,
+          shops: [],
+        };
+      });
+
+    const cart = await service.getCartV2('checkoutId', null, 'token');
+    expect(cart).toEqual({
+      status: 200,
+      data: {
+        checkoutId: null,
+        validations: null,
+        userEmail: null,
+        totalPrice: null,
+        shops: [],
+      },
+    });
+    expect(cart).toBeDefined();
+  });
+
+  it('should get cart with isSelected', async () => {
+    jest
+      .spyOn(MarketplaceCheckoutHandler, 'getCartV2Handler')
+      .mockImplementation(async () => {
+        return {
+          checkoutId: null,
+          validations: null,
+          userEmail: null,
+          totalPrice: null,
+          shops: [],
+        };
+      });
+
+    const cart = await service.getCartV2('checkoutId', true, 'token');
+    expect(cart).toEqual({
+      status: 200,
+      data: {
+        checkoutId: null,
+        validations: null,
+        userEmail: null,
+        totalPrice: null,
+        shops: [],
+      },
+    });
+    expect(cart).toBeDefined();
+  });
+
+  it('should add bundles v2 to cart when there is checkout id', async () => {
+    jest
+      .spyOn(SaleorCartHandlers, 'addLinesHandler')
+      .mockImplementation(async () => {
+        return { id: 'checkout', status: 'done' };
+      });
+    jest
+      .spyOn(MarketplaceCheckoutHandler, 'addCheckoutBundlesV2Handler')
+      .mockImplementation(async () => {
+        return { status: 'done' } as any;
+      });
+    jest
+      .spyOn(ProductHandlers, 'getBundlesHandler')
+      .mockImplementation(async () => mocks.mockProductBundles as any);
+
+    jest
+      .spyOn(MarketplaceCartHandlers, 'updateCartBundlesCheckoutIdHandler')
+      .mockImplementation(async () => mocks.mockProductBundles);
+
+    const addToCart = await service.addToCartV2(
+      {
+        userEmail: 'testMail@gmail.com',
+        checkoutId: 'checkoutId',
+        bundles: [
+          { bundleId: '19c88ba8-7429-45f7-87dd-a9999803d955', quantity: 3 },
+        ],
+      },
+      'token',
+    );
+
+    expect(addToCart).toEqual({
+      status: 201,
+      data: {
+        saleor: { id: 'checkout', status: 'done' },
+        marketplace: { status: 'done' },
+      },
+      message: 'bundles added to cart',
+    });
+    expect(addToCart).toBeDefined();
+  });
+
+  it('should add open bundle to cart', async () => {
+    jest
+      .spyOn(ProductHandlers, 'createBundleHandler')
+      .mockImplementation(async () => {
+        const bundleCreate = {
+          id: '19c88ba8-7429-45f7-87dd-a9999803d955',
+          name: 'bundleId',
+        };
+        return bundleCreate;
+      });
+    jest
+      .spyOn(ProductHandlers, 'getBundlesHandler')
+      .mockImplementation(async () => mocks.mockProductBundles as any);
+    jest
+      .spyOn(SaleorCartHandlers, 'addLinesHandler')
+      .mockImplementation(async () => {
+        return {
+          id: 'Q2hlY2tvdXQ6NDQ4NTE3M2UtNDkzOC00NDZhLWIyNjgtMzAyZDE1N2IyMTg3',
+          lines: [
+            {
+              id: 'Q2hlY2tvdXRMaW5lOmFiMzFhZDI1LWFmNmMtNDdhOC1iNTc4LWIzMTc4Y2YzMjJkMg==',
+              quantity: 4,
+              variant: { id: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI2' },
+            },
+          ],
+        };
+      });
+    jest
+      .spyOn(MarketplaceCartHandlers, 'addCheckoutBundlesHandler')
+      .mockImplementation(async () => {
+        return { status: 'done' };
+      });
+
+    jest
+      .spyOn(MarketplaceCartHandlers, 'updateCartBundlesCheckoutIdHandler')
+      .mockImplementation(async () => mocks.mockProductBundles);
+
+    const addToCart = await service.addOpenPackToCart(
+      {
+        userEmail: 'azhariqbal100@mailinator.com',
+        checkoutId: '123',
+        bundles: [
+          {
+            isOpenBundle: true,
+            shopId: '610',
+            productId: 'UHJvZHVjdDoxMjUxNQ==',
+            description: 'string',
+            name: 'string',
+            productVariants: [
+              {
+                productVariantId: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI2',
+                quantity: 2,
+              },
+            ],
+          },
+        ],
+      },
+      '',
+    );
+    expect(addToCart).toEqual({
+      status: 201,
+      data: {
+        saleor: {
+          id: 'Q2hlY2tvdXQ6NDQ4NTE3M2UtNDkzOC00NDZhLWIyNjgtMzAyZDE1N2IyMTg3',
+          lines: [
+            {
+              id: 'Q2hlY2tvdXRMaW5lOmFiMzFhZDI1LWFmNmMtNDdhOC1iNTc4LWIzMTc4Y2YzMjJkMg==',
+              quantity: 4,
+              variant: { id: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI2' },
+            },
+          ],
+        },
+        marketplace: { status: 'done' },
+        bundlesResponse: [
+          { id: '19c88ba8-7429-45f7-87dd-a9999803d955', name: 'bundleId' },
+        ],
+      },
+      message: 'open pack added to cart',
+    });
+    expect(addToCart).toBeDefined();
+  });
+
+  it('should update open pack from cart', async () => {
+    jest
+      .spyOn(ProductHandlers, 'getBundleHandler')
+      .mockImplementation(async () => {
+        return {
+          id: '62129625-7675-428a-a3ef-db82a7e72262',
+          name: 'string',
+          description: 'string',
+          slug: 'string',
+          productVariants: [
+            {
+              quantity: 5,
+              productVariant: {
+                id: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI5',
+                sku: '001-GRE-O-16796618463',
+              },
+            },
+          ],
+        };
+      });
+    jest
+      .spyOn(MarketplaceCartHandlers, 'getCheckoutHandler')
+      .mockImplementation(async () => {
+        return {
+          id: 'Q2hlY2tvdXQ6NjM4NzRkNjEtMTBlZC00N2E2LThlMzItMzlkMjNkOWI0NzJh',
+          metadata: [],
+          totalPrice: { gross: { amount: 80 } },
+          shippingMethods: [],
+          deliveryMethod: null,
+          lines: [
+            {
+              id: 'Q2hlY2tvdXRMaW5lOjI5NmU2N2IyLTkxNTItNDY3Yy1hOTUzLTQ4NzY1NjgyODI5MQ==',
+              quantity: 15,
+              variant: { id: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI2' },
+            },
+            {
+              id: 'Q2hlY2tvdXRMaW5lOmY4NGU0ZTg5LWVlMWQtNDljYS04NGEyLWQ0YzI3Zjg1ZmJmNA==',
+              quantity: 5,
+              variant: { id: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI5' },
+            },
+          ],
+        } as any;
+      });
+    jest
+      .spyOn(ProductHandlers, 'updateBundleHandler')
+      .mockImplementation(async () => {
+        return {
+          id: '62129625-7675-428a-a3ef-db82a7e72262',
+          name: 'string',
+          description: 'string',
+          slug: 'string',
+          productVariants: [],
+        };
+      });
+
+    jest
+      .spyOn(SaleorCartHandlers, 'updateLinesHandler')
+      .mockImplementation(async () => {
+        return {
+          checkout: {
+            id: '62129625-7675-428a-a3ef-db82a7e72262',
+            name: 'string',
+            description: 'string',
+            slug: 'string',
+            productVariants: [],
+          },
+        };
+      });
+
+    jest
+      .spyOn(MarketplaceCartHandlers, 'getCheckoutBundlesHandler')
+      .mockImplementation(async () => {
+        return {
+          checkout: {
+            id: '62129625-7675-428a-a3ef-db82a7e72262',
+            name: 'string',
+            description: 'string',
+            slug: 'string',
+            productVariants: [],
+          },
+        };
+      });
+
+    const updateOpenPack = await service.updateOpenPack(
+      {
+        checkoutId:
+          'Q2hlY2tvdXQ6NjM4NzRkNjEtMTBlZC00N2E2LThlMzItMzlkMjNkOWI0NzJh',
+        bundleId: '62129625-7675-428a-a3ef-db82a7e72262',
+        variants: [
+          {
+            oldVariantId: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI5',
+            quantity: 5,
+          },
+        ],
+      },
+      '',
+    );
+
+    expect(updateOpenPack).toEqual({
+      data: {
+        saleor: {
+          id: '62129625-7675-428a-a3ef-db82a7e72262',
+          name: 'string',
+          description: 'string',
+          slug: 'string',
+          productVariants: [],
+        },
+        updateBundle: {
+          id: '62129625-7675-428a-a3ef-db82a7e72262',
+          name: 'string',
+          description: 'string',
+          slug: 'string',
+          productVariants: [],
+        },
+        marketplace: {
+          checkout: {
+            id: '62129625-7675-428a-a3ef-db82a7e72262',
+            name: 'string',
+            description: 'string',
+            slug: 'string',
+            productVariants: [],
+          },
+        },
+      },
+      message: 'open pack updated',
+      status: 201,
+    });
+    expect(updateOpenPack).toBeDefined();
   });
 });

@@ -35,6 +35,7 @@ import { StoreOrderAssigneeDto } from './dto/storeOrderAssignee';
 import UpsService from 'src/external/services/Ups.service';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { OrderTrackingDto } from './dto/tracking';
 
 @ApiTags('orders')
 @Controller('')
@@ -355,6 +356,9 @@ export class OrdersController {
   }
 
   @Get('api/v1/order/return/:orderId')
+  @ApiOperation({
+    summary: 'uploads image against order return',
+  })
   @ApiBearerAuth('JWT-auth')
   async getReturnedOrderDetails(
     @Res() res,
@@ -370,6 +374,21 @@ export class OrdersController {
         Authorization,
         filter.isB2c,
       ),
+    );
+  }
+
+  @Get('api/v1/order/tracking/:inquiryNumber')
+  @ApiOperation({
+    summary: 'returns order tracking information from ups',
+  })
+  @ApiBearerAuth('JWT-auth')
+  async getOrderTracking(
+    @Res() res,
+    @Param() params: OrderTrackingDto,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.upsService.getOrderTracking(params.inquiryNumber),
     );
   }
 }
