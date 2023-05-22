@@ -139,22 +139,51 @@ export const transformOsShopMapping = (
   return shopColors;
 };
 
-const getPackQuantity = (osBundles, productId, productSize, quantity) => {
+const getPackDetail = (osBundles, productId, productSize, quantity) => {
   let finalPackQuantity = 1;
+  let shoeSizeId;
   const bundles = hash(osBundles, 'id');
   if (bundles[productId].is_shoes) {
-    return 3;
-  }
-  const productQuanityInPack =
-    bundles[productId]?.size_chart?.size_chart[productSize];
+    const shoePacks = bundles[productId]?.size_chart;
+    const shoePacksSizeInfo = [];
+    shoePacks.forEach((pack:any) => {
+      const matchingSize = pack?.size_chart[productSize];
+      if(matchingSize && (matchingSize <= quantity)){
+        let quanityDifference = Math.abs(matchingSize - quantity);
+        pack.quanityDifference = quanityDifference;
+        shoePacksSizeInfo.push(pack)
+      }
+    })
 
-  if (productQuanityInPack && quantity > productQuanityInPack) {
-    finalPackQuantity = Math.ceil(Math.round(quantity / productQuanityInPack));
+    const sortedPackSizeInfo = shoePacksSizeInfo.sort((a, b) => a?.quanityDifference - b?.quanityDifference);
+    const productQuanityInPack = sortedPackSizeInfo.length && sortedPackSizeInfo[0]?.size_chart[productSize];
+    shoeSizeId = sortedPackSizeInfo.length && sortedPackSizeInfo[0]?.id;
+    if (productQuanityInPack && quantity > productQuanityInPack) {
+      finalPackQuantity = Math.ceil(Math.round(quantity / productQuanityInPack));
+    }
+    console.log({
+      productId,
+      productSize,
+      quantity,
+      finalPackQuantity,
+      shoeSizeId
+    }, sortedPackSizeInfo)
+  
+  } else {
+    const productQuanityInPack =
+      bundles[productId]?.size_chart?.size_chart[productSize];
+  
+    if (productQuanityInPack && quantity > productQuanityInPack) {
+      finalPackQuantity = Math.ceil(Math.round(quantity / productQuanityInPack));
+    }
+    if (!productQuanityInPack) {
+      finalPackQuantity = 0;
+    }
   }
-  if (!productQuanityInPack) {
-    finalPackQuantity = 0;
-  }
-  return finalPackQuantity;
+  return {
+    quantity: finalPackQuantity,
+    shoeSizeId
+  };
 };
 
 /**
@@ -183,16 +212,18 @@ export const transformOsOrderPayload = (
       const osShopId = osShopMapping[productShopId];
       const osColorId = osColorIds.find(
         (color) => color.brand === osShopId && color.name === variantColor,
-      ).id;
-      osOrderItems.push({
-        item_id: osProductId,
-        color_id: osColorId,
-        pack_qty: getPackQuantity(
+      )?.id;
+        const selectedPackDetail:any = getPackDetail(
           osBundles,
           osProductId,
           variantSize,
           quantity,
-        ),
+        );
+
+      osOrderItems.push({
+        item_id: osProductId,
+        color_id: osColorId,
+        pack_qty: selectedPackDetail?.quantity,
         stock_type: 'in_stock',
         memo: '',
         sms_number: SMS_NUMBER,
@@ -200,20 +231,23 @@ export const transformOsOrderPayload = (
         spm_name: 'UPS',
         store_credit: STORE_CREDIT,
         signature_requested: SIGNATURE_REQUESTED,
+        ...(selectedPackDetail?.shoeSizeId && {
+          shoe_size_id: selectedPackDetail?.shoeSizeId
+        })
       });
     },
   );
   const uniqueOrderItems: OsOrderItem[] = [];
   osOrderItems.forEach((orderItem) => {
     const isAlreadyExist = uniqueOrderItems.find(
-      (item) => item.color_id === orderItem.color_id,
+      (item) => ((item.color_id === orderItem.color_id) && (orderItem?.shoe_size_id === item?.shoe_size_id)),
     );
     if (isAlreadyExist) {
       console.log(orderItem.color_id, isAlreadyExist);
       uniqueOrderItems.forEach((item) => {
         if (
-          item.color_id === orderItem.color_id &&
-          orderItem.pack_qty > item.pack_qty
+          (item.color_id === orderItem.color_id) &&
+          (orderItem.pack_qty > item.pack_qty)
         ) {
           item.pack_qty = orderItem.pack_qty;
         }

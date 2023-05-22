@@ -10,7 +10,7 @@ import { NoPaymentIntentError } from './Checkout.errors';
 import { MarketplaceCartService } from './cart/services/marketplace/Cart.marketplace.service';
 import { PaymentService } from './payment/Payment.service';
 import { CreateCheckoutDto } from './dto/createCheckout';
-import { B2B_CHECKOUT_APP_TOKEN, SHAROVE_BILLING_ADDRESS } from 'src/constants';
+import { B2B_CHECKOUT_APP_TOKEN, SHAROVE_BILLING_ADDRESS, SHAROVE_EMAIL, SHAROVE_PASSWORD } from 'src/constants';
 import { getOrdersByShopId } from '../orders/Orders.utils';
 import { OrdersService } from '../orders/Orders.service';
 import { LegacyService } from 'src/external/services/osPlaceOrder/Legacy.service';
@@ -189,8 +189,8 @@ export class CheckoutService {
   public async osPlaceOrder(orderId: string, token: string): Promise<object> {
     try {
       const auth0Tokens = await getAuth0Tokens(
-        'touqeerahmad2023@mailinator.com',
-        'Password123',
+        SHAROVE_EMAIL,
+        SHAROVE_PASSWORD,
       );
       const accessToken = auth0Tokens?.access_token;
       const decodedToken = jwt_decode(accessToken);

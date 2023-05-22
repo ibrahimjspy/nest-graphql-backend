@@ -9,6 +9,7 @@ export type OsOrderItem = {
   spm_name: string;
   store_credit: string;
   signature_requested: string;
+  shoe_size_id?: number;
 };
 
 export type OsBillingAddressType = {
