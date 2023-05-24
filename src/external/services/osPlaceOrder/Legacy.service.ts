@@ -48,7 +48,7 @@ export class LegacyService {
   paymentMethodId: string;
   colorsByShops: any[];
   billingInfo: shippingAddressType;
-
+  B2B_ORDER_TYPE = 'B2B';
   constructor(
     selectedBundles,
     shipping_info,
@@ -277,6 +277,7 @@ export class LegacyService {
             sms_number: SMS_NUMBER,
             spa_id: shippingAddressInfo?.data?.user_id,
             spm_name: 'UPS',
+            order_type: this.B2B_ORDER_TYPE,
             store_credit: STORE_CREDIT,
             signature_requested: SIGNATURE_REQUESTED,
           };
