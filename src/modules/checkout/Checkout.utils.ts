@@ -242,25 +242,27 @@ export const transformOsOrderPayload = (
     const isAlreadyExist = uniqueOrderItems.find(
       (item) => ((item.color_id === orderItem.color_id) && (orderItem?.shoe_size_id === item?.shoe_size_id)),
     );
-    if (isAlreadyExist) {
-      console.log(orderItem.color_id, isAlreadyExist);
-      uniqueOrderItems.forEach((item) => {
-        if (
-          (item.color_id === orderItem.color_id) &&
-          (orderItem.pack_qty > item.pack_qty)
-        ) {
-          item.pack_qty = orderItem.pack_qty;
-        }
-      });
-    } else {
-      uniqueOrderItems.push(orderItem);
+    if(orderItem.pack_qty && orderItem.color_id){
+      if (isAlreadyExist) {
+        console.log(orderItem.color_id, isAlreadyExist);
+        uniqueOrderItems.forEach((item) => {
+          if (
+            (item.color_id === orderItem.color_id) &&
+            (orderItem.pack_qty > item.pack_qty)
+          ) {
+            item.pack_qty = orderItem.pack_qty;
+          }
+        });
+      } else {
+        uniqueOrderItems.push(orderItem);
+      }
     }
   });
   const osOrderPayload: OsOrderPayloadType = {
     orders: uniqueOrderItems,
     sharove_order_id: '000',
     stripe_payment_method_id: 'pm_1N8M28Gr7zGKk44AORqD8OHh',
-    spa_id: 162187,
+    spa_id: OsShippingAddressId,
     payment_type: PAYMENT_TYPE,
     billing: SHAROVE_BILLING_ADDRESS,
   };
