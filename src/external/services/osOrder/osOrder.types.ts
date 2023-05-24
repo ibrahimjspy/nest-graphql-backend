@@ -10,6 +10,7 @@ export type OsOrderItem = {
   store_credit: string;
   signature_requested: string;
   shoe_size_id?: number;
+  size_run?: number[];
 };
 
 export type OsBillingAddressType = {
