@@ -277,7 +277,6 @@ export class LegacyService {
             sms_number: SMS_NUMBER,
             spa_id: shippingAddressInfo?.data?.user_id,
             spm_name: 'UPS',
-            order_type: this.B2B_ORDER_TYPE,
             store_credit: STORE_CREDIT,
             signature_requested: SIGNATURE_REQUESTED,
           };
@@ -297,6 +296,7 @@ export class LegacyService {
       sharove_order_id: this.orderId,
       stripe_payment_method_id: this.paymentMethodId,
       billing: this.transformBillingInformation(),
+      order_type: this.B2B_ORDER_TYPE,
     };
   }
 
