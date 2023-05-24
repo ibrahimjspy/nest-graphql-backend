@@ -124,7 +124,7 @@ export const getB2bProductMapping = async (productIds: string[]) => {
     );
 
     const results = response?.data?.results;
-    const mapping:ProductIdsMappingType = {};
+    const mapping: ProductIdsMappingType = {};
 
     results.forEach((obj) => {
       const b2cProductId = obj.shr_b2c_product_id.raw;

@@ -10,7 +10,12 @@ import { NoPaymentIntentError } from './Checkout.errors';
 import { MarketplaceCartService } from './cart/services/marketplace/Cart.marketplace.service';
 import { PaymentService } from './payment/Payment.service';
 import { CreateCheckoutDto } from './dto/createCheckout';
-import { B2B_CHECKOUT_APP_TOKEN, SHAROVE_BILLING_ADDRESS, SHAROVE_EMAIL, SHAROVE_PASSWORD } from 'src/constants';
+import {
+  B2B_CHECKOUT_APP_TOKEN,
+  SHAROVE_BILLING_ADDRESS,
+  SHAROVE_EMAIL,
+  SHAROVE_PASSWORD,
+} from 'src/constants';
 import { getOrdersByShopId } from '../orders/Orders.utils';
 import { OrdersService } from '../orders/Orders.service';
 import { LegacyService } from 'src/external/services/osPlaceOrder/Legacy.service';
@@ -24,9 +29,7 @@ import {
 import OsOrderService from 'src/external/services/osOrder/osOrder.service';
 import { ProductType } from './Checkout.utils.type';
 import { getB2bProductMapping } from 'src/external/endpoints/b2cMapping';
-import {
-  getOsProductMapping,
-} from 'src/external/endpoints/b2bMapping';
+import { getOsProductMapping } from 'src/external/endpoints/b2bMapping';
 import { authenticateAuth0User } from 'src/external/endpoints/auth0';
 import { getUserByToken } from '../account/user/User.utils';
 import { ProductIdsMappingType } from 'src/external/endpoints/b2bMapping.types';
@@ -194,29 +197,32 @@ export class CheckoutService {
       const userAccessToken = userAuthReponse?.access_token;
       const userDetail = getUserByToken(userAccessToken);
       const osUserId = userDetail['os_user_id'];
-      const orderDetail:any = await this.ordersService.getOrderDetailsById(
+      const orderDetail: any = await this.ordersService.getOrderDetailsById(
         orderId,
         token,
       );
 
-      const orderNumber = orderDetail?.data?.number
+      const orderNumber = orderDetail?.data?.number;
       const lessInventoryProducts: ProductType[] =
         getLessInventoryProducts(orderDetail);
       const b2cProductIds: string[] = lessInventoryProducts.map(
         (product) => product.id,
       );
-      const b2bProductMapping: ProductIdsMappingType = await getB2bProductMapping(
-        b2cProductIds,
-      );
+      const b2bProductMapping: ProductIdsMappingType =
+        await getB2bProductMapping(b2cProductIds);
       const b2bProductIds = Object.values(b2bProductMapping);
-      const osProductMapping: ProductIdsMappingType = await getOsProductMapping(b2bProductIds);
+      const osProductMapping: ProductIdsMappingType = await getOsProductMapping(
+        b2bProductIds,
+      );
       const osProductIds = Object.values(osProductMapping);
       const osShippingAddress: any =
         await this.osOrderService.createShippingAddress({
           ...SHAROVE_BILLING_ADDRESS,
           user_id: osUserId,
         });
-      const osProductsBundles = await this.osOrderService.getBundles(osProductIds);
+      const osProductsBundles = await this.osOrderService.getBundles(
+        osProductIds,
+      );
       const OsShippingAddressId = osShippingAddress?.data?.user_id;
       const osOrderPayload = transformOsOrderPayload(
         orderNumber,
@@ -229,7 +235,7 @@ export class CheckoutService {
 
       const response = await this.osOrderService.placeOrder(
         osOrderPayload,
-        userAccessToken
+        userAccessToken,
       );
       return prepareSuccessResponse(
         { response },

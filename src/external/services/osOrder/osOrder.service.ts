@@ -27,7 +27,7 @@ export default class OsOrderService {
       this.logger.error(err);
       await saveFailedOrderHandler(
         {
-          email:"",
+          email: '',
           source: '',
           orderId: '',
           exception: JSON.stringify(err),

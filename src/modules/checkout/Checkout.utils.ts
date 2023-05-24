@@ -2,10 +2,7 @@ import {
   OsOrderItem,
   OsOrderPayloadType,
 } from 'src/external/services/osOrder/osOrder.types';
-import {
-  ProductType,
-  SaleorCheckoutInterface,
-} from './Checkout.utils.type';
+import { ProductType, SaleorCheckoutInterface } from './Checkout.utils.type';
 import {
   PAYMENT_TYPE,
   PROMOTION_SHIPPING_METHOD_ID,
@@ -92,26 +89,25 @@ export const getLessInventoryProducts = (orderDetail) => {
   if (order && order?.lines?.length) {
     order?.lines.forEach((line) => {
       // if (line.quantity > line.variant.stocks[0].quantity) {
-        const variantColors = getAttributeValues(
-          line.variant.attributes,
-          'color',
-        );
-        const variantSizes = getAttributeValues(line.variant.attributes, 'size');
-        products.push({
-          id: line.variant.product.id,
-          color: variantColors?.length && variantColors[0],
-          size: variantSizes?.length && variantSizes[0],
-          quantity: line.quantity,
-        });
+      const variantColors = getAttributeValues(
+        line.variant.attributes,
+        'color',
+      );
+      const variantSizes = getAttributeValues(line.variant.attributes, 'size');
+      products.push({
+        id: line.variant.product.id,
+        color: variantColors?.length && variantColors[0],
+        size: variantSizes?.length && variantSizes[0],
+        quantity: line.quantity,
+      });
       // }
     });
   }
   return products;
 };
 
-
 /**
- * @description -- this function get orangeshine closest shoes size against given product qunatity 
+ * @description -- this function get orangeshine closest shoes size against given product qunatity
  * from orangeshine shoes packs
  * @param osProductBundle - Orangeshine product bundle details
  * @param {ProductType} product - B2C product details
@@ -121,22 +117,25 @@ const getClosestShoePackSize = (osProductBundle, product: ProductType) => {
   const shoeSizePacks = osProductBundle?.size_chart;
   const matchingShoeSizes = [];
 
-  shoeSizePacks.forEach((shoeSizePack:any) => {
+  shoeSizePacks.forEach((shoeSizePack: any) => {
     const shoeSizeQuantity = shoeSizePack?.size_chart[product.size];
-    if(shoeSizeQuantity && (shoeSizeQuantity <= product.quantity)){
-      let quanityDifference = Math.abs(shoeSizeQuantity - product.quantity);
+    if (shoeSizeQuantity && shoeSizeQuantity <= product.quantity) {
+      const quanityDifference = Math.abs(shoeSizeQuantity - product.quantity);
       shoeSizePack.quanityDifference = quanityDifference;
-      matchingShoeSizes.push(shoeSizePack)
+      matchingShoeSizes.push(shoeSizePack);
     }
-  })
+  });
 
-  const sortedByQuantityDifference = matchingShoeSizes.sort((a, b) => a?.quanityDifference - b?.quanityDifference);
-  const closestShoePackSize = sortedByQuantityDifference.length && sortedByQuantityDifference[0];
+  const sortedByQuantityDifference = matchingShoeSizes.sort(
+    (a, b) => a?.quanityDifference - b?.quanityDifference,
+  );
+  const closestShoePackSize =
+    sortedByQuantityDifference.length && sortedByQuantityDifference[0];
   return closestShoePackSize;
-}
+};
 
 /**
- * @description -- this function decide orangeshine packs quanity based on 
+ * @description -- this function decide orangeshine packs quanity based on
  * given b2c product quantity
  * @param osProductBundle - Orangeshine product bundle details
  * @param {ProductType} product - B2C product details
@@ -147,15 +146,21 @@ const getSelectedPackQuantity = (osProductBundle, product: ProductType) => {
   let productQuanityInPack = 0;
 
   if (osProductBundle?.is_shoes) {
-    const closestShoePackSize = getClosestShoePackSize(osProductBundle, product)
+    const closestShoePackSize = getClosestShoePackSize(
+      osProductBundle,
+      product,
+    );
     productQuanityInPack = closestShoePackSize?.size_chart[product.size];
   } else {
-    productQuanityInPack = osProductBundle?.size_chart?.size_chart[product.size];
+    productQuanityInPack =
+      osProductBundle?.size_chart?.size_chart[product.size];
   }
 
   if (productQuanityInPack && product.quantity > productQuanityInPack) {
-    finalPackQuantity = Math.ceil(Math.round(product.quantity / productQuanityInPack));
-  } else if (!productQuanityInPack){
+    finalPackQuantity = Math.ceil(
+      Math.round(product.quantity / productQuanityInPack),
+    );
+  } else if (!productQuanityInPack) {
     finalPackQuantity = 0;
   }
 
@@ -163,23 +168,25 @@ const getSelectedPackQuantity = (osProductBundle, product: ProductType) => {
 };
 
 /**
- * @description -- this function remove duplicate orangeshine order items 
+ * @description -- this function remove duplicate orangeshine order items
  * and returns maximum packs quantity order items for duplicate order items
- * @param {OsOrderItem} osOrderItems - Orangeshine order items 
+ * @param {OsOrderItem} osOrderItems - Orangeshine order items
  * @return {object} orangeshine unique order items
  */
 const getUniqueOsOrderItems = (osOrderItems: OsOrderItem[]) => {
   const uniqueOrderItems: OsOrderItem[] = [];
   osOrderItems.forEach((orderItem) => {
     const isAlreadyExist = uniqueOrderItems.find(
-      (item) => ((item.color_id === orderItem.color_id) && (orderItem?.shoe_size_id === item?.shoe_size_id)),
+      (item) =>
+        item.color_id === orderItem.color_id &&
+        orderItem?.shoe_size_id === item?.shoe_size_id,
     );
-    if(orderItem.pack_qty && orderItem.color_id){
+    if (orderItem.pack_qty && orderItem.color_id) {
       if (isAlreadyExist) {
         uniqueOrderItems.forEach((item) => {
           if (
-            (item.color_id === orderItem.color_id) &&
-            (orderItem.pack_qty > item.pack_qty)
+            item.color_id === orderItem.color_id &&
+            orderItem.pack_qty > item.pack_qty
           ) {
             item.pack_qty = orderItem.pack_qty;
           }
@@ -190,7 +197,7 @@ const getUniqueOsOrderItems = (osOrderItems: OsOrderItem[]) => {
     }
   });
   return uniqueOrderItems;
-}
+};
 
 /**
  * @description -- this function takes orangeshine order details and transform data
@@ -203,7 +210,7 @@ const getUniqueOsOrderItems = (osOrderItems: OsOrderItem[]) => {
  * @return {object} payload for orangeshine order
  */
 export const transformOsOrderPayload = (
-  orderNumber:string,
+  orderNumber: string,
   b2cProducts: ProductType[],
   osProductMapping: ProductIdsMappingType,
   b2bProductMapping: ProductIdsMappingType,
@@ -211,37 +218,36 @@ export const transformOsOrderPayload = (
   osProductsBundles,
 ) => {
   const osOrderItems: OsOrderItem[] = [];
-  b2cProducts.forEach(
-    product => {
-      const osProductId = osProductMapping[b2bProductMapping[product.id]];
-      const osBundles = hash(osProductsBundles, 'id')
-      const osProductBundle = osBundles[osProductId];
-      const osProductBundleColors = hash(osProductBundle?.colors, 'name');
-      const selectedProductColorId = osProductBundleColors[product?.color]?.color_id;
-      const selectedPackQuantity = getSelectedPackQuantity(
-        osProductBundle,
-        product
-      );
+  b2cProducts.forEach((product) => {
+    const osProductId = osProductMapping[b2bProductMapping[product.id]];
+    const osBundles = hash(osProductsBundles, 'id');
+    const osProductBundle = osBundles[osProductId];
+    const osProductBundleColors = hash(osProductBundle?.colors, 'name');
+    const selectedProductColorId =
+      osProductBundleColors[product?.color]?.color_id;
+    const selectedPackQuantity = getSelectedPackQuantity(
+      osProductBundle,
+      product,
+    );
 
-      if(selectedProductColorId && selectedPackQuantity){
-        osOrderItems.push({
-          item_id: osProductId,
-          color_id: selectedProductColorId,
-          pack_qty: selectedPackQuantity,
-          stock_type: 'in_stock',
-          memo: '',
-          sms_number: SMS_NUMBER,
-          spa_id: OsShippingAddressId,
-          spm_name: 'UPS',
-          store_credit: STORE_CREDIT,
-          signature_requested: SIGNATURE_REQUESTED,
-          ...(osProductBundle?.is_shoes && {
-            shoe_size_id: getClosestShoePackSize(osProductBundle, product)?.id
-          })
-        });
-      }
-    },
-  );
+    if (selectedProductColorId && selectedPackQuantity) {
+      osOrderItems.push({
+        item_id: osProductId,
+        color_id: selectedProductColorId,
+        pack_qty: selectedPackQuantity,
+        stock_type: 'in_stock',
+        memo: '',
+        sms_number: SMS_NUMBER,
+        spa_id: OsShippingAddressId,
+        spm_name: 'UPS',
+        store_credit: STORE_CREDIT,
+        signature_requested: SIGNATURE_REQUESTED,
+        ...(osProductBundle?.is_shoes && {
+          shoe_size_id: getClosestShoePackSize(osProductBundle, product)?.id,
+        }),
+      });
+    }
+  });
 
   const osOrderPayload: OsOrderPayloadType = {
     orders: getUniqueOsOrderItems(osOrderItems),

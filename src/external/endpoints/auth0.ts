@@ -16,7 +16,10 @@ export const validateAuth0Token = async (token: string) => {
   });
 };
 
-export const authenticateAuth0User = async (email: string, password: string) => {
+export const authenticateAuth0User = async (
+  email: string,
+  password: string,
+) => {
   const response = await http.post(`https://${AUTH0_DOMAIN}/oauth/token`, {
     realm: AUTH0_B2B_CONNECTION,
     audience: AUTH0_AUDIENCE,
