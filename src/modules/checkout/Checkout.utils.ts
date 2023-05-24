@@ -88,19 +88,22 @@ export const getLessInventoryProducts = (orderDetail) => {
   const products: ProductType[] = [];
   if (order && order?.lines?.length) {
     order?.lines.forEach((line) => {
-      // if (line.quantity > line.variant.stocks[0].quantity) {
-      const variantColors = getAttributeValues(
-        line.variant.attributes,
-        'color',
-      );
-      const variantSizes = getAttributeValues(line.variant.attributes, 'size');
-      products.push({
-        id: line.variant.product.id,
-        color: variantColors?.length && variantColors[0],
-        size: variantSizes?.length && variantSizes[0],
-        quantity: line.quantity,
-      });
-      // }
+      if (line.quantity > line.variant.stocks[0].quantity) {
+        const variantColors = getAttributeValues(
+          line.variant.attributes,
+          'color',
+        );
+        const variantSizes = getAttributeValues(
+          line.variant.attributes,
+          'size',
+        );
+        products.push({
+          id: line.variant.product.id,
+          color: variantColors?.length && variantColors[0],
+          size: variantSizes?.length && variantSizes[0],
+          quantity: line.quantity,
+        });
+      }
     });
   }
   return products;
