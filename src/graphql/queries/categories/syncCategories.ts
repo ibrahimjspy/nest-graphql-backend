@@ -16,7 +16,8 @@ export const syncCategoriesQuery = (
             name
             products(
               first: 1
-              filter: { isPublished: true, isAvailable: true }
+              filter: { isPublished: true, isAvailable: true,
+                 metadata: {key: "isMaster", value: "true"} }
             ) {
               totalCount
             }

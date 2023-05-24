@@ -9,7 +9,6 @@ export const prepareSyncedCategoriesResponse = (
   categoriesData,
   syncedCategoriesMapping,
 ) => {
-  const STATIC_PRODUCT_COUNT = 100;
   categoriesData.edges.map((category) => {
     if (
       syncedCategoriesMapping.results.some(
@@ -17,7 +16,6 @@ export const prepareSyncedCategoriesResponse = (
       )
     ) {
       category.node.sync = true;
-      category.node.products.totalCount = STATIC_PRODUCT_COUNT;
       return;
     }
     category.node.sync = false;
