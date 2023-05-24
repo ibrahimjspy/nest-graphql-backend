@@ -46,6 +46,7 @@ export const ACCEPT_ENCODING_HEADER = {
 // OrangeShine Variables
 export const SHAROVE_EMAIL = process.env.OS_EMAIL;
 export const SHAROVE_PASSWORD = process.env.OS_PASSWORD;
+export const SHAROVE_STRIPE_PAYMENT_METHOD = "pm_1N8M28Gr7zGKk44AORqD8OHh";
 export const BASE_EXTERNAL_ENDPOINT = process.env.OS_ENDPOINT;
 export const PAYMENT_TYPE = process.env.CHECKOUT_PAYMENT_TYPE || 'credit_card';
 export const STORE_CREDIT = process.env.OS_STORE_CREDIT;
@@ -122,6 +123,7 @@ export const AUTH0_TTL_CACHE_TIME = 72000;
 export const AUTH0_B2B_CONNECTION = 'Username-Password-Authentication';
 export const AUTH0_SPA_CLIENT_ID = 'NHDmV7IkVh8s8zX1d5waoPolBAwwLSzT';
 export const AUTH0_SPA_SCOPE = 'openid profile email offline_access';
+export const AUTH0_AUDIENCE = 'sharove-dev-authorization';
 export const AUTH0_GRANT_TYPE =
   'http://auth0.com/oauth/grant-type/password-realm';
 

@@ -1,4 +1,5 @@
 import {
+  AUTH0_AUDIENCE,
   AUTH0_B2B_CONNECTION,
   AUTH0_DOMAIN,
   AUTH0_GRANT_TYPE,
@@ -15,15 +16,15 @@ export const validateAuth0Token = async (token: string) => {
   });
 };
 
-export const getAuth0Tokens = async (email: string, password: string) => {
+export const authenticateAuth0User = async (email: string, password: string) => {
   const response = await http.post(`https://${AUTH0_DOMAIN}/oauth/token`, {
     realm: AUTH0_B2B_CONNECTION,
-    audience: 'sharove-dev-authorization',
+    audience: AUTH0_AUDIENCE,
     client_id: AUTH0_SPA_CLIENT_ID,
     scope: AUTH0_SPA_SCOPE,
     grant_type: AUTH0_GRANT_TYPE,
     username: email,
     password: password,
   });
-  return response.data;
+  return response?.data;
 };

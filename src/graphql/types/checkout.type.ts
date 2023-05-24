@@ -8,6 +8,7 @@ export interface CheckoutBundlesDto {
 }
 
 export interface FailedOrderInterface {
+  email?:string;
   source: string;
   orderId: string;
   exception: string;

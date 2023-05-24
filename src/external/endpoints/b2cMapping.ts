@@ -6,6 +6,7 @@ import {
 } from 'src/constants';
 import { Logger } from '@nestjs/common';
 import axios from 'axios';
+import { ProductIdsMappingType } from './b2bMapping.types';
 
 /**
  * @description -- this method connects with mapping service and returns b2c product
@@ -101,7 +102,7 @@ export const removeB2cProductMapping = async (productIds) => {
 /**
  * @description -- this method connects with mapping service and returns b2b product ids
  * @param {string[]} productIds -- b2c product ids
- * @return {object} -- b2b product ids mapping against b2c product ids
+ * @return {ProductIdsMappingType} -- b2b product ids mapping against b2c product ids
  */
 export const getB2bProductMapping = async (productIds: string[]) => {
   try {
@@ -123,7 +124,7 @@ export const getB2bProductMapping = async (productIds: string[]) => {
     );
 
     const results = response?.data?.results;
-    const mapping = {};
+    const mapping:ProductIdsMappingType = {};
 
     results.forEach((obj) => {
       const b2cProductId = obj.shr_b2c_product_id.raw;

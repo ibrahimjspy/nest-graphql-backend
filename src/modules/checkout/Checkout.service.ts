@@ -20,17 +20,16 @@ import {
   checkoutShippingMethodsSort,
   getLessInventoryProducts,
   transformOsOrderPayload,
-  transformOsShopMapping,
 } from './Checkout.utils';
 import OsOrderService from 'src/external/services/osOrder/osOrder.service';
-import { LessInventoryProductType } from './Checkout.utils.type';
+import { ProductType } from './Checkout.utils.type';
 import { getB2bProductMapping } from 'src/external/endpoints/b2cMapping';
 import {
   getOsProductMapping,
-  getOsShopMapping,
 } from 'src/external/endpoints/b2bMapping';
-import { getAuth0Tokens } from 'src/external/endpoints/auth0';
-import jwt_decode from 'jwt-decode';
+import { authenticateAuth0User } from 'src/external/endpoints/auth0';
+import { getUserByToken } from '../account/user/User.utils';
+import { ProductIdsMappingType } from 'src/external/endpoints/b2bMapping.types';
 
 @Injectable()
 export class CheckoutService {
@@ -188,58 +187,49 @@ export class CheckoutService {
    */
   public async osPlaceOrder(orderId: string, token: string): Promise<object> {
     try {
-      const auth0Tokens = await getAuth0Tokens(
+      const userAuthReponse = await authenticateAuth0User(
         SHAROVE_EMAIL,
         SHAROVE_PASSWORD,
       );
-      const accessToken = auth0Tokens?.access_token;
-      const decodedToken = jwt_decode(accessToken);
-      const os_user_id = decodedToken['os_user_id'];
-      const orderDetail = await this.ordersService.getOrderDetailsById(
+      const userAccessToken = userAuthReponse?.access_token;
+      const userDetail = getUserByToken(userAccessToken);
+      const osUserId = userDetail['os_user_id'];
+      const orderDetail:any = await this.ordersService.getOrderDetailsById(
         orderId,
         token,
       );
-      const lessInventoryProducts: LessInventoryProductType[] =
+
+      const orderNumber = orderDetail?.data?.number
+      const lessInventoryProducts: ProductType[] =
         getLessInventoryProducts(orderDetail);
       const b2cProductIds: string[] = lessInventoryProducts.map(
-        (product) => product.productId,
+        (product) => product.id,
       );
-      const b2bProductMapping: object = await getB2bProductMapping(
+      const b2bProductMapping: ProductIdsMappingType = await getB2bProductMapping(
         b2cProductIds,
       );
       const b2bProductIds = Object.values(b2bProductMapping);
-      const osProductMapping: object = await getOsProductMapping(b2bProductIds);
+      const osProductMapping: ProductIdsMappingType = await getOsProductMapping(b2bProductIds);
       const osProductIds = Object.values(osProductMapping);
-      const b2bShopIds = lessInventoryProducts.map(
-        (product) => product.productShopId,
-      );
-      const osShopMapping: object = await getOsShopMapping(b2bShopIds);
-      const osShopColors = transformOsShopMapping(
-        osShopMapping,
-        lessInventoryProducts,
-      );
-      const osProductColorIDs = await this.osOrderService.getProductColorIDs(
-        osShopColors,
-      );
       const osShippingAddress: any =
         await this.osOrderService.createShippingAddress({
           ...SHAROVE_BILLING_ADDRESS,
-          user_id: os_user_id,
+          user_id: osUserId,
         });
-      const osBundles: any = await this.osOrderService.getBundles(osProductIds);
+      const osProductsBundles = await this.osOrderService.getBundles(osProductIds);
       const OsShippingAddressId = osShippingAddress?.data?.user_id;
       const osOrderPayload = transformOsOrderPayload(
-        osShopMapping,
+        orderNumber,
         lessInventoryProducts,
         osProductMapping,
         b2bProductMapping,
-        osProductColorIDs,
         OsShippingAddressId,
-        osBundles,
+        osProductsBundles,
       );
+
       const response = await this.osOrderService.placeOrder(
         osOrderPayload,
-        accessToken,
+        userAccessToken
       );
       return prepareSuccessResponse(
         { response },

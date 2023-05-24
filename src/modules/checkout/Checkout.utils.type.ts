@@ -67,10 +67,9 @@ export interface SaleorCheckoutInterface {
   }[];
 }
 
-export interface LessInventoryProductType {
-  productId: string;
-  productShopId: string;
-  variantColor: string;
-  variantSize: string;
+export interface ProductType {
+  id: string;
+  color: string;
+  size: string;
   quantity: number;
 }

@@ -21,13 +21,13 @@ export default class OsOrderService {
       const header = {
         headers: { Authorization: getTokenWithoutBearer(token) },
       };
-      console.log('payload', payload);
       const response = await axios.post(URL, payload, header);
       return response?.data;
     } catch (err) {
       this.logger.error(err);
       await saveFailedOrderHandler(
         {
+          email:"",
           source: '',
           orderId: '',
           exception: JSON.stringify(err),
@@ -38,24 +38,6 @@ export default class OsOrderService {
       );
       return prepareFailedResponse(err.message);
     }
-  }
-
-  async getProductColorIDs(colorObject) {
-    const URL = `${this.API_URI}/product/details?color-mapping=${JSON.stringify(
-      colorObject,
-    ).replaceAll('#', '')}`; // Todo need to resolve # including colors
-    const response = await axios.get(URL);
-    return response?.data?.data;
-  }
-
-  async getShoeSizeIDs(vendorNameList: string[], shoeSizeNameList: string[]) {
-    const URL = `${
-      this.API_URI
-    }/product/shoe-sizes?vendor_name_list=${JSON.stringify(
-      vendorNameList,
-    )}&shoe_size_name_list=${JSON.stringify(shoeSizeNameList)}`;
-    const response = await axios.get(URL);
-    return response?.data?.data;
   }
 
   async createShippingAddress(shippingAddressInfo: OsShippingAddressType) {
