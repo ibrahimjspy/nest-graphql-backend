@@ -79,3 +79,8 @@ export interface shippingAddressType {
     country: string;
   };
 }
+
+export interface DeliveryMethodType {
+  id: string;
+  name: string;
+}
