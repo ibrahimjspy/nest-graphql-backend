@@ -5,6 +5,7 @@ import {
 } from 'src/external/services/osOrder/osOrder.types';
 import {
   MetadataType,
+  OsOrderResponseInterface,
   OsOrderTranformType,
   ProductType,
   SaleorCheckoutInterface,

@@ -29,7 +29,7 @@ import {
   transformOsOrderPayload,
 } from './Checkout.utils';
 import OsOrderService from 'src/external/services/osOrder/osOrder.service';
-import { ProductType } from './Checkout.utils.type';
+import { OsOrderResponseInterface, ProductType } from './Checkout.utils.type';
 import { getB2bProductMapping } from 'src/external/endpoints/b2cMapping';
 import { getOsProductMapping } from 'src/external/endpoints/b2bMapping';
 import { authenticateAuth0User } from 'src/external/endpoints/auth0';
