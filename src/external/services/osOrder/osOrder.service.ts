@@ -1,15 +1,31 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
   OsBundlesType,
+  OsOrderItem,
   OsOrderPayloadType,
+  OsOrderTranformType,
   OsShippingAddressType,
 } from './osOrder.types';
-import { BASE_EXTERNAL_ENDPOINT } from 'src/constants';
+import {
+  BASE_EXTERNAL_ENDPOINT,
+  PAYMENT_TYPE,
+  SHAROVE_BILLING_ADDRESS,
+  SHAROVE_STRIPE_PAYMENT_METHOD,
+  SIGNATURE_REQUESTED,
+  SMS_NUMBER,
+  STORE_CREDIT,
+} from 'src/constants';
 import { saveFailedOrderHandler } from 'src/graphql/handlers/checkout/checkout';
 import { prepareFailedResponse } from 'src/core/utils/response';
 import { getTokenWithoutBearer } from 'src/modules/account/user/User.utils';
 import axios from 'axios';
 import { addShippingAddressInfo } from 'src/external/endpoints/checkout';
+import { hash } from 'src/core/utils/helpers';
+import {
+  getClosestShoePackSize,
+  getSelectedPackQuantity,
+  getUniqueOrderItems,
+} from './osOrder.utils';
 
 @Injectable()
 export default class OsOrderService {
@@ -65,5 +81,70 @@ export default class OsOrderService {
     )}`;
     const response = await axios.get(URL);
     return response?.data;
+  }
+
+  /**
+   * @description -- this function takes orangeshine order details and transform data
+   * for orangeshine order payload
+   * @param b2cProducts - B2C products list for order on orangeshine
+   * @param osProductMapping - orangeshine product ids against b2b product ids
+   * @param b2bProductMapping - b2b product ids against b2c product ids
+   * @param OsShippingAddressId - orangeshine user shipping address id
+   * @param osProductsBundles - orangeshine bundles array against orangeshine product ids
+   * @return payload for orangeshine order
+   */
+  transformOrderPayload({
+    orderNumber,
+    b2cProducts,
+    osProductMapping,
+    b2bProductMapping,
+    OsShippingAddressId,
+    osProductsBundles,
+  }: OsOrderTranformType) {
+    const osOrderItems: OsOrderItem[] = [];
+    b2cProducts?.forEach((product) => {
+      const osProductId = osProductMapping.get(
+        b2bProductMapping.get(product.id),
+      );
+      const osBundles = hash(osProductsBundles, 'id');
+      const osProductBundle = osBundles[osProductId];
+      const osProductBundleColors = hash(osProductBundle?.colors, 'name');
+      const selectedProductColorId =
+        osProductBundleColors[product?.color]?.color_id;
+      const selectedPackQuantity = getSelectedPackQuantity(
+        osProductBundle,
+        product,
+      );
+
+      if (selectedProductColorId && selectedPackQuantity) {
+        osOrderItems.push({
+          item_id: osProductId,
+          color_id: selectedProductColorId,
+          pack_qty: selectedPackQuantity,
+          stock_type: 'in_stock',
+          memo: '',
+          sms_number: SMS_NUMBER,
+          spa_id: OsShippingAddressId,
+          spm_name: 'UPS',
+          store_credit: STORE_CREDIT,
+          signature_requested: SIGNATURE_REQUESTED,
+          ...(osProductBundle?.is_shoes && {
+            shoe_size_id: getClosestShoePackSize(osProductBundle, product)?.id,
+          }),
+        });
+      }
+    });
+
+    const osOrderPayload: OsOrderPayloadType = {
+      orders: getUniqueOrderItems(osOrderItems),
+      sharove_order_id: orderNumber,
+      stripe_payment_method_id: SHAROVE_STRIPE_PAYMENT_METHOD,
+      spa_id: OsShippingAddressId,
+      payment_type: PAYMENT_TYPE,
+      billing: SHAROVE_BILLING_ADDRESS,
+      order_type: 'D2C',
+    };
+
+    return osOrderPayload;
   }
 }

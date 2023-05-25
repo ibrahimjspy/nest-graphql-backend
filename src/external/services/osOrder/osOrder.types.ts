@@ -1,3 +1,5 @@
+import { ProductIdsMappingType } from 'src/external/endpoints/b2bMapping.types';
+
 export type OsOrderItem = {
   item_id: string;
   color_id: string;
@@ -83,4 +85,19 @@ export interface OsBundlesType {
   pre_order: {
     is_pre_order: boolean;
   };
+}
+
+export interface ProductType {
+  id: string;
+  color: string;
+  size: string;
+  quantity: number;
+}
+export interface OsOrderTranformType {
+  orderNumber: string;
+  b2cProducts: ProductType[];
+  osProductMapping: ProductIdsMappingType;
+  b2bProductMapping: ProductIdsMappingType;
+  OsShippingAddressId: number;
+  osProductsBundles: OsBundlesType[];
 }

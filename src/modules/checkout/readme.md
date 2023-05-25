@@ -48,4 +48,6 @@ Rollback Service :
 - this service is used to rollback if any failures happen in one of service methods
 
 OsOrder Service :
-- this service used to directly place order on orangeshine
+- this service used to directly place order on orangeshine using V3 orangeshine APIs
+- We can create shipping address on orangeshine against given user id
+- Using this service we can get orangeshine bundles against given oranshine product ids

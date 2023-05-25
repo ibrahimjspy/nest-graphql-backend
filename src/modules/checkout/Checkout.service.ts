@@ -26,7 +26,6 @@ import {
   extractOsOrderNumber,
   getLessInventoryProducts,
   getProductIds,
-  transformOsOrderPayload,
 } from './Checkout.utils';
 import OsOrderService from 'src/external/services/osOrder/osOrder.service';
 import { OsOrderResponseInterface, ProductType } from './Checkout.utils.type';
@@ -238,7 +237,7 @@ export class CheckoutService {
         osProductIds,
       );
       const OsShippingAddressId = osShippingAddress?.data?.user_id;
-      const osOrderPayload = transformOsOrderPayload({
+      const osOrderPayload = this.osOrderService.transformOrderPayload({
         orderNumber,
         b2cProducts: lessInventoryProducts,
         osProductMapping,

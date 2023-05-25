@@ -46,7 +46,7 @@ export const ACCEPT_ENCODING_HEADER = {
 // OrangeShine Variables
 export const SHAROVE_EMAIL = process.env.OS_EMAIL;
 export const SHAROVE_PASSWORD = process.env.OS_PASSWORD;
-export const SHAROVE_STRIPE_PAYMENT_METHOD = 'pm_1NBHKNGr7zGKk44A425DemRU';
+export const SHAROVE_STRIPE_PAYMENT_METHOD = 'pm_1NBliPHH1XVL0zjbClGzN1hX';
 export const BASE_EXTERNAL_ENDPOINT = process.env.OS_ENDPOINT;
 export const PAYMENT_TYPE = process.env.CHECKOUT_PAYMENT_TYPE || 'credit_card';
 export const STORE_CREDIT = process.env.OS_STORE_CREDIT;
