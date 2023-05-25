@@ -132,7 +132,7 @@ export class LegacyService {
       zipcode: this.shipping_info?.postalCode,
       user_id: this.userId,
       company_name: this.shipping_info?.companyName,
-      country: this.shipping_info?.country.code,
+      country: this.shipping_info?.country.country,
       first_name: this.shipping_info?.firstName,
       last_name: this.shipping_info?.lastName,
       nick_name: this.shipping_info?.firstName,
