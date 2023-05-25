@@ -86,7 +86,7 @@ export const getLessInventoryProducts = (orderDetail) => {
   const products: ProductType[] = [];
   if (order && order?.lines?.length) {
     order?.lines?.forEach((line) => {
-      // if (line.quantity > line.variant.stocks[0].quantity) {
+      if (line.quantity > line.variant.stocks[0].quantity) {
         const colorAttributeName = 'color';
         const sizeAttributeName = 'size';
         const variantColors = getAttributeValues(
@@ -103,7 +103,7 @@ export const getLessInventoryProducts = (orderDetail) => {
           size: variantSizes?.length && variantSizes[0],
           quantity: line.quantity,
         });
-      // }
+      }
     });
   }
   return products;
