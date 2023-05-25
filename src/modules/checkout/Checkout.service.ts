@@ -23,6 +23,7 @@ import { preparePromotionResponse } from './shipping/services/Shipping.response'
 import {
   addPreAuthInCheckoutResponse,
   checkoutShippingMethodsSort,
+  extractOsOrderNumber,
   getLessInventoryProducts,
   getProductIds,
   transformOsOrderPayload,
@@ -90,6 +91,7 @@ export class CheckoutService {
         orderDetails['number'],
         paymentMethodId,
         orderDetails['billingAddress'],
+        orderDetails['deliveryMethod'],
         token,
       );
       return await instance.placeExternalOrder();
@@ -145,6 +147,10 @@ export class CheckoutService {
         this.ordersService.addOrderToShop(ordersByShop, token),
         CheckoutHandlers.disableCheckoutSession(checkoutId, token),
       ]);
+      const osOrderId = extractOsOrderNumber(
+        osOrderResponse as OsOrderResponseInterface,
+      );
+      await this.paymentService.paymentIntentUpdate(paymentIntentId, osOrderId);
       return prepareSuccessResponse(
         { createOrder, osOrderResponse },
         'order created against checkout',

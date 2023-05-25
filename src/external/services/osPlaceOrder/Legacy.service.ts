@@ -18,6 +18,7 @@ import axios from 'axios';
 import { Logger } from '@nestjs/common';
 import { prepareFailedResponse } from 'src/core/utils/response';
 import {
+  DeliveryMethodType,
   checkoutBundlesInterface,
   shippingAddressType,
 } from './Legacy.service.types';
@@ -45,6 +46,7 @@ export class LegacyService {
   shoesVendorIds = [];
   userId: string;
   token: string;
+  deliveryMethod: DeliveryMethodType;
   paymentMethodId: string;
   colorsByShops: any[];
   billingInfo: shippingAddressType;
@@ -55,6 +57,7 @@ export class LegacyService {
     orderId,
     paymentMethodId,
     billingInfo: shippingAddressType,
+    deliveryMethod: DeliveryMethodType,
     token,
   ) {
     this.selectedBundles = selectedBundles;
@@ -65,6 +68,7 @@ export class LegacyService {
     this.token = token;
     this.baseUrl = `${BASE_EXTERNAL_ENDPOINT}/api/v3`;
     this.elasticSearchUrl = `${ELASTIC_SEARCH_ENDPOINT}/api/as/v1`;
+    this.deliveryMethod = deliveryMethod;
   }
   async placeExternalOrder() {
     try {
@@ -128,11 +132,11 @@ export class LegacyService {
       address1: this.shipping_info?.streetAddress1,
       address2: this.shipping_info?.streetAddress2,
       city: this.shipping_info?.city,
-      state: this.shipping_info?.country.code,
+      state: this.shipping_info?.countryArea,
       zipcode: this.shipping_info?.postalCode,
       user_id: this.userId,
       company_name: this.shipping_info?.companyName,
-      country: this.shipping_info?.country.code,
+      country: this.shipping_info?.country.country,
       first_name: this.shipping_info?.firstName,
       last_name: this.shipping_info?.lastName,
       nick_name: this.shipping_info?.firstName,
@@ -276,7 +280,7 @@ export class LegacyService {
             memo: '',
             sms_number: SMS_NUMBER,
             spa_id: shippingAddressInfo?.data?.user_id,
-            spm_name: 'UPS',
+            spm_name: this.deliveryMethod.name,
             store_credit: STORE_CREDIT,
             signature_requested: SIGNATURE_REQUESTED,
           };

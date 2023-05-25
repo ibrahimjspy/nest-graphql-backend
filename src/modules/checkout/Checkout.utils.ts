@@ -309,3 +309,11 @@ export const transformOsOrderPayload = ({
 export const getProductIds = (products: ProductType[]): string[] => {
   return products.map((product) => product.id) as string[];
 };
+
+/**
+ * @description -- this return os order number form os order data
+ * @pre_condition -- this assumes that all orders in os data have same order number
+ */
+export const extractOsOrderNumber = (orderData: OsOrderResponseInterface) => {
+  return orderData.data.orders[0].order_number || null;
+};

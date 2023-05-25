@@ -15,7 +15,10 @@ import { prepareSuccessResponse } from 'src/core/utils/response';
 import { SuccessResponseType } from 'src/core/utils/response.type';
 import { createStoreDTO, shopDetailDto } from '../../dto/shop';
 import { validateArray, validateStoreInput } from '../../Shop.utils';
-import { provisionStoreFront } from 'src/external/endpoints/provisionStorefront';
+import {
+  provisionStoreFront,
+  provisionStoreFrontV2,
+} from 'src/external/endpoints/provisionStorefront';
 import { B2C_DEVELOPMENT_TOKEN, B2C_STOREFRONT_TLD } from 'src/constants';
 import { shopInfoDto } from '../../../orders/dto';
 @Injectable()
@@ -54,6 +57,47 @@ export class ShopService {
         201,
       );
     } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description -- this method creates a new storefront in b2c against a b2b shop
+   * @pre_condition -- you should provide valid create shop input
+   * @post_condition -- it creates a new store in b2c database, provisions a new storefront using github actions and adds store
+   * information against b2b shop as well
+   */
+  public async createStoreV2(
+    shopId: string,
+    storeInput: createStoreDTO,
+    token: string,
+  ): Promise<any> {
+    try {
+      const storeUrl = this.generateStorefrontUrl(storeInput.name);
+      storeInput.url = storeUrl;
+      const [createStore, shopDetails] = await Promise.all([
+        createStoreHandler(
+          validateStoreInput(storeInput),
+          B2C_DEVELOPMENT_TOKEN,
+          true,
+        ),
+        getShopDetailsV2Handler({ id: shopId }),
+      ]);
+      const [workflowResponse] = await Promise.all([
+        provisionStoreFrontV2(storeInput.url),
+        addStoreToShopHandler(createStore, shopDetails, token),
+      ]);
+      return prepareSuccessResponse(
+        {
+          createStore,
+          workflowResponse,
+        },
+        'new storefront provisioned',
+        201,
+      );
+    } catch (error) {
+      console.log(error);
       this.logger.error(error);
       return graphqlExceptionHandler(error);
     }

@@ -126,4 +126,13 @@ export default class StripeService {
     );
     return cancelPaymentIntentId;
   }
+
+  public async paymentIntentUpdate(paymentIntentId: string, osOrderId: string) {
+    const updatePaymentIntentDescription =
+      await this.stripe.paymentIntents.update(paymentIntentId, {
+        description: `${osOrderId}`,
+        metadata: { osOrderId },
+      });
+    return updatePaymentIntentDescription;
+  }
 }
