@@ -24,6 +24,7 @@ import {
   addPreAuthInCheckoutResponse,
   checkoutShippingMethodsSort,
   getLessInventoryProducts,
+  getProductIds,
   transformOsOrderPayload,
 } from './Checkout.utils';
 import OsOrderService from 'src/external/services/osOrder/osOrder.service';
@@ -187,6 +188,15 @@ export class CheckoutService {
 
   /**
    * @description -- this method place order on orangeshine as sharove against B2C order
+   * @step -- Authenticate Sharove user for getting access token
+   * @step -- Get b2c order detail against given b2c order id
+   * @step -- Get less inventory products from b2c order detail
+   * @step -- Get OS product ids from elastic search mapping agianst b2c product ids
+   * @step -- Create sharove shipping address on orangeshine
+   * @step -- Get bundles from orangeshine against given OS product ids
+   * @step -- Transform data for orangeshine order payload
+   * @step -- Place order on orangeshine against sharove account with transformed payload
+   * @return -- Orangeshine order response
    */
   public async osPlaceOrder(orderId: string, token: string): Promise<object> {
     try {
@@ -205,16 +215,14 @@ export class CheckoutService {
       const orderNumber = orderDetail?.data?.number;
       const lessInventoryProducts: ProductType[] =
         getLessInventoryProducts(orderDetail);
-      const b2cProductIds: string[] = lessInventoryProducts.map(
-        (product) => product.id,
-      );
+      const b2cProductIds: string[] = getProductIds(lessInventoryProducts);
       const b2bProductMapping: ProductIdsMappingType =
         await getB2bProductMapping(b2cProductIds);
-      const b2bProductIds = Object.values(b2bProductMapping);
+      const b2bProductIds = Array.from(b2bProductMapping.values());
       const osProductMapping: ProductIdsMappingType = await getOsProductMapping(
         b2bProductIds,
       );
-      const osProductIds = Object.values(osProductMapping);
+      const osProductIds = Array.from(osProductMapping.values());
       const osShippingAddress: any =
         await this.osOrderService.createShippingAddress({
           ...SHAROVE_BILLING_ADDRESS,
@@ -224,17 +232,19 @@ export class CheckoutService {
         osProductIds,
       );
       const OsShippingAddressId = osShippingAddress?.data?.user_id;
-      const osOrderPayload = transformOsOrderPayload(
+      const osOrderPayload = transformOsOrderPayload({
         orderNumber,
-        lessInventoryProducts,
+        b2cProducts: lessInventoryProducts,
         osProductMapping,
         b2bProductMapping,
         OsShippingAddressId,
         osProductsBundles,
-      );
+      });
 
       const response = await this.osOrderService.placeOrder(
         osOrderPayload,
+        SHAROVE_EMAIL,
+        orderId,
         userAccessToken,
       );
       return prepareSuccessResponse(

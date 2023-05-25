@@ -1,5 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { OsOrderPayloadType, OsShippingAddressType } from './osOrder.types';
+import {
+  OsBundlesType,
+  OsOrderPayloadType,
+  OsShippingAddressType,
+} from './osOrder.types';
 import { BASE_EXTERNAL_ENDPOINT } from 'src/constants';
 import { saveFailedOrderHandler } from 'src/graphql/handlers/checkout/checkout';
 import { prepareFailedResponse } from 'src/core/utils/response';
@@ -12,8 +16,18 @@ export default class OsOrderService {
   private readonly logger = new Logger(OsOrderService.name);
   private readonly API_URI: string = `${BASE_EXTERNAL_ENDPOINT}/api/v3`;
 
+  /**
+   * @description -- this method directly place order on orangeshine as retailer
+   * @param payload -- order data
+   * @param email -- user email
+   * @param orderId -- reference order id
+   * @param token -- user b2b authorization token
+   * @return response with order details
+   */
   public async placeOrder(
     payload: OsOrderPayloadType,
+    email: string,
+    orderId: string,
     token: string,
   ): Promise<object> {
     try {
@@ -27,9 +41,9 @@ export default class OsOrderService {
       this.logger.error(err);
       await saveFailedOrderHandler(
         {
-          email: '',
-          source: '',
-          orderId: '',
+          email: email,
+          source: orderId,
+          orderId: orderId,
           exception: JSON.stringify(err),
           errorShortDesc: err.message,
           orderPayload: payload,
@@ -45,7 +59,7 @@ export default class OsOrderService {
     return response;
   }
 
-  async getBundles(productIds: string[]) {
+  async getBundles(productIds: string[]): Promise<OsBundlesType[]> {
     const URL = `${this.API_URI}/styles/details?pids=${JSON.stringify(
       productIds,
     )}`;

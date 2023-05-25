@@ -46,3 +46,6 @@ Response Service :
 
 Rollback Service : 
 - this service is used to rollback if any failures happen in one of service methods
+
+OsOrder Service :
+- this service used to directly place order on orangeshine

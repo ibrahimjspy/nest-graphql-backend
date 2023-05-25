@@ -124,12 +124,12 @@ export const getB2bProductMapping = async (productIds: string[]) => {
     );
 
     const results = response?.data?.results;
-    const mapping: ProductIdsMappingType = {};
+    const mapping: ProductIdsMappingType = new Map();
 
     results.forEach((obj) => {
       const b2cProductId = obj.shr_b2c_product_id.raw;
       const b2bProductId = obj.shr_b2b_product_id.raw;
-      mapping[b2cProductId] = b2bProductId;
+      mapping.set(b2cProductId, b2bProductId);
     });
 
     return mapping;

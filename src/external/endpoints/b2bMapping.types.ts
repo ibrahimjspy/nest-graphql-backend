@@ -1,3 +1,1 @@
-export interface ProductIdsMappingType {
-  [key: string]: string;
-}
+export type ProductIdsMappingType = Map<string, string>;

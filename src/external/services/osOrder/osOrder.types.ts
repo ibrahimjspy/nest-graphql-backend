@@ -31,6 +31,7 @@ export interface OsOrderPayloadType {
   sharove_order_id: string;
   stripe_payment_method_id: string;
   billing: OsBillingAddressType;
+  order_type: string;
 }
 
 export interface OsShippingAddressType {
@@ -46,4 +47,40 @@ export interface OsShippingAddressType {
   last_name: string;
   nick_name: string;
   phone_number: string;
+}
+
+export interface OsBundlesType {
+  is_restock: boolean;
+  min_broken_pack_order_qty: number;
+  is_shoes: boolean;
+  brand: {
+    fulfillment: {
+      min_order_amount: number;
+    };
+  };
+  colors: Array<{
+    color_id: string;
+    name: string;
+    item_id: string;
+  }>;
+  price: {
+    is_sale: boolean;
+    price: number;
+    regular_price: number;
+    sale_price: number;
+  };
+  is_active: boolean;
+  is_broken_pack: boolean;
+  id: string;
+  size_chart: {
+    size: string[];
+    pack: number[];
+    total: number;
+    size_chart: {
+      [key: string]: number;
+    };
+  };
+  pre_order: {
+    is_pre_order: boolean;
+  };
 }

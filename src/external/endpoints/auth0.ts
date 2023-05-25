@@ -1,33 +1,40 @@
-import {
-  AUTH0_AUDIENCE,
-  AUTH0_B2B_CONNECTION,
-  AUTH0_DOMAIN,
-  AUTH0_GRANT_TYPE,
-  AUTH0_SPA_CLIENT_ID,
-  AUTH0_SPA_SCOPE,
-} from 'src/constants';
+import { Logger } from '@nestjs/common';
+import { AUTH0_DOMAIN, AUTH0_SPA_CONFIG } from 'src/constants';
 import http from 'src/core/proxies/restHandler';
 
+const AUTH0_URL = `https://${AUTH0_DOMAIN}`;
+
 export const validateAuth0Token = async (token: string) => {
-  return await http.get(`https://${AUTH0_DOMAIN}/userinfo`, {
+  return await http.get(`${AUTH0_URL}/userinfo`, {
     headers: {
       Authorization: token,
     },
   });
 };
 
+/**
+ * @description -- this function authenticate user by user email and password
+ * @param {string} email - user email
+ * @param {string} password -  user password
+ * @return this function return user authentication tokens
+ */
+
 export const authenticateAuth0User = async (
   email: string,
   password: string,
 ) => {
-  const response = await http.post(`https://${AUTH0_DOMAIN}/oauth/token`, {
-    realm: AUTH0_B2B_CONNECTION,
-    audience: AUTH0_AUDIENCE,
-    client_id: AUTH0_SPA_CLIENT_ID,
-    scope: AUTH0_SPA_SCOPE,
-    grant_type: AUTH0_GRANT_TYPE,
-    username: email,
-    password: password,
-  });
-  return response?.data;
+  try {
+    const response = await http.post(`${AUTH0_URL}/oauth/token`, {
+      realm: AUTH0_SPA_CONFIG.connection,
+      audience: AUTH0_SPA_CONFIG.audience,
+      client_id: AUTH0_SPA_CONFIG.clientId,
+      scope: AUTH0_SPA_CONFIG.scope,
+      grant_type: AUTH0_SPA_CONFIG.grantType,
+      username: email,
+      password: password,
+    });
+    return response?.data;
+  } catch (error) {
+    Logger.error(error);
+  }
 };

@@ -1,8 +1,15 @@
 import {
+  OsBundlesType,
   OsOrderItem,
   OsOrderPayloadType,
 } from 'src/external/services/osOrder/osOrder.types';
-import { ProductType, SaleorCheckoutInterface } from './Checkout.utils.type';
+import {
+  MetadataType,
+  OsOrderTranformType,
+  ProductType,
+  SaleorCheckoutInterface,
+  attributeType,
+} from './Checkout.utils.type';
 import {
   PAYMENT_TYPE,
   PROMOTION_SHIPPING_METHOD_ID,
@@ -49,9 +56,12 @@ export const addPreAuthInCheckoutResponse = (
  * @param attributeName - attribute name for filter
  * @return {string[]} filtered attribute value if found
  */
-export const getAttributeValues = (attributes, attributeName: string) => {
+export const getAttributeValues = (
+  attributes: attributeType[],
+  attributeName: string,
+) => {
   let attributeValue: string[] = [];
-  attributes.forEach((attribute) => {
+  attributes?.forEach((attribute) => {
     if (
       attribute?.attribute?.name?.toLowerCase() === attributeName?.toLowerCase()
     ) {
@@ -67,9 +77,12 @@ export const getAttributeValues = (attributes, attributeName: string) => {
  * @param keyName -  metadata key name for filter
  * @return {string} filtered metadata object value if found
  */
-export const getMetadataValue = (allMetadata, keyName: string) => {
+export const getMetadataValue = (
+  allMetadata: MetadataType[],
+  keyName: string,
+) => {
   let metadataValue: string;
-  allMetadata.forEach((metadata) => {
+  allMetadata?.forEach((metadata) => {
     if (metadata?.key?.toLowerCase() === keyName?.toLowerCase()) {
       metadataValue = metadata?.value;
     }
@@ -87,23 +100,25 @@ export const getLessInventoryProducts = (orderDetail) => {
   const order = orderDetail?.data;
   const products: ProductType[] = [];
   if (order && order?.lines?.length) {
-    order?.lines.forEach((line) => {
-      if (line.quantity > line.variant.stocks[0].quantity) {
-        const variantColors = getAttributeValues(
-          line.variant.attributes,
-          'color',
-        );
-        const variantSizes = getAttributeValues(
-          line.variant.attributes,
-          'size',
-        );
-        products.push({
-          id: line.variant.product.id,
-          color: variantColors?.length && variantColors[0],
-          size: variantSizes?.length && variantSizes[0],
-          quantity: line.quantity,
-        });
-      }
+    order?.lines?.forEach((line) => {
+      // if (line.quantity > line.variant.stocks[0].quantity) {
+      const colorAttributeName = 'color';
+      const sizeAttributeName = 'size';
+      const variantColors = getAttributeValues(
+        line.variant.attributes,
+        colorAttributeName,
+      );
+      const variantSizes = getAttributeValues(
+        line.variant.attributes,
+        sizeAttributeName,
+      );
+      products.push({
+        id: line.variant.product.id,
+        color: variantColors?.length && variantColors[0],
+        size: variantSizes?.length && variantSizes[0],
+        quantity: line.quantity,
+      });
+      // }
     });
   }
   return products;
@@ -119,9 +134,11 @@ export const getLessInventoryProducts = (orderDetail) => {
 const getClosestShoePackSize = (osProductBundle, product: ProductType) => {
   const shoeSizePacks = osProductBundle?.size_chart;
   const matchingShoeSizes = [];
-
-  shoeSizePacks.forEach((shoeSizePack: any) => {
-    const shoeSizeQuantity = shoeSizePack?.size_chart[product.size];
+  shoeSizePacks?.forEach((shoeSizePack: any) => {
+    // Todo: Need to verify product size names with orangehine
+    const shoeSizeQuantity =
+      shoeSizePack?.size_chart[product?.size] ||
+      shoeSizePack?.size_chart[product?.size?.replace('/', '.')];
     if (shoeSizeQuantity && shoeSizeQuantity <= product.quantity) {
       const quanityDifference = Math.abs(shoeSizeQuantity - product.quantity);
       shoeSizePack.quanityDifference = quanityDifference;
@@ -138,25 +155,37 @@ const getClosestShoePackSize = (osProductBundle, product: ProductType) => {
 };
 
 /**
- * @description -- this function decide orangeshine packs quanity based on
+ * @description -- this function calculate orangeshine packs quanity based on
  * given b2c product quantity
  * @param osProductBundle - Orangeshine product bundle details
- * @param {ProductType} product - B2C product details
- * @return {object} orangeshine packs quantity
+ * @param product - B2C product details
+ * @return orangeshine packs quantity
  */
-const getSelectedPackQuantity = (osProductBundle, product: ProductType) => {
+const getSelectedPackQuantity = (
+  osProductBundle: OsBundlesType,
+  product: ProductType,
+) => {
   let finalPackQuantity = 1;
   let productQuanityInPack = 0;
+  const bundleMinOrderAmount =
+    osProductBundle?.brand?.fulfillment?.min_order_amount;
+  const singleProductPrice = osProductBundle?.price?.price;
+  const productsInPack = osProductBundle.size_chart.total;
 
   if (osProductBundle?.is_shoes) {
     const closestShoePackSize = getClosestShoePackSize(
       osProductBundle,
       product,
     );
-    productQuanityInPack = closestShoePackSize?.size_chart[product.size];
-  } else {
+    // Todo: Need to verify product size names with orangehine
     productQuanityInPack =
-      osProductBundle?.size_chart?.size_chart[product.size];
+      closestShoePackSize?.size_chart[product?.size] ||
+      closestShoePackSize?.size_chart[product?.size?.replace('/', '.')];
+  } else {
+    // Todo: Need to verify product size names with orangehine
+    productQuanityInPack =
+      osProductBundle?.size_chart?.size_chart[product?.size] ||
+      osProductBundle?.size_chart?.size_chart[product?.size?.replace('/', '.')];
   }
 
   if (productQuanityInPack && product.quantity > productQuanityInPack) {
@@ -167,14 +196,22 @@ const getSelectedPackQuantity = (osProductBundle, product: ProductType) => {
     finalPackQuantity = 0;
   }
 
+  const finalPackAmount =
+    finalPackQuantity * productsInPack * singleProductPrice;
+  const isOrderMinAmountFulfilled = bundleMinOrderAmount <= finalPackAmount;
+  if (!isOrderMinAmountFulfilled) {
+    finalPackQuantity = Math.ceil(
+      Math.round(bundleMinOrderAmount / (productsInPack * singleProductPrice)),
+    );
+  }
   return finalPackQuantity;
 };
 
 /**
  * @description -- this function remove duplicate orangeshine order items
  * and returns maximum packs quantity order items for duplicate order items
- * @param {OsOrderItem} osOrderItems - Orangeshine order items
- * @return {object} orangeshine unique order items
+ * @param osOrderItems - Orangeshine order items
+ * @return orangeshine unique order items
  */
 const getUniqueOsOrderItems = (osOrderItems: OsOrderItem[]) => {
   const uniqueOrderItems: OsOrderItem[] = [];
@@ -184,19 +221,18 @@ const getUniqueOsOrderItems = (osOrderItems: OsOrderItem[]) => {
         item.color_id === orderItem.color_id &&
         orderItem?.shoe_size_id === item?.shoe_size_id,
     );
-    if (orderItem.pack_qty && orderItem.color_id) {
-      if (isAlreadyExist) {
-        uniqueOrderItems.forEach((item) => {
-          if (
-            item.color_id === orderItem.color_id &&
-            orderItem.pack_qty > item.pack_qty
-          ) {
-            item.pack_qty = orderItem.pack_qty;
-          }
-        });
-      } else {
-        uniqueOrderItems.push(orderItem);
-      }
+    if (!orderItem.pack_qty || !orderItem.color_id) return;
+    if (isAlreadyExist) {
+      uniqueOrderItems.forEach((item) => {
+        if (
+          item.color_id === orderItem.color_id &&
+          orderItem.pack_qty > item.pack_qty
+        ) {
+          item.pack_qty = orderItem.pack_qty;
+        }
+      });
+    } else {
+      uniqueOrderItems.push(orderItem);
     }
   });
   return uniqueOrderItems;
@@ -205,24 +241,24 @@ const getUniqueOsOrderItems = (osOrderItems: OsOrderItem[]) => {
 /**
  * @description -- this function takes orangeshine order details and transform data
  * for orangeshine order payload
- * @param {ProductType[]} b2cProducts - B2C products list for order on orangeshine
- * @param {ProductIdsMappingType} osProductMapping - orangeshine product ids against b2b product ids
- * @param {ProductIdsMappingType} b2bProductMapping - b2b product ids against b2c product ids
- * @param {number} OsShippingAddressId - orangeshine user shipping address id
+ * @param b2cProducts - B2C products list for order on orangeshine
+ * @param osProductMapping - orangeshine product ids against b2b product ids
+ * @param b2bProductMapping - b2b product ids against b2c product ids
+ * @param OsShippingAddressId - orangeshine user shipping address id
  * @param osProductsBundles - orangeshine bundles array against orangeshine product ids
- * @return {object} payload for orangeshine order
+ * @return payload for orangeshine order
  */
-export const transformOsOrderPayload = (
-  orderNumber: string,
-  b2cProducts: ProductType[],
-  osProductMapping: ProductIdsMappingType,
-  b2bProductMapping: ProductIdsMappingType,
-  OsShippingAddressId: number,
+export const transformOsOrderPayload = ({
+  orderNumber,
+  b2cProducts,
+  osProductMapping,
+  b2bProductMapping,
+  OsShippingAddressId,
   osProductsBundles,
-) => {
+}: OsOrderTranformType) => {
   const osOrderItems: OsOrderItem[] = [];
-  b2cProducts.forEach((product) => {
-    const osProductId = osProductMapping[b2bProductMapping[product.id]];
+  b2cProducts?.forEach((product) => {
+    const osProductId = osProductMapping.get(b2bProductMapping.get(product.id));
     const osBundles = hash(osProductsBundles, 'id');
     const osProductBundle = osBundles[osProductId];
     const osProductBundleColors = hash(osProductBundle?.colors, 'name');
@@ -259,7 +295,17 @@ export const transformOsOrderPayload = (
     spa_id: OsShippingAddressId,
     payment_type: PAYMENT_TYPE,
     billing: SHAROVE_BILLING_ADDRESS,
+    order_type: 'D2C',
   };
 
   return osOrderPayload;
+};
+
+/**
+ * @description this function parses products and returns product ids in an array format
+ * @param {ProductType[]} products -- products array
+ * @return productIds -- string[]
+ */
+export const getProductIds = (products: ProductType[]): string[] => {
+  return products.map((product) => product.id) as string[];
 };

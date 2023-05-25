@@ -1,3 +1,5 @@
+import { ProductIdsMappingType } from 'src/external/endpoints/b2bMapping.types';
+import { OsBundlesType } from 'src/external/services/osOrder/osOrder.types';
 import { BundleType } from 'src/graphql/types/bundle.type';
 
 export interface CheckoutShippingMethodType {
@@ -72,4 +74,27 @@ export interface ProductType {
   color: string;
   size: string;
   quantity: number;
+}
+
+export interface OsOrderTranformType {
+  orderNumber: string;
+  b2cProducts: ProductType[];
+  osProductMapping: ProductIdsMappingType;
+  b2bProductMapping: ProductIdsMappingType;
+  OsShippingAddressId: number;
+  osProductsBundles: OsBundlesType[];
+}
+
+export interface MetadataType {
+  key: string;
+  value: string;
+}
+
+export interface attributeType {
+  attribute: {
+    name: string;
+  };
+  values: Array<{
+    name: string;
+  }>;
 }

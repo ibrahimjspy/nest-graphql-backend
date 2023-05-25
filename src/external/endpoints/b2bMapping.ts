@@ -33,12 +33,12 @@ export const getOsProductMapping = async (productIds: string[]) => {
       MAPPING_SERVICE_HEADERS,
     );
     const results = response?.data?.results;
-    const mapping: ProductIdsMappingType = {};
+    const mapping: ProductIdsMappingType = new Map<string, string>();
 
     results.forEach((obj) => {
       const b2bProductId = obj.shr_b2b_product_id.raw;
       const osProductId = obj.os_product_id.raw;
-      mapping[b2bProductId] = osProductId;
+      mapping.set(b2bProductId, osProductId);
     });
 
     return mapping;
