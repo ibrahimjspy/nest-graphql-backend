@@ -1,6 +1,6 @@
 on:
   push:
-    branches: ["develop"]
+    branches: ["main"]
 
 name: AWS ECR push
 
@@ -29,7 +29,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.SHAROVE_AWS_REPO }}
-          IMAGE_TAG: latest
+          IMAGE_TAG: 1.0.1
         run: |
           # Build a docker container and push it to ECR 
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
@@ -37,31 +37,3 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
-  provision:
-    name: provision
-    needs: deploy
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Deploy in EC2
-        env:
-          PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY_KUB  }}
-          HOSTNAME: ${{ secrets.HOSTNAME_KUB  }}
-          USER_NAME: ${{ secrets.USER_NAME_KUB  }}
-
-        run: |
-          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
-            #Now we have got the access of EC2 and we will start the deploy .
-            cd /home/ubuntu/sharove-eks/sharove-b2b/middleware
-            helm delete middleware-b2b-api
-            echo "successfully deleted old version."
-            helm install middleware-b2b-api ./helm-middleware
-            echo "Successfully deployed new version."
-            cd /home/ubuntu/sharove-eks/sharove-b2c/middleware
-            helm delete middleware-b2c-api
-            echo "successfully deleted old version."
-            helm install middleware-b2c-api ./helm-middleware
-            echo "Successfully deployed new version."
-          '
