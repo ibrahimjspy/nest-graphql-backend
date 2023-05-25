@@ -127,10 +127,7 @@ export default class StripeService {
     return cancelPaymentIntentId;
   }
 
-  public async updatePaymentIntentMetadata(
-    paymentIntentId: string,
-    osOrderId: string,
-  ) {
+  public async updatePaymentIntent(paymentIntentId: string, osOrderId: string) {
     const updatePaymentIntentDescription =
       await this.stripe.paymentIntents.update(paymentIntentId, {
         description: `os order id :: ${osOrderId}`,

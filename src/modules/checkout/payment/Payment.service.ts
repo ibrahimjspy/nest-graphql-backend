@@ -244,11 +244,10 @@ export class PaymentService {
     osOrderId: string,
   ): Promise<object> {
     try {
-      const updatePaymentIntent =
-        await this.stripeService.updatePaymentIntentMetadata(
-          paymentIntentId,
-          osOrderId,
-        );
+      const updatePaymentIntent = await this.stripeService.updatePaymentIntent(
+        paymentIntentId,
+        osOrderId,
+      );
       return updatePaymentIntent;
     } catch (error) {
       this.logger.error(error);
