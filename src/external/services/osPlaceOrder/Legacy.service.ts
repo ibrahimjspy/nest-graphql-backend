@@ -48,7 +48,7 @@ export class LegacyService {
   paymentMethodId: string;
   colorsByShops: any[];
   billingInfo: shippingAddressType;
-
+  B2B_ORDER_TYPE = 'B2B';
   constructor(
     selectedBundles,
     shipping_info,
@@ -296,6 +296,7 @@ export class LegacyService {
       sharove_order_id: this.orderId,
       stripe_payment_method_id: this.paymentMethodId,
       billing: this.transformBillingInformation(),
+      order_type: this.B2B_ORDER_TYPE,
     };
   }
 

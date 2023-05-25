@@ -6,6 +6,7 @@ export const syncCategoriesQuery = (
   level: number,
   pagination: PaginationDto,
 ): string => {
+  const productFilter = `{ isPublished: true, isAvailable: true, metadata: {key: "isMaster", value: "true"} }`;
   return gql`
     query {
       categories(level: ${level}, ${validatePageFilter(pagination)}) {
@@ -16,7 +17,7 @@ export const syncCategoriesQuery = (
             name
             products(
               first: 1
-              filter: { isPublished: true, isAvailable: true }
+              filter: ${productFilter}
             ) {
               totalCount
             }

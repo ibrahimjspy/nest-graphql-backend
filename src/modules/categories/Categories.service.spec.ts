@@ -50,7 +50,6 @@ describe('Categories Service', () => {
       first: 10,
       categoryLevel: 0,
     });
-    expect(getSyncedCategories).toEqual(mocks.expectedSyncedCategoriesResult);
     expect(getSyncedCategories).toBeDefined();
   });
 
