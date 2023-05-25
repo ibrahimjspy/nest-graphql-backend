@@ -1,4 +1,7 @@
-import { SaleorCheckoutInterface } from './Checkout.utils.type';
+import {
+  OsOrderResponseInterface,
+  SaleorCheckoutInterface,
+} from './Checkout.utils.type';
 import { PROMOTION_SHIPPING_METHOD_ID } from 'src/constants';
 
 export const toCents = (amount: number) => {
@@ -27,4 +30,12 @@ export const addPreAuthInCheckoutResponse = (
   checkoutData: SaleorCheckoutInterface,
 ) => {
   checkoutData.preAuth = { gross: { amount: preAuthAmount } };
+};
+
+/**
+ * @description -- this return os order number form os order data
+ * @pre_condition -- this assumes that all orders in os data have same order number
+ */
+export const extractOsOrderNumber = (orderData: OsOrderResponseInterface) => {
+  return orderData.data.orders[0].order_number || null;
 };

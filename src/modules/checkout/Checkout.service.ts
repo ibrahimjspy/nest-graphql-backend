@@ -18,7 +18,9 @@ import { preparePromotionResponse } from './shipping/services/Shipping.response'
 import {
   addPreAuthInCheckoutResponse,
   checkoutShippingMethodsSort,
+  extractOsOrderNumber,
 } from './Checkout.utils';
+import { OsOrderResponseInterface } from './Checkout.utils.type';
 
 @Injectable()
 export class CheckoutService {
@@ -129,6 +131,10 @@ export class CheckoutService {
         this.ordersService.addOrderToShop(ordersByShop, token),
         CheckoutHandlers.disableCheckoutSession(checkoutId, token),
       ]);
+      const osOrderId = extractOsOrderNumber(
+        osOrderResponse as OsOrderResponseInterface,
+      );
+      await this.paymentService.paymentIntentUpdate(paymentIntentId, osOrderId);
       return prepareSuccessResponse(
         { createOrder, osOrderResponse },
         'order created against checkout',
