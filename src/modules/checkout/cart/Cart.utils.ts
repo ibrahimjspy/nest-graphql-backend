@@ -193,6 +193,7 @@ export const getAddBundleToCartLines = (
     // Bundle quantity is multiplied with variant quantity for getting actual quantity ordered by user
     const bundleQty = targetBundle?.quantity;
     checkoutBundle?.node?.productVariants?.forEach((v) => {
+      if (v.quantity == 0) return;
       lines.push({
         quantity: bundleQty * v?.quantity,
         variantId: v?.productVariant?.id,
