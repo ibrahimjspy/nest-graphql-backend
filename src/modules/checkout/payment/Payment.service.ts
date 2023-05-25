@@ -244,7 +244,7 @@ export class PaymentService {
     osOrderId: string,
   ): Promise<object> {
     try {
-      const updatePaymentIntent = await this.stripeService.updatePaymentIntent(
+      const updatePaymentIntent = await this.stripeService.paymentIntentUpdate(
         paymentIntentId,
         osOrderId,
       );
