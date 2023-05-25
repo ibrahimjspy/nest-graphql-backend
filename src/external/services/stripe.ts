@@ -131,6 +131,7 @@ export default class StripeService {
     const updatePaymentIntentDescription =
       await this.stripe.paymentIntents.update(paymentIntentId, {
         description: `os order id :: ${osOrderId}`,
+        metadata: { osOrderId },
       });
     return updatePaymentIntentDescription;
   }
