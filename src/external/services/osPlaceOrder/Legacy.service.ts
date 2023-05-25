@@ -128,7 +128,7 @@ export class LegacyService {
       address1: this.shipping_info?.streetAddress1,
       address2: this.shipping_info?.streetAddress2,
       city: this.shipping_info?.city,
-      state: this.shipping_info?.country.code,
+      state: this.shipping_info?.countryArea,
       zipcode: this.shipping_info?.postalCode,
       user_id: this.userId,
       company_name: this.shipping_info?.companyName,
