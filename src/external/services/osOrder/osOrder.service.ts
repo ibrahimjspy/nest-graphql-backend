@@ -54,7 +54,7 @@ export default class OsOrderService {
       const response = await axios.post(URL, payload, header);
       this.logger.log('Order placed on orangeshine', {
         orderId: orderId,
-        response: response?.data
+        response: response?.data,
       });
       return response?.data;
     } catch (err) {
