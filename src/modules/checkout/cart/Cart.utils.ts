@@ -311,7 +311,7 @@ export const getOpenPackLinesReplace = (
 
   openPackUpdates.variants.map((variant) => {
     const newVariantQuantity =
-      bundleVariantMapping.get(variant.oldVariantId) +
+      (bundleVariantMapping.get(variant.oldVariantId) || 0) +
       (saleorVariantsMapping.get(variant.newVariantId) || 0);
     const oldVariantQuantity =
       saleorVariantsMapping.get(variant.oldVariantId) -
@@ -324,7 +324,7 @@ export const getOpenPackLinesReplace = (
       },
       {
         variantId: variant.oldVariantId,
-        quantity: oldVariantQuantity,
+        quantity: oldVariantQuantity || 0,
       },
     );
   });

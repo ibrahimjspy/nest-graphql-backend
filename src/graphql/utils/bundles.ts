@@ -10,13 +10,13 @@ export const updateBundlesTransformer = (
 ): string => {
   const transformedVariants: Array<{
     proVariantOldId: string;
-    newVariantId: string;
+    proVariantNewId: string;
     quantity: number;
   }> = [];
   bundles.map((bundle) => {
     transformedVariants.push({
       proVariantOldId: bundle.oldVariantId,
-      newVariantId: bundle.newVariantId,
+      proVariantNewId: bundle.newVariantId,
       quantity: bundle.quantity,
     });
   });
