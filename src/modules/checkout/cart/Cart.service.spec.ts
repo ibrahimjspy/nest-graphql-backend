@@ -14,44 +14,47 @@ import { ProductService } from 'src/modules/product/Product.service';
 
 describe('Cart Service', () => {
   let service: CartService;
+  let productService: ProductService;
   const mocks = {
     mockProductBundles: {
-      edges: [
-        {
-          node: {
-            id: '19c88ba8-7429-45f7-87dd-a9999803d955',
-            productVariants: [
-              {
-                quantity: 2,
-                productVariant: { id: 'UHJvZHVjdFZhcmlhbnQ6MTA3NzE1' },
-                attributes: [
-                  { name: 'Color', value: 'BLUE' },
-                  { name: 'Size', value: 'L' },
-                ],
-              },
-              {
-                quantity: 2,
-                productVariant: { id: 'UHJvZHVjdFZhcmlhbnQ6MTA3NzEz' },
-                attributes: [
-                  { name: 'Color', value: 'BLUE' },
-                  { name: 'Size', value: 'M' },
-                ],
-              },
-              {
-                quantity: 2,
-                productVariant: { id: 'UHJvZHVjdFZhcmlhbnQ6MTA3NzEx' },
-                attributes: [
-                  { name: 'Color', value: 'BLUE' },
-                  { name: 'Size', value: 'S' },
-                ],
-              },
-            ],
+      data: {
+        edges: [
+          {
+            node: {
+              id: '19c88ba8-7429-45f7-87dd-a9999803d955',
+              productVariants: [
+                {
+                  quantity: 2,
+                  productVariant: { id: 'UHJvZHVjdFZhcmlhbnQ6MTA3NzE1' },
+                  attributes: [
+                    { name: 'Color', value: 'BLUE' },
+                    { name: 'Size', value: 'L' },
+                  ],
+                },
+                {
+                  quantity: 2,
+                  productVariant: { id: 'UHJvZHVjdFZhcmlhbnQ6MTA3NzEz' },
+                  attributes: [
+                    { name: 'Color', value: 'BLUE' },
+                    { name: 'Size', value: 'M' },
+                  ],
+                },
+                {
+                  quantity: 2,
+                  productVariant: { id: 'UHJvZHVjdFZhcmlhbnQ6MTA3NzEx' },
+                  attributes: [
+                    { name: 'Color', value: 'BLUE' },
+                    { name: 'Size', value: 'S' },
+                  ],
+                },
+              ],
+            },
           },
-        },
-      ],
+        ],
+      },
+      status: 200,
     },
   };
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -68,6 +71,7 @@ describe('Cart Service', () => {
     module.useLogger(false);
 
     service = module.get<CartService>(CartService);
+    productService = module.get<ProductService>(ProductService);
   });
 
   it('should add bundles to cart', async () => {
@@ -82,9 +86,8 @@ describe('Cart Service', () => {
         return { status: 'done' };
       });
     jest
-      .spyOn(ProductHandlers, 'getBundlesHandler')
-      .mockImplementation(async () => mocks.mockProductBundles as any);
-
+      .spyOn(productService, 'getProductBundles')
+      .mockResolvedValue(mocks.mockProductBundles as any);
     jest
       .spyOn(MarketplaceCartHandlers, 'updateCartBundlesCheckoutIdHandler')
       .mockImplementation(async () => mocks.mockProductBundles);
@@ -156,8 +159,8 @@ describe('Cart Service', () => {
         throw new Error(' add to marketplace call failed');
       });
     jest
-      .spyOn(ProductHandlers, 'getBundlesHandler')
-      .mockImplementation(async () => mocks.mockProductBundles as any);
+      .spyOn(productService, 'getProductBundles')
+      .mockResolvedValue(mocks.mockProductBundles as any);
 
     jest
       .spyOn(MarketplaceCartHandlers, 'updateCartBundlesCheckoutIdHandler')
@@ -248,8 +251,8 @@ describe('Cart Service', () => {
         return { status: 'done' } as any;
       });
     jest
-      .spyOn(ProductHandlers, 'getBundlesHandler')
-      .mockImplementation(async () => mocks.mockProductBundles as any);
+      .spyOn(productService, 'getProductBundles')
+      .mockResolvedValue(mocks.mockProductBundles as any);
 
     jest
       .spyOn(MarketplaceCartHandlers, 'updateCartBundlesCheckoutIdHandler')
@@ -288,8 +291,8 @@ describe('Cart Service', () => {
         return bundleCreate;
       });
     jest
-      .spyOn(ProductHandlers, 'getBundlesHandler')
-      .mockImplementation(async () => mocks.mockProductBundles as any);
+      .spyOn(productService, 'getProductBundles')
+      .mockResolvedValue(mocks.mockProductBundles as any);
     jest
       .spyOn(SaleorCartHandlers, 'addLinesHandler')
       .mockImplementation(async () => {
