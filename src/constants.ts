@@ -49,11 +49,12 @@ export const SHAROVE_PASSWORD = process.env.OS_PASSWORD;
 export const SHAROVE_STRIPE_PAYMENT_METHOD = 'pm_1NBliPHH1XVL0zjbClGzN1hX';
 export const BASE_EXTERNAL_ENDPOINT = process.env.OS_ENDPOINT;
 export const PAYMENT_TYPE = process.env.CHECKOUT_PAYMENT_TYPE || 'credit_card';
-export const STORE_CREDIT = process.env.OS_STORE_CREDIT;
-export const SIGNATURE_REQUESTED = process.env.OS_SIGNATURE_REQUESTED;
+export const STORE_CREDIT = process.env.OS_STORE_CREDIT || '0';
+export const SIGNATURE_REQUESTED =
+  process.env.OS_SIGNATURE_REQUESTED || 'false';
 export const SPM_ID = process.env.OS_SPM_ID;
 export const SPA_ID = process.env.OS_SPA_ID;
-export const SMS_NUMBER = process.env.OS_SMS_NUMBER;
+export const SMS_NUMBER = process.env.OS_SMS_NUMBER || '234-9882';
 export const IN_STOCK = 'in_stock';
 export const PRE_ORDER = 'pre_order';
 export const CATEGORY_SHOES = 'Shoes';
