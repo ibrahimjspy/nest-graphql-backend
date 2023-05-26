@@ -1,6 +1,6 @@
 import { gql } from 'graphql-request';
-import { graphqlObjectTransform } from 'src/core/utils/helpers';
 import { bundleDetailsFragment } from 'src/graphql/fragments/bundle';
+import { updateBundlesTransformer } from 'src/graphql/utils/bundles';
 import { UpdateOpenPackDto } from 'src/modules/checkout/cart/dto/cart';
 
 export const bundleUpdateMutation = (updateBundle: UpdateOpenPackDto) => {
@@ -10,9 +10,7 @@ export const bundleUpdateMutation = (updateBundle: UpdateOpenPackDto) => {
         Input: {
           bundleId: "${updateBundle.bundleId}"
           isOpenBundle: true
-          productVariants: ${graphqlObjectTransform(updateBundle.variants)
-            .replace('oldVariantId', 'proVariantOldId')
-            .replace('newVariantId', 'proVariantNewId')}
+          productVariants: ${updateBundlesTransformer(updateBundle.variants)}
         }
       ) {
         ... on BundleViewType {
