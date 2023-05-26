@@ -295,7 +295,7 @@ export class ShopController {
 
   @Post('/api/v1/auto/sync')
   @ApiOperation({
-    summary: 'create a marketplace shop',
+    summary: 'sync a category against a shop',
   })
   @ApiBearerAuth('JWT-auth')
   async autoSync(
