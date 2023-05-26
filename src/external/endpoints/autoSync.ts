@@ -7,5 +7,5 @@ export const autoSyncHandler = async (
 ) => {
   const MAPPING_URL = `${AUTO_SYNC_API_URL}/api/v2/auto/sync`;
   const response = await http.post(MAPPING_URL, autoSyncInput);
-  return response;
+  return response.data;
 };

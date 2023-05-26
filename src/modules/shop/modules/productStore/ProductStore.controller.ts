@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Headers,
   HttpStatus,
   ParseFilePipeBuilder,
   Post,
@@ -8,7 +9,7 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
 import { ProductStoreService } from './ProductStore.service';
 import { PushToStoreDto } from './dto/products';
@@ -45,11 +46,17 @@ export class ProductStoreController {
   }
 
   @Post('api/v1/store/push')
+  @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'imports products to storefront' })
   public async pushToStore(
     @Res() res,
     @Body() body: PushToStoreDto,
+    @Headers() headers,
   ): Promise<object> {
-    return await makeResponse(res, await this.appService.pushToStore(body));
+    const Authorization: string = headers.authorization;
+    return await makeResponse(
+      res,
+      await this.appService.pushToStore(body, Authorization),
+    );
   }
 }
