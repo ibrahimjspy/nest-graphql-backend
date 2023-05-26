@@ -49,6 +49,8 @@ export const SHAROVE_PASSWORD = process.env.OS_PASSWORD;
 export const SHAROVE_STRIPE_PAYMENT_METHOD =
   process.env.SHAROVE_STRIPE_PAYMENT_METHOD || 'pm_1NBliPHH1XVL0zjbClGzN1hX';
 export const BASE_EXTERNAL_ENDPOINT = process.env.OS_ENDPOINT;
+export const SHIPPING_METHOD = process.env.SHIPPING_METHOD || 'UPS';
+export const B2C_ORDER_TYPE = 'D2C';
 export const PAYMENT_TYPE = process.env.CHECKOUT_PAYMENT_TYPE || 'credit_card';
 export const STORE_CREDIT = process.env.OS_STORE_CREDIT || '0';
 export const SIGNATURE_REQUESTED =

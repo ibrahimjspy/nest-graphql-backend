@@ -1,6 +1,7 @@
 import { OsBundlesType, OsOrderItem, ProductType } from './osOrder.types';
 
 /**
+ * @deprecated Need to optimze
  * @description -- this function get orangeshine closest shoes size against given product qunatity
  * from orangeshine shoes packs
  * @param osProductBundle - Orangeshine product bundle details

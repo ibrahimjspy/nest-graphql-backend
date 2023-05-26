@@ -7,10 +7,12 @@ import {
   OsShippingAddressType,
 } from './osOrder.types';
 import {
+  B2C_ORDER_TYPE,
   BASE_EXTERNAL_ENDPOINT,
   PAYMENT_TYPE,
   SHAROVE_BILLING_ADDRESS,
   SHAROVE_STRIPE_PAYMENT_METHOD,
+  SHIPPING_METHOD,
   SIGNATURE_REQUESTED,
   SMS_NUMBER,
   STORE_CREDIT,
@@ -129,7 +131,7 @@ export default class OsOrderService {
           memo: '',
           sms_number: SMS_NUMBER,
           spa_id: OsShippingAddressId,
-          spm_name: 'UPS',
+          spm_name: SHIPPING_METHOD,
           store_credit: STORE_CREDIT,
           signature_requested: SIGNATURE_REQUESTED,
           ...(osProductBundle?.is_shoes && {
@@ -146,7 +148,7 @@ export default class OsOrderService {
       spa_id: OsShippingAddressId,
       payment_type: PAYMENT_TYPE,
       billing: SHAROVE_BILLING_ADDRESS,
-      order_type: 'D2C',
+      order_type: B2C_ORDER_TYPE,
     };
 
     return osOrderPayload;
