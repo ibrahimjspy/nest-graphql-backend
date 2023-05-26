@@ -75,6 +75,17 @@ describe('Cart utility tests', () => {
         },
       ],
     },
+    openPackUpdatesQuantity: {
+      checkoutId:
+        'Q2hlY2tvdXQ6NjM4NzRkNjEtMTBlZC00N2E2LThlMzItMzlkMjNkOWI0NzJh',
+      bundleId: '62129625-7675-428a-a3ef-db82a7e72262',
+      variants: [
+        {
+          oldVariantId: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI2',
+          quantity: 0,
+        },
+      ],
+    },
     bundle: {
       status: 200,
       data: {
@@ -300,6 +311,17 @@ describe('Cart utility tests', () => {
         { variantId: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI5', quantity: 5 },
         { variantId: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI2', quantity: 15 },
       ]);
+    });
+
+    it('testing whether getOpenPackLinesReplace is working correctly for quantity zero', async () => {
+      const replacedLines = getOpenPackLinesReplace(
+        openPackReplaceMocks.openPackUpdatesQuantity,
+        openPackReplaceMocks.bundle,
+        openPackReplaceMocks.saleor as any,
+      );
+      console.log(replacedLines);
+      expect(replacedLines).toBeDefined();
+      expect(replacedLines).toStrictEqual([]);
     });
   });
 });
