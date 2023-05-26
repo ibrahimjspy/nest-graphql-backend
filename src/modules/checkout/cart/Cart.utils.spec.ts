@@ -75,6 +75,17 @@ describe('Cart utility tests', () => {
         },
       ],
     },
+    openPackUpdatesQuantity: {
+      checkoutId:
+        'Q2hlY2tvdXQ6NjM4NzRkNjEtMTBlZC00N2E2LThlMzItMzlkMjNkOWI0NzJh',
+      bundleId: '62129625-7675-428a-a3ef-db82a7e72262',
+      variants: [
+        {
+          oldVariantId: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI2',
+          quantity: 0,
+        },
+      ],
+    },
     bundle: {
       status: 200,
       data: {
