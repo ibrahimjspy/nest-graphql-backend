@@ -312,16 +312,5 @@ describe('Cart utility tests', () => {
         { variantId: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI2', quantity: 15 },
       ]);
     });
-
-    it('testing whether getOpenPackLinesReplace is working correctly for quantity zero', async () => {
-      const replacedLines = getOpenPackLinesReplace(
-        openPackReplaceMocks.openPackUpdatesQuantity,
-        openPackReplaceMocks.bundle,
-        openPackReplaceMocks.saleor as any,
-      );
-      console.log(replacedLines);
-      expect(replacedLines).toBeDefined();
-      expect(replacedLines).toStrictEqual([]);
-    });
   });
 });

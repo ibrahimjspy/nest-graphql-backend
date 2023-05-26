@@ -279,18 +279,15 @@ export const getOpenPackLinesUpdate = (
   bundle: GetBundleResponseType,
   saleor: SaleorCheckoutInterface,
 ) => {
-  const validateOpenPack = openPackVariants.filter(
-    (pack) => pack.newVariantId || !!pack.quantity,
-  );
   const checkoutLines = [];
   const bundleVariantMapping = getBundleProductVariantsMapping(bundle);
   const saleorVariantsMapping = getSaleorProductVariantsMapping(saleor);
 
-  validateOpenPack.map((variant) => {
+  openPackVariants.map((variant) => {
     const saleorQuantity = saleorVariantsMapping.get(variant.oldVariantId);
     const bundleQuantity =
       variant.quantity - bundleVariantMapping.get(variant.oldVariantId);
-    const quantity = saleorQuantity + bundleQuantity;
+    const quantity = (saleorQuantity || 0) + bundleQuantity;
     checkoutLines.push({
       variantId: variant.oldVariantId,
       quantity: quantity,
@@ -308,14 +305,11 @@ export const getOpenPackLinesReplace = (
   bundle: GetBundleResponseType,
   saleor: SaleorCheckoutInterface,
 ) => {
-  const validateOpenPack = openPackUpdates.variants.filter(
-    (variant) => variant.newVariantId || !!variant.quantity,
-  );
   const updatedLines = [] as CheckoutLinesInterface[];
   const saleorVariantsMapping = getSaleorProductVariantsMapping(saleor);
   const bundleVariantMapping = getBundleProductVariantsMapping(bundle);
 
-  validateOpenPack.map((variant) => {
+  openPackUpdates.variants.map((variant) => {
     const newVariantQuantity =
       bundleVariantMapping.get(variant.oldVariantId) +
       (saleorVariantsMapping.get(variant.newVariantId) || 0);
