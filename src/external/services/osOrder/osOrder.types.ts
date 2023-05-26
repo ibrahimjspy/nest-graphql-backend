@@ -1,4 +1,4 @@
-import { ProductIdsMappingType } from "src/external/endpoints/b2bMapping.types";
+import { ProductIdsMappingType } from 'src/external/endpoints/b2bMapping.types';
 
 export type OsOrderItem = {
   item_id: string;

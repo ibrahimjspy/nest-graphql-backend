@@ -122,9 +122,9 @@ export const getUniqueOrderItems = (osOrderItems: OsOrderItem[]) => {
  * @return data in Map format
  */
 export const transformObjectToMap = (dataObject: object) => {
-  let dataMap = new Map();
-  Object.keys(dataObject).forEach(key => {
+  const dataMap = new Map();
+  Object.keys(dataObject).forEach((key) => {
     dataMap.set(key, dataObject[key]);
-  })
+  });
   return dataMap;
-}
+};
