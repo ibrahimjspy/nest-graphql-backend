@@ -46,13 +46,18 @@ export const ACCEPT_ENCODING_HEADER = {
 // OrangeShine Variables
 export const SHAROVE_EMAIL = process.env.OS_EMAIL;
 export const SHAROVE_PASSWORD = process.env.OS_PASSWORD;
+export const SHAROVE_STRIPE_PAYMENT_METHOD =
+  process.env.SHAROVE_STRIPE_PAYMENT_METHOD || 'pm_1NBliPHH1XVL0zjbClGzN1hX';
 export const BASE_EXTERNAL_ENDPOINT = process.env.OS_ENDPOINT;
+export const SHIPPING_METHOD = process.env.SHIPPING_METHOD || 'UPS';
+export const B2C_ORDER_TYPE = 'D2C';
 export const PAYMENT_TYPE = process.env.CHECKOUT_PAYMENT_TYPE || 'credit_card';
-export const STORE_CREDIT = process.env.OS_STORE_CREDIT;
-export const SIGNATURE_REQUESTED = process.env.OS_SIGNATURE_REQUESTED;
+export const STORE_CREDIT = process.env.OS_STORE_CREDIT || '0';
+export const SIGNATURE_REQUESTED =
+  process.env.OS_SIGNATURE_REQUESTED || 'false';
 export const SPM_ID = process.env.OS_SPM_ID;
 export const SPA_ID = process.env.OS_SPA_ID;
-export const SMS_NUMBER = process.env.OS_SMS_NUMBER;
+export const SMS_NUMBER = process.env.OS_SMS_NUMBER || '234-9882';
 export const IN_STOCK = 'in_stock';
 export const PRE_ORDER = 'pre_order';
 export const CATEGORY_SHOES = 'Shoes';
@@ -63,6 +68,8 @@ export const OS_AWS_API_GATEWAY_ENDPOINT =
   process.env.OS_AWS_API_GATEWAY_ENDPOINT;
 export const B2C_DEVELOPMENT_TOKEN = process.env.B2C_DEVELOPMENT_TOKEN;
 export const PROVISION_STOREFRONT_URL = process.env.PROVISION_STOREFRONT_URL;
+export const PROVISION_STOREFRONT_WORKFLOW_URL =
+  process.env.PROVISION_STOREFRONT_WORKFLOW;
 export const B2C_ENDPOINT = process.env.B2C_ENDPOINT;
 export const B2B_ENDPOINT = process.env.B2B_ENDPOINT;
 export const B2C_ENABLED = process.env.B2C_ENABLED;
@@ -94,6 +101,20 @@ export const preAuthTransactionInput = {
   eventName: 'Authorized credit card',
   availableActions: '[VOID, CHARGE]',
 };
+export const SHAROVE_BILLING_ADDRESS = {
+  first_name: 'Azhar',
+  last_name: 'Iqbal',
+  address1: '9956B Foxrun St. Poughkeepsie, NY 12603',
+  city: 'Poughkeepsie',
+  state: 'NY',
+  zipcode: '10001',
+  country: 'US',
+  phone_number: '(922) 322-8703',
+  nick_name: 'Sharove',
+  address2: '',
+  company_name: 'Sharove',
+};
+
 export const PROMOTION_SHIPPING_METHOD_ID = 'U2hpcHBpbmdNZXRob2Q6NzA=';
 export const B2B_CHECKOUT_APP_TOKEN = process.env.B2B_CHECKOUT_APP_TOKEN;
 export const ELASTIC_SEARCH_ENDPOINT = process.env.ELASTIC_SEARCH_ENDPOINT;
@@ -104,6 +125,15 @@ export const AUTH0_M2M_APP_CLIENT_ID = process.env.AUTH0_M2M_APP_CLIENT_ID;
 export const AUTH0_M2M_APP_CLIENT_SECRET =
   process.env.AUTH0_M2M_APP_CLIENT_SECRET;
 export const AUTH0_TTL_CACHE_TIME = 72000;
+
+export const AUTH0_SPA_CONFIG = {
+  clientId: 'NHDmV7IkVh8s8zX1d5waoPolBAwwLSzT',
+  scope: 'openid profile email offline_access',
+  audience: 'sharove-dev-authorization',
+  connection: 'Username-Password-Authentication',
+  grantType: 'http://auth0.com/oauth/grant-type/password-realm',
+};
+
 export const UPS_TRACKING_HEADERS = {
   headers: {
     'Content-Type': 'application/json',

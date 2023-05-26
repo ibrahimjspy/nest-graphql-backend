@@ -67,6 +67,27 @@ export interface SaleorCheckoutInterface {
   }[];
 }
 
+export interface ProductType {
+  id: string;
+  color: string;
+  size: string;
+  quantity: number;
+}
+
+export interface MetadataType {
+  key: string;
+  value: string;
+}
+
+export interface attributeType {
+  attribute: {
+    name: string;
+  };
+  values: Array<{
+    name: string;
+  }>;
+}
+
 export interface OsOrderResponseInterface {
   data: {
     orders: {
