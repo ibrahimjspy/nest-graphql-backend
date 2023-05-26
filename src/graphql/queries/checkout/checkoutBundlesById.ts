@@ -1,4 +1,5 @@
 import { gql } from 'graphql-request';
+import { metadataFragment } from 'src/graphql/fragments/attributes';
 import { checkoutShopDetailsFragment } from 'src/graphql/fragments/shop';
 
 export const checkoutBundlesByIdQuery = (
@@ -35,6 +36,9 @@ export const checkoutBundlesByIdQuery = (
               product {
                 name
                 id
+                metadata {
+                  ...Metadata
+                }
                 thumbnail {
                   url
                 }
@@ -112,5 +116,6 @@ export const checkoutBundlesByIdQuery = (
       }
     }
     ${checkoutShopDetailsFragment}
+    ${metadataFragment}
   `;
 };

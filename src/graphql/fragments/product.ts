@@ -1,5 +1,6 @@
 import { gql } from 'graphql-request';
 import { mediaFragment } from './media';
+import { metadataFragment } from './attributes';
 
 export const productDetailsFragment = gql`
   fragment Product on Product {
@@ -7,7 +8,11 @@ export const productDetailsFragment = gql`
     description
     name
     slug
+    metadata {
+      ...Metadata
+    }
   }
+  ${metadataFragment}
 `;
 
 export const checkoutProductDetailsFragment = gql`
