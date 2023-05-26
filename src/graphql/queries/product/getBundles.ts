@@ -1,8 +1,5 @@
 import { gql } from 'graphql-request';
-import {
-  attributeFragment,
-  metadataFragment,
-} from 'src/graphql/fragments/attributes';
+import { attributeFragment } from 'src/graphql/fragments/attributes';
 import { bundleDetailsFragment } from 'src/graphql/fragments/bundle';
 import { resultErrorFragment } from 'src/graphql/fragments/errors';
 import { mediaFragment } from 'src/graphql/fragments/media';
@@ -84,7 +81,6 @@ export const getBundlesQuery = (filter: GetBundlesDto) => {
     ${productVariantDetailsFragment}
     ${pricingFragment}
     ${bundleDetailsFragment}
-    ${metadataFragment}
   `;
   }
   return gql`
