@@ -315,7 +315,7 @@ export class ShopController {
     );
   }
 
-  @Post('/api/v1/auto/sync')
+  @Post('/api/v1/shop/auto/sync')
   @ApiOperation({
     summary: 'sync a category against a shop',
   })
