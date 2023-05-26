@@ -279,7 +279,9 @@ export const getOpenPackLinesUpdate = (
   bundle: GetBundleResponseType,
   saleor: SaleorCheckoutInterface,
 ) => {
-  const validateOpenPack = openPackVariants.filter((pack) => !!pack.quantity);
+  const validateOpenPack = openPackVariants.filter(
+    (pack) => pack.newVariantId || !!pack.quantity,
+  );
   const checkoutLines = [];
   const bundleVariantMapping = getBundleProductVariantsMapping(bundle);
   const saleorVariantsMapping = getSaleorProductVariantsMapping(saleor);
@@ -307,7 +309,7 @@ export const getOpenPackLinesReplace = (
   saleor: SaleorCheckoutInterface,
 ) => {
   const validateOpenPack = openPackUpdates.variants.filter(
-    (variant) => !!variant.quantity,
+    (variant) => variant.newVariantId || !!variant.quantity,
   );
   const updatedLines = [] as CheckoutLinesInterface[];
   const saleorVariantsMapping = getSaleorProductVariantsMapping(saleor);
