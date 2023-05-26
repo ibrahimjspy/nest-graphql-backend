@@ -23,16 +23,12 @@ export const provisionStoreFront = async (domainName: string) => {
 };
 
 export const provisionStoreFrontV2 = async (domainName: string) => {
-  console.log("[provisionStoreFrontV2][input]", domainName)
-  const subDomainName = domainName.split('.')[0] //splitting subdomain from complete domain
-  console.log("[provisionStoreFrontV2][subDomainName]", subDomainName)
-  const response = await http.post(
-    PROVISION_STOREFRONT_WORKFLOW_URL,
-    {
-      domainName: subDomainName
-    },
-  );
-  console.log(response)
+  console.log('[provisionStoreFrontV2][input]', domainName);
+  const subDomainName = domainName.split('.')[0]; //splitting subdomain from complete domain
+  console.log('[provisionStoreFrontV2][subDomainName]', subDomainName);
+  const response = await http.post(PROVISION_STOREFRONT_WORKFLOW_URL, {
+    domainName: subDomainName,
+  });
+  console.log(response);
   return response.data;
-  
 };

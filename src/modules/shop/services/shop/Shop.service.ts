@@ -15,7 +15,10 @@ import { prepareSuccessResponse } from 'src/core/utils/response';
 import { SuccessResponseType } from 'src/core/utils/response.type';
 import { createStoreDTO, shopDetailDto } from '../../dto/shop';
 import { validateArray, validateStoreInput } from '../../Shop.utils';
-import { provisionStoreFront, provisionStoreFrontV2 } from 'src/external/endpoints/provisionStorefront';
+import {
+  provisionStoreFront,
+  provisionStoreFrontV2,
+} from 'src/external/endpoints/provisionStorefront';
 import { B2C_DEVELOPMENT_TOKEN, B2C_STOREFRONT_TLD } from 'src/constants';
 import { shopInfoDto } from '../../../orders/dto';
 @Injectable()
@@ -59,7 +62,6 @@ export class ShopService {
     }
   }
 
-  
   /**
    * @description -- this method creates a new storefront in b2c against a b2b shop
    * @pre_condition -- you should provide valid create shop input
@@ -88,14 +90,14 @@ export class ShopService {
       ]);
       return prepareSuccessResponse(
         {
-          createStore, 
-          workflowResponse
+          createStore,
+          workflowResponse,
         },
         'new storefront provisioned',
         201,
       );
     } catch (error) {
-      console.log(error)
+      console.log(error);
       this.logger.error(error);
       return graphqlExceptionHandler(error);
     }
