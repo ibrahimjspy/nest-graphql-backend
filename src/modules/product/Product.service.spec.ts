@@ -98,20 +98,37 @@ describe('Product Service', () => {
     expect(productDetails).toBeDefined();
   });
 
-  it('product bundles call is working end to end', async () => {
+  it('should return combined data for bundle and product', async () => {
+    jest
+      .spyOn(ProductsHandlers, 'getProductDetailsHandler')
+      .mockResolvedValue(mocks.singleProduct as any);
     jest
       .spyOn(ProductsHandlers, 'getBundlesHandler')
-      .mockImplementation(async () => {
-        return { details: 'test bundle' } as any;
-      });
+      .mockResolvedValue(mocks.bundles as any);
 
-    const productDetails = await service.getProductBundles({
-      productId: 'test',
+    // Call the method being tested
+    const result = await service.getProductBundles({
+      productId: '123',
     });
-    expect(productDetails).toEqual({
-      status: 200,
-      data: { details: 'test bundle' },
-    });
-    expect(productDetails).toBeDefined();
+
+    // Assert the result
+    expect(result).toBeDefined();
+    expect(result.data.edges.length).toBe(1);
+
+    // Assert the combined data for the first edge
+    const firstEdge = result.data.edges[0];
+    expect(firstEdge.node.id).toBe('bundle-1');
+    expect(firstEdge.node.name).toBe('Bundle 1');
+    expect(firstEdge.node.isOpenBundle).toBe(true);
+    expect(firstEdge.node.description).toBe('Bundle Description');
+    expect(firstEdge.node.slug).toBe('bundle-slug');
+
+    // Assert the product variants within the bundle
+    const productVariants = firstEdge.node.productVariants;
+    expect(productVariants.length).toBe(1);
+    const firstProductVariant = productVariants[0];
+    expect(firstProductVariant.quantity).toBe(3);
+    expect(firstProductVariant.productVariant.id).toBe('variant-1');
+    expect(firstProductVariant.productVariant.sku).toBe('variant-1-sku');
   });
 });

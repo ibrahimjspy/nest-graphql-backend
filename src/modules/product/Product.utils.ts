@@ -1,5 +1,10 @@
 import { GQL_EDGES } from 'src/constants';
-import { MarketplaceProductsResponseType } from './Product.types';
+import {
+  BundlesResponseType,
+  BundlesType,
+  MarketplaceProductsResponseType,
+  ProductDetailType,
+} from './Product.types';
 
 /**
  * returns array of bundle ids
@@ -91,3 +96,71 @@ export const getShopProductIds = (
 export const isEmptyArray = (arr) => {
   return arr?.length;
 };
+
+/**
+ * Combines product detail and bundles data into a unified structure.
+ * @param productDetail - The product detail data.
+ * @param bundles - The bundles data.
+ * @returns The combined data.
+ */
+export function makeGetBundlesResponse(
+  productDetail: ProductDetailType,
+  bundles: BundlesType,
+): BundlesResponseType {
+  /**
+   * Combines a product variant from the product detail data with a given variant ID.
+   * @param variantId - The ID of the variant to combine.
+   * @returns The combined product variant, or null if not found.
+   */
+  const combineProductVariant = (variantId) => {
+    const variant = productDetail.data.product.variants.find(
+      (v) => v.id === variantId,
+    );
+    return variant ? { ...variant } : null;
+  };
+
+  /**
+   * Combines an array of product variants with their quantities from the bundles data.
+   * @param productVariants - The array of product variants to combine.
+   * @returns The combined product variants with quantities.
+   */
+  const combineProductVariants = (productVariants) =>
+    productVariants
+      .map(({ productVariant, quantity }) => {
+        const combinedVariant = combineProductVariant(productVariant.id);
+        return combinedVariant
+          ? { quantity, productVariant: { ...combinedVariant } }
+          : null;
+      })
+      .filter(Boolean);
+
+  /**
+   * Combines a bundle node from the bundles data with the product detail data.
+   * @param bundleNode - The bundle node to combine.
+   * @returns The combined bundle node.
+   */
+  const combineBundleNode = ({ node: bundleNode }) => {
+    const productVariants = combineProductVariants(bundleNode.productVariants);
+
+    return {
+      node: {
+        ...bundleNode,
+        product: {
+          ...productDetail.data.product,
+          variants: productDetail.data.product.variants.map((variant) => ({
+            ...variant,
+          })),
+        },
+        productVariants: [...productVariants],
+      },
+    };
+  };
+
+  const combinedData = {
+    data: {
+      edges: bundles.data.edges.map(combineBundleNode),
+    },
+  };
+
+  return combinedData;
+}

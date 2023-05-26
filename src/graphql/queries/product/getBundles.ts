@@ -84,7 +84,6 @@ export const getBundlesQuery = (filter: GetBundlesDto) => {
     ${productVariantDetailsFragment}
     ${pricingFragment}
     ${bundleDetailsFragment}
-    ${metadataFragment}
   `;
   }
   return gql`
@@ -100,15 +99,14 @@ export const getBundlesQuery = (filter: GetBundlesDto) => {
         ... on BundleConnectionType {
           edges {
             node {
-              id
+              ... Bundle
+              shop {
+                ... Shop
+              }
               productVariants {
                 quantity
                 productVariant{
                   id
-                }
-                attributes {
-                  name
-                  value
                 }
               }
             }
@@ -120,5 +118,7 @@ export const getBundlesQuery = (filter: GetBundlesDto) => {
       }
     }
     ${resultErrorFragment}
+    ${shopDetailsFragment}
+    ${bundleDetailsFragment}
   `;
 };

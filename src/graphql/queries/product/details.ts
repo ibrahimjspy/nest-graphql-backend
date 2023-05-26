@@ -73,6 +73,9 @@ const b2cQuery = (filter: ProductDetailsDto): string => {
         attributes{
           ... Attribute
         }
+        thumbnail {
+          url
+        }
         media {
           ... Media
         }

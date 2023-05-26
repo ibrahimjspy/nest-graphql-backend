@@ -14,13 +14,17 @@ import {
   getProductIdsByVariants,
   getShopProductIds,
   isEmptyArray,
+  makeGetBundlesResponse,
   storeB2cMapping,
 } from './Product.utils';
 import { GetBundlesDto, ProductDetailsDto } from './dto/product.dto';
 import {
   BundleCreateResponseType,
+  BundlesResponseType,
+  BundlesType,
   GetBundleResponseType,
   MarketplaceProductsResponseType,
+  ProductDetailType,
 } from './Product.types';
 import { BundleCreateDto } from './dto/bundle';
 import { UpdateOpenPackDto } from '../checkout/cart/dto/cart';
@@ -71,11 +75,13 @@ export class ProductService {
     }
   }
 
-  public async getProductDetails(filter: ProductDetailsDto): Promise<object> {
+  public async getProductDetails(
+    filter: ProductDetailsDto,
+  ): Promise<ProductDetailType> {
     try {
       return prepareSuccessResponse(
         await ProductsHandlers.getProductDetailsHandler(filter, filter.isB2c),
-      );
+      ) as unknown as ProductDetailType;
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -126,11 +132,29 @@ export class ProductService {
       this.logger.error(error);
     }
   }
-  public async getProductBundles(filter: GetBundlesDto): Promise<object> {
+  /**
+   * Get product bundles based on the provided filter.
+   * @param filter - The filter parameters for retrieving bundles.
+   * @returns {Promise<BundlesResponseType>} - The product bundles.
+   */
+  public async getProductBundles(
+    filter: GetBundlesDto,
+  ): Promise<BundlesResponseType> {
     try {
-      return prepareSuccessResponse(
-        await ProductsHandlers.getBundlesHandler(filter),
-      );
+      const { productId } = filter;
+
+      // Retrieve product details
+      const [productDetails, bundleDetails] = await Promise.all([
+        this.getProductDetails({
+          productId,
+        }),
+        prepareSuccessResponse(
+          await ProductsHandlers.getBundlesHandler(filter),
+        ) as unknown as BundlesType,
+      ]);
+
+      // Combine product details and bundle details
+      return makeGetBundlesResponse(productDetails, bundleDetails);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
