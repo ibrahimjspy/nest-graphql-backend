@@ -1,4 +1,4 @@
-import { ProductIdsMappingType } from 'src/external/endpoints/b2bMapping.types';
+import { ProductIdsMappingType } from "src/external/endpoints/b2bMapping.types";
 
 export type OsOrderItem = {
   item_id: string;
@@ -30,7 +30,7 @@ export interface OsOrderPayloadType {
   orders: Array<OsOrderItem>;
   payment_type: string;
   spa_id: number;
-  sharove_order_id: string;
+  sharove_order_id: number;
   stripe_payment_method_id: string;
   billing: OsBillingAddressType;
   order_type: string;
@@ -94,7 +94,7 @@ export interface ProductType {
   quantity: number;
 }
 export interface OsOrderTranformType {
-  orderNumber: string;
+  orderNumber: number;
   b2cProducts: ProductType[];
   osProductMapping: ProductIdsMappingType;
   b2bProductMapping: ProductIdsMappingType;

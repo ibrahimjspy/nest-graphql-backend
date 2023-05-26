@@ -115,3 +115,16 @@ export const getUniqueOrderItems = (osOrderItems: OsOrderItem[]) => {
   });
   return uniqueOrderItems;
 };
+
+/**
+ * @description -- this function transform object data to javascript Map format
+ * @param dataObject - data in object format
+ * @return data in Map format
+ */
+export const transformObjectToMap = (dataObject: object) => {
+  let dataMap = new Map();
+  Object.keys(dataObject).forEach(key => {
+    dataMap.set(key, dataObject[key]);
+  })
+  return dataMap;
+}
