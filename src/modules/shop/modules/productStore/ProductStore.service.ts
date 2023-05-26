@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
-import { prepareSuccessResponse } from 'src/core/utils/response';
+import {
+  prepareFailedResponse,
+  prepareSuccessResponse,
+} from 'src/core/utils/response';
 import { PushToStoreDto } from './dto/products';
 import { uploadImagesHandler } from 'src/external/services/uploadImages';
 import { ShopService } from '../../services/shop/Shop.service';
@@ -29,11 +32,13 @@ export class ProductStoreService {
     token = '',
   ): Promise<object> {
     try {
+      const { shopId } = pushToStoreInput;
+      await this.shopService.validateShopBank(shopId, token);
       return prepareSuccessResponse(
         await pushToStoreHandler(pushToStoreInput, token),
       );
     } catch (error) {
-      return graphqlExceptionHandler(error);
+      return prepareFailedResponse(error.message);
     }
   }
 }

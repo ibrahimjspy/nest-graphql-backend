@@ -11,7 +11,10 @@ import {
   updateStoreInfoHandler,
 } from 'src/graphql/handlers/shop';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
-import { prepareSuccessResponse } from 'src/core/utils/response';
+import {
+  prepareFailedResponse,
+  prepareSuccessResponse,
+} from 'src/core/utils/response';
 import { SuccessResponseType } from 'src/core/utils/response.type';
 import { createStoreDTO, shopDetailDto } from '../../dto/shop';
 import { validateArray, validateStoreInput } from '../../Shop.utils';
@@ -21,6 +24,9 @@ import {
 } from 'src/external/endpoints/provisionStorefront';
 import { B2C_DEVELOPMENT_TOKEN, B2C_STOREFRONT_TLD } from 'src/constants';
 import { shopInfoDto } from '../../../orders/dto';
+import { ImportBulkCategoriesDto } from '../../dto/autoSync';
+import { autoSyncHandler } from 'src/external/endpoints/autoSync';
+import { NoBankAccountFoundError } from '../../Shop.exceptions';
 @Injectable()
 export class ShopService {
   private readonly logger = new Logger(ShopService.name);
@@ -226,6 +232,37 @@ export class ShopService {
       );
     } catch (error) {
       return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * validates if shop has bank details saved
+   * @warn throws error if no shop bank account is saved
+   */
+  public async validateShopBank(shopId: string, token: string) {
+    const bankDetails = await getShopBankDetailsHandler(shopId, token);
+    const accountReferenceId = bankDetails.accReferId;
+    if (!accountReferenceId) {
+      throw new NoBankAccountFoundError();
+    }
+  }
+
+  /**
+   * validates if shop has bank details saved and runs auto sync
+   */
+  public async autoSync(autoSyncInput: ImportBulkCategoriesDto, token: string) {
+    try {
+      const { shopId } = autoSyncInput;
+      await this.validateShopBank(shopId, token);
+      const response = await autoSyncHandler(autoSyncInput);
+      return prepareSuccessResponse(
+        response,
+        'category auto sync message sent',
+        201,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return prepareFailedResponse(error.message);
     }
   }
 }
