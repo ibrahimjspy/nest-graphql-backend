@@ -16,6 +16,10 @@ export const checkoutBundlesByIdQuery = (
         ... on CheckoutBundlesType {
           __typename
           checkoutId
+          totalAmount
+          subTotal
+          taxes
+          discounts
           userEmail
           checkoutBundles {
             checkoutBundleId
