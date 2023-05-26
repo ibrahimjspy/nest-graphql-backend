@@ -52,6 +52,10 @@ export default class OsOrderService {
         headers: { Authorization: getTokenWithoutBearer(token) },
       };
       const response = await axios.post(URL, payload, header);
+      this.logger.log('Order placed on orangeshine', {
+        orderId: orderId,
+        response: response?.data
+      });
       return response?.data;
     } catch (err) {
       this.logger.error(err);
