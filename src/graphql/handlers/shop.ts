@@ -22,6 +22,7 @@ import { shopDetailsV2Query } from '../queries/shop/shopDetailsV2';
 import { removeProductsFromShopMutation } from '../mutations/shop/removeProducts';
 import { shopInfoDto } from 'src/modules/orders/dto';
 import { updateStoreInfoMutation } from '../mutations/shop/updateStore';
+import { ShopBankDetailsType } from 'src/modules/shop/services/shop/Shop.service.types';
 
 export const createStoreHandler = async (
   storeInput: createStoreDTO,
@@ -106,12 +107,12 @@ export const shopIdByOrderIdHandler = async (
 export const getShopBankDetailsHandler = async (
   shopId: string,
   token: string,
-): Promise<object> => {
+): Promise<ShopBankDetailsType> => {
   try {
     const response = await graphqlResultErrorHandler(
       await graphqlCall(shopBankDetailsQuery(shopId), token),
     );
-    return response['shopBankDetails'];
+    return response['shopBankDetails'] as ShopBankDetailsType;
   } catch (error) {
     const errorMessage = await graphqlExceptionHandler(error);
     return errorMessage;

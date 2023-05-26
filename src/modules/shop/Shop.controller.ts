@@ -32,6 +32,7 @@ import {
 import { ShopIdDto, shopInfoDto } from '../orders/dto';
 import { MyProductsService } from './services/myProducts/MyProducts.service';
 import { MyVendorsService } from './services/myVendors/MyVendors.service';
+import { ImportBulkCategoriesDto } from './dto/autoSync';
 
 @ApiTags('shop')
 @Controller('')
@@ -289,6 +290,23 @@ export class ShopController {
         Authorization,
         filter.isB2c,
       ),
+    );
+  }
+
+  @Post('/api/v1/auto/sync')
+  @ApiOperation({
+    summary: 'create a marketplace shop',
+  })
+  @ApiBearerAuth('JWT-auth')
+  async autoSync(
+    @Res() res,
+    @Body() autoSyncInput: ImportBulkCategoriesDto,
+    @Headers() headers,
+  ): Promise<object> {
+    const Authorization: string = headers.authorization;
+    return makeResponse(
+      res,
+      await this.shopService.autoSync(autoSyncInput, Authorization),
     );
   }
 }

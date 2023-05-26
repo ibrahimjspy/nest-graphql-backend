@@ -111,3 +111,4 @@ export const UPS_TRACKING_HEADERS = {
     transactionSrc: process.env.UPS_TRANSACTION_SOURCE || 'test',
   },
 };
+export const AUTO_SYNC_API_URL = process.env.AUTO_SYNC_API_URL;
