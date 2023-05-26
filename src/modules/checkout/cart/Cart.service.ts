@@ -436,7 +436,7 @@ export class CartService {
         token,
       );
       const [updateBundle, marketplace] = await Promise.all([
-        this.productService.updateBundle(updateOpenPack),
+        await this.productService.updateBundle(updateOpenPack),
         this.marketplaceService.getAllCheckoutBundles({ checkoutId, token }),
       ]);
       return this.cartResponseBuilder.updateOpenPack(
