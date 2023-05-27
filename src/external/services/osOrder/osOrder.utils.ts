@@ -80,9 +80,7 @@ export const getSelectedPackQuantity = (
     finalPackQuantity * productsInPack * singleProductPrice;
   const isOrderMinAmountFulfilled = bundleMinOrderAmount <= finalPackAmount;
   if (!isOrderMinAmountFulfilled) {
-    finalPackQuantity = Math.ceil(
-      Math.round(bundleMinOrderAmount / (productsInPack * singleProductPrice)),
-    );
+    finalPackQuantity = Math.ceil(bundleMinOrderAmount / (productsInPack * singleProductPrice));
   }
   return finalPackQuantity;
 };
