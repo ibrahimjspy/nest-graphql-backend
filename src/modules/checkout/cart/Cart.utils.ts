@@ -320,11 +320,11 @@ export const getOpenPackLinesReplace = (
     updatedLines.push(
       {
         variantId: variant.newVariantId,
-        quantity: newVariantQuantity,
+        quantity: Math.max(newVariantQuantity, 0),
       },
       {
         variantId: variant.oldVariantId,
-        quantity: oldVariantQuantity || 0,
+        quantity: Math.max(oldVariantQuantity, 0) || 0,
       },
     );
   });

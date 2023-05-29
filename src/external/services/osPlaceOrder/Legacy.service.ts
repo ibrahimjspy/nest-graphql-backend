@@ -256,6 +256,7 @@ export class LegacyService {
     selectedBundlesData?.map((elements) => {
       const shopId = elements.bundle.shop.id;
       elements?.bundle?.productVariants?.map((element) => {
+        const sizeRun = [];
         const colorName = this.getColorAttribute(
           element?.productVariant?.attributes,
         )?.values[0]?.name;
@@ -268,7 +269,10 @@ export class LegacyService {
 
         const bundle_name = elements?.bundle?.name;
         const productId = elements?.bundle?.product?.id;
-
+        const bundleType = elements.bundle.isOpenBundle;
+        elements.bundle.productVariants.map((variant) => {
+          sizeRun.push(variant.quantity);
+        });
         const itemId = productMappings[productId]['legacyProductId'];
         const compositeKey = `${itemId}_${colorId}`;
         if (productId && !(compositeKey in payloadObject)) {
@@ -278,6 +282,7 @@ export class LegacyService {
             pack_qty: elements?.quantity,
             stock_type: this.stockTypeMappingObject[productId],
             memo: '',
+            ...(bundleType ? { size_run: sizeRun } : {}),
             sms_number: SMS_NUMBER,
             spa_id: shippingAddressInfo?.data?.user_id,
             spm_name: this.deliveryMethod.name,
