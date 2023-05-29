@@ -5,6 +5,7 @@ export interface checkoutBundlesInterface {
   price: number;
   bundle: {
     id: string;
+    isOpenBundle: boolean;
     name: string;
     description: string;
     slug: string;
