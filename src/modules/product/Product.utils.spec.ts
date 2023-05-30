@@ -67,7 +67,7 @@ describe('Product utility tests', () => {
 
     const idsMapping = storeB2bMapping(elasticSearchData);
 
-    expect(idsMapping).toEqual(expectedMapping);
+    expect(idsMapping).toStrictEqual(expectedMapping);
   });
 
   it('should add b2c product ID to products data using the provided IDs mapping (B2B origin)', () => {
@@ -114,7 +114,7 @@ describe('Product utility tests', () => {
       'B2B' as any,
     );
 
-    expect(mergedProductsData).toEqual(expectedProductsData);
+    expect(mergedProductsData).toStrictEqual(expectedProductsData);
   });
 
   it('should add b2c product ID to products data using the provided IDs mapping (B2C origin)', () => {
@@ -161,7 +161,7 @@ describe('Product utility tests', () => {
       'B2C' as any,
     );
 
-    expect(mergedProductsData).toEqual(expectedProductsData);
+    expect(mergedProductsData).toStrictEqual(expectedProductsData);
   });
 
   it('should return the original products data if no IDs mapping is provided', () => {
@@ -203,7 +203,7 @@ describe('Product utility tests', () => {
       'B2B' as any,
     );
 
-    expect(mergedProductsData).toEqual(expectedProductsData);
+    expect(mergedProductsData).toStrictEqual(expectedProductsData);
   });
 
   it('should return the original products data if products data is not provided', () => {
@@ -219,6 +219,6 @@ describe('Product utility tests', () => {
       'B2B' as any,
     );
 
-    expect(mergedProductsData).toEqual(expectedProductsData);
+    expect(mergedProductsData).toStrictEqual(expectedProductsData);
   });
 });
