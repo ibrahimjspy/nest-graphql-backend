@@ -103,6 +103,10 @@ export const getBundlesQuery = (filter: GetBundlesDto) => {
               }
               productVariants {
                 quantity
+                attributes {
+                  name
+                  value
+                }
                 productVariant{
                   id
                 }

@@ -143,6 +143,12 @@ export class ProductService {
     try {
       const { productId } = filter;
 
+      // Returning only bundle detail if no product details are asked
+      if (!filter.getProductDetails) {
+        return prepareSuccessResponse(
+          await ProductsHandlers.getBundlesHandler(filter),
+        ) as unknown as BundlesResponseType;
+      }
       // Retrieve product details
       const [productDetails, bundleDetails] = await Promise.all([
         this.getProductDetails({

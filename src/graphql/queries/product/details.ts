@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request';
-import { DEFAULT_CHANNEL } from 'src/constants';
+import { DEFAULT_CHANNEL, DEFAULT_THUMBNAIL_SIZE } from 'src/constants';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 import { attributeFragment } from 'src/graphql/fragments/attributes';
 import { categoryFragment } from 'src/graphql/fragments/category';
@@ -26,6 +26,9 @@ const b2bQuery = (filter: ProductDetailsDto): string => {
         }
         media {
           ... Media
+        }
+        thumbnail(size: ${DEFAULT_THUMBNAIL_SIZE}) {
+          url
         }
         defaultVariant {
           ... ProductVariant
