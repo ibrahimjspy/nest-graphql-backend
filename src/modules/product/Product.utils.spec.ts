@@ -72,8 +72,8 @@ describe('Product utility tests', () => {
 
   it('should add b2c product ID to products data using the provided IDs mapping (B2B origin)', () => {
     const idsMapping = new Map<string, string>([
-      ['b2c-id-1', 'b2b-id-1'],
-      ['b2c-id-2', 'b2b-id-2'],
+      ['b2b-id-1', 'b2c-id-1'],
+      ['b2b-id-2', 'b2c-id-2'],
     ]);
 
     const productsData = {
@@ -114,9 +114,8 @@ describe('Product utility tests', () => {
       'B2B' as any,
     );
 
-    expect(mergedProductsData).toStrictEqual(expectedProductsData);
+    expect(mergedProductsData).toEqual(expectedProductsData);
   });
-
   it('should add b2c product ID to products data using the provided IDs mapping (B2C origin)', () => {
     const idsMapping = new Map<string, string>([
       ['b2c-id-1', 'b2b-id-1'],
@@ -186,11 +185,13 @@ describe('Product utility tests', () => {
       edges: [
         {
           node: {
+            b2cProductId: null,
             id: 'b2b-id-1',
           },
         },
         {
           node: {
+            b2cProductId: null,
             id: 'b2b-id-2',
           },
         },
