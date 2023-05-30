@@ -37,90 +37,78 @@ export const validateCategoriesResponse = (
   });
 };
 
-export const getChildCategoriesInParents = (
+
+/**
+ * @description -- this method validates categories list whether it includes default type or not , also it returns categories in list format which
+ * is according to contract
+ * This method also returns only parent categories with child categories and move all child categories in there parents if there any exist
+ */
+export const moveChildCategoriesToParents = (
   categoriesData: CategoryListType,
 ) => {
   const categories = validateCategoriesResponse(categoriesData);
-  const categoriesWithParents = categories.filter(category => {
+  const parentCategories = categories.filter(category => {
     if(category.node.level === 0){
       category.node.children.edges = [];
       return category;
     }
   });
 
-  categories.forEach(category => {
-    const ancestorCategoryLevel0 = category.node.ancestors.edges.length && category.node.ancestors.edges[0];
-    const ancestorCategoryLevel1 = (category.node.ancestors.edges.length > 1) && category.node.ancestors.edges[1];
-    if(category.node.level === 1){
-      let isCategoryArranged = false;
-      categoriesWithParents.find(parentCategory => {
-        if(parentCategory?.node?.id === ancestorCategoryLevel0?.node?.id){
-          isCategoryArranged = true;
-          category.node.ancestors.edges = [];
-          parentCategory.node.children.edges.push(category);
-        }
-      })
-      if(!isCategoryArranged){
-        category.node.ancestors.edges = [];
-        const newParentCategoryWithChild = {
-          node: {
-            ...ancestorCategoryLevel0.node,
-            children: {
-              edges: [category]
-            }
-          },
-        }
-        categoriesWithParents.push(newParentCategoryWithChild)
-      }
+  const childCategories = categories.filter(category => {
+    if(category.node.level !== 0){
+      category.node.children.edges = [];
+      return category;
     }
+  });
 
-    if(category.node.level === 2){
-      let isCategoryLevel1 = false;
-      let isCategoryLevel2 = false;
-      categoriesWithParents.find(parentCategory => {
-        if(parentCategory?.node?.id === ancestorCategoryLevel0?.node?.id){
-          isCategoryLevel1 = true;
-          parentCategory.node.children.edges.find(parentCategorylevel1 => {
-            if(parentCategorylevel1?.node?.id === ancestorCategoryLevel1?.node?.id){
-              isCategoryLevel2 = true;
+  childCategories.forEach(category => {
+    const categoryAncestorLevel0 = category.node.ancestors.edges.length && category.node.ancestors.edges[0];
+    const categoryAncestorLevel1 = (category.node.ancestors.edges.length > 1) && category.node.ancestors.edges[1];
+    let isArrangedInLevel0 = false;
+    let isArrangedInLevel1 = false;
+    parentCategories.find(categoryLevel0 => {
+      if(categoryLevel0?.node?.id === categoryAncestorLevel0?.node?.id){
+        if(category.node.level === 1){
+          isArrangedInLevel0 = true;
+          category.node.ancestors.edges = [];
+          categoryLevel0.node.children.edges.push(category);
+        }
+        if(category.node.level === 2){
+          isArrangedInLevel0 = true;
+          categoryLevel0.node.children.edges.find(categoryLevel1 => {
+            if(categoryLevel1?.node?.id === categoryAncestorLevel1?.node?.id){
+              isArrangedInLevel1 = true;
               category.node.ancestors.edges = [];
-              parentCategorylevel1.node.children.edges.push(category);
+              categoryLevel1.node.children.edges.push(category);
             }
-          })
-          if(!isCategoryLevel2){
+          });
+          if(!isArrangedInLevel1){
             category.node.ancestors.edges = [];
-            const newChildCategoryWithSub = {
+            const newCategoryLevel1 = {
               node: {
-                ...ancestorCategoryLevel1.node,
+                ...categoryAncestorLevel1.node,
                 children: {
                   edges: [category]
                 }
               }
             }
-            parentCategory.node.children.edges.push(newChildCategoryWithSub)
+            categoryLevel0.node.children.edges.push(newCategoryLevel1)
           }
         }
-      })
-      if(!isCategoryLevel1){
-        category.node.ancestors.edges = [];
-        const newParentCategoryWithChild = {
-          node: {
-            ...ancestorCategoryLevel0.node,
-            children: {
-              edges: [{
-                node: {
-                  ...ancestorCategoryLevel1.node,
-                  children: {
-                    edges: [category]
-                  }
-                }
-              }]
-            }
-          },
-        }
-        categoriesWithParents.push(newParentCategoryWithChild)
       }
+    })
+    if(!isArrangedInLevel0){
+      category.node.ancestors.edges = [];
+      const newCategoryLevel0 = {
+        node: {
+          ...categoryAncestorLevel0.node,
+          children: {
+            edges: [category]
+          }
+        },
+      }
+      parentCategories.push(newCategoryLevel0)
     }
   })
-  return categoriesWithParents;
+  return parentCategories;
 };
