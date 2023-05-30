@@ -36,3 +36,91 @@ export const validateCategoriesResponse = (
     return category.node.slug !== DEFAULT_CATEGORY_SLUG;
   });
 };
+
+export const getChildCategoriesInParents = (
+  categoriesData: CategoryListType,
+) => {
+  const categories = validateCategoriesResponse(categoriesData);
+  const categoriesWithParents = categories.filter(category => {
+    if(category.node.level === 0){
+      category.node.children.edges = [];
+      return category;
+    }
+  });
+
+  categories.forEach(category => {
+    const ancestorCategoryLevel0 = category.node.ancestors.edges.length && category.node.ancestors.edges[0];
+    const ancestorCategoryLevel1 = (category.node.ancestors.edges.length > 1) && category.node.ancestors.edges[1];
+    if(category.node.level === 1){
+      let isCategoryArranged = false;
+      categoriesWithParents.find(parentCategory => {
+        if(parentCategory?.node?.id === ancestorCategoryLevel0?.node?.id){
+          isCategoryArranged = true;
+          category.node.ancestors.edges = [];
+          parentCategory.node.children.edges.push(category);
+        }
+      })
+      if(!isCategoryArranged){
+        category.node.ancestors.edges = [];
+        const newParentCategoryWithChild = {
+          node: {
+            ...ancestorCategoryLevel0.node,
+            children: {
+              edges: [category]
+            }
+          },
+        }
+        categoriesWithParents.push(newParentCategoryWithChild)
+      }
+    }
+
+    if(category.node.level === 2){
+      let isCategoryLevel1 = false;
+      let isCategoryLevel2 = false;
+      categoriesWithParents.find(parentCategory => {
+        if(parentCategory?.node?.id === ancestorCategoryLevel0?.node?.id){
+          isCategoryLevel1 = true;
+          parentCategory.node.children.edges.find(parentCategorylevel1 => {
+            if(parentCategorylevel1?.node?.id === ancestorCategoryLevel1?.node?.id){
+              isCategoryLevel2 = true;
+              category.node.ancestors.edges = [];
+              parentCategorylevel1.node.children.edges.push(category);
+            }
+          })
+          if(!isCategoryLevel2){
+            category.node.ancestors.edges = [];
+            const newChildCategoryWithSub = {
+              node: {
+                ...ancestorCategoryLevel1.node,
+                children: {
+                  edges: [category]
+                }
+              }
+            }
+            parentCategory.node.children.edges.push(newChildCategoryWithSub)
+          }
+        }
+      })
+      if(!isCategoryLevel1){
+        category.node.ancestors.edges = [];
+        const newParentCategoryWithChild = {
+          node: {
+            ...ancestorCategoryLevel0.node,
+            children: {
+              edges: [{
+                node: {
+                  ...ancestorCategoryLevel1.node,
+                  children: {
+                    edges: [category]
+                  }
+                }
+              }]
+            }
+          },
+        }
+        categoriesWithParents.push(newParentCategoryWithChild)
+      }
+    }
+  })
+  return categoriesWithParents;
+};

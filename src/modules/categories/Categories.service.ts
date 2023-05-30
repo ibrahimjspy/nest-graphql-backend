@@ -14,6 +14,7 @@ import { CategoriesDto, SyncCategoriesDto } from './dto/categories';
 import { getSyncCategoriesMapping } from 'src/external/endpoints/syncCategoriesMapping';
 import {
   prepareSyncedCategoriesResponse,
+  getChildCategoriesInParents,
   validateCategoriesResponse,
 } from './Categories.utils';
 
@@ -73,9 +74,10 @@ export class CategoriesService {
       const categoryIds = marketplace?.categoryIds || [];
       if (categoryIds.length) {
         const saleor = await categoriesHandler({ ...filter, categoryIds });
+        const categories = getChildCategoriesInParents(saleor)
         return prepareSuccessResponse({
           marketplace,
-          saleor,
+          saleor: categories,
         });
       }
       return prepareSuccessResponse(
