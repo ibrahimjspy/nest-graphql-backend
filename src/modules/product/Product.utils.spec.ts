@@ -6,6 +6,7 @@ import {
   getBundleIds,
   getProductIds,
   getShopProductIds,
+  storeB2bMapping,
   storeB2cMapping,
 } from './Product.utils';
 
@@ -44,5 +45,27 @@ describe('Product utility tests', () => {
     expect(shopProducts).toBeDefined();
     expect(shopProducts).toBeTruthy();
     expect(shopProducts).toStrictEqual(['123']);
+  });
+
+  it('should parse elastic search response and store b2b and b2c IDs in a hash map', () => {
+    const elasticSearchData = [
+      {
+        shr_b2b_product_id: { raw: 'b2b-id-1' },
+        shr_b2c_product_id: { raw: 'b2c-id-1' },
+      },
+      {
+        shr_b2b_product_id: { raw: 'b2b-id-2' },
+        shr_b2c_product_id: { raw: 'b2c-id-2' },
+      },
+    ];
+
+    const expectedMapping = new Map<string, string>([
+      ['b2c-id-1', 'b2b-id-1'],
+      ['b2c-id-2', 'b2b-id-2'],
+    ]);
+
+    const idsMapping = storeB2bMapping(elasticSearchData);
+
+    expect(idsMapping).toEqual(expectedMapping);
   });
 });

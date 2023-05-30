@@ -4,6 +4,7 @@ import {
   BundlesType,
   MarketplaceProductsResponseType,
   ProductDetailType,
+  ProductOriginEnum,
 } from './Product.types';
 
 /**
@@ -60,16 +61,22 @@ export const storeB2cMapping = (
 /**
  * @description this function takes b2c and b2b ids hashmap and adds its b2c id against b2b in products object
  * @params productsData -- exact format as Saleor
- * @params idsMapping -- Map<string, string> -- Map< b2bId, b2cId >
+ * @params idsMapping -- Map<string, string>
+ * @param productOrigin - Origin of the products (default: 'B2B'). - product for which you want to get mapping for -- passing B2B will return b2c mappings against it
  * @warn please do not remove edges from your productsData object
  * @return productsData - this productsData also include b2c product id as well
  */
-export const addB2cIdsToProductData = (
+export const mergeB2cMappingsWithProductData = (
   idsMapping: Map<string, string>,
   productsData,
+  productOrigin = ProductOriginEnum.B2B,
 ) => {
   productsData?.edges?.map((product) => {
-    product.node.b2cProductId = idsMapping.get(product.node.id) || null;
+    if (productOrigin === ProductOriginEnum.B2B) {
+      product.node.b2cProductId = idsMapping.get(product.node.id) || null;
+    } else {
+      product.node.b2bProductId = idsMapping.get(product.node.id) || null;
+    }
   });
   return productsData;
 };
@@ -164,3 +171,24 @@ export function makeGetBundlesResponse(
 
   return combinedData;
 }
+
+/**
+ * @description this function parses elastic search response and stored b2b and b2c id in hashMap
+ * @params elasticSearchData -- exact format as elastic search
+ * @warn please send data without parsing it
+ * @return idsMapping - returns hasp map with b2c id as key and b2b id as value-- Map<string, string>
+ */
+export const storeB2bMapping = (
+  elasticSearchData: Array<{
+    shr_b2b_product_id: { raw: string };
+    shr_b2c_product_id: { raw: string };
+  }>,
+): Map<string, string> => {
+  const idsMapping: Map<string, string> = new Map();
+  elasticSearchData?.map((mapping) => {
+    const b2bId = mapping?.shr_b2b_product_id?.raw;
+    const b2cId = mapping?.shr_b2c_product_id?.raw;
+    idsMapping.set(b2cId, b2bId);
+  });
+  return idsMapping;
+};

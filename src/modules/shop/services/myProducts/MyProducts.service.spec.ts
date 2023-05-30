@@ -3,6 +3,7 @@ import * as ShopHandlers from 'src/graphql/handlers/shop';
 import * as ProductHandlers from 'src/graphql/handlers/product';
 import { shopIntegrationMocks } from '../../../../../test/mock/shop';
 import { MyProductsService } from './MyProducts.service';
+import * as Mapping from 'src/external/endpoints/b2cMapping';
 
 describe('My Products Service Integration test', () => {
   let service: MyProductsService;
@@ -27,8 +28,12 @@ describe('My Products Service Integration test', () => {
     jest
       .spyOn(ProductHandlers, 'getMyProductsHandler')
       .mockImplementation(async () => mocks.mockMyProducts);
+    jest
+      .spyOn(Mapping, 'getB2cProductMapping')
+      .mockImplementation(async () => mocks.mockElasticSearchMappingData);
 
     const getMyProducts = await service.getMyProducts('123', { first: 12 });
+
     expect(getMyProducts).toEqual(mocks.expectedMyProductsResponse);
     expect(getMyProducts).toBeDefined();
   });

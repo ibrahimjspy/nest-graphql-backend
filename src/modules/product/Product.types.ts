@@ -231,3 +231,8 @@ export interface BundlesResponseType {
     }[];
   };
 }
+
+export enum ProductOriginEnum {
+  B2B = 'B2B',
+  B2C = 'B2C',
+}

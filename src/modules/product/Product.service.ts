@@ -9,12 +9,12 @@ import * as ProductsHandlers from 'src/graphql/handlers/product';
 import { downloadProductImagesHandler } from 'src/external/services/downloadImages';
 import { getB2cProductMapping } from 'src/external/endpoints/b2cMapping';
 import {
-  addB2cIdsToProductData,
   getProductIds,
   getProductIdsByVariants,
   getShopProductIds,
   isEmptyArray,
   makeGetBundlesResponse,
+  mergeB2cMappingsWithProductData,
   storeB2cMapping,
 } from './Product.utils';
 import { GetBundlesDto, ProductDetailsDto } from './dto/product.dto';
@@ -127,7 +127,7 @@ export class ProductService {
       const productIdsMapping = storeB2cMapping(
         await getB2cProductMapping(b2bProductIds, retailerId),
       );
-      return addB2cIdsToProductData(productIdsMapping, productsData);
+      return mergeB2cMappingsWithProductData(productIdsMapping, productsData);
     } catch (error) {
       this.logger.error(error);
     }
