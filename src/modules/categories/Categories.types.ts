@@ -6,24 +6,18 @@ export interface CategoryListType {
       slug: string;
       level?: number;
       ancestors?: CategoryListType;
-      children: {
-        edges: {
-          node: {
-            name: string;
-            id: string;
-            slug: string;
-            children: {
-              edges: {
-                node: {
-                  name: string;
-                  id: string;
-                  slug: string;
-                };
-              }[];
-            };
-          };
-        }[];
-      };
+      children: CategoryListType;
     };
   }[];
+}
+
+export interface CategoryType {
+  node: {
+    name: string;
+    id: string;
+    slug: string;
+    level?: number;
+    ancestors?: CategoryListType;
+    children: CategoryListType;
+  };
 }

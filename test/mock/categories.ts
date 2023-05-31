@@ -321,6 +321,35 @@ export const mockCategoriesData = {
           },
         },
       },
+      {
+        node: {
+          name: "JEANS",
+          id: "Q2F0ZWdvcnk6NjI=",
+          slug: "jeans",
+          level: 2,
+          ancestors: {
+            edges: [
+              {
+                node: {
+                  id: "Q2F0ZWdvcnk6Mg==",
+                  name: "Women",
+                  level: 0
+                }
+              },
+              {
+                node: {
+                  id: "Q2F0ZWdvcnk6MTk=",
+                  name: "BOTTOMS",
+                  level: 1
+                }
+              }
+            ]
+          },
+          children: {
+            edges: []
+          }
+        }
+      }
     ],
   },
   arrangedCategories: {
@@ -354,6 +383,20 @@ export const mockCategoriesData = {
                           },
                         },
                       },
+                      {
+                        node: {
+                          name: "JEANS",
+                          id: "Q2F0ZWdvcnk6NjI=",
+                          slug: "jeans",
+                          level: 2,
+                          ancestors: {
+                            edges: []
+                          },
+                          children: {
+                            edges: []
+                          }
+                        }
+                      }
                     ],
                   },
                 },
