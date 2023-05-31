@@ -1,5 +1,7 @@
 import { gql } from 'graphql-request';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
+import { categoryFragment } from 'src/graphql/fragments/category';
+import { categoryWithAncestors } from 'src/graphql/fragments/categoryWithAncestors';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
 
 const b2cQuery = ({ categoryIds, ...filter }): string => {
@@ -8,26 +10,20 @@ const b2cQuery = ({ categoryIds, ...filter }): string => {
     categories(
       ${validatePageFilter(filter)}
       filter: {
-        ids: ${JSON.stringify(categoryIds)}
+        ids: ${JSON.stringify(categoryIds || [])}
       }
     ) {
       edges {
         node {
-          name
-          id
-          slug
+          ... CategoryWithAncestors
           children(${validatePageFilter(filter)}) {
             edges {
               node {
-                name
-                id
-                slug
+                ... Category
                 children(${validatePageFilter(filter)}) {
                   edges {
                     node {
-                      name
-                      id
-                      slug
+                      ... Category
                     }
                   }
                 }
@@ -37,7 +33,9 @@ const b2cQuery = ({ categoryIds, ...filter }): string => {
         }
       }
     }
-  }`;
+  }
+  ${categoryFragment}
+  ${categoryWithAncestors}`;
 };
 
 const b2bQuery = b2cQuery;
