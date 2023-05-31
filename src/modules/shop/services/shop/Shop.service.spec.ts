@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as ShopHandlers from 'src/graphql/handlers/shop';
 import * as Github from 'src/external/endpoints/provisionStorefront';
+import * as Workflow from 'src/external/endpoints/workflow';
 import { ShopService } from './Shop.service';
 import { ShopType } from 'src/graphql/types/shop.type';
 
@@ -137,5 +138,18 @@ describe('Shop Service Integration test', () => {
       data: { name: 'leoMessi', url: '123.com' },
     });
     expect(getBulkShops).toBeDefined();
+  });
+
+  it('should return workflow status as it is', async () => {
+    jest.spyOn(Workflow, 'workflowHandler').mockImplementation(async () => {
+      return { name: 'leoMessi', status: 'Goat' } as any;
+    });
+
+    const workflowStatus = await service.getWorkflowStatus('leoMessi');
+    expect(workflowStatus).toEqual({
+      status: 200,
+      data: { name: 'leoMessi', status: 'Goat' },
+    });
+    expect(workflowStatus).toBeDefined();
   });
 });

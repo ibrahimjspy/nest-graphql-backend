@@ -14,6 +14,7 @@ import { makeResponse } from '../../core/utils/response';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ShopService } from './services/shop/Shop.service';
 import {
+  WorkflowNameDto,
   accountIdDTO,
   allShopIdsDTO,
   b2cDto,
@@ -329,6 +330,20 @@ export class ShopController {
     return makeResponse(
       res,
       await this.shopService.autoSync(autoSyncInput, Authorization),
+    );
+  }
+
+  @Get('/api/v1/shop/workflow/status/:workflowName')
+  @ApiOperation({
+    summary: 'returns workflow status by workflow name',
+  })
+  async getWorkflowStatus(
+    @Res() res,
+    @Param() params: WorkflowNameDto,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.shopService.getWorkflowStatus(params.workflowName),
     );
   }
 }

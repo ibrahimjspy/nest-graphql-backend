@@ -1,7 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
-import { removeB2cProductMapping } from 'src/external/endpoints/b2cMapping';
+import {
+  getB2bProductMapping,
+  removeB2cProductMapping,
+} from 'src/external/endpoints/b2cMapping';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 import {
   deleteBulkMediaHandler,
@@ -15,8 +18,10 @@ import {
   removeProductsFromShopHandler,
 } from 'src/graphql/handlers/shop';
 import {
+  getProductIds,
   getShopProductIds,
   isEmptyArray,
+  mergeB2cMappingsWithProductData,
 } from 'src/modules/product/Product.utils';
 import { getFieldValues, makeMyProductsResponse } from '../../Shop.utils';
 import {
@@ -24,6 +29,7 @@ import {
   removeMyProductsDto,
   updateMyProductDTO,
 } from '../../dto/myProducts';
+import { ProductOriginEnum } from 'src/modules/product/Product.types';
 
 @Injectable()
 export class MyProductsService {
@@ -53,7 +59,10 @@ export class MyProductsService {
       );
       if (isEmptyArray(productIds)) {
         const productsList = makeMyProductsResponse(
-          await getMyProductsHandler(productIds, { first: 10 }),
+          await this.addB2cProductsMapping(
+            await getMyProductsHandler(productIds, { first: 100 }),
+            retailerId,
+          ),
           storeDetails,
         );
         return prepareSuccessResponse([retailer, productsList]);
@@ -104,6 +113,32 @@ export class MyProductsService {
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description this function adds b2b product ids against b2c products list
+   * @link - getB2cProductMapping -- to fetch b2c productIds against a retailer id from elastic search mapping service
+   */
+  public async addB2cProductsMapping(
+    productsData,
+    retailerId: string,
+  ): Promise<object> {
+    try {
+      if (!retailerId) {
+        // returns products list as it is if retailer id is not valid
+        return productsData;
+      }
+      const b2cProductIds = getProductIds(productsData);
+      const productIdsMapping = await getB2bProductMapping(b2cProductIds);
+
+      return mergeB2cMappingsWithProductData(
+        productIdsMapping,
+        productsData,
+        ProductOriginEnum.B2C,
+      );
+    } catch (error) {
+      this.logger.error(error);
     }
   }
 }
