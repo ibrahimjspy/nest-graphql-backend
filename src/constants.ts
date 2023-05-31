@@ -19,10 +19,6 @@ export const B2BClientPlatform = 'sharove@sharove.com';
 
 export const STRIPE_RETURN_URL = process.env.B2B_ENDPOINT;
 export const DEFAULT_THUMBNAIL_SIZE = 512;
-export const QUEUE_URL = process.env.SQS_QUEUE_URL;
-export const SQS_ACCESSID = process.env.SQS_ACCESS_ID;
-export const SQS_SECRET_ACCESS_KEY = process.env.SQS_SECRET_ACCESS_KEY;
-
 export const SQS_MESSAGE_GROUPID = '1';
 //
 export const COMMON_HEADERS = {
