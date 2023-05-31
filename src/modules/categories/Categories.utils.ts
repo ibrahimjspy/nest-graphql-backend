@@ -45,11 +45,11 @@ export const validateCategoriesResponse = (
  */
 export const getCategoriesByLevel = (
   categories: CategoryListType['edges'],
-  level: number
+  level: number,
 ) => {
-  if((typeof level !== "number") || !categories){
-    return []
-  };
+  if (typeof level !== 'number' || !categories) {
+    return [];
+  }
   return categories.filter((category) => {
     if (category.node.level === level) {
       category.node.children.edges = [];
@@ -63,10 +63,10 @@ export const getCategoriesByLevel = (
  * @param category -- Category detail
  * @return -- ancestors of given catagory
  */
-export const getCategoryAncestors = (
-  category: CategoryType
-) =>  {
-  return category.node?.ancestors?.edges?.length ? category.node?.ancestors?.edges : []
+export const getCategoryAncestors = (category: CategoryType) => {
+  return category.node?.ancestors?.edges?.length
+    ? category.node?.ancestors?.edges
+    : [];
 };
 
 /**
@@ -77,30 +77,27 @@ export const getCategoryAncestors = (
  */
 export const addChildCategory = (
   parentCategory: CategoryType,
-  childCategory: CategoryType
-) =>  {
+  childCategory: CategoryType,
+) => {
   const category: CategoryType = {
     node: {
       ...childCategory?.node,
       children: {
-        edges: []
+        edges: [],
       },
       ancestors: {
-        edges: []
-      }
-    }
-  }
+        edges: [],
+      },
+    },
+  };
   const mergedCategories: CategoryType = {
     node: {
       ...parentCategory?.node,
       children: {
-        edges: [
-          ...(parentCategory?.node?.children?.edges || []),
-          category
-        ]
-      }
-    }
-  }
+        edges: [...(parentCategory?.node?.children?.edges || []), category],
+      },
+    },
+  };
   return mergedCategories;
 };
 
@@ -121,25 +118,26 @@ export const moveChildCategoriesToParents = (
   childCategories.forEach((category) => {
     const categoryAncestors = getCategoryAncestors(category);
     const ancestorLevel0 = categoryAncestors.length && categoryAncestors[0];
-    const ancestorLevel1 = (categoryAncestors.length > 1) && categoryAncestors[1];
+    const ancestorLevel1 = categoryAncestors.length > 1 && categoryAncestors[1];
 
     let isArrangedInLevel0 = false;
     let isArrangedInLevel1 = false;
 
     parentCategories.find((categoryLevel0) => {
-      const isMatchLevel0 = categoryLevel0?.node?.id === ancestorLevel0?.node?.id;
+      const isMatchLevel0 =
+        categoryLevel0?.node?.id === ancestorLevel0?.node?.id;
 
       if (ancestorLevel0 && isMatchLevel0) {
-        
         if (category.node.level === 1) {
           isArrangedInLevel0 = true;
-          categoryLevel0 = addChildCategory(categoryLevel0, category)
+          categoryLevel0 = addChildCategory(categoryLevel0, category);
         }
 
         if (categoryLevel0 && category.node.level === 2) {
           isArrangedInLevel0 = true;
           categoryLevel0.node.children.edges.find((categoryLevel1) => {
-          const isMatchLevel1 = categoryLevel1?.node?.id === ancestorLevel1?.node?.id;
+            const isMatchLevel1 =
+              categoryLevel1?.node?.id === ancestorLevel1?.node?.id;
             if (ancestorLevel1 && isMatchLevel1) {
               isArrangedInLevel1 = true;
               category.node.ancestors.edges = [];
@@ -147,7 +145,7 @@ export const moveChildCategoriesToParents = (
             }
           });
           if (!isArrangedInLevel1) {
-            const mergedCategory = addChildCategory(ancestorLevel1, category)
+            const mergedCategory = addChildCategory(ancestorLevel1, category);
             categoryLevel0.node.children.edges.push(mergedCategory);
           }
         }
@@ -155,7 +153,7 @@ export const moveChildCategoriesToParents = (
     });
 
     if (!isArrangedInLevel0 && ancestorLevel0) {
-      const mergedCategory = addChildCategory(ancestorLevel0, category)
+      const mergedCategory = addChildCategory(ancestorLevel0, category);
       parentCategories.push(mergedCategory);
     }
   });
