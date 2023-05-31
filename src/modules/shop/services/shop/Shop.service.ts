@@ -27,6 +27,7 @@ import { shopInfoDto } from '../../../orders/dto';
 import { ImportBulkCategoriesDto } from '../../dto/autoSync';
 import { autoSyncHandler } from 'src/external/endpoints/autoSync';
 import { NoBankAccountFoundError } from '../../Shop.exceptions';
+import { workflowHandler } from 'src/external/endpoints/workflow';
 @Injectable()
 export class ShopService {
   private readonly logger = new Logger(ShopService.name);
@@ -260,6 +261,19 @@ export class ShopService {
         'category auto sync message sent',
         201,
       );
+    } catch (error) {
+      this.logger.error(error);
+      return prepareFailedResponse(error.message);
+    }
+  }
+
+  /**
+   * return workflow status against workflow name
+   */
+  public async getWorkflowStatus(workflowName: string) {
+    try {
+      const workflowStatus = await workflowHandler(workflowName);
+      return prepareSuccessResponse(workflowStatus);
     } catch (error) {
       this.logger.error(error);
       return prepareFailedResponse(error.message);
