@@ -777,4 +777,116 @@ export const productIntegrationMocks = {
       },
     ],
   },
+  singleProduct: {
+    product: {
+      id: '123',
+      description: 'Product Description',
+      name: 'Product Name',
+      slug: 'product-slug',
+      metadata: [
+        { key: 'key1', value: 'value1' },
+        { key: 'key2', value: 'value2' },
+      ],
+      category: {
+        id: 'category123',
+        name: 'Product Category',
+      },
+      attributes: [
+        {
+          attribute: { name: 'Attribute 1' },
+          values: [{ name: 'Value 1' }, { name: 'Value 2' }],
+        },
+        {
+          attribute: { name: 'Attribute 2' },
+          values: [{ name: 'Value 3' }, { name: 'Value 4' }],
+        },
+      ],
+      thumbnail: {
+        url: 'thumbnail-url',
+      },
+      media: [{ url: 'media-url-1' }, { url: 'media-url-2' }],
+      defaultVariant: {
+        id: 'default-variant-123',
+        sku: 'default-variant-sku',
+        attributes: [
+          {
+            attribute: { name: 'Attribute 1' },
+            values: [{ name: 'Value 1' }, { name: 'Value 2' }],
+          },
+        ],
+        pricing: {
+          price: {
+            gross: { currency: 'USD', amount: 50 },
+            net: { currency: 'USD', amount: 40 },
+          },
+        },
+      },
+      variants: [
+        {
+          id: 'variant-1',
+          sku: 'variant-1-sku',
+          media: [{ url: 'variant-1-media-url' }],
+          attributes: [
+            {
+              attribute: { name: 'Attribute 1' },
+              values: [{ name: 'Value 1' }],
+            },
+          ],
+          pricing: {
+            price: {
+              gross: { currency: 'USD', amount: 50 },
+              net: { currency: 'USD', amount: 40 },
+            },
+          },
+        },
+      ],
+    },
+  },
+  bundles: {
+    edges: [
+      {
+        node: {
+          id: 'bundle-1',
+          name: 'Bundle 1',
+          isOpenBundle: true,
+          description: 'Bundle Description',
+          slug: 'bundle-slug',
+          shop: {
+            id: 'shop-123',
+            name: 'Shop Name',
+            email: 'shop@example.com',
+            url: 'shop-url',
+            madeIn: 'Country',
+            minOrder: 5,
+            description: 'Shop Description',
+            about: 'About the Shop',
+            returnPolicy: 'Return Policy',
+            storePolicy: 'Store Policy',
+          },
+          productVariants: [
+            {
+              productVariant: {
+                id: 'variant-1',
+                sku: 'variant-1-sku',
+                media: [{ url: 'variant-1-media-url' }],
+                attributes: [
+                  {
+                    attribute: { name: 'Attribute 1' },
+                    values: [{ name: 'Value 1' }],
+                  },
+                ],
+                pricing: {
+                  price: {
+                    gross: { currency: 'USD', amount: 50 },
+                    net: { currency: 'USD', amount: 40 },
+                  },
+                },
+              },
+              quantity: 3,
+            },
+          ],
+        },
+      },
+    ],
+  },
 };
