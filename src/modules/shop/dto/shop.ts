@@ -123,3 +123,8 @@ export class shopDetailDto extends b2cDto {
   @IsOptional()
   email?: string;
 }
+
+export class WorkflowNameDto {
+  @ApiProperty({ type: String, required: true })
+  workflowName: string;
+}
