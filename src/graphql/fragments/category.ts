@@ -5,5 +5,6 @@ export const categoryFragment = gql`
     id
     name
     slug
+    level
   }
 `;

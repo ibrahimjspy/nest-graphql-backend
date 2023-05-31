@@ -5,7 +5,7 @@ export interface CategoryListType {
       id: string;
       slug: string;
       level?: number;
-      ancestors?: CategoryListType,
+      ancestors?: CategoryListType;
       children: {
         edges: {
           node: {

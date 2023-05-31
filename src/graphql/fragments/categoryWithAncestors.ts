@@ -5,12 +5,14 @@ export const categoryWithAncestors = gql`
     id
     name
     slug
+    level
     ancestors(first: 10) {
       edges {
         node {
           id
           name
           slug
+          level
         }
       }
     }

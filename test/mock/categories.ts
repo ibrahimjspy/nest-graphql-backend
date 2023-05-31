@@ -250,59 +250,9 @@ export const mockCategoriesData = {
           name: 'Women',
           id: 'Q2F0ZWdvcnk6Mg==',
           slug: 'women',
+          level: 0,
           children: {
-            edges: [
-              {
-                node: {
-                  name: 'LOUNGE WEAR',
-                  id: 'Q2F0ZWdvcnk6MjI=',
-                  slug: 'lounge-wear',
-                  children: {
-                    edges: [
-                      {
-                        node: {
-                          name: 'PANTS',
-                          id: 'Q2F0ZWdvcnk6NjU=',
-                          slug: 'pants-2',
-                        },
-                      },
-                      {
-                        node: {
-                          name: 'SETS',
-                          id: 'Q2F0ZWdvcnk6Njg=',
-                          slug: 'sets-2',
-                        },
-                      },
-                    ],
-                  },
-                },
-              },
-              {
-                node: {
-                  name: 'DRESSES',
-                  id: 'Q2F0ZWdvcnk6MTI=',
-                  slug: 'dresses',
-                  children: {
-                    edges: [
-                      {
-                        node: {
-                          name: 'CASUAL',
-                          id: 'Q2F0ZWdvcnk6NDc=',
-                          slug: 'casual',
-                        },
-                      },
-                      {
-                        node: {
-                          name: 'CLASSIC AND CAREER',
-                          id: 'Q2F0ZWdvcnk6NDg=',
-                          slug: 'classic-and-career',
-                        },
-                      },
-                    ],
-                  },
-                },
-              },
-            ],
+            edges: [],
           },
         },
       },
@@ -319,64 +269,99 @@ export const mockCategoriesData = {
               name: 'Women',
               id: 'Q2F0ZWdvcnk6Mg==',
               slug: 'women',
+              level: 0,
               children: {
-                edges: [
-                  {
-                    node: {
-                      name: 'LOUNGE WEAR',
-                      id: 'Q2F0ZWdvcnk6MjI=',
-                      slug: 'lounge-wear',
-                      children: {
-                        edges: [
-                          {
-                            node: {
-                              name: 'PANTS',
-                              id: 'Q2F0ZWdvcnk6NjU=',
-                              slug: 'pants-2',
-                            },
-                          },
-                          {
-                            node: {
-                              name: 'SETS',
-                              id: 'Q2F0ZWdvcnk6Njg=',
-                              slug: 'sets-2',
-                            },
-                          },
-                        ],
-                      },
-                    },
-                  },
-                  {
-                    node: {
-                      name: 'DRESSES',
-                      id: 'Q2F0ZWdvcnk6MTI=',
-                      slug: 'dresses',
-                      children: {
-                        edges: [
-                          {
-                            node: {
-                              name: 'CASUAL',
-                              id: 'Q2F0ZWdvcnk6NDc=',
-                              slug: 'casual',
-                            },
-                          },
-                          {
-                            node: {
-                              name: 'CLASSIC AND CAREER',
-                              id: 'Q2F0ZWdvcnk6NDg=',
-                              slug: 'classic-and-career',
-                            },
-                          },
-                        ],
-                      },
-                    },
-                  },
-                ],
+                edges: [],
               },
             },
           },
         ],
       },
     },
+  },
+  unArrangedCategories: {
+    edges: [
+      {
+        node: {
+          name: 'Women',
+          id: 'Q2F0ZWdvcnk6Mg==',
+          slug: 'women',
+          level: 0,
+          children: {
+            edges: [],
+          },
+        },
+      },
+      {
+        node: {
+          name: 'LEGGINGS',
+          id: 'Q2F0ZWdvcnk6NTc=',
+          slug: 'leggings',
+          level: 2,
+          ancestors: {
+            edges: [
+              {
+                node: {
+                  id: 'Q2F0ZWdvcnk6Mg==',
+                  name: 'Women',
+                  level: 0,
+                },
+              },
+              {
+                node: {
+                  id: 'Q2F0ZWdvcnk6MTk=',
+                  name: 'BOTTOMS',
+                  level: 1,
+                },
+              },
+            ],
+          },
+          children: {
+            edges: [],
+          },
+        },
+      },
+    ],
+  },
+  arrangedCategories: {
+    edges: [
+      {
+        node: {
+          name: 'Women',
+          id: 'Q2F0ZWdvcnk6Mg==',
+          slug: 'women',
+          level: 0,
+          children: {
+            edges: [
+              {
+                node: {
+                  id: 'Q2F0ZWdvcnk6MTk=',
+                  name: 'BOTTOMS',
+                  level: 1,
+                  children: {
+                    edges: [
+                      {
+                        node: {
+                          name: 'LEGGINGS',
+                          id: 'Q2F0ZWdvcnk6NTc=',
+                          slug: 'leggings',
+                          level: 2,
+                          ancestors: {
+                            edges: [],
+                          },
+                          children: {
+                            edges: [],
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+    ],
   },
 };

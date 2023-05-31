@@ -37,7 +37,6 @@ export const validateCategoriesResponse = (
   });
 };
 
-
 /**
  * @description -- this method validates categories list whether it includes default type or not , also it returns categories in list format which
  * is according to contract
@@ -47,68 +46,90 @@ export const moveChildCategoriesToParents = (
   categoriesData: CategoryListType,
 ) => {
   const categories = validateCategoriesResponse(categoriesData);
-  const parentCategories = categories.filter(category => {
-    if(category.node.level === 0){
+  const parentCategories = categories.filter((category) => {
+    if (category.node.level === 0) {
       category.node.children.edges = [];
       return category;
     }
   });
 
-  const childCategories = categories.filter(category => {
-    if(category.node.level !== 0){
+  const childCategories = categories.filter((category) => {
+    if (category.node.level !== 0) {
       category.node.children.edges = [];
       return category;
     }
   });
 
-  childCategories.forEach(category => {
-    const categoryAncestorLevel0 = category.node.ancestors.edges.length && category.node.ancestors.edges[0];
-    const categoryAncestorLevel1 = (category.node.ancestors.edges.length > 1) && category.node.ancestors.edges[1];
+  childCategories.forEach((category) => {
+    const categoryAncestorLevel0 =
+      category.node?.ancestors?.edges.length &&
+      category.node?.ancestors?.edges[0];
+    const categoryAncestorLevel1 =
+      category.node?.ancestors?.edges.length > 1 &&
+      category.node?.ancestors?.edges[1];
     let isArrangedInLevel0 = false;
     let isArrangedInLevel1 = false;
-    parentCategories.find(categoryLevel0 => {
-      if(categoryLevel0?.node?.id === categoryAncestorLevel0?.node?.id){
-        if(category.node.level === 1){
+
+    parentCategories.find((categoryLevel0) => {
+      if (
+        categoryAncestorLevel0 &&
+        categoryLevel0?.node?.id === categoryAncestorLevel0?.node?.id
+      ) {
+        if (category.node.level === 1) {
           isArrangedInLevel0 = true;
           category.node.ancestors.edges = [];
           categoryLevel0.node.children.edges.push(category);
         }
-        if(category.node.level === 2){
+        if (category.node.level === 2) {
           isArrangedInLevel0 = true;
-          categoryLevel0.node.children.edges.find(categoryLevel1 => {
-            if(categoryLevel1?.node?.id === categoryAncestorLevel1?.node?.id){
+          categoryLevel0.node.children.edges.find((categoryLevel1) => {
+            if (
+              categoryAncestorLevel1 &&
+              categoryLevel1?.node?.id === categoryAncestorLevel1?.node?.id
+            ) {
               isArrangedInLevel1 = true;
               category.node.ancestors.edges = [];
               categoryLevel1.node.children.edges.push(category);
             }
           });
-          if(!isArrangedInLevel1){
+          if (!isArrangedInLevel1) {
             category.node.ancestors.edges = [];
             const newCategoryLevel1 = {
               node: {
                 ...categoryAncestorLevel1.node,
                 children: {
-                  edges: [category]
-                }
-              }
-            }
-            categoryLevel0.node.children.edges.push(newCategoryLevel1)
+                  edges: [category],
+                },
+              },
+            };
+            categoryLevel0.node.children.edges.push(newCategoryLevel1);
           }
         }
       }
-    })
-    if(!isArrangedInLevel0){
-      category.node.ancestors.edges = [];
+    });
+
+    if (!isArrangedInLevel0 && categoryAncestorLevel0) {
+      const childCategory = {
+        node: {
+          ...category.node,
+          ancestors: {
+            edges: [],
+          },
+        },
+      };
+
       const newCategoryLevel0 = {
         node: {
           ...categoryAncestorLevel0.node,
           children: {
-            edges: [category]
-          }
+            edges: [childCategory],
+          },
         },
-      }
-      parentCategories.push(newCategoryLevel0)
+      };
+      parentCategories.push(newCategoryLevel0);
     }
-  })
-  return parentCategories;
+  });
+  return {
+    edges: parentCategories,
+  };
 };
