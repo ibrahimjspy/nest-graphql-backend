@@ -29,7 +29,7 @@ describe('My Products Service Integration test', () => {
       .spyOn(ProductHandlers, 'getMyProductsHandler')
       .mockImplementation(async () => mocks.mockMyProducts);
     jest
-      .spyOn(Mapping, 'getB2cProductMapping')
+      .spyOn(Mapping, 'getB2bProductMapping')
       .mockImplementation(async () => mocks.mockElasticSearchMappingData);
 
     const getMyProducts = await service.getMyProducts('123', { first: 12 });

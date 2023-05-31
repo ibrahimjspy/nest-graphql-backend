@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { prepareSuccessResponse } from 'src/core/utils/response';
 import {
-  getB2cProductMapping,
+  getB2bProductMapping,
   removeB2cProductMapping,
 } from 'src/external/endpoints/b2cMapping';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
@@ -22,7 +22,6 @@ import {
   getShopProductIds,
   isEmptyArray,
   mergeB2cMappingsWithProductData,
-  storeB2bMapping,
 } from 'src/modules/product/Product.utils';
 import { getFieldValues, makeMyProductsResponse } from '../../Shop.utils';
 import {
@@ -130,14 +129,9 @@ export class MyProductsService {
         // returns products list as it is if retailer id is not valid
         return productsData;
       }
-      const b2bProductIds = getProductIds(productsData);
-      const productIdsMapping = storeB2bMapping(
-        await getB2cProductMapping(
-          b2bProductIds,
-          retailerId,
-          ProductOriginEnum.B2C,
-        ),
-      );
+      const b2cProductIds = getProductIds(productsData);
+      const productIdsMapping = await getB2bProductMapping(b2cProductIds);
+
       return mergeB2cMappingsWithProductData(
         productIdsMapping,
         productsData,

@@ -120,10 +120,7 @@ export function makeGetBundlesResponse(
    * @returns The combined product variant, or null if not found.
    */
   const combineProductVariant = (variantId) => {
-    const variant = productDetail.data.product.variants.find(
-      (v) => v.id === variantId,
-    );
-    return variant ? { ...variant } : null;
+    return productDetail.data.product.variants.find((v) => v.id === variantId);
   };
 
   /**

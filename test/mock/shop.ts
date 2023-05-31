@@ -1,10 +1,7 @@
 export const shopIntegrationMocks = {
-  mockElasticSearchMappingData: [
-    {
-      shr_b2b_product_id: { raw: 'UHJvZHVjdDoxMjUxNQ==' },
-      shr_b2c_product_id: { raw: 'UHJvZHVjdDoxMTkzNTM=' },
-    },
-  ],
+  mockElasticSearchMappingData: new Map([
+    ['UHJvZHVjdDoxMTkzNTM=', 'UHJvZHVjdDoxMjUxNQ=='],
+  ]),
   expectedMyProductsResponse: {
     status: 200,
     data: [
