@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { ManagementClient } from 'auth0';
+import { validateAuth0Token } from 'src/external/endpoints/auth0';
+import { Auth0UserDetailType } from 'src/modules/account/user/User.types';
+import { validateObjectLength } from 'src/modules/account/user/User.utils';
+import { AllUsersDTO } from '../dto/user.dto';
 import {
   AUTH0_DOMAIN,
   AUTH0_M2M_APP_CLIENT_ID,
   AUTH0_M2M_APP_CLIENT_SECRET,
   AUTH0_TTL_CACHE_TIME,
-} from 'src/constants';
-import { validateAuth0Token } from 'src/external/endpoints/auth0';
-import { Auth0UserDetailType } from 'src/modules/account/user/User.types';
-import { validateObjectLength } from 'src/modules/account/user/User.utils';
-import { AllUsersDTO } from '../dto/user.dto';
+} from './auth0.constants';
 
 @Injectable()
 export default class Auth0Service {

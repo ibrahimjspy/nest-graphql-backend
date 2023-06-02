@@ -1,6 +1,9 @@
 import { Logger } from '@nestjs/common';
-import { AUTH0_DOMAIN, AUTH0_SPA_CONFIG } from 'src/constants';
 import http from 'src/core/proxies/restHandler';
+import {
+  AUTH0_DOMAIN,
+  AUTH0_SPA_CONFIG,
+} from 'src/modules/account/user/services/auth0.constants';
 
 const AUTH0_URL = `https://${AUTH0_DOMAIN}`;
 
