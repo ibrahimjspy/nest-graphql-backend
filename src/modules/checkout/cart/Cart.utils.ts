@@ -8,6 +8,7 @@ import { NoBundleCreatedError } from '../Checkout.errors';
 import { OpenPackTransactionTypeEnum } from './dto/common.dto';
 import { UpdateBundleDto, UpdateOpenPackDto } from './dto/cart';
 import { SaleorCheckoutInterface } from '../Checkout.utils.type';
+import { CheckoutBundleInterface } from './Cart.types';
 
 /**
  * parses checkout bundles object and returns bundle ids
@@ -355,4 +356,31 @@ export const getSaleorProductVariantsMapping = (
     quantityMapping.set(line.variant.id, line.quantity);
   });
   return quantityMapping;
+};
+
+/**
+ * Updates variant media URLs in checkout bundles to use the product's thumbnail URL if they don't include "ColorSwatch".
+ * @param {CheckoutBundleInterface[]} checkoutBundles - Array of checkout bundles.
+ */
+export const validateCheckoutVariantMedia = (
+  checkoutBundles: CheckoutBundleInterface[],
+): void => {
+  checkoutBundles.forEach((checkoutBundle) => {
+    // Get the product's thumbnail URL
+    const productMedia = checkoutBundle.bundle.product.thumbnail.url;
+    checkoutBundle.bundle.productVariants.forEach((variant) => {
+      // Get the URL of the variant's media (assumed to be at index 0)
+      const variantMedia = variant.productVariant?.media[0]?.url;
+      if (!variantMedia) {
+        const media = { url: productMedia };
+        variant.productVariant.media[0] = media;
+        return;
+      }
+
+      // Check if the variant media URL includes "ColorSwatch"
+      if (!variantMedia.includes('ColorSwatch')) {
+        variant.productVariant.media[0].url = productMedia;
+      }
+    });
+  });
 };

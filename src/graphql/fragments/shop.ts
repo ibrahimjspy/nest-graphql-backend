@@ -12,6 +12,7 @@ export const shopDetailsFragment = gql`
     about
     returnPolicy
     storePolicy
+    shipsFrom
     fields {
       name
       values
