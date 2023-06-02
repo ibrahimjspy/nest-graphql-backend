@@ -23,8 +23,6 @@ import {
   checkoutBundlesInterface,
   shippingAddressType,
 } from './Legacy.service.types';
-import packageInfo from '../../../../package.json';
-import { saveFailedOrderHandler } from 'src/graphql/handlers/checkout/checkout';
 import { EnvironmentEnum } from 'src/external/endpoints/provisionStorefront';
 
 // TODO refactor this class implementation according to nest js classes
@@ -75,6 +73,7 @@ export class LegacyService {
   async placeExternalOrder() {
     try {
       const payload = await this.getExternalOrderPlacePayload();
+      console.log(payload);
       const URL = `${this.baseUrl}/check-out/`;
       const tokenWithoutBearer = this.token.match(/^(\S+)\s(.*)/).slice(1);
       const header = {
@@ -83,21 +82,8 @@ export class LegacyService {
       const response = await http.post(URL, payload, header);
       return response?.data;
     } catch (err) {
-      Logger.error(err);
-      await saveFailedOrderHandler(
-        {
-          source: packageInfo.name,
-          orderId: this.orderId,
-          exception: JSON.stringify(err),
-          errorShortDesc: err.message,
-          orderPayload: {
-            checkoutBundles: this.selectedBundles,
-            shippingInformation: this.shipping_info,
-            paymentMethodId: this.paymentMethodId,
-          },
-        },
-        this.token,
-      );
+      Logger.error(err, err);
+      console.dir(err, { depth: null });
       return prepareFailedResponse(err.message);
     }
   }
