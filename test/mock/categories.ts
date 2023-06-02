@@ -5,6 +5,9 @@ export const mockCategoriesData = {
         node: {
           name: 'Default Category',
           id: 'Q2F0ZWdvcnk6MQ==',
+          products: {
+            totalCount: 10000,
+          },
           slug: 'default-category',
           children: { edges: [] },
         },
@@ -24,11 +27,17 @@ export const mockCategoriesData = {
                   name: 'LOUNGE WEAR',
                   id: 'Q2F0ZWdvcnk6MjI=',
                   slug: 'lounge-wear',
+                  products: {
+                    totalCount: 10000,
+                  },
                   children: {
                     edges: [
                       {
                         node: {
                           name: 'PANTS',
+                          products: {
+                            totalCount: 0,
+                          },
                           id: 'Q2F0ZWdvcnk6NjU=',
                           slug: 'pants-2',
                         },
@@ -36,6 +45,9 @@ export const mockCategoriesData = {
                       {
                         node: {
                           name: 'SETS',
+                          products: {
+                            totalCount: 10000,
+                          },
                           id: 'Q2F0ZWdvcnk6Njg=',
                           slug: 'sets-2',
                         },
@@ -49,11 +61,17 @@ export const mockCategoriesData = {
                   name: 'DRESSES',
                   id: 'Q2F0ZWdvcnk6MTI=',
                   slug: 'dresses',
+                  products: {
+                    totalCount: 10000,
+                  },
                   children: {
                     edges: [
                       {
                         node: {
                           name: 'CASUAL',
+                          products: {
+                            totalCount: 10000,
+                          },
                           id: 'Q2F0ZWdvcnk6NDc=',
                           slug: 'casual',
                         },
@@ -62,6 +80,9 @@ export const mockCategoriesData = {
                         node: {
                           name: 'CLASSIC AND CAREER',
                           id: 'Q2F0ZWdvcnk6NDg=',
+                          products: {
+                            totalCount: 0,
+                          },
                           slug: 'classic-and-career',
                         },
                       },
@@ -81,9 +102,7 @@ export const mockCategoriesData = {
         name: 'Women',
         id: 'Q2F0ZWdvcnk6MTg=',
         slug: 'women',
-        products: {
-          totalCount: 10000,
-        },
+        products: { totalCount: 10000 },
         children: {
           edges: [
             {
@@ -91,18 +110,13 @@ export const mockCategoriesData = {
                 name: 'LOUNGE WEAR',
                 id: 'Q2F0ZWdvcnk6MjI=',
                 slug: 'lounge-wear',
+                products: { totalCount: 10000 },
                 children: {
                   edges: [
                     {
                       node: {
-                        name: 'PANTS',
-                        id: 'Q2F0ZWdvcnk6NjU=',
-                        slug: 'pants-2',
-                      },
-                    },
-                    {
-                      node: {
                         name: 'SETS',
+                        products: { totalCount: 10000 },
                         id: 'Q2F0ZWdvcnk6Njg=',
                         slug: 'sets-2',
                       },
@@ -116,20 +130,15 @@ export const mockCategoriesData = {
                 name: 'DRESSES',
                 id: 'Q2F0ZWdvcnk6MTI=',
                 slug: 'dresses',
+                products: { totalCount: 10000 },
                 children: {
                   edges: [
                     {
                       node: {
                         name: 'CASUAL',
+                        products: { totalCount: 10000 },
                         id: 'Q2F0ZWdvcnk6NDc=',
                         slug: 'casual',
-                      },
-                    },
-                    {
-                      node: {
-                        name: 'CLASSIC AND CAREER',
-                        id: 'Q2F0ZWdvcnk6NDg=',
-                        slug: 'classic-and-career',
                       },
                     },
                   ],

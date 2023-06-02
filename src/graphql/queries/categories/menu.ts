@@ -9,17 +9,26 @@ export const menuCategoriesQuery = (): string => {
             name
             id
             slug
+            products {
+              totalCount
+            }
             children(first: 20) {
               edges {
                 node {
                   name
                   id
+                  products {
+                    totalCount
+                  }
                   slug
                   children(first: 20) {
                     edges {
                       node {
                         name
                         id
+                        products {
+                          totalCount
+                        }
                         slug
                       }
                     }
