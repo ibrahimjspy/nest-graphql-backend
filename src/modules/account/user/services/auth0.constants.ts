@@ -5,10 +5,12 @@ export const AUTH0_M2M_APP_CLIENT_SECRET =
 export const AUTH0_TTL_CACHE_TIME = 72000;
 
 export const AUTH0_SPA_CONFIG = {
-  clientId: process.env.clientId || 'NHDmV7IkVh8s8zX1d5waoPolBAwwLSzT',
-  scope: process.env.scope || 'openid profile email offline_access',
-  audience: process.env.audience || 'sharove-dev-authorization',
-  connection: process.env.connection || 'Username-Password-Authentication',
+  clientId: process.env.AUTH0_CLIENT_ID || 'NHDmV7IkVh8s8zX1d5waoPolBAwwLSzT',
+  scope: process.env.AUTH0_SCOPE || 'openid profile email offline_access',
+  audience: process.env.AUTH0_AUDIENCE || 'sharove-dev-authorization',
+  connection:
+    process.env.AUTH0_CONNECTION || 'Username-Password-Authentication',
   grantType:
-    process.env.grantType || 'http://auth0.com/oauth/grant-type/password-realm',
+    process.env.AUTH0_GRANT_TYPE ||
+    'http://auth0.com/oauth/grant-type/password-realm',
 };
