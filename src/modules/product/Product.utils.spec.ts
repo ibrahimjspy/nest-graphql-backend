@@ -6,6 +6,8 @@ import {
   getBundleIds,
   getProductIds,
   getShopProductIds,
+  mergeB2cMappingsWithProductData,
+  storeB2bMapping,
   storeB2cMapping,
 } from './Product.utils';
 
@@ -44,5 +46,180 @@ describe('Product utility tests', () => {
     expect(shopProducts).toBeDefined();
     expect(shopProducts).toBeTruthy();
     expect(shopProducts).toStrictEqual(['123']);
+  });
+
+  it('should parse elastic search response and store b2b and b2c IDs in a hash map', () => {
+    const elasticSearchData = [
+      {
+        shr_b2b_product_id: { raw: 'b2b-id-1' },
+        shr_b2c_product_id: { raw: 'b2c-id-1' },
+      },
+      {
+        shr_b2b_product_id: { raw: 'b2b-id-2' },
+        shr_b2c_product_id: { raw: 'b2c-id-2' },
+      },
+    ];
+
+    const expectedMapping = new Map<string, string>([
+      ['b2c-id-1', 'b2b-id-1'],
+      ['b2c-id-2', 'b2b-id-2'],
+    ]);
+
+    const idsMapping = storeB2bMapping(elasticSearchData);
+
+    expect(idsMapping).toStrictEqual(expectedMapping);
+  });
+
+  it('should add b2c product ID to products data using the provided IDs mapping (B2B origin)', () => {
+    const idsMapping = new Map<string, string>([
+      ['b2b-id-1', 'b2c-id-1'],
+      ['b2b-id-2', 'b2c-id-2'],
+    ]);
+
+    const productsData = {
+      edges: [
+        {
+          node: {
+            id: 'b2b-id-1',
+          },
+        },
+        {
+          node: {
+            id: 'b2b-id-2',
+          },
+        },
+      ],
+    };
+
+    const expectedProductsData = {
+      edges: [
+        {
+          node: {
+            id: 'b2b-id-1',
+            b2cProductId: 'b2c-id-1',
+          },
+        },
+        {
+          node: {
+            id: 'b2b-id-2',
+            b2cProductId: 'b2c-id-2',
+          },
+        },
+      ],
+    };
+
+    const mergedProductsData = mergeB2cMappingsWithProductData(
+      idsMapping,
+      productsData,
+      'B2B' as any,
+    );
+
+    expect(mergedProductsData).toEqual(expectedProductsData);
+  });
+  it('should add b2c product ID to products data using the provided IDs mapping (B2C origin)', () => {
+    const idsMapping = new Map<string, string>([
+      ['b2c-id-1', 'b2b-id-1'],
+      ['b2c-id-2', 'b2b-id-2'],
+    ]);
+
+    const productsData = {
+      edges: [
+        {
+          node: {
+            id: 'b2c-id-1',
+          },
+        },
+        {
+          node: {
+            id: 'b2c-id-2',
+          },
+        },
+      ],
+    };
+
+    const expectedProductsData = {
+      edges: [
+        {
+          node: {
+            id: 'b2c-id-1',
+            b2bProductId: 'b2b-id-1',
+          },
+        },
+        {
+          node: {
+            id: 'b2c-id-2',
+            b2bProductId: 'b2b-id-2',
+          },
+        },
+      ],
+    };
+
+    const mergedProductsData = mergeB2cMappingsWithProductData(
+      idsMapping,
+      productsData,
+      'B2C' as any,
+    );
+
+    expect(mergedProductsData).toStrictEqual(expectedProductsData);
+  });
+
+  it('should return the original products data if no IDs mapping is provided', () => {
+    const idsMapping = new Map<string, string>();
+
+    const productsData = {
+      edges: [
+        {
+          node: {
+            id: 'b2b-id-1',
+          },
+        },
+        {
+          node: {
+            id: 'b2b-id-2',
+          },
+        },
+      ],
+    };
+
+    const expectedProductsData = {
+      edges: [
+        {
+          node: {
+            b2cProductId: null,
+            id: 'b2b-id-1',
+          },
+        },
+        {
+          node: {
+            b2cProductId: null,
+            id: 'b2b-id-2',
+          },
+        },
+      ],
+    };
+
+    const mergedProductsData = mergeB2cMappingsWithProductData(
+      idsMapping,
+      productsData,
+      'B2B' as any,
+    );
+
+    expect(mergedProductsData).toStrictEqual(expectedProductsData);
+  });
+
+  it('should return the original products data if products data is not provided', () => {
+    const idsMapping = new Map<string, string>();
+
+    const productsData = undefined;
+
+    const expectedProductsData = undefined;
+
+    const mergedProductsData = mergeB2cMappingsWithProductData(
+      idsMapping,
+      productsData,
+      'B2B' as any,
+    );
+
+    expect(mergedProductsData).toStrictEqual(expectedProductsData);
   });
 });

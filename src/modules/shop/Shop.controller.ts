@@ -14,6 +14,7 @@ import { makeResponse } from '../../core/utils/response';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ShopService } from './services/shop/Shop.service';
 import {
+  WorkflowNameDto,
   accountIdDTO,
   allShopIdsDTO,
   b2cDto,
@@ -32,6 +33,7 @@ import {
 import { ShopIdDto, shopInfoDto } from '../orders/dto';
 import { MyProductsService } from './services/myProducts/MyProducts.service';
 import { MyVendorsService } from './services/myVendors/MyVendors.service';
+import { ImportBulkCategoriesDto } from './dto/autoSync';
 
 @ApiTags('shop')
 @Controller('')
@@ -91,6 +93,28 @@ export class ShopController {
     return makeResponse(
       res,
       await this.shopService.createStore(
+        params.shopId,
+        storeInput,
+        Authorization,
+      ),
+    );
+  }
+
+  @Post('/api/v2/store/create/:shopId')
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'create store against given user shop id',
+  })
+  async createStoreV2(
+    @Res() res,
+    @Param() params: shopIdDTO,
+    @Body() storeInput: createStoreDTO,
+    @Headers() headers,
+  ): Promise<object> {
+    const Authorization: string = headers.authorization;
+    return makeResponse(
+      res,
+      await this.shopService.createStoreV2(
         params.shopId,
         storeInput,
         Authorization,
@@ -289,6 +313,37 @@ export class ShopController {
         Authorization,
         filter.isB2c,
       ),
+    );
+  }
+
+  @Post('/api/v1/shop/auto/sync')
+  @ApiOperation({
+    summary: 'sync a category against a shop',
+  })
+  @ApiBearerAuth('JWT-auth')
+  async autoSync(
+    @Res() res,
+    @Body() autoSyncInput: ImportBulkCategoriesDto,
+    @Headers() headers,
+  ): Promise<object> {
+    const Authorization: string = headers.authorization;
+    return makeResponse(
+      res,
+      await this.shopService.autoSync(autoSyncInput, Authorization),
+    );
+  }
+
+  @Get('/api/v1/shop/workflow/status/:workflowName')
+  @ApiOperation({
+    summary: 'returns workflow status by workflow name',
+  })
+  async getWorkflowStatus(
+    @Res() res,
+    @Param() params: WorkflowNameDto,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.shopService.getWorkflowStatus(params.workflowName),
     );
   }
 }

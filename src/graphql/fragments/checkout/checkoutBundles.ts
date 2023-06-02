@@ -39,6 +39,9 @@ export const checkoutBundlesFragment = gql`
             attributes {
               ...Attribute
             }
+            media {
+              url
+            }
             pricing {
               ...Price
             }

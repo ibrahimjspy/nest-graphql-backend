@@ -1,4 +1,7 @@
 export const shopIntegrationMocks = {
+  mockElasticSearchMappingData: new Map([
+    ['UHJvZHVjdDoxMTkzNTM=', 'UHJvZHVjdDoxMjUxNQ=='],
+  ]),
   expectedMyProductsResponse: {
     status: 200,
     data: [
@@ -685,6 +688,7 @@ export const shopIntegrationMocks = {
                   },
                 },
               ],
+              b2bProductId: 'UHJvZHVjdDoxMjUxNQ==',
             },
           },
         ],

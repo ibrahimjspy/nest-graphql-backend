@@ -10,7 +10,12 @@ import { NoPaymentIntentError } from './Checkout.errors';
 import { MarketplaceCartService } from './cart/services/marketplace/Cart.marketplace.service';
 import { PaymentService } from './payment/Payment.service';
 import { CreateCheckoutDto } from './dto/createCheckout';
-import { B2B_CHECKOUT_APP_TOKEN } from 'src/constants';
+import {
+  B2B_CHECKOUT_APP_TOKEN,
+  SHAROVE_BILLING_ADDRESS,
+  SHAROVE_EMAIL,
+  SHAROVE_PASSWORD,
+} from 'src/constants';
 import { getOrdersByShopId } from '../orders/Orders.utils';
 import { OrdersService } from '../orders/Orders.service';
 import { LegacyService } from 'src/external/services/osPlaceOrder/Legacy.service';
@@ -18,7 +23,17 @@ import { preparePromotionResponse } from './shipping/services/Shipping.response'
 import {
   addPreAuthInCheckoutResponse,
   checkoutShippingMethodsSort,
+  extractOsOrderNumber,
+  getLessInventoryProducts,
+  getProductIds,
 } from './Checkout.utils';
+import OsOrderService from 'src/external/services/osOrder/osOrder.service';
+import { OsOrderResponseInterface, ProductType } from './Checkout.utils.type';
+import { getB2bProductMapping } from 'src/external/endpoints/b2cMapping';
+import { getOsProductMapping } from 'src/external/endpoints/b2bMapping';
+import { authenticateAuth0User } from 'src/external/endpoints/auth0';
+import { getUserByToken } from '../account/user/User.utils';
+import { ProductIdsMappingType } from 'src/external/endpoints/b2bMapping.types';
 
 @Injectable()
 export class CheckoutService {
@@ -27,6 +42,7 @@ export class CheckoutService {
     private paymentService: PaymentService,
     private marketplaceCartService: MarketplaceCartService,
     private ordersService: OrdersService,
+    private osOrderService: OsOrderService,
   ) {
     return;
   }
@@ -74,6 +90,7 @@ export class CheckoutService {
         orderDetails['number'],
         paymentMethodId,
         orderDetails['billingAddress'],
+        orderDetails['deliveryMethod'],
         token,
       );
       return await instance.placeExternalOrder();
@@ -129,6 +146,10 @@ export class CheckoutService {
         this.ordersService.addOrderToShop(ordersByShop, token),
         CheckoutHandlers.disableCheckoutSession(checkoutId, token),
       ]);
+      const osOrderId = extractOsOrderNumber(
+        osOrderResponse as OsOrderResponseInterface,
+      );
+      await this.paymentService.paymentIntentUpdate(paymentIntentId, osOrderId);
       return prepareSuccessResponse(
         { createOrder, osOrderResponse },
         'order created against checkout',
@@ -167,6 +188,82 @@ export class CheckoutService {
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description -- this method place order on orangeshine as sharove against B2C order
+   * @step -- Authenticate Sharove user for getting access token
+   * @step -- Get b2c order detail against given b2c order id
+   * @step -- Get less inventory products from b2c order detail
+   * @step -- Get OS product ids from elastic search mapping agianst b2c product ids
+   * @step -- Create sharove shipping address on orangeshine
+   * @step -- Get bundles from orangeshine against given OS product ids
+   * @step -- Transform data for orangeshine order payload
+   * @step -- Place order on orangeshine against sharove account with transformed payload
+   * @return -- Orangeshine order response
+   */
+  public async osPlaceOrder(orderId: string, token: string): Promise<object> {
+    try {
+      const userAuthReponse = await authenticateAuth0User(
+        SHAROVE_EMAIL,
+        SHAROVE_PASSWORD,
+      );
+      const userAccessToken = userAuthReponse?.access_token;
+      const userDetail = getUserByToken(userAccessToken);
+      const osUserId = userDetail['os_user_id'];
+      const orderDetail: any = await this.ordersService.getOrderDetailsById(
+        orderId,
+        token,
+      );
+
+      const orderNumber = orderDetail?.data?.number;
+      const lessInventoryProducts: ProductType[] =
+        getLessInventoryProducts(orderDetail);
+      const b2cProductIds: string[] = getProductIds(lessInventoryProducts);
+      const b2bProductMapping: ProductIdsMappingType =
+        await getB2bProductMapping(b2cProductIds);
+      const b2bProductIds = Array.from(b2bProductMapping.values());
+      const osProductMapping: ProductIdsMappingType = await getOsProductMapping(
+        b2bProductIds,
+      );
+      const osProductIds = Array.from(osProductMapping.values());
+      const osShippingAddress: any =
+        await this.osOrderService.createShippingAddress({
+          ...SHAROVE_BILLING_ADDRESS,
+          user_id: osUserId,
+        });
+      const osProductsBundles = await this.osOrderService.getBundles(
+        osProductIds,
+      );
+      const OsShippingAddressId = osShippingAddress?.data?.user_id;
+      const osOrderPayload = this.osOrderService.transformOrderPayload({
+        orderNumber,
+        b2cProducts: lessInventoryProducts,
+        osProductMapping,
+        b2bProductMapping,
+        OsShippingAddressId,
+        osProductsBundles,
+      });
+
+      const response = await this.osOrderService.placeOrder(
+        osOrderPayload,
+        SHAROVE_EMAIL,
+        orderId,
+        userAccessToken,
+      );
+      return prepareSuccessResponse(
+        { response },
+        'order created on orangeshine',
+        201,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      if (error instanceof NoPaymentIntentError) {
+        return prepareFailedResponse(error.message);
+      } else {
+        return graphqlExceptionHandler(error);
+      }
     }
   }
 }

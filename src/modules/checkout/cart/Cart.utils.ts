@@ -8,6 +8,7 @@ import { NoBundleCreatedError } from '../Checkout.errors';
 import { OpenPackTransactionTypeEnum } from './dto/common.dto';
 import { UpdateBundleDto, UpdateOpenPackDto } from './dto/cart';
 import { SaleorCheckoutInterface } from '../Checkout.utils.type';
+import { CheckoutBundleInterface } from './Cart.types';
 
 /**
  * parses checkout bundles object and returns bundle ids
@@ -193,6 +194,7 @@ export const getAddBundleToCartLines = (
     // Bundle quantity is multiplied with variant quantity for getting actual quantity ordered by user
     const bundleQty = targetBundle?.quantity;
     checkoutBundle?.node?.productVariants?.forEach((v) => {
+      if (v.quantity == 0) return;
       lines.push({
         quantity: bundleQty * v?.quantity,
         variantId: v?.productVariant?.id,
@@ -277,7 +279,7 @@ export const getOpenPackLinesUpdate = (
   openPackVariants: UpdateBundleDto[],
   bundle: GetBundleResponseType,
   saleor: SaleorCheckoutInterface,
-): CheckoutLinesInterface => {
+) => {
   const checkoutLines = [];
   const bundleVariantMapping = getBundleProductVariantsMapping(bundle);
   const saleorVariantsMapping = getSaleorProductVariantsMapping(saleor);
@@ -286,7 +288,7 @@ export const getOpenPackLinesUpdate = (
     const saleorQuantity = saleorVariantsMapping.get(variant.oldVariantId);
     const bundleQuantity =
       variant.quantity - bundleVariantMapping.get(variant.oldVariantId);
-    const quantity = saleorQuantity + bundleQuantity;
+    const quantity = (saleorQuantity || 0) + bundleQuantity;
     checkoutLines.push({
       variantId: variant.oldVariantId,
       quantity: quantity,
@@ -304,13 +306,13 @@ export const getOpenPackLinesReplace = (
   bundle: GetBundleResponseType,
   saleor: SaleorCheckoutInterface,
 ) => {
-  const updatedLines = [];
+  const updatedLines = [] as CheckoutLinesInterface[];
   const saleorVariantsMapping = getSaleorProductVariantsMapping(saleor);
   const bundleVariantMapping = getBundleProductVariantsMapping(bundle);
 
   openPackUpdates.variants.map((variant) => {
     const newVariantQuantity =
-      bundleVariantMapping.get(variant.oldVariantId) +
+      (bundleVariantMapping.get(variant.oldVariantId) || 0) +
       (saleorVariantsMapping.get(variant.newVariantId) || 0);
     const oldVariantQuantity =
       saleorVariantsMapping.get(variant.oldVariantId) -
@@ -319,11 +321,11 @@ export const getOpenPackLinesReplace = (
     updatedLines.push(
       {
         variantId: variant.newVariantId,
-        quantity: newVariantQuantity,
+        quantity: Math.max(newVariantQuantity, 0),
       },
       {
         variantId: variant.oldVariantId,
-        quantity: oldVariantQuantity,
+        quantity: Math.max(oldVariantQuantity, 0) || 0,
       },
     );
   });
@@ -354,4 +356,31 @@ export const getSaleorProductVariantsMapping = (
     quantityMapping.set(line.variant.id, line.quantity);
   });
   return quantityMapping;
+};
+
+/**
+ * Updates variant media URLs in checkout bundles to use the product's thumbnail URL if they don't include "ColorSwatch".
+ * @param {CheckoutBundleInterface[]} checkoutBundles - Array of checkout bundles.
+ */
+export const validateCheckoutVariantMedia = (
+  checkoutBundles: CheckoutBundleInterface[],
+): void => {
+  checkoutBundles.forEach((checkoutBundle) => {
+    // Get the product's thumbnail URL
+    const productMedia = checkoutBundle.bundle.product.thumbnail.url;
+    checkoutBundle.bundle.productVariants.forEach((variant) => {
+      // Get the URL of the variant's media (assumed to be at index 0)
+      const variantMedia = variant.productVariant?.media[0]?.url;
+      if (!variantMedia) {
+        const media = { url: productMedia };
+        variant.productVariant.media[0] = media;
+        return;
+      }
+
+      // Check if the variant media URL includes "ColorSwatch"
+      if (!variantMedia.includes('ColorSwatch')) {
+        variant.productVariant.media[0].url = productMedia;
+      }
+    });
+  });
 };

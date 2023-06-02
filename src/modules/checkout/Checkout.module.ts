@@ -9,6 +9,7 @@ import { MarketplaceCartService } from './cart/services/marketplace/Cart.marketp
 import { SaleorCheckoutService } from './services/Checkout.saleor';
 import { CheckoutValidationService } from './services/Checkout.validation';
 import { OrdersService } from '../orders/Orders.service';
+import OsOrderService from 'src/external/services/osOrder/osOrder.service';
 
 @Module({
   imports: [ShippingModule, PaymentModule, CartModule],
@@ -20,6 +21,7 @@ import { OrdersService } from '../orders/Orders.service';
     SaleorCheckoutService,
     CheckoutValidationService,
     OrdersService,
+    OsOrderService,
   ],
   exports: [CheckoutService],
 })

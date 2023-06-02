@@ -16,6 +16,7 @@ import {
   getNewBundlesToAdd,
   getSelectedCheckoutBundles,
   getUnSelectedCheckoutBundles,
+  validateCheckoutVariantMedia,
 } from './Cart.utils';
 import { CartResponseService } from './services/Response.service';
 import {
@@ -30,6 +31,7 @@ import {
 } from './dto/cart';
 import { SuccessResponseType } from 'src/core/utils/response.type';
 import { ProductService } from 'src/modules/product/Product.service';
+import { CartResponseInterface } from './Cart.types';
 
 @Injectable()
 export class CartService {
@@ -51,12 +53,16 @@ export class CartService {
     try {
       const isSelected = null;
       const productDetails = true;
-      return await this.marketplaceService.getAllCheckoutBundles({
-        userEmail,
-        token,
-        productDetails,
-        isSelected,
-      });
+      const cartResponse = (await this.marketplaceService.getAllCheckoutBundles(
+        {
+          userEmail,
+          token,
+          productDetails,
+          isSelected,
+        },
+      )) as CartResponseInterface;
+      validateCheckoutVariantMedia(cartResponse.data.checkoutBundles);
+      return cartResponse;
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -436,7 +442,7 @@ export class CartService {
         token,
       );
       const [updateBundle, marketplace] = await Promise.all([
-        this.productService.updateBundle(updateOpenPack),
+        await this.productService.updateBundle(updateOpenPack),
         this.marketplaceService.getAllCheckoutBundles({ checkoutId, token }),
       ]);
       return this.cartResponseBuilder.updateOpenPack(

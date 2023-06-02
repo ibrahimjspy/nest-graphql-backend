@@ -4,6 +4,7 @@ import {
   BASE_EXTERNAL_ENDPOINT,
   CATEGORY_SHOES,
   ELASTIC_SEARCH_ENDPOINT,
+  ENVIRONMENT,
   IN_STOCK,
   MAPPING_SERVICE_TOKEN,
   PAYMENT_TYPE,
@@ -18,11 +19,13 @@ import axios from 'axios';
 import { Logger } from '@nestjs/common';
 import { prepareFailedResponse } from 'src/core/utils/response';
 import {
+  DeliveryMethodType,
   checkoutBundlesInterface,
   shippingAddressType,
 } from './Legacy.service.types';
 import packageInfo from '../../../../package.json';
 import { saveFailedOrderHandler } from 'src/graphql/handlers/checkout/checkout';
+import { EnvironmentEnum } from 'src/external/endpoints/provisionStorefront';
 
 // TODO refactor this class implementation according to nest js classes
 // TODO split down classes based on external services like mapping, os
@@ -45,16 +48,18 @@ export class LegacyService {
   shoesVendorIds = [];
   userId: string;
   token: string;
+  deliveryMethod: DeliveryMethodType;
   paymentMethodId: string;
   colorsByShops: any[];
   billingInfo: shippingAddressType;
-
+  B2B_ORDER_TYPE = 'B2B';
   constructor(
     selectedBundles,
     shipping_info,
     orderId,
     paymentMethodId,
     billingInfo: shippingAddressType,
+    deliveryMethod: DeliveryMethodType,
     token,
   ) {
     this.selectedBundles = selectedBundles;
@@ -65,6 +70,7 @@ export class LegacyService {
     this.token = token;
     this.baseUrl = `${BASE_EXTERNAL_ENDPOINT}/api/v3`;
     this.elasticSearchUrl = `${ELASTIC_SEARCH_ENDPOINT}/api/as/v1`;
+    this.deliveryMethod = deliveryMethod;
   }
   async placeExternalOrder() {
     try {
@@ -128,11 +134,11 @@ export class LegacyService {
       address1: this.shipping_info?.streetAddress1,
       address2: this.shipping_info?.streetAddress2,
       city: this.shipping_info?.city,
-      state: this.shipping_info?.country.code,
+      state: this.shipping_info?.countryArea,
       zipcode: this.shipping_info?.postalCode,
       user_id: this.userId,
       company_name: this.shipping_info?.companyName,
-      country: this.shipping_info?.country.code,
+      country: this.shipping_info?.country.country,
       first_name: this.shipping_info?.firstName,
       last_name: this.shipping_info?.lastName,
       nick_name: this.shipping_info?.firstName,
@@ -185,8 +191,11 @@ export class LegacyService {
             ],
           },
         };
-
-        const URL = `${this.elasticSearchUrl}/engines/b2b-product-track-dev/search`;
+        // todo fix this
+        const URL =
+          ENVIRONMENT == EnvironmentEnum.DEV
+            ? `${this.elasticSearchUrl}/engines/b2b-product-track-dev/search`
+            : `${this.elasticSearchUrl}/engines/b2b-product-track-prod/search`;
         const response = await http.post(URL, payload, {
           headers: {
             Authorization: `Bearer private-${MAPPING_SERVICE_TOKEN}`,
@@ -221,7 +230,10 @@ export class LegacyService {
           },
         };
 
-        const URL = `${this.elasticSearchUrl}/engines/b2b-shop-track-dev/search`;
+        const URL =
+          ENVIRONMENT == EnvironmentEnum.DEV
+            ? `${this.elasticSearchUrl}/engines/b2b-shop-track-dev/search`
+            : `${this.elasticSearchUrl}/engines/b2b-shop-track-prod/search`;
         const response = await http.post(URL, payload, {
           headers: {
             Authorization: `Bearer private-${MAPPING_SERVICE_TOKEN}`,
@@ -252,6 +264,7 @@ export class LegacyService {
     selectedBundlesData?.map((elements) => {
       const shopId = elements.bundle.shop.id;
       elements?.bundle?.productVariants?.map((element) => {
+        const sizeRun = [];
         const colorName = this.getColorAttribute(
           element?.productVariant?.attributes,
         )?.values[0]?.name;
@@ -264,7 +277,10 @@ export class LegacyService {
 
         const bundle_name = elements?.bundle?.name;
         const productId = elements?.bundle?.product?.id;
-
+        const bundleType = elements.bundle.isOpenBundle;
+        elements.bundle.productVariants.map((variant) => {
+          sizeRun.push(variant.quantity);
+        });
         const itemId = productMappings[productId]['legacyProductId'];
         const compositeKey = `${itemId}_${colorId}`;
         if (productId && !(compositeKey in payloadObject)) {
@@ -274,9 +290,10 @@ export class LegacyService {
             pack_qty: elements?.quantity,
             stock_type: this.stockTypeMappingObject[productId],
             memo: '',
+            ...(bundleType ? { size_run: sizeRun } : {}),
             sms_number: SMS_NUMBER,
             spa_id: shippingAddressInfo?.data?.user_id,
-            spm_name: 'UPS',
+            spm_name: this.deliveryMethod.name,
             store_credit: STORE_CREDIT,
             signature_requested: SIGNATURE_REQUESTED,
           };
@@ -296,6 +313,7 @@ export class LegacyService {
       sharove_order_id: this.orderId,
       stripe_payment_method_id: this.paymentMethodId,
       billing: this.transformBillingInformation(),
+      order_type: this.B2B_ORDER_TYPE,
     };
   }
 

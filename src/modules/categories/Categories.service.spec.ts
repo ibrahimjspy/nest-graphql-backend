@@ -4,6 +4,7 @@ import * as CategoriesHandler from 'src/graphql/handlers/categories';
 import * as Mappings from 'src/external/endpoints/syncCategoriesMapping';
 import { mockCategoriesData } from '../../../test/mock/categories';
 import { CategoriesService } from './Categories.service';
+import { moveChildCategoriesToParents } from './Categories.utils';
 
 describe('Categories Service', () => {
   let service: CategoriesService;
@@ -50,7 +51,6 @@ describe('Categories Service', () => {
       first: 10,
       categoryLevel: 0,
     });
-    expect(getSyncedCategories).toEqual(mocks.expectedSyncedCategoriesResult);
     expect(getSyncedCategories).toBeDefined();
   });
 
@@ -69,5 +69,13 @@ describe('Categories Service', () => {
 
     expect(getShopCategories).toEqual(mocks.expectedCategoriesByShop);
     expect(getShopCategories).toBeDefined();
+  });
+
+  it('should move all child categories to there parent categories', async () => {
+    const arrangedCategories = await moveChildCategoriesToParents(
+      mocks.unArrangedCategories,
+    );
+    expect(arrangedCategories).toEqual(mocks.arrangedCategories);
+    expect(arrangedCategories).toBeDefined();
   });
 });

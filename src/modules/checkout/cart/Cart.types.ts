@@ -1,17 +1,23 @@
-export interface checkoutBundlesInterface {
+export interface CheckoutBundleInterface {
   checkoutBundleId: string;
   isSelected: boolean;
   quantity: number;
   price: number;
   bundle: {
     id: string;
-    isOpenBundle: boolean;
     name: string;
+    isOpenBundle: boolean;
     description: string;
     slug: string;
     product: {
-      name: string;
       id: string;
+      description: string;
+      name: string;
+      slug: string;
+      metadata: {
+        key: string;
+        value: string;
+      }[];
       thumbnail: {
         url: string;
       };
@@ -23,7 +29,6 @@ export interface checkoutBundlesInterface {
       quantity: number;
       productVariant: {
         id: string;
-        name: string;
         sku: string;
         attributes: {
           attribute: {
@@ -33,23 +38,18 @@ export interface checkoutBundlesInterface {
             name: string;
           }[];
         }[];
-        product: {
-          category: {
-            ancestors: {
-              edges: {
-                node: {
-                  id: string;
-                  name: string;
-                };
-              }[];
+        media: {
+          url: string;
+        }[];
+        pricing: {
+          price: {
+            net: {
+              amount: number;
+              currency: string;
             };
           };
-        };
-        pricing: {
-          net: {
-            amount: number;
-            currency: string;
-          };
+          onSale: boolean;
+          discount: null;
         };
       };
     }[];
@@ -57,6 +57,7 @@ export interface checkoutBundlesInterface {
       id: string;
       name: string;
       madeIn: string;
+      minOrder: number;
       shippingMethods: {
         id: string;
         shippingMethodId: string;
@@ -65,23 +66,18 @@ export interface checkoutBundlesInterface {
     };
   };
 }
-export interface shippingAddressType {
-  firstName: string;
-  lastName: string;
-  streetAddress1: string;
-  streetAddress2: string;
-  phone: string;
-  companyName: string;
-  city: string;
-  postalCode: string;
-  countryArea: string;
-  country: {
-    code: string;
-    country: string;
-  };
-}
 
-export interface DeliveryMethodType {
-  id: string;
-  name: string;
+export interface CartResponseInterface {
+  status: number;
+  data: {
+    __typename: string;
+    userEmail: string;
+    totalAmount: number;
+    subTotal: number;
+    taxes: number;
+    discounts: number;
+    checkoutId: string;
+    checkoutBundles: CheckoutBundleInterface[];
+    selectedMethods: any[];
+  };
 }

@@ -66,3 +66,49 @@ export interface SaleorCheckoutInterface {
     };
   }[];
 }
+
+export interface ProductType {
+  id: string;
+  color: string;
+  size: string;
+  quantity: number;
+}
+
+export interface MetadataType {
+  key: string;
+  value: string;
+}
+
+export interface attributeType {
+  attribute: {
+    name: string;
+  };
+  values: Array<{
+    name: string;
+  }>;
+}
+
+export interface OsOrderResponseInterface {
+  data: {
+    orders: {
+      order_number: string;
+      order_amount: number;
+      order_status: {
+        is_held: boolean;
+        status_id: number;
+        status_alias: string;
+      };
+      fulfillment: string;
+      payment: {
+        auth_form_required: boolean;
+        payment_id: string;
+        payment_method_alias: string;
+      };
+      stock_type: string;
+    }[];
+    sharove_order_id: string;
+    pre_auth_vendors: string[];
+  };
+  message: any;
+  status: string;
+}

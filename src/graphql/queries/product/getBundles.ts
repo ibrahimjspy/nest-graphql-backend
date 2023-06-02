@@ -1,8 +1,6 @@
 import { gql } from 'graphql-request';
-import {
-  attributeFragment,
-  metadataFragment,
-} from 'src/graphql/fragments/attributes';
+import { DEFAULT_THUMBNAIL_SIZE } from 'src/constants';
+import { attributeFragment } from 'src/graphql/fragments/attributes';
 import { bundleDetailsFragment } from 'src/graphql/fragments/bundle';
 import { resultErrorFragment } from 'src/graphql/fragments/errors';
 import { mediaFragment } from 'src/graphql/fragments/media';
@@ -43,7 +41,7 @@ export const getBundlesQuery = (filter: GetBundlesDto) => {
                 metadata {
                   ... Metadata
                 }
-                thumbnail {
+                thumbnail(size: ${DEFAULT_THUMBNAIL_SIZE}) {
                   url
                 }
                 media {
@@ -84,7 +82,6 @@ export const getBundlesQuery = (filter: GetBundlesDto) => {
     ${productVariantDetailsFragment}
     ${pricingFragment}
     ${bundleDetailsFragment}
-    ${metadataFragment}
   `;
   }
   return gql`
@@ -100,15 +97,18 @@ export const getBundlesQuery = (filter: GetBundlesDto) => {
         ... on BundleConnectionType {
           edges {
             node {
-              id
+              ... Bundle
+              shop {
+                ... Shop
+              }
               productVariants {
                 quantity
-                productVariant{
-                  id
-                }
                 attributes {
                   name
                   value
+                }
+                productVariant{
+                  id
                 }
               }
             }
@@ -120,5 +120,7 @@ export const getBundlesQuery = (filter: GetBundlesDto) => {
       }
     }
     ${resultErrorFragment}
+    ${shopDetailsFragment}
+    ${bundleDetailsFragment}
   `;
 };

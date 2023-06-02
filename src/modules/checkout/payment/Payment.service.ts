@@ -235,4 +235,23 @@ export class PaymentService {
       return prepareFailedResponse(error.message);
     }
   }
+
+  /**
+   * @description -- this updates payment intent with order id - os
+   */
+  public async paymentIntentUpdate(
+    paymentIntentId: string,
+    osOrderId: string,
+  ): Promise<object> {
+    try {
+      const updatePaymentIntent = await this.stripeService.paymentIntentUpdate(
+        paymentIntentId,
+        osOrderId,
+      );
+      return updatePaymentIntent;
+    } catch (error) {
+      this.logger.error(error);
+      return prepareFailedResponse(error.message);
+    }
+  }
 }
