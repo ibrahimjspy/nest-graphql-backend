@@ -403,9 +403,6 @@ describe('Cart utility tests', () => {
       // Modify the checkout bundle data to have variant media URLs containing "ColorSwatch"
       checkoutBundles[0].bundle.productVariants[0].productVariant.media[0].url =
         'https://example.com/ColorSwatch/variant1.jpg';
-      checkoutBundles[0].bundle.productVariants[1].productVariant.media[0].url =
-        'https://example.com/variant2.jpg';
-
       // Mock the desired product thumbnail URL
       const productMediaUrl = 'https://example.com/product-1-thumbnail.jpg';
 
@@ -420,10 +417,6 @@ describe('Cart utility tests', () => {
         checkoutBundles[0].bundle.productVariants[0].productVariant.media[0]
           .url,
       ).toEqual('https://example.com/ColorSwatch/variant1.jpg');
-      expect(
-        checkoutBundles[0].bundle.productVariants[0].productVariant.media[0]
-          .url,
-      ).toEqual('https://example.com/variant2.jpg');
     });
 
     it('should not update variant media URLs when product thumbnail URL is not present', () => {
