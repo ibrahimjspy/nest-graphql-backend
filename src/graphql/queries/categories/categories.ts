@@ -15,27 +15,18 @@ const b2cQuery = ({ categoryIds, ...filter }): string => {
         node {
           name
           id
-          products {
-            totalCount
-          }
           slug
           children(${validatePageFilter(filter)}) {
             edges {
               node {
                 name
                 id
-                products {
-                  totalCount
-                }
                 slug
                 children(${validatePageFilter(filter)}) {
                   edges {
                     node {
                       name
                       id
-                      products {
-                        totalCount
-                      }
                       slug
                     }
                   }
