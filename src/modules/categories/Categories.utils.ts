@@ -24,6 +24,7 @@ export const prepareSyncedCategoriesResponse = (
   return categoriesData;
 };
 
+// TODO we need to handle all levels of categories for product count
 /**
  * Filters the categories data by removing categories, children, and grandchildren with zero product counts.
  *
@@ -135,7 +136,6 @@ export const addChildCategory = (
   };
   return mergedCategories;
 };
-
 /**
  * @description -- this method validates categories list whether it includes default type or not , also it returns categories in list format which
  * is according to contract

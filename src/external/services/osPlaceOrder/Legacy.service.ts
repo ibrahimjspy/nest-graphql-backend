@@ -4,6 +4,7 @@ import {
   BASE_EXTERNAL_ENDPOINT,
   CATEGORY_SHOES,
   ELASTIC_SEARCH_ENDPOINT,
+  ENVIRONMENT,
   IN_STOCK,
   MAPPING_SERVICE_TOKEN,
   PAYMENT_TYPE,
@@ -24,6 +25,7 @@ import {
 } from './Legacy.service.types';
 import packageInfo from '../../../../package.json';
 import { saveFailedOrderHandler } from 'src/graphql/handlers/checkout/checkout';
+import { EnvironmentEnum } from 'src/external/endpoints/provisionStorefront';
 
 // TODO refactor this class implementation according to nest js classes
 // TODO split down classes based on external services like mapping, os
@@ -189,8 +191,11 @@ export class LegacyService {
             ],
           },
         };
-
-        const URL = `${this.elasticSearchUrl}/engines/b2b-product-track-dev/search`;
+        // todo fix this
+        const URL =
+          ENVIRONMENT == EnvironmentEnum.DEV
+            ? `${this.elasticSearchUrl}/engines/b2b-product-track-dev/search`
+            : `${this.elasticSearchUrl}/engines/b2b-product-track-prod/search`;
         const response = await http.post(URL, payload, {
           headers: {
             Authorization: `Bearer private-${MAPPING_SERVICE_TOKEN}`,
@@ -225,7 +230,10 @@ export class LegacyService {
           },
         };
 
-        const URL = `${this.elasticSearchUrl}/engines/b2b-shop-track-dev/search`;
+        const URL =
+          ENVIRONMENT == EnvironmentEnum.DEV
+            ? `${this.elasticSearchUrl}/engines/b2b-shop-track-dev/search`
+            : `${this.elasticSearchUrl}/engines/b2b-shop-track-prod/search`;
         const response = await http.post(URL, payload, {
           headers: {
             Authorization: `Bearer private-${MAPPING_SERVICE_TOKEN}`,
