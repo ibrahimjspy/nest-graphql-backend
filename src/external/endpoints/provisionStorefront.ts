@@ -6,7 +6,7 @@ import {
 } from 'src/constants';
 import http from 'src/core/proxies/restHandler';
 import { v4 as uuidv4 } from 'uuid';
-const enum EnvironmentEnum {
+export const enum EnvironmentEnum {
   DEV = 'dev',
   PROD = 'prod',
 }
