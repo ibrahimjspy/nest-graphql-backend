@@ -1,3 +1,4 @@
+import { CheckoutBundleInterface } from './Cart.types';
 import {
   getAddBundleToCartLines,
   getBundleIds,
@@ -15,6 +16,7 @@ import {
   getUpdateCartBundleLines,
   getVariantIds,
   validateBundlesLength,
+  validateCheckoutVariantMedia,
 } from './Cart.utils';
 
 describe('Cart utility tests', () => {
@@ -119,6 +121,68 @@ describe('Cart utility tests', () => {
       ],
     },
   };
+  const checkoutBundles: CheckoutBundleInterface[] = [
+    {
+      checkoutBundleId: 'bundle1',
+      isSelected: true,
+      quantity: 1,
+      price: 10,
+      bundle: {
+        id: 'bundle1',
+        name: 'Bundle 1',
+        isOpenBundle: true,
+        description: 'Bundle description',
+        slug: 'bundle-1',
+        product: {
+          id: 'product1',
+          description: 'Product description',
+          name: 'Product 1',
+          slug: 'product-1',
+          metadata: [],
+          thumbnail: {
+            url: 'https://example.com/product-1-thumbnail.jpg',
+          },
+          media: [
+            {
+              url: 'https://example.com/product-1-media1.jpg',
+            },
+          ],
+        },
+        productVariants: [
+          {
+            quantity: 1,
+            productVariant: {
+              id: 'variant1',
+              sku: 'variant-sku-1',
+              attributes: [],
+              media: [
+                {
+                  url: 'https://example.com/variant-1-media1.jpg',
+                },
+              ],
+              pricing: {
+                price: {
+                  net: {
+                    amount: 10,
+                    currency: 'USD',
+                  },
+                },
+                onSale: false,
+                discount: null,
+              },
+            },
+          },
+        ],
+        shop: {
+          id: 'shop1',
+          name: 'Shop 1',
+          madeIn: 'Country',
+          minOrder: 1,
+          shippingMethods: [],
+        },
+      },
+    },
+  ];
   const bundlesList = {
     edges: [
       {
@@ -311,6 +375,76 @@ describe('Cart utility tests', () => {
         { variantId: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI5', quantity: 5 },
         { variantId: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI2', quantity: 15 },
       ]);
+    });
+
+    it('should update variant media URLs correctly when product thumbnail URL is present', () => {
+      // Mock the desired product and variant media URLs
+      const productMediaUrl = 'https://example.com/product-1-thumbnail.jpg';
+      const variantMediaUrl = 'https://example.com/variant-1-media1.jpg';
+
+      // Set the product thumbnail URL
+      checkoutBundles[0].bundle.product.thumbnail.url = productMediaUrl;
+
+      // Set the variant media URL
+      checkoutBundles[0].bundle.productVariants[0].productVariant.media[0].url =
+        variantMediaUrl;
+
+      // Invoke the function
+      validateCheckoutVariantMedia(checkoutBundles);
+
+      // Assertions
+      expect(
+        checkoutBundles[0].bundle.productVariants[0].productVariant.media[0]
+          .url,
+      ).toEqual(productMediaUrl);
+    });
+
+    it('should not update variant media URLs when "ColorSwatch" is present', () => {
+      // Modify the checkout bundle data to have variant media URLs containing "ColorSwatch"
+      checkoutBundles[0].bundle.productVariants[0].productVariant.media[0].url =
+        'https://example.com/ColorSwatch/variant1.jpg';
+      checkoutBundles[0].bundle.productVariants[1].productVariant.media[0].url =
+        'https://example.com/variant2.jpg';
+
+      // Mock the desired product thumbnail URL
+      const productMediaUrl = 'https://example.com/product-1-thumbnail.jpg';
+
+      // Set the product thumbnail URL
+      checkoutBundles[0].bundle.product.thumbnail.url = productMediaUrl;
+
+      // Invoke the function
+      validateCheckoutVariantMedia(checkoutBundles);
+
+      // Assertions
+      expect(
+        checkoutBundles[0].bundle.productVariants[0].productVariant.media[0]
+          .url,
+      ).toEqual('https://example.com/ColorSwatch/variant1.jpg');
+      expect(
+        checkoutBundles[0].bundle.productVariants[0].productVariant.media[0]
+          .url,
+      ).toEqual('https://example.com/variant2.jpg');
+    });
+
+    it('should not update variant media URLs when product thumbnail URL is not present', () => {
+      // Remove the product thumbnail URL
+      checkoutBundles[0].bundle.product.thumbnail.url = '';
+
+      // Mock the variant media URL
+      const variantMediaUrl = 'https://example.com/variant-1-media1.jpg';
+
+      // Set the variant media URL
+      checkoutBundles[0].bundle.productVariants[0].productVariant.media[0].url =
+        variantMediaUrl;
+
+      // Invoke the function
+      validateCheckoutVariantMedia(checkoutBundles);
+
+      // Assertions
+      expect(
+        checkoutBundles[0].bundle.productVariants[0].productVariant.media[0]
+          .url,
+      ).toEqual('');
     });
   });
 });
