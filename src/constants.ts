@@ -126,3 +126,9 @@ export const UPS_TRACKING_HEADERS = {
 };
 export const AUTO_SYNC_API_URL = process.env.AUTO_SYNC_API_URL;
 export const WORKFLOW_URL = process.env.WORKFLOW_URL;
+
+/**
+ * @description - this is to specify which environment middleware is deployed in
+ * @options -- prod || dev
+ */
+export const ENVIRONMENT = process.env.ENVIRONMENT || 'dev';
