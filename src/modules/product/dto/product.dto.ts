@@ -44,6 +44,10 @@ export class ProductFilterDto extends PaginationDto {
 
   @ApiProperty({ required: false })
   @IsOptional()
+  vendorId?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
   category?: string;
 }
 

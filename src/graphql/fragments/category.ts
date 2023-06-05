@@ -6,5 +6,8 @@ export const categoryFragment = gql`
     name
     slug
     level
+    products {
+      totalCount
+    }
   }
 `;
