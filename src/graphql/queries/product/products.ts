@@ -12,6 +12,9 @@ import { ProductFilterDto } from 'src/modules/product/dto';
 export const b2bQuery = (filter: ProductFilterDto): string => {
   const pageFilter = validatePageFilter(filter);
   const categoryFilter = filter['category'] ? `"${filter['category']}"` : '';
+  const metadataFilter = filter.vendorId
+    ? ` metadata: [{ key: "vendorId", value: "${filter.vendorId}" }]`
+    : '';
   return gql`
     query {
       products(
@@ -20,6 +23,7 @@ export const b2bQuery = (filter: ProductFilterDto): string => {
           ids: ${JSON.stringify(filter.productIds || [])}
           isAvailable: true,
           categories: [${categoryFilter}]
+          ${metadataFilter}
         }
       ) {
         pageInfo {
