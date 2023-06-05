@@ -17,11 +17,14 @@ import {
   addCheckoutBundlesV2Handler,
   deleteCheckoutBundlesHandler,
   getCartV2Handler,
+  replaceCheckoutBundleHandler,
 } from 'src/graphql/handlers/checkout/cart/cart.marketplace';
 import { getTargetBundleByCheckoutBundleId } from '../../Cart.utils';
 import { CheckoutIdError } from 'src/modules/checkout/Checkout.errors';
 import { CheckoutBundlesDto } from 'src/graphql/types/checkout.type';
 import { MarketplaceBundlesType } from './Cart.marketplace.types';
+import { checkoutBundlesInterface } from 'src/external/services/osPlaceOrder/Legacy.service.types';
+import { ReplaceBundleDto } from '../../dto/cart';
 
 @Injectable()
 export class MarketplaceCartService {
@@ -75,7 +78,7 @@ export class MarketplaceCartService {
     const checkoutBundlesData = getTargetBundleByCheckoutBundleId(
       marketplaceCheckout['data']['checkoutBundles'],
       checkoutBundleIds,
-    );
+    ) as checkoutBundlesInterface;
     return { checkoutId, checkoutBundlesData };
   }
 
@@ -231,5 +234,19 @@ export class MarketplaceCartService {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
     }
+  }
+
+  /**
+   * @description -- this replaces checkout bundle with given bundle id
+   */
+  public async replaceCheckoutBundle(
+    replaceBundleInput: ReplaceBundleDto,
+    token: string,
+  ): Promise<object> {
+    const replaceCheckoutBundles = await replaceCheckoutBundleHandler(
+      replaceBundleInput,
+      token,
+    );
+    return replaceCheckoutBundles;
   }
 }

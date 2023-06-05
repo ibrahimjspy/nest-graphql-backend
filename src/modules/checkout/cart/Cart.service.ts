@@ -455,4 +455,31 @@ export class CartService {
       return graphqlExceptionHandler(error);
     }
   }
+
+  /**
+   * @description -- this method replaces existing checkout bundle with another bundle
+   */
+  public async replaceCheckoutBundleV2(
+    replaceBundleData: ReplaceBundleDto,
+    token: string,
+  ) {
+    try {
+      const saleor = await this.saleorService.handleClosePackReplace(
+        replaceBundleData,
+        token,
+      );
+      const marketplace = await this.marketplaceService.replaceCheckoutBundle(
+        replaceBundleData,
+        token,
+      );
+      return prepareSuccessResponse(
+        { saleor, marketplace },
+        'checkout bundle replaced',
+        201,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
 }

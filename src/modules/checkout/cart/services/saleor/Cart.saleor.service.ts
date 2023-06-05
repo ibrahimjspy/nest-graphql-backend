@@ -12,6 +12,7 @@ import { MarketplaceCartService } from '../marketplace/Cart.marketplace.service'
 import {
   getAddBundleToCartLines,
   getBundleIds,
+  getClosePackLinesReplace,
   getDeleteBundlesLines,
   getOpenPackLinesReplace,
   getOpenPackLinesUpdate,
@@ -23,7 +24,7 @@ import { CheckoutBundleInputType } from 'src/graphql/handlers/checkout.type';
 import { ProductService } from 'src/modules/product/Product.service';
 import { CartValidationService } from '../Validation.service';
 import { SaleorCheckoutInterface } from 'src/modules/checkout/Checkout.utils.type';
-import { UpdateOpenPackDto } from '../../dto/cart';
+import { ReplaceBundleDto, UpdateOpenPackDto } from '../../dto/cart';
 import { OpenPackTransactionTypeEnum } from '../../dto/common.dto';
 
 @Injectable()
@@ -211,5 +212,43 @@ export class SaleorCartService {
       token,
       true,
     );
+  }
+
+  /**
+   * Handles the replacement of a bundle in the checkout.
+   *
+   * @param {ReplaceBundleDto} replaceBundles - The replacement bundle details.
+   * @param {string} token - The authentication token.
+   * @returns {Promise<ReturnTypeOfUpdateLines>} - The result of updating the checkout lines.
+   */
+  public async handleClosePackReplace(
+    replaceBundles: ReplaceBundleDto,
+    token: string,
+  ) {
+    const { newBundleId, checkoutBundleId, userEmail } = replaceBundles;
+
+    // Retrieve the checkout bundle data and checkout ID
+    const { checkoutId, checkoutBundlesData } =
+      await this.marketplaceService.getCheckoutBundlesByIds(
+        userEmail,
+        [checkoutBundleId],
+        token,
+      );
+
+    // Retrieve the new bundle and saleor checkout data
+    const [bundle, saleor] = await Promise.all([
+      this.productService.getBundle(newBundleId),
+      this.saleorCheckoutService.getCheckout(checkoutId, token),
+    ]);
+
+    // Calculate the updated checkout lines
+    const updatedLines = getClosePackLinesReplace(
+      checkoutBundlesData[0],
+      bundle,
+      saleor,
+    );
+
+    // Update the checkout lines
+    return await this.updateLines(checkoutId, updatedLines, token, true);
   }
 }
