@@ -58,7 +58,6 @@ describe('Categories Service', () => {
     const arrangedCategories = await moveChildCategoriesToParents(
       mocks.unArrangedCategories,
     );
-    console.dir(arrangedCategories, { depth: null });
     expect(arrangedCategories).toEqual(mocks.arrangedCategories);
     expect(arrangedCategories).toBeDefined();
   });
