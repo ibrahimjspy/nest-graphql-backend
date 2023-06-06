@@ -74,9 +74,14 @@ export const validateCategoriesResponse = (
 
   // Filter the top-level parent categories with "display" set to "none"
   const filteredTopParents = filteredCategories?.filter((category) => {
-    // Exclude top-level parent categories with "display" set to "none"
-    return !category.node.metadata.some(
-      (meta) => meta.key === 'display' && meta.value === 'none',
+    // Exclude top-level parent categories with "display" set to "none" and zero product count, unless they have metadata key "order" set to 1
+    return (
+      !category.node.metadata.some(
+        (meta) => meta.key === 'display' && meta.value === 'none',
+      ) &&
+      (category.node.products.totalCount !== 0 ||
+        (category.node.metadata.some((meta) => meta.key === 'order') &&
+          getCategoryOrderValue(category.node) === 1))
     );
   });
 
