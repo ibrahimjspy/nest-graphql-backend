@@ -44,7 +44,11 @@ export const validateCategoriesResponse = (
     ) {
       return false;
     }
-    if (!category.node.children.edges) {
+    if (
+      !category.node.children.edges ||
+      getCategoryOrderValue(category.node) === 1
+    ) {
+      sortCategories(category.node.children.edges);
       return category;
     }
     // Filter the children categories
@@ -85,14 +89,7 @@ export const validateCategoriesResponse = (
     );
   });
 
-  // Reorder the categories based on metadata key "order" value
-  const reorderedCategories = filteredTopParents?.sort((a, b) => {
-    const orderA = getCategoryOrderValue(a.node);
-    const orderB = getCategoryOrderValue(b.node);
-    return orderA - orderB;
-  });
-
-  return reorderedCategories;
+  return sortCategories(filteredTopParents);
 };
 
 /**
@@ -228,4 +225,15 @@ export const moveChildCategoriesToParents = (
   return {
     edges: parentCategories,
   };
+};
+
+/**
+ * @description -- reorder the categories based on metadata key "order" value
+ */
+export const sortCategories = (categories: CategoryType[]) => {
+  return categories?.sort((a, b) => {
+    const orderA = getCategoryOrderValue(a.node);
+    const orderB = getCategoryOrderValue(b.node);
+    return orderA - orderB;
+  });
 };
