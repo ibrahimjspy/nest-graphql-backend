@@ -44,7 +44,10 @@ export const validateCategoriesResponse = (
     ) {
       return false;
     }
-    if (!category.node.children.edges) {
+    if (
+      !category.node.children.edges ||
+      getCategoryOrderValue(category.node) === 1
+    ) {
       return category;
     }
     // Filter the children categories
