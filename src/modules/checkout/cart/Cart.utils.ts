@@ -405,8 +405,7 @@ export const getClosePackLinesReplace = (
   // Remove old variant lines
   checkoutBundle.bundle.productVariants.forEach((variant) => {
     const variantId = variant.productVariant.id;
-    const oldVariantQuantity =
-      variant.quantity * checkoutBundle.quantity * variant.quantity;
+    const oldVariantQuantity = variant.quantity * checkoutBundle.quantity;
     const updatedQuantity =
       saleorVariantsMapping.get(variantId) - oldVariantQuantity;
     updatedLines.push({

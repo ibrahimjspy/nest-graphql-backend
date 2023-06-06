@@ -531,7 +531,7 @@ describe('getClosePackLinesReplace', () => {
   const bundle = {
     status: 200,
     data: {
-      id: 'bundleId',
+      id: 'bundleId2',
       productVariants: [
         {
           productVariant: {
@@ -596,7 +596,7 @@ describe('getClosePackLinesReplace', () => {
 
   it('should return the updated checkout lines', () => {
     const expectedLines = [
-      { variantId: 'variantId1', quantity: 2 },
+      { variantId: 'variantId1', quantity: 0 },
       { variantId: 'variantId2', quantity: 2 },
     ];
 
@@ -605,7 +605,6 @@ describe('getClosePackLinesReplace', () => {
       bundle,
       saleor,
     );
-    console.log(updatedLines);
     expect(updatedLines).toEqual(expectedLines);
   });
 
@@ -613,7 +612,7 @@ describe('getClosePackLinesReplace', () => {
     const newVariantOnly = {
       status: 200,
       data: {
-        id: 'bundleId',
+        id: 'bundleId2',
         productVariants: [
           {
             productVariant: {
@@ -630,8 +629,9 @@ describe('getClosePackLinesReplace', () => {
       newVariantOnly,
       saleor,
     );
+
     const expectedLines = [
-      { variantId: 'variantId1', quantity: 2 },
+      { variantId: 'variantId1', quantity: 0 },
       { variantId: 'variantId3', quantity: 6 },
     ];
     expect(updatedLines).toEqual(expectedLines);
