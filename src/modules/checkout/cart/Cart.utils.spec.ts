@@ -3,6 +3,7 @@ import {
   getAddBundleToCartLines,
   getBundleIds,
   getBundlesFromCheckout,
+  getClosePackLinesReplace,
   getDeleteBundlesLines,
   getLinesFromBundles,
   getNewBundlesToAdd,
@@ -17,6 +18,7 @@ import {
   getVariantIds,
   validateBundlesLength,
   validateCheckoutVariantMedia,
+  validateReplaceCheckoutBundle,
 } from './Cart.utils';
 
 describe('Cart utility tests', () => {
@@ -439,5 +441,219 @@ describe('Cart utility tests', () => {
           .url,
       ).toEqual('');
     });
+  });
+});
+
+describe('getClosePackLinesReplace', () => {
+  const checkoutBundle = {
+    checkoutBundleId: 'bundleId',
+    isSelected: true,
+    quantity: 2,
+    price: 10,
+    bundle: {
+      id: 'bundleId',
+      isOpenBundle: true,
+      name: 'Bundle 1',
+      description: 'Bundle description',
+      slug: 'bundle-1',
+      product: {
+        name: 'Product 1',
+        id: 'productId',
+        thumbnail: {
+          url: 'thumbnail-url',
+        },
+        media: [
+          {
+            url: 'media-url-1',
+          },
+          {
+            url: 'media-url-2',
+          },
+        ],
+      },
+      productVariants: [
+        {
+          quantity: 2,
+          productVariant: {
+            id: 'variantId1',
+            name: 'Variant 1',
+            sku: 'SKU123',
+            attributes: [
+              {
+                attribute: {
+                  name: 'Attribute 1',
+                },
+                values: [
+                  {
+                    name: 'Value 1',
+                  },
+                ],
+              },
+            ],
+            product: {
+              category: {
+                ancestors: {
+                  edges: [
+                    {
+                      node: {
+                        id: 'categoryId',
+                        name: 'Category 1',
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+            pricing: {
+              net: {
+                amount: 20,
+                currency: 'USD',
+              },
+            },
+          },
+        },
+      ],
+      shop: {
+        id: 'shopId',
+        name: 'Shop 1',
+        madeIn: 'Country 1',
+        shippingMethods: [
+          {
+            id: 'methodId',
+            shippingMethodId: 'methodId',
+            shippingMethodTypeId: 'typeId',
+          },
+        ],
+      },
+    },
+  };
+
+  const bundle = {
+    status: 200,
+    data: {
+      id: 'bundleId2',
+      productVariants: [
+        {
+          productVariant: {
+            id: 'variantId2',
+          },
+          quantity: 1,
+        },
+      ],
+    },
+  };
+
+  const saleor = {
+    id: 'saleorId',
+    preAuth: {
+      gross: {
+        amount: 100,
+      },
+    },
+    metadata: [
+      {
+        key: 'key1',
+        value: 'value1',
+      },
+    ],
+    totalPrice: {
+      gross: {
+        amount: 150,
+      },
+    },
+    shippingMethods: [
+      {
+        id: 'methodId',
+        name: 'Shipping Method',
+        active: true,
+        price: {
+          amount: 10,
+          currency: 'USD',
+        },
+      },
+    ],
+    deliveryMethod: {
+      __typename: 'DeliveryMethod',
+      id: 'methodId',
+      name: 'Delivery Method',
+      metadata: [
+        {
+          key: 'key1',
+          value: 'value1',
+        },
+      ],
+    },
+    lines: [
+      {
+        id: 'lineId1',
+        quantity: 2,
+        variant: {
+          id: 'variantId1',
+        },
+      },
+    ],
+  };
+
+  it('should return the updated checkout lines', () => {
+    const expectedLines = [
+      { variantId: 'variantId1', quantity: 0 },
+      { variantId: 'variantId2', quantity: 2 },
+    ];
+
+    const updatedLines = getClosePackLinesReplace(
+      checkoutBundle,
+      bundle,
+      saleor,
+    );
+    expect(updatedLines).toEqual(expectedLines);
+  });
+
+  it('should return the updated checkout lines with only the new variant when saleor does not have the old variant', () => {
+    const newVariantOnly = {
+      status: 200,
+      data: {
+        id: 'bundleId2',
+        productVariants: [
+          {
+            productVariant: {
+              id: 'variantId3',
+            },
+            quantity: 3,
+          },
+        ],
+      },
+    };
+
+    const updatedLines = getClosePackLinesReplace(
+      checkoutBundle,
+      newVariantOnly,
+      saleor,
+    );
+
+    const expectedLines = [
+      { variantId: 'variantId1', quantity: 0 },
+      { variantId: 'variantId3', quantity: 6 },
+    ];
+    expect(updatedLines).toEqual(expectedLines);
+  });
+
+  it('should return false when the replacement bundle is the same as the existing bundle', () => {
+    const existingBundle = {
+      bundle: {
+        id: 'existingBundleId',
+      },
+    };
+
+    const replacementBundle = {
+      data: {
+        id: 'existingBundleId',
+      },
+    };
+
+    const isValid = validateReplaceCheckoutBundle(
+      existingBundle,
+      replacementBundle,
+    );
+    expect(isValid).toBe(false);
   });
 });

@@ -17,11 +17,18 @@ import {
   addCheckoutBundlesV2Handler,
   deleteCheckoutBundlesHandler,
   getCartV2Handler,
+  replaceCheckoutBundleHandler,
 } from 'src/graphql/handlers/checkout/cart/cart.marketplace';
 import { getTargetBundleByCheckoutBundleId } from '../../Cart.utils';
-import { CheckoutIdError } from 'src/modules/checkout/Checkout.errors';
+import {
+  CheckoutIdError,
+  NoCheckoutBundleFoundError,
+} from 'src/modules/checkout/Checkout.errors';
 import { CheckoutBundlesDto } from 'src/graphql/types/checkout.type';
 import { MarketplaceBundlesType } from './Cart.marketplace.types';
+import { checkoutBundlesInterface } from 'src/external/services/osPlaceOrder/Legacy.service.types';
+import { ReplaceBundleDto } from '../../dto/cart';
+import { isEmptyArray } from 'src/modules/product/Product.utils';
 
 @Injectable()
 export class MarketplaceCartService {
@@ -37,19 +44,14 @@ export class MarketplaceCartService {
     productDetails = true,
     isSelected = null,
   }: CheckoutBundlesDto): Promise<object> {
-    try {
-      const checkoutData = await getCheckoutBundlesHandler({
-        userEmail,
-        checkoutId,
-        token,
-        productDetails,
-        isSelected,
-      });
-      return prepareSuccessResponse(checkoutData);
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
+    const checkoutData = await getCheckoutBundlesHandler({
+      userEmail,
+      checkoutId,
+      token,
+      productDetails,
+      isSelected,
+    });
+    return prepareSuccessResponse(checkoutData);
   }
 
   /**
@@ -75,7 +77,11 @@ export class MarketplaceCartService {
     const checkoutBundlesData = getTargetBundleByCheckoutBundleId(
       marketplaceCheckout['data']['checkoutBundles'],
       checkoutBundleIds,
-    );
+    ) as checkoutBundlesInterface;
+    const validateCheckoutBundles = isEmptyArray(checkoutBundlesData);
+    if (!validateCheckoutBundles)
+      throw new NoCheckoutBundleFoundError(checkoutBundleIds);
+
     return { checkoutId, checkoutBundlesData };
   }
 
@@ -231,5 +237,19 @@ export class MarketplaceCartService {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
     }
+  }
+
+  /**
+   * @description -- this replaces checkout bundle with given bundle id
+   */
+  public async replaceCheckoutBundle(
+    replaceBundleInput: ReplaceBundleDto,
+    token: string,
+  ): Promise<object> {
+    const replaceCheckoutBundles = await replaceCheckoutBundleHandler(
+      replaceBundleInput,
+      token,
+    );
+    return replaceCheckoutBundles;
   }
 }

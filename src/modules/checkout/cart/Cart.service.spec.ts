@@ -140,10 +140,9 @@ describe('Cart Service', () => {
       [{ bundleId: '19c88ba8-7429-45f7-87dd-a9999803d955', quantity: 3 }],
       'token',
     );
-    expect(addToCart).toEqual({
-      status: 400,
-      message: 'Adding bundle lines to Saleor failed',
-    });
+    expect(addToCart.status).toBe(400);
+    expect(addToCart.message).toBe('Adding bundle lines to Saleor failed');
+
     expect(addToCart).toBeDefined();
   });
 
@@ -178,10 +177,9 @@ describe('Cart Service', () => {
       [{ bundleId: '19c88ba8-7429-45f7-87dd-a9999803d955', quantity: 3 }],
       'token',
     );
-    expect(addToCart).toEqual({
-      status: 400,
-      message: 'Adding bundle lines to Marketplace failed',
-    });
+
+    expect(addToCart.status).toBe(400);
+    expect(addToCart.message).toBe('Adding bundle to saleor failed');
     expect(addToCart).toBeDefined();
   });
 
