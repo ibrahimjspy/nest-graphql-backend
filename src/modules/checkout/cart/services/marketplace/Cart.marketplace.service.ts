@@ -20,11 +20,15 @@ import {
   replaceCheckoutBundleHandler,
 } from 'src/graphql/handlers/checkout/cart/cart.marketplace';
 import { getTargetBundleByCheckoutBundleId } from '../../Cart.utils';
-import { CheckoutIdError } from 'src/modules/checkout/Checkout.errors';
+import {
+  CheckoutIdError,
+  NoCheckoutBundleFoundError,
+} from 'src/modules/checkout/Checkout.errors';
 import { CheckoutBundlesDto } from 'src/graphql/types/checkout.type';
 import { MarketplaceBundlesType } from './Cart.marketplace.types';
 import { checkoutBundlesInterface } from 'src/external/services/osPlaceOrder/Legacy.service.types';
 import { ReplaceBundleDto } from '../../dto/cart';
+import { isEmptyArray } from 'src/modules/product/Product.utils';
 
 @Injectable()
 export class MarketplaceCartService {
@@ -74,6 +78,10 @@ export class MarketplaceCartService {
       marketplaceCheckout['data']['checkoutBundles'],
       checkoutBundleIds,
     ) as checkoutBundlesInterface;
+    const validateCheckoutBundles = isEmptyArray(checkoutBundlesData);
+    if (!validateCheckoutBundles)
+      throw new NoCheckoutBundleFoundError(checkoutBundleIds);
+
     return { checkoutId, checkoutBundlesData };
   }
 

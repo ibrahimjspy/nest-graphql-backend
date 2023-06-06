@@ -73,3 +73,12 @@ export class NoBundleCreatedError extends Error {
     this.name = 'NoBundleCreateError';
   }
 }
+
+export class NoCheckoutBundleFoundError extends Error {
+  checkoutBundleId: string;
+  constructor(checkoutBundleId) {
+    super('no checkout bundle found ' + checkoutBundleId);
+    this.name = 'NoCheckoutBundleFound';
+    this.checkoutBundleId = checkoutBundleId;
+  }
+}
