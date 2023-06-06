@@ -9,6 +9,7 @@ import { OpenPackTransactionTypeEnum } from './dto/common.dto';
 import { UpdateBundleDto, UpdateOpenPackDto } from './dto/cart';
 import { SaleorCheckoutInterface } from '../Checkout.utils.type';
 import { CheckoutBundleInterface } from './Cart.types';
+import { checkoutBundlesInterface } from 'src/external/services/osPlaceOrder/Legacy.service.types';
 
 /**
  * parses checkout bundles object and returns bundle ids
@@ -383,4 +384,61 @@ export const validateCheckoutVariantMedia = (
       }
     });
   });
+};
+
+/**
+ * Updates the checkout lines for a close pack based on the provided checkout bundle, bundle, and saleor checkout information.
+ * @param checkoutBundle The checkout bundle containing the bundle and product variant information.
+ * @param bundle The bundle response type containing the product variants.
+ * @param saleor The saleor checkout interface containing the saleor checkout information.
+ * @returns An array of updated checkout lines.
+ */
+export const getClosePackLinesReplace = (
+  checkoutBundle: checkoutBundlesInterface,
+  bundle: GetBundleResponseType,
+  saleor: SaleorCheckoutInterface,
+): CheckoutLinesInterface => {
+  const updatedLines = [];
+  const saleorVariantsMapping = getSaleorProductVariantsMapping(saleor);
+  const oldBundleQuantity = checkoutBundle.quantity;
+  if (!validateReplaceCheckoutBundle(checkoutBundle, bundle)) return;
+  // Remove old variant lines
+  checkoutBundle.bundle.productVariants.forEach((variant) => {
+    const variantId = variant.productVariant.id;
+    const oldVariantQuantity = variant.quantity * checkoutBundle.quantity;
+    const updatedQuantity =
+      saleorVariantsMapping.get(variantId) - oldVariantQuantity;
+    updatedLines.push({
+      variantId: variantId,
+      quantity: Math.max(updatedQuantity, 0),
+    });
+  });
+
+  // Add new variant lines
+  bundle.data.productVariants.forEach((variant) => {
+    const variantId = variant.productVariant.id;
+    const newVariantLineQuantity =
+      (saleorVariantsMapping.get(variantId) || 0) +
+      variant.quantity * oldBundleQuantity;
+    updatedLines.push({
+      variantId: variantId,
+      quantity: Math.max(newVariantLineQuantity, 0),
+    });
+  });
+
+  return updatedLines as CheckoutLinesInterface;
+};
+
+/**
+ * Validates whether a replacement checkout bundle is different from the existing bundle.
+ *
+ * @param {checkoutBundlesInterface} checkoutBundle - The existing checkout bundle.
+ * @param {GetBundleResponseType} bundle - The replacement bundle.
+ * @returns {boolean} - True if the replacement bundle is different, false otherwise.
+ */
+export const validateReplaceCheckoutBundle = (checkoutBundle, bundle) => {
+  if (checkoutBundle.bundle.id === bundle.data.id) {
+    return false;
+  }
+  return true;
 };

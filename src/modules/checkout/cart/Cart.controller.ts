@@ -222,4 +222,20 @@ export class CartController {
       await this.appService.updateOpenPack(updateOpenPackData, token),
     );
   }
+
+  @ApiOperation({
+    summary: 'replaces checkout bundle with another bundle',
+  })
+  @Post('api/v2/cart/items/replace')
+  @ApiBearerAuth('JWT-auth')
+  async replaceCheckoutBundleV2(
+    @Res() res,
+    @Body() replaceBundleData: ReplaceBundleDto,
+    @IsAuthenticated('authorization') token: string,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.replaceCheckoutBundleV2(replaceBundleData, token),
+    );
+  }
 }

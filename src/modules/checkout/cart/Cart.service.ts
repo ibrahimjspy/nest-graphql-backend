@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import {
+  prepareCheckoutFailedResponse,
   prepareFailedResponse,
   prepareSuccessResponse,
 } from 'src/core/utils/response';
@@ -453,6 +454,37 @@ export class CartService {
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description -- this method replaces existing checkout bundle with another bundle
+   */
+  public async replaceCheckoutBundleV2(
+    replaceBundleData: ReplaceBundleDto,
+    token: string,
+  ) {
+    try {
+      const saleor = await this.saleorService.handleClosePackReplace(
+        replaceBundleData,
+        token,
+      );
+      const marketplace = await this.marketplaceService.replaceCheckoutBundle(
+        replaceBundleData,
+        token,
+      );
+      return prepareSuccessResponse(
+        { saleor, marketplace },
+        'checkout bundle replaced',
+        201,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return prepareCheckoutFailedResponse(
+        'replace checkout bundles failed',
+        400,
+        error,
+      );
     }
   }
 }
