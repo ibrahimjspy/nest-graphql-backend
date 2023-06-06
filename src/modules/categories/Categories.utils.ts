@@ -48,7 +48,7 @@ export const validateCategoriesResponse = (
       !category.node.children.edges ||
       getCategoryOrderValue(category.node) === 1
     ) {
-      reorderCategoryByOrder(category.node.children.edges);
+      sortCategories(category.node.children.edges);
       return category;
     }
     // Filter the children categories
@@ -89,7 +89,7 @@ export const validateCategoriesResponse = (
     );
   });
 
-  return reorderCategoryByOrder(filteredTopParents);
+  return sortCategories(filteredTopParents);
 };
 
 /**
@@ -230,7 +230,7 @@ export const moveChildCategoriesToParents = (
 /**
  * @description -- reorder the categories based on metadata key "order" value
  */
-export const reorderCategoryByOrder = (categories: CategoryType[]) => {
+export const sortCategories = (categories: CategoryType[]) => {
   return categories?.sort((a, b) => {
     const orderA = getCategoryOrderValue(a.node);
     const orderB = getCategoryOrderValue(b.node);
