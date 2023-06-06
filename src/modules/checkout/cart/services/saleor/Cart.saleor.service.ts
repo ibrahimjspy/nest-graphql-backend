@@ -248,6 +248,10 @@ export class SaleorCartService {
       saleor,
     );
     if (!updatedLines) return;
+    this.logger.log(
+      'Updating checkout lines after close pack replace',
+      updatedLines,
+    );
 
     // Update the checkout lines
     return await this.updateLines(checkoutId, updatedLines, token, true);

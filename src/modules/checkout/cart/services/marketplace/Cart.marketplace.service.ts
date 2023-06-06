@@ -246,6 +246,10 @@ export class MarketplaceCartService {
     replaceBundleInput: ReplaceBundleDto,
     token: string,
   ): Promise<object> {
+    this.logger.log(
+      'Replacing checkout bundles in marketplace',
+      replaceBundleInput,
+    );
     const replaceCheckoutBundles = await replaceCheckoutBundleHandler(
       replaceBundleInput,
       token,

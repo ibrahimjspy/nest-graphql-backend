@@ -465,6 +465,7 @@ export class CartService {
     token: string,
   ) {
     try {
+      this.logger.log('Replacing checkout bundles', replaceBundleData);
       const saleor = await this.saleorService.handleClosePackReplace(
         replaceBundleData,
         token,
