@@ -401,7 +401,7 @@ export const getClosePackLinesReplace = (
   const updatedLines = [];
   const saleorVariantsMapping = getSaleorProductVariantsMapping(saleor);
   const oldBundleQuantity = checkoutBundle.quantity;
-
+  if (!validateReplaceCheckoutBundle(checkoutBundle, bundle)) return;
   // Remove old variant lines
   checkoutBundle.bundle.productVariants.forEach((variant) => {
     const variantId = variant.productVariant.id;
@@ -428,4 +428,18 @@ export const getClosePackLinesReplace = (
   });
 
   return updatedLines as CheckoutLinesInterface;
+};
+
+/**
+ * Validates whether a replacement checkout bundle is different from the existing bundle.
+ *
+ * @param {checkoutBundlesInterface} checkoutBundle - The existing checkout bundle.
+ * @param {GetBundleResponseType} bundle - The replacement bundle.
+ * @returns {boolean} - True if the replacement bundle is different, false otherwise.
+ */
+export const validateReplaceCheckoutBundle = (checkoutBundle, bundle) => {
+  if (checkoutBundle.bundle.id === bundle.data.id) {
+    return false;
+  }
+  return true;
 };

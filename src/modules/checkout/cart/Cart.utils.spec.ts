@@ -18,6 +18,7 @@ import {
   getVariantIds,
   validateBundlesLength,
   validateCheckoutVariantMedia,
+  validateReplaceCheckoutBundle,
 } from './Cart.utils';
 
 describe('Cart utility tests', () => {
@@ -595,14 +596,8 @@ describe('getClosePackLinesReplace', () => {
 
   it('should return the updated checkout lines', () => {
     const expectedLines = [
-      {
-        variantId: 'variantId1',
-        quantity: 0,
-      },
-      {
-        variantId: 'variantId2',
-        quantity: 2,
-      },
+      { variantId: 'variantId1', quantity: 2 },
+      { variantId: 'variantId2', quantity: 2 },
     ];
 
     const updatedLines = getClosePackLinesReplace(
@@ -610,6 +605,55 @@ describe('getClosePackLinesReplace', () => {
       bundle,
       saleor,
     );
+    console.log(updatedLines);
     expect(updatedLines).toEqual(expectedLines);
+  });
+
+  it('should return the updated checkout lines with only the new variant when saleor does not have the old variant', () => {
+    const newVariantOnly = {
+      status: 200,
+      data: {
+        id: 'bundleId',
+        productVariants: [
+          {
+            productVariant: {
+              id: 'variantId3',
+            },
+            quantity: 3,
+          },
+        ],
+      },
+    };
+
+    const updatedLines = getClosePackLinesReplace(
+      checkoutBundle,
+      newVariantOnly,
+      saleor,
+    );
+    const expectedLines = [
+      { variantId: 'variantId1', quantity: 2 },
+      { variantId: 'variantId3', quantity: 6 },
+    ];
+    expect(updatedLines).toEqual(expectedLines);
+  });
+
+  it('should return false when the replacement bundle is the same as the existing bundle', () => {
+    const existingBundle = {
+      bundle: {
+        id: 'existingBundleId',
+      },
+    };
+
+    const replacementBundle = {
+      data: {
+        id: 'existingBundleId',
+      },
+    };
+
+    const isValid = validateReplaceCheckoutBundle(
+      existingBundle,
+      replacementBundle,
+    );
+    expect(isValid).toBe(false);
   });
 });

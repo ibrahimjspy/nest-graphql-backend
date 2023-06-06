@@ -40,19 +40,14 @@ export class MarketplaceCartService {
     productDetails = true,
     isSelected = null,
   }: CheckoutBundlesDto): Promise<object> {
-    try {
-      const checkoutData = await getCheckoutBundlesHandler({
-        userEmail,
-        checkoutId,
-        token,
-        productDetails,
-        isSelected,
-      });
-      return prepareSuccessResponse(checkoutData);
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
+    const checkoutData = await getCheckoutBundlesHandler({
+      userEmail,
+      checkoutId,
+      token,
+      productDetails,
+      isSelected,
+    });
+    return prepareSuccessResponse(checkoutData);
   }
 
   /**

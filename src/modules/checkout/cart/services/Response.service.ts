@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import { CartRollbackService } from './Rollback.service';
 import {
+  prepareCheckoutFailedResponse,
   prepareFailedResponse,
   prepareSuccessResponse,
 } from 'src/core/utils/response';
@@ -55,8 +56,8 @@ export class CartResponseService {
           userBundles,
           token,
         );
-        return prepareFailedResponse(
-          'Adding bundle lines to Marketplace failed',
+        return prepareCheckoutFailedResponse(
+          'Adding bundle to saleor failed',
           400,
           marketplaceErrors,
         );
@@ -68,13 +69,17 @@ export class CartResponseService {
           userBundles,
           token,
         );
-        return prepareFailedResponse(
+        return prepareCheckoutFailedResponse(
           'Adding bundle lines to Saleor failed',
           400,
           saleorErrors,
         );
       }
-      return prepareFailedResponse('Adding bundles to cart failed', 400);
+      return prepareCheckoutFailedResponse(
+        'Adding bundles to cart failed =',
+        400,
+        [marketplaceErrors, saleorErrors],
+      );
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -110,7 +115,7 @@ export class CartResponseService {
           { checkoutBundlesData, userEmail },
           token,
         );
-        return prepareFailedResponse(
+        return prepareCheckoutFailedResponse(
           'deleting bundle lines from Saleor failed',
           400,
           saleorErrors,
@@ -124,16 +129,17 @@ export class CartResponseService {
           checkoutId,
           token,
         );
-        return prepareFailedResponse(
+        return prepareCheckoutFailedResponse(
           'deleting bundle lines from Marketplace failed',
           400,
           marketplaceErrors,
         );
       }
-      return prepareFailedResponse('deleting bundles from cart failed', 400, [
-        saleorErrors,
-        ...marketplaceErrors,
-      ]);
+      return prepareCheckoutFailedResponse(
+        'Deleting bundles from cart failed',
+        400,
+        [saleorErrors, ...marketplaceErrors],
+      );
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -170,16 +176,17 @@ export class CartResponseService {
           userEmail,
           token,
         );
-        return prepareFailedResponse(
+        return prepareCheckoutFailedResponse(
           'updating cart state in Saleor failed',
           400,
           saleorErrors,
         );
       }
-      return prepareFailedResponse('updating cart bundles state failed', 400, [
-        ...saleorErrors,
-        ...marketplaceErrors,
-      ]);
+      return prepareCheckoutFailedResponse(
+        'updating cart bundles state failed',
+        400,
+        [...saleorErrors, ...marketplaceErrors],
+      );
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -216,16 +223,17 @@ export class CartResponseService {
           userEmail,
           token,
         );
-        return prepareFailedResponse(
+        return prepareCheckoutFailedResponse(
           'updating cart state in Saleor failed',
           400,
           saleorErrors,
         );
       }
-      return prepareFailedResponse('updating cart bundles state failed', 400, [
-        ...marketplaceErrors,
-        ...saleorErrors,
-      ]);
+      return prepareCheckoutFailedResponse(
+        'updating cart bundles state failed',
+        400,
+        [...marketplaceErrors, ...saleorErrors],
+      );
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -258,7 +266,7 @@ export class CartResponseService {
           newBundleId,
           token,
         );
-        return prepareFailedResponse('deleting old bundle failed', 400);
+        return prepareCheckoutFailedResponse('deleting old bundle failed', 400);
       }
       if (status == NEW_BUNDLE_CREATION_FAILED) {
         await this.cartRollbackService.replaceBundleCreate(
@@ -269,7 +277,7 @@ export class CartResponseService {
         );
         return prepareFailedResponse('creating new bundle failed', 400);
       }
-      return prepareFailedResponse('replacing bundle failed', 400);
+      return prepareCheckoutFailedResponse('replacing bundle failed', 400);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
@@ -319,7 +327,11 @@ export class CartResponseService {
       );
     } catch (error) {
       this.logger.error(error);
-      return graphqlExceptionHandler(error);
+      return prepareCheckoutFailedResponse(
+        'Adding open pack to cart failed',
+        400,
+        error,
+      );
     }
   }
 }

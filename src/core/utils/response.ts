@@ -95,3 +95,22 @@ export const prepareGQLPaginatedResponse = async (input): Promise<any> => {
 
   return output;
 };
+
+/**
+ * It returns a failed response object
+ * @param {string} [message=Failed.] - The message to be returned to the client.
+ * @param {HttpStatus} status - The HTTP status code.
+ * @param errors - Array<any> = []
+ * @returns An object with a status, message, and errors.
+ */
+export const prepareCheckoutFailedResponse = async (
+  message,
+  status: HttpStatus = HttpStatus.BAD_REQUEST,
+  errors: Array<any> = [],
+): Promise<object> => {
+  const response = {} as any;
+  response.message = message;
+  response.errors = errors;
+  response.status = status ? status : HttpStatus.BAD_REQUEST;
+  return response;
+};

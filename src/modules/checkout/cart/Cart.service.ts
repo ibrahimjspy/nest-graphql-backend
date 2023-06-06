@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import {
+  prepareCheckoutFailedResponse,
   prepareFailedResponse,
   prepareSuccessResponse,
 } from 'src/core/utils/response';
@@ -479,7 +480,11 @@ export class CartService {
       );
     } catch (error) {
       this.logger.error(error);
-      return graphqlExceptionHandler(error);
+      return prepareCheckoutFailedResponse(
+        'replace checkout bundles failed',
+        400,
+        error,
+      );
     }
   }
 }

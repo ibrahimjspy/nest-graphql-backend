@@ -247,6 +247,7 @@ export class SaleorCartService {
       bundle,
       saleor,
     );
+    if (!updatedLines) return;
 
     // Update the checkout lines
     return await this.updateLines(checkoutId, updatedLines, token, true);
