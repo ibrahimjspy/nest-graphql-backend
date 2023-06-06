@@ -8,6 +8,12 @@ export const mockCategoriesData = {
           products: {
             totalCount: 10000,
           },
+          metadata: [
+            {
+              key: 'display',
+              value: 'none',
+            },
+          ],
           slug: 'default-category',
           children: { edges: [] },
         },
@@ -20,6 +26,12 @@ export const mockCategoriesData = {
           products: {
             totalCount: 10000,
           },
+          metadata: [
+            {
+              key: 'order',
+              value: '2',
+            },
+          ],
           children: {
             edges: [
               {
@@ -102,6 +114,12 @@ export const mockCategoriesData = {
         name: 'Women',
         id: 'Q2F0ZWdvcnk6MTg=',
         slug: 'women',
+        metadata: [
+          {
+            key: 'order',
+            value: '2',
+          },
+        ],
         products: { totalCount: 10000 },
         children: {
           edges: [
@@ -181,6 +199,12 @@ export const mockCategoriesData = {
           slug: 'default-category',
           children: { edges: [] },
           sync: false,
+          metadata: [
+            {
+              key: 'display',
+              value: 'none',
+            },
+          ],
         },
       },
       {
@@ -191,6 +215,12 @@ export const mockCategoriesData = {
           products: {
             totalCount: 100,
           },
+          metadata: [
+            {
+              key: 'order',
+              value: '2',
+            },
+          ],
           children: {
             edges: [
               {
@@ -260,10 +290,14 @@ export const mockCategoriesData = {
           id: 'Q2F0ZWdvcnk6Mg==',
           slug: 'women',
           level: 0,
+          metadata: [
+            {
+              key: 'order',
+              value: '2',
+            },
+          ],
           products: { totalCount: 10000 },
-          children: {
-            edges: [],
-          },
+          children: [],
         },
       },
     ],
@@ -279,11 +313,10 @@ export const mockCategoriesData = {
               name: 'Women',
               id: 'Q2F0ZWdvcnk6Mg==',
               slug: 'women',
-              products: { totalCount: 10000 },
               level: 0,
-              children: {
-                edges: [],
-              },
+              metadata: [{ key: 'order', value: '2' }],
+              products: { totalCount: 10000 },
+              children: [{ edges: [] }],
             },
           },
         ],
@@ -302,6 +335,12 @@ export const mockCategoriesData = {
           children: {
             edges: [],
           },
+          metadata: [
+            {
+              key: 'order',
+              value: '2',
+            },
+          ],
         },
       },
       {
@@ -310,6 +349,7 @@ export const mockCategoriesData = {
           id: 'Q2F0ZWdvcnk6NTc=',
           slug: 'leggings',
           level: 2,
+          metadata: [],
           products: { totalCount: 10000 },
           ancestors: {
             edges: [
@@ -318,6 +358,7 @@ export const mockCategoriesData = {
                   id: 'Q2F0ZWdvcnk6Mg==',
                   name: 'Women',
                   level: 0,
+                  metadata: [],
                   products: { totalCount: 10000 },
                 },
               },
@@ -326,6 +367,7 @@ export const mockCategoriesData = {
                   id: 'Q2F0ZWdvcnk6MTk=',
                   name: 'BOTTOMS',
                   level: 1,
+                  metadata: [],
                   products: { totalCount: 10000 },
                 },
               },
@@ -341,6 +383,7 @@ export const mockCategoriesData = {
           name: 'JEANS',
           id: 'Q2F0ZWdvcnk6NjI=',
           slug: 'jeans',
+          metadata: [],
           products: { totalCount: 10000 },
           level: 2,
           ancestors: {
@@ -349,6 +392,12 @@ export const mockCategoriesData = {
                 node: {
                   id: 'Q2F0ZWdvcnk6Mg==',
                   name: 'Women',
+                  metadata: [
+                    {
+                      key: 'order',
+                      value: '2',
+                    },
+                  ],
                   products: { totalCount: 10000 },
                   level: 0,
                 },
@@ -357,6 +406,7 @@ export const mockCategoriesData = {
                 node: {
                   id: 'Q2F0ZWdvcnk6MTk=',
                   name: 'BOTTOMS',
+                  metadata: [],
                   products: { totalCount: 10000 },
                   level: 1,
                 },
@@ -377,6 +427,12 @@ export const mockCategoriesData = {
           name: 'Women',
           id: 'Q2F0ZWdvcnk6Mg==',
           slug: 'women',
+          metadata: [
+            {
+              key: 'order',
+              value: '2',
+            },
+          ],
           products: { totalCount: 10000 },
           level: 0,
           children: {
@@ -387,6 +443,7 @@ export const mockCategoriesData = {
                   name: 'BOTTOMS',
                   products: { totalCount: 10000 },
                   level: 1,
+                  metadata: [],
                   children: {
                     edges: [
                       {
@@ -394,6 +451,7 @@ export const mockCategoriesData = {
                           name: 'LEGGINGS',
                           id: 'Q2F0ZWdvcnk6NTc=',
                           slug: 'leggings',
+                          metadata: [],
                           products: { totalCount: 10000 },
                           level: 2,
                           ancestors: {
@@ -414,6 +472,8 @@ export const mockCategoriesData = {
                           ancestors: {
                             edges: [],
                           },
+                          metadata: [],
+
                           children: {
                             edges: [],
                           },

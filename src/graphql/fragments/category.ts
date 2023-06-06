@@ -9,5 +9,9 @@ export const categoryFragment = gql`
     products {
       totalCount
     }
+    metadata {
+      key
+      value
+    }
   }
 `;

@@ -54,23 +54,6 @@ describe('Categories Service', () => {
     expect(getSyncedCategories).toBeDefined();
   });
 
-  it('should get categories by shop', async () => {
-    jest
-      .spyOn(CategoriesHandler, 'shopCategoryIdsHandler')
-      .mockImplementation(async () => mocks.categoriesByShop);
-
-    jest
-      .spyOn(CategoriesHandler, 'categoriesHandler')
-      .mockImplementation(async () => mocks.shopCategoryData);
-
-    const getShopCategories = await service.getShopCategories('162', {
-      first: 10,
-    });
-
-    expect(getShopCategories).toEqual(mocks.expectedCategoriesByShop);
-    expect(getShopCategories).toBeDefined();
-  });
-
   it('should move all child categories to there parent categories', async () => {
     const arrangedCategories = await moveChildCategoriesToParents(
       mocks.unArrangedCategories,

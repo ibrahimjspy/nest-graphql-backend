@@ -6,6 +6,10 @@ export const categoryWithAncestors = gql`
     name
     slug
     level
+    metadata {
+      key
+      value
+    }
     products {
       totalCount
     }
@@ -14,6 +18,10 @@ export const categoryWithAncestors = gql`
         node {
           id
           name
+          metadata {
+            key
+            value
+          }
           slug
           products {
             totalCount
