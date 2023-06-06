@@ -15,6 +15,7 @@ import { getSyncCategoriesMapping } from 'src/external/endpoints/syncCategoriesM
 import {
   moveChildCategoriesToParents,
   prepareSyncedCategoriesResponse,
+  updateNewArrivalCategoryChildren,
   validateCategoriesResponse,
 } from './Categories.utils';
 
@@ -27,6 +28,7 @@ export class CategoriesService {
       const categoriesResponse = validateCategoriesResponse(
         await menuCategoriesHandler(),
       );
+      updateNewArrivalCategoryChildren(categoriesResponse);
       return prepareSuccessResponse(categoriesResponse);
     } catch (error) {
       this.logger.error(error);

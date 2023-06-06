@@ -104,6 +104,18 @@ const getCategoryOrderValue = (category) => {
 };
 
 /**
+ * Retrieves the category parent id value from the metadata of a category.
+ *
+ * @param {CategoryType} category - The category object.
+ * @returns {string} - The id value extracted from the metadata, or 0 if not found.
+ */
+const getCategoryParentId = (category) => {
+  const orderMeta = category.metadata.find(
+    (meta) => meta.key === 'parentCategoryId',
+  );
+  return orderMeta ? orderMeta.value : 0;
+};
+/**
  * @description -- this method return catagories by filter there level against given level
  * @param categories -- All categories
  * @param level -- Category level for filter categories
@@ -236,4 +248,28 @@ export const sortCategories = (categories: CategoryType[]) => {
     const orderB = getCategoryOrderValue(b.node);
     return orderA - orderB;
   });
+};
+
+/**
+ * Updates the children of the new category based on the parent category IDs.
+ * Replaces the children with corresponding categories from the provided array.
+ * @param categories The array of categories to update.
+ */
+export const updateNewArrivalCategoryChildren = (
+  categories: CategoryType[],
+) => {
+  const newCategory = categories.find(
+    (category) => getCategoryOrderValue(category.node) === 1,
+  );
+
+  const updatedChildren = newCategory.node.children.edges.map((children) => {
+    const parentCategoryId = getCategoryParentId(children.node);
+    const otherCategory = parentCategoryId
+      ? categories.find((category) => category.node.id === parentCategoryId)
+      : null;
+
+    return otherCategory ? otherCategory : children;
+  });
+
+  newCategory.node.children.edges = updatedChildren;
 };
