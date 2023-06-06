@@ -12,6 +12,10 @@ export const menuCategoriesQuery = (): string => {
             products {
               totalCount
             }
+            metadata {
+              key
+              value
+            }
             children(first: 20) {
               edges {
                 node {

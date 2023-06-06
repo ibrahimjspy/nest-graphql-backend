@@ -34,43 +34,71 @@ export const prepareSyncedCategoriesResponse = (
 export const validateCategoriesResponse = (
   categoriesData: CategoryListType,
 ) => {
-  // Define the slug of the default category to exclude if needed
-  const DEFAULT_CATEGORY_SLUG = 'default-category';
-
-  // Filter the categories data
-  return categoriesData.edges?.filter((category) => {
-    // Exclude categories with zero product counts
-    if (category.node.products.totalCount === 0) return false;
-
+  // Filter and reorder the categories data
+  const filteredCategories = categoriesData.edges?.filter((category) => {
+    // Exclude categories with "display" set to "none"
+    if (
+      category.node.metadata.some(
+        (meta) => meta.key === 'display' && meta.value === 'none',
+      )
+    ) {
+      return false;
+    }
+    if (!category.node.children.edges) {
+      return category;
+    }
     // Filter the children categories
-    const filteredChildren = category.node.children.edges.filter((childOne) => {
-      // Exclude children categories with zero product counts
-      if (childOne.node.products.totalCount === 0) return false;
+    const filteredChildren = category.node.children?.edges?.filter(
+      (childOne) => {
+        // Filter the grandchildren categories
+        const filteredGrandchildren = childOne.node.children.edges.filter(
+          (childTwo) => {
+            // Exclude grandchildren categories with zero product counts
+            return childTwo.node.products.totalCount !== 0;
+          },
+        );
 
-      // Filter the grandchildren categories
-      const filteredGrandchildren = childOne.node.children.edges.filter(
-        (childTwo) => {
-          // Keep grandchildren categories with non-zero product counts
-          return childTwo.node.products.totalCount !== 0;
-        },
-      );
+        // Replace the grandchildren categories with the filtered ones
+        childOne.node.children.edges = filteredGrandchildren;
 
-      // Replace the grandchildren categories with the filtered ones
-      childOne.node.children.edges = filteredGrandchildren;
-
-      // Keep children categories with at least one non-zero product count grandchild
-      return filteredGrandchildren.length > 0;
-    });
+        // Keep children categories with at least one non-zero product count grandchild
+        return filteredGrandchildren.length > 0;
+      },
+    );
 
     // Replace the children categories with the filtered ones
     category.node.children.edges = filteredChildren;
-
     // Keep categories with at least one non-zero product count child or non-default slug
-    return (
-      category.node.children.edges.length > 0 ||
-      category.node.slug !== DEFAULT_CATEGORY_SLUG
+    return category;
+  });
+
+  // Filter the top-level parent categories with "display" set to "none"
+  const filteredTopParents = filteredCategories?.filter((category) => {
+    // Exclude top-level parent categories with "display" set to "none"
+    return !category.node.metadata.some(
+      (meta) => meta.key === 'display' && meta.value === 'none',
     );
   });
+
+  // Reorder the categories based on metadata key "order" value
+  const reorderedCategories = filteredTopParents?.sort((a, b) => {
+    const orderA = getCategoryOrderValue(a.node);
+    const orderB = getCategoryOrderValue(b.node);
+    return orderA - orderB;
+  });
+
+  return reorderedCategories;
+};
+
+/**
+ * Retrieves the order value from the metadata of a category.
+ *
+ * @param {CategoryType} category - The category object.
+ * @returns {number} - The order value extracted from the metadata, or 0 if not found.
+ */
+const getCategoryOrderValue = (category) => {
+  const orderMeta = category.metadata.find((meta) => meta.key === 'order');
+  return orderMeta ? parseInt(orderMeta.value, 10) : 0;
 };
 
 /**
