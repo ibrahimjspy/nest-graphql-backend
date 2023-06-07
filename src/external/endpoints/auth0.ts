@@ -1,4 +1,5 @@
 import { Logger } from '@nestjs/common';
+import { AWS_AUTH0_CONNECTION_API } from 'src/constants';
 import http from 'src/core/proxies/restHandler';
 import {
   AUTH0_DOMAIN,
@@ -36,6 +37,25 @@ export const authenticateAuth0User = async (
       username: email,
       password: password,
     });
+    return response?.data;
+  } catch (error) {
+    Logger.error(error);
+  }
+};
+
+/**
+ * @description -- this function create auth0 connection against given storefront id
+ * @param {string} storeId -- storefront id
+ * @return -- Auth0 response of connection creation agianst given storeId
+ */
+
+export const createAuth0Connection = async (
+  storeId: string,
+) => {
+  try {
+    const response = await http.post(`${AWS_AUTH0_CONNECTION_API}`, {
+      storeId: storeId,
+    })
     return response?.data;
   } catch (error) {
     Logger.error(error);
