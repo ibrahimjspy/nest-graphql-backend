@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as ShopHandlers from 'src/graphql/handlers/shop';
 import * as Github from 'src/external/endpoints/provisionStorefront';
+import * as AuthO from 'src/external/endpoints/auth0';
 import * as Workflow from 'src/external/endpoints/workflow';
 import { ShopService } from './Shop.service';
 import { ShopType } from 'src/graphql/types/shop.type';
@@ -63,6 +64,12 @@ describe('Shop Service Integration test', () => {
       });
 
     jest.spyOn(Github, 'provisionStoreFront').mockImplementation(async () => {
+      return {
+        status: 200,
+      } as any;
+    });
+
+    jest.spyOn(AuthO, 'createAuth0Connection').mockImplementation(async () => {
       return {
         status: 200,
       } as any;
