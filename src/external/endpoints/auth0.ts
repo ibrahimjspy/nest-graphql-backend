@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { AWS_AUTH0_CONNECTION_API } from 'src/constants';
+import { AUTH0_CONNECTION_LAMBDA_URL } from 'src/constants';
 import http from 'src/core/proxies/restHandler';
 import {
   AUTH0_DOMAIN,
@@ -52,8 +52,8 @@ export const authenticateAuth0User = async (
 
 export const createAuth0Connection = async (storeId: string) => {
   try {
-    Logger.log(`Creating aiuth0 connection for storefront ${storeId}`);
-    const response = await http.post(`${AWS_AUTH0_CONNECTION_API}`, {
+    Logger.log(`Creating auth0 connection for storefront ${storeId}`);
+    const response = await http.post(`${AUTH0_CONNECTION_LAMBDA_URL}`, {
       storeId: storeId,
     });
     return response?.data;
