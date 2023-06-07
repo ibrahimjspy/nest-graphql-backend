@@ -133,4 +133,4 @@ export const WORKFLOW_URL = process.env.WORKFLOW_URL;
  */
 export const ENVIRONMENT = process.env.ENVIRONMENT || 'dev';
 
-export const AWS_AUTH0_CONNECTION_API = process.env.AWS_AUTH0_CONNECTION_API;
+export const AUTH0_CONNECTION_LAMBDA_URL = process.env.AUTH0_CONNECTION_LAMBDA_URL;
