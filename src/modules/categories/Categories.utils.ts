@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { CategoryListType, CategoryType } from './Categories.types';
 
 /**
@@ -268,7 +269,10 @@ export const updateNewArrivalCategoryChildren = (
       const otherCategory = parentCategoryId
         ? categories.find((category) => category.node.id === parentCategoryId)
         : null;
-
+      Logger.log(
+        `replacing new arrivals category for ${children.node.name}`,
+        otherCategory,
+      );
       return otherCategory ? otherCategory : children;
     },
   );
