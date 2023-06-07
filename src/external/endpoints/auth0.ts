@@ -52,10 +52,10 @@ export const authenticateAuth0User = async (
 
 export const createAuth0Connection = async (storeId: string) => {
   try {
+    Logger.log(`Creating aiuth0 connection for storefront ${storeId}`);
     const response = await http.post(`${AWS_AUTH0_CONNECTION_API}`, {
       storeId: storeId,
     });
-    Logger.log(`Creating aiuth0 connection for storefront ${storeId}`);
     return response?.data;
   } catch (error) {
     Logger.error(error);
