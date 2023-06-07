@@ -251,25 +251,27 @@ export const sortCategories = (categories: CategoryType[]) => {
 };
 
 /**
- * Updates the children of the new category based on the parent category IDs.
+ * Updates the children of the new arrival category based on the parent category IDs.
  * Replaces the children with corresponding categories from the provided array.
  * @param categories The array of categories to update.
  */
 export const updateNewArrivalCategoryChildren = (
   categories: CategoryType[],
 ) => {
-  const newCategory = categories.find(
+  const newArrivalCategory = categories.find(
     (category) => getCategoryOrderValue(category.node) === 1,
   );
 
-  const updatedChildren = newCategory.node.children.edges.map((children) => {
-    const parentCategoryId = getCategoryParentId(children.node);
-    const otherCategory = parentCategoryId
-      ? categories.find((category) => category.node.id === parentCategoryId)
-      : null;
+  const updatedChildren = newArrivalCategory.node.children.edges.map(
+    (children) => {
+      const parentCategoryId = getCategoryParentId(children.node);
+      const otherCategory = parentCategoryId
+        ? categories.find((category) => category.node.id === parentCategoryId)
+        : null;
 
-    return otherCategory ? otherCategory : children;
-  });
+      return otherCategory ? otherCategory : children;
+    },
+  );
 
-  newCategory.node.children.edges = updatedChildren;
+  newArrivalCategory.node.children.edges = updatedChildren;
 };
