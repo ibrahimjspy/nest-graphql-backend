@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { CategoryListType, CategoryType } from './Categories.types';
 
 /**
@@ -103,6 +104,18 @@ const getCategoryOrderValue = (category) => {
   return orderMeta ? parseInt(orderMeta.value, 10) : 0;
 };
 
+/**
+ * Retrieves the category parent id value from the metadata of a category.
+ *
+ * @param {CategoryType} category - The category object.
+ * @returns {string} - The id value extracted from the metadata, or 0 if not found.
+ */
+const getCategoryParentId = (category) => {
+  const orderMeta = category.metadata.find(
+    (meta) => meta.key === 'parentCategoryId',
+  );
+  return orderMeta ? orderMeta.value : 0;
+};
 /**
  * @description -- this method return catagories by filter there level against given level
  * @param categories -- All categories
@@ -236,4 +249,33 @@ export const sortCategories = (categories: CategoryType[]) => {
     const orderB = getCategoryOrderValue(b.node);
     return orderA - orderB;
   });
+};
+
+/**
+ * Updates the children of the new arrival category based on the parent category IDs.
+ * Replaces the children with corresponding categories from the provided array.
+ * @param categories The array of categories to update.
+ */
+export const updateNewArrivalCategoryChildren = (
+  categories: CategoryType[],
+) => {
+  const newArrivalCategory = categories.find(
+    (category) => getCategoryOrderValue(category.node) === 1,
+  );
+
+  const updatedChildren = newArrivalCategory.node.children.edges.map(
+    (children) => {
+      const parentCategoryId = getCategoryParentId(children.node);
+      const otherCategory = parentCategoryId
+        ? categories.find((category) => category.node.id === parentCategoryId)
+        : null;
+      Logger.log(
+        `replacing new arrivals category for ${children.node.name}`,
+        otherCategory,
+      );
+      return otherCategory ? otherCategory : children;
+    },
+  );
+
+  newArrivalCategory.node.children.edges = updatedChildren;
 };

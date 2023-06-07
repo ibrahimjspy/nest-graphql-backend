@@ -49,6 +49,13 @@ export class ProductFilterDto extends PaginationDto {
   @ApiProperty({ required: false })
   @IsOptional()
   category?: string;
+
+  @ApiProperty({
+    required: false,
+    description: 'date in iso format -- return product after this date',
+  })
+  @IsOptional()
+  date?: string;
 }
 
 export class ProductListDto {

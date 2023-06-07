@@ -8,6 +8,7 @@ export const bundleDetailsFragment = gql`
     isOpenBundle
     description
     slug
+    price
   }
 `;
 

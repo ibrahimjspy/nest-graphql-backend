@@ -15,15 +15,23 @@ export const b2bQuery = (filter: ProductFilterDto): string => {
   const metadataFilter = filter.vendorId
     ? ` metadata: [{ key: "vendorId", value: "${filter.vendorId}" }]`
     : '';
+  const sortBy = filter.date
+    ? 'sortBy: { field: CREATED_AT, direction: DESC}'
+    : '';
+  const daysBeforeFilter = filter.date
+    ? `updatedAt: {gte: "${filter.date}"}`
+    : '';
   return gql`
     query {
       products(
         ${pageFilter}
+        ${sortBy}
         filter: {
           ids: ${JSON.stringify(filter.productIds || [])}
           isAvailable: true,
           categories: [${categoryFilter}]
           ${metadataFilter}
+          ${daysBeforeFilter}
         }
       ) {
         pageInfo {
