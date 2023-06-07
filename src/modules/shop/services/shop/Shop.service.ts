@@ -28,6 +28,7 @@ import { ImportBulkCategoriesDto } from '../../dto/autoSync';
 import { autoSyncHandler } from 'src/external/endpoints/autoSync';
 import { NoBankAccountFoundError } from '../../Shop.exceptions';
 import { workflowHandler } from 'src/external/endpoints/workflow';
+import { createAuth0Connection } from 'src/external/endpoints/auth0';
 @Injectable()
 export class ShopService {
   private readonly logger = new Logger(ShopService.name);
@@ -56,9 +57,11 @@ export class ShopService {
         getShopDetailsV2Handler({ id: shopId }),
       ]);
       this.logger.log(`store created ${shopId}`, createStore);
+      const storeId = createStore['id'];
       await Promise.all([
         addStoreToShopHandler(createStore, shopDetails, token),
         provisionStoreFront(storeInput.url),
+        createAuth0Connection(storeId),
       ]);
       return prepareSuccessResponse(
         createStore,

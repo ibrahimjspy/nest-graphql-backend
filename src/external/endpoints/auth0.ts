@@ -1,4 +1,5 @@
 import { Logger } from '@nestjs/common';
+import { AUTH0_CONNECTION_LAMBDA_URL } from 'src/constants';
 import http from 'src/core/proxies/restHandler';
 import {
   AUTH0_DOMAIN,
@@ -39,5 +40,25 @@ export const authenticateAuth0User = async (
     return response?.data;
   } catch (error) {
     Logger.error(error);
+  }
+};
+
+/**
+ * @description -- this function create auth0 connection against given storefront id
+ * for authentication against that storefront
+ * @param {string} storeId -- storefront id
+ * @return -- Auth0 response of connection creation agianst given storeId
+ */
+
+export const createAuth0Connection = async (storeId: string) => {
+  try {
+    Logger.log(`Creating auth0 connection for storefront ${storeId}`);
+    const response = await http.post(`${AUTH0_CONNECTION_LAMBDA_URL}`, {
+      storeId: storeId,
+    });
+    return response?.data;
+  } catch (error) {
+    Logger.error(error);
+    throw error;
   }
 };

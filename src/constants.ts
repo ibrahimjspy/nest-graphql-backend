@@ -132,3 +132,5 @@ export const WORKFLOW_URL = process.env.WORKFLOW_URL;
  * @options -- prod || dev
  */
 export const ENVIRONMENT = process.env.ENVIRONMENT || 'dev';
+
+export const AUTH0_CONNECTION_LAMBDA_URL = process.env.AUTH0_CONNECTION_LAMBDA_URL;
