@@ -99,6 +99,10 @@ export class ProductService {
     token: string,
   ): Promise<object> {
     try {
+      this.logger.log(
+        `Adding variant stock against ${productVariantId}`,
+        quantity,
+      );
       const response = await ProductsHandlers.updateProductVariantStockHandler(
         productVariantId,
         quantity,
@@ -159,6 +163,11 @@ export class ProductService {
         ) as unknown as BundlesType,
       ]);
 
+      this.logger.log('Merging bundles to make response', [
+        productDetails,
+        bundleDetails,
+      ]);
+
       // Combine product details and bundle details
       return makeGetBundlesResponse(productDetails, bundleDetails);
     } catch (error) {
@@ -198,6 +207,7 @@ export class ProductService {
     bundleCreateInput: BundleCreateDto,
   ): Promise<BundleCreateResponseType> {
     try {
+      this.logger.log('Creating bundle', bundleCreateInput);
       return prepareSuccessResponse(
         await ProductsHandlers.createBundleHandler(bundleCreateInput),
       ) as unknown as BundleCreateResponseType;
@@ -211,6 +221,8 @@ export class ProductService {
     bundleUpdateInput: UpdateOpenPackDto,
   ): Promise<BundleCreateResponseType> {
     try {
+      this.logger.log('Updating bundle', bundleUpdateInput);
+
       const updateBundle = await ProductsHandlers.updateBundleHandler(
         bundleUpdateInput,
       );

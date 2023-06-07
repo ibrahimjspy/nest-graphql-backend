@@ -129,6 +129,10 @@ export class CheckoutService {
         checkoutId,
         B2B_CHECKOUT_APP_TOKEN,
       );
+      this.logger.log(
+        `Order created against checkout id ${checkoutId}`,
+        createOrder['order'],
+      );
       const ordersByShop = {
         userEmail: checkoutBundles['data']['userEmail'],
         marketplaceOrders: getOrdersByShopId(
@@ -148,6 +152,9 @@ export class CheckoutService {
       ]);
       const osOrderId = extractOsOrderNumber(
         osOrderResponse as OsOrderResponseInterface,
+      );
+      this.logger.log(
+        `Os order id ${osOrderId} created against checkout id ${checkoutId}`,
       );
       await this.paymentService.paymentIntentUpdate(paymentIntentId, osOrderId);
       return prepareSuccessResponse(
@@ -217,6 +224,7 @@ export class CheckoutService {
         token,
       );
 
+      this.logger.log(`Creating os order against saleor order`, orderDetail);
       const orderNumber = orderDetail?.data?.number;
       const lessInventoryProducts: ProductType[] =
         getLessInventoryProducts(orderDetail);
@@ -246,11 +254,19 @@ export class CheckoutService {
         osProductsBundles,
       });
 
+      this.logger.log(
+        `Placing OS order against b2c order id ${orderId}`,
+        osOrderPayload,
+      );
       const response = await this.osOrderService.placeOrder(
         osOrderPayload,
         SHAROVE_EMAIL,
         orderId,
         userAccessToken,
+      );
+      this.logger.log(
+        `Order created in os against b2c order ${orderId}`,
+        response,
       );
       return prepareSuccessResponse(
         { response },

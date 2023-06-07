@@ -72,7 +72,9 @@ export class LegacyService {
   }
   async placeExternalOrder() {
     try {
+      const logger = new Logger('LegacyService');
       const payload = await this.getExternalOrderPlacePayload();
+      logger.log('Placing order in os', payload);
       const URL = `${this.baseUrl}/check-out/`;
       const tokenWithoutBearer = this.token.match(/^(\S+)\s(.*)/).slice(1);
       const header = {

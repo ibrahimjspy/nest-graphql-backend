@@ -96,6 +96,8 @@ export class MarketplaceCartService {
     throwException = true,
   ) {
     try {
+      this.logger.log('Adding checkout bundles', checkoutBundles);
+
       return await addCheckoutBundlesHandler(userEmail, checkoutBundles, token);
     } catch (error) {
       this.logger.error(error);
@@ -115,6 +117,8 @@ export class MarketplaceCartService {
     token: string,
   ): Promise<object> {
     try {
+      this.logger.log('Updating checkout bundles', checkoutBundles);
+
       return await updateCheckoutBundlesHandler(
         userEmail,
         checkoutBundles,
@@ -136,6 +140,8 @@ export class MarketplaceCartService {
     throwException = true,
   ): Promise<object> {
     try {
+      this.logger.log('Deleting checkout bundles', checkoutBundleIds);
+
       return await deleteCheckoutBundlesHandler(
         checkoutBundleIds,
         userEmail,
@@ -161,6 +167,11 @@ export class MarketplaceCartService {
     token: string,
   ) {
     try {
+      this.logger.log(
+        'Updating checkout bundles state',
+        updateBundleState.checkoutBundleIds,
+      );
+
       const response = await updateCheckoutBundleState(
         action,
         updateBundleState,
@@ -186,6 +197,8 @@ export class MarketplaceCartService {
     checkoutId: string,
   ) {
     try {
+      this.logger.log('Adding checkout id to marketplace', checkoutId);
+
       const response = await updateCartBundlesCheckoutIdHandler(
         userEmail,
         token,
@@ -228,6 +241,11 @@ export class MarketplaceCartService {
     token: string,
   ): Promise<MarketplaceBundlesType> {
     try {
+      this.logger.log(
+        'Adding checkout bundles to cart',
+        checkoutBundles.bundles,
+      );
+
       const addCheckoutBundles = await addCheckoutBundlesV2Handler(
         checkoutBundles,
         token,
@@ -248,7 +266,7 @@ export class MarketplaceCartService {
   ): Promise<object> {
     this.logger.log(
       'Replacing checkout bundles in marketplace',
-      replaceBundleInput,
+      replaceBundleInput.checkoutBundleId,
     );
     const replaceCheckoutBundles = await replaceCheckoutBundleHandler(
       replaceBundleInput,

@@ -189,6 +189,10 @@ export class ShippingService {
     token: string,
   ): Promise<SuccessResponseType> {
     try {
+      this.logger.log(
+        'Updating shipping method price',
+        updateShippingMethodPriceInput,
+      );
       const updateShippingMethodPrice = await updateShippingMethodPriceHandler(
         updateShippingMethodPriceInput,
         token,

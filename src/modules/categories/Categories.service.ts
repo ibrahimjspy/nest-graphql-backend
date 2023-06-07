@@ -75,6 +75,10 @@ export class CategoriesService {
       const marketplace = await shopCategoryIdsHandler(shopId);
       const categoryIds = marketplace?.categoryIds || [];
       if (categoryIds.length) {
+        this.logger.log(
+          `Returning shop categories against ${shopId}`,
+          marketplace,
+        );
         const saleor = await categoriesHandler({ ...filter, categoryIds });
         const categories = moveChildCategoriesToParents(saleor);
         return prepareSuccessResponse({

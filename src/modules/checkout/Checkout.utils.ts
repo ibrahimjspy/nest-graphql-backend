@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import {
   MetadataType,
   OsOrderResponseInterface,
@@ -19,6 +20,10 @@ export const checkoutShippingMethodsSort = (
 ) => {
   checkoutData.shippingMethods.map((shippingMethod, key) => {
     if (shippingMethod.id == PROMOTION_SHIPPING_METHOD_ID) {
+      Logger.log(
+        'ReSorting shipping methods to accommodate promotion shipping method',
+        PROMOTION_SHIPPING_METHOD_ID,
+      );
       checkoutData.shippingMethods.splice(key, 1);
       checkoutData.shippingMethods.splice(0, 0, shippingMethod);
     }
