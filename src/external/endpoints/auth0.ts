@@ -55,8 +55,10 @@ export const createAuth0Connection = async (storeId: string) => {
     const response = await http.post(`${AWS_AUTH0_CONNECTION_API}`, {
       storeId: storeId,
     });
+    Logger.log(`Creating aiuth0 connection for storefront ${storeId}`);
     return response?.data;
   } catch (error) {
     Logger.error(error);
+    throw error;
   }
 };
