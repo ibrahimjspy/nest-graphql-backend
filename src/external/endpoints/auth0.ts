@@ -45,6 +45,7 @@ export const authenticateAuth0User = async (
 
 /**
  * @description -- this function create auth0 connection against given storefront id
+ * for authentication against that storefront
  * @param {string} storeId -- storefront id
  * @return -- Auth0 response of connection creation agianst given storeId
  */
