@@ -50,13 +50,11 @@ export const authenticateAuth0User = async (
  * @return -- Auth0 response of connection creation agianst given storeId
  */
 
-export const createAuth0Connection = async (
-  storeId: string,
-) => {
+export const createAuth0Connection = async (storeId: string) => {
   try {
     const response = await http.post(`${AWS_AUTH0_CONNECTION_API}`, {
       storeId: storeId,
-    })
+    });
     return response?.data;
   } catch (error) {
     Logger.error(error);

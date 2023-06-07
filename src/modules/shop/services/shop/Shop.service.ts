@@ -59,7 +59,7 @@ export class ShopService {
       await Promise.all([
         addStoreToShopHandler(createStore, shopDetails, token),
         provisionStoreFront(storeInput.url),
-        createAuth0Connection(storeId)
+        createAuth0Connection(storeId),
       ]);
       return prepareSuccessResponse(
         createStore,
