@@ -35,7 +35,6 @@ export const prepareSyncedCategoriesResponse = (
 export const validateCategoriesResponse = (
   categoriesData: CategoryListType,
 ) => {
-  console.dir(categoriesData, { depth: null });
   // Filter and reorder the categories data
   const filteredCategories = categoriesData.edges?.filter((category) => {
     // Exclude categories with "display" set to "none"
