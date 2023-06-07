@@ -152,6 +152,7 @@ export class OrdersService {
     token: string,
   ): Promise<object> {
     try {
+      this.logger.log('Placing order return', payload);
       const b2cEnabled = filter.isB2c || false;
       const isStaffReturn = filter.staff || false;
       const metadata = [{ key: 'isStaffReturn', value: `${isStaffReturn}` }];
@@ -179,6 +180,8 @@ export class OrdersService {
     token: string,
   ): Promise<object> {
     try {
+      this.logger.log(`Fulfilling order ${orderId}`, orderLineIds);
+
       const response = await orderFulfillHandler(orderId, orderLineIds, token);
       const metadata: OrderMetadataDto[] = [
         {
@@ -226,6 +229,7 @@ export class OrdersService {
 
   public async orderCancel(orderId: string, token: string): Promise<object> {
     try {
+      this.logger.log('Cancelling order', orderId);
       const response = await orderCancelHandler(orderId, token);
       return prepareSuccessResponse(response, 'order is cancelled', 201);
     } catch (error) {
@@ -240,6 +244,7 @@ export class OrdersService {
     token: string,
   ): Promise<object> {
     try {
+      this.logger.log('Cancelling order fulfillment', fulfillmentId);
       const response = await orderFulfillmentCancelHandler(
         fulfillmentId,
         warehouseId,

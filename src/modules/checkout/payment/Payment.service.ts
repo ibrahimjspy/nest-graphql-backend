@@ -178,6 +178,7 @@ export class PaymentService {
         );
       }
 
+      this.logger.log('Creating new payment intent as checkout has updated');
       await this.stripeService.cancelPaymentIntentById(paymentIntentId);
       const newPaymentIntentCreate = await this.createPaymentIntent({
         checkoutId,

@@ -9,6 +9,7 @@ const b2cQuery = ({ categoryIds, ...filter }): string => {
   query {
     categories(
       ${validatePageFilter(filter)}
+      level: 0
       filter: {
         ids: ${JSON.stringify(categoryIds || [])}
       }

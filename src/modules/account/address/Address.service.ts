@@ -64,6 +64,7 @@ export class AddressService {
     token: string,
   ): Promise<SuccessResponseType> {
     try {
+      this.logger.log(`Setting ${addressId} as default address`);
       return prepareSuccessResponse(
         await AccountHandlers.setDefaultAddressHandler(
           userId,

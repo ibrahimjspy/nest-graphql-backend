@@ -45,6 +45,7 @@ export class SaleorCartService {
     throwException = true,
   ) {
     try {
+      this.logger.log(`Adding lines to cart ${checkoutId}`, checkoutLines);
       return await addLinesHandler(checkoutId, checkoutLines, token);
     } catch (error) {
       this.logger.error(error);
@@ -61,6 +62,8 @@ export class SaleorCartService {
     throwException = true,
   ) {
     try {
+      this.logger.log(`Updating checkout lines ${checkoutId}`, checkoutLines);
+
       const response = await updateLinesHandler(
         checkoutId,
         checkoutLines,
@@ -82,6 +85,8 @@ export class SaleorCartService {
     throwException = true,
   ) {
     try {
+      this.logger.log(`Updating checkout lines ${checkoutId}`, lineIds);
+
       return await deleteLinesHandler(checkoutId, lineIds, token);
     } catch (error) {
       this.logger.error(error);
@@ -95,6 +100,8 @@ export class SaleorCartService {
     checkoutLines,
     token: string,
   ) {
+    this.logger.log(`Creating checkout from bundle lines`);
+
     const createCheckout = await this.saleorCheckoutService.createCheckout(
       userEmail,
       checkoutLines,
@@ -165,6 +172,10 @@ export class SaleorCartService {
       checkoutBundles,
       updatedCheckoutBundles,
     );
+    this.logger.log(
+      `Updating checkout lines against ${checkoutId}`,
+      checkoutLines,
+    );
     return await this.updateLines(checkoutId, checkoutLines, token);
   }
 
@@ -184,6 +195,10 @@ export class SaleorCartService {
     if (!this.cartValidationService.isEmptyList(updatedSaleorLines)) {
       return;
     }
+    this.logger.log(
+      `Updating checkout lines against ${checkoutId}`,
+      updatedSaleorLines,
+    );
     return this.updateLines(checkoutId, updatedSaleorLines, token);
   }
 
@@ -199,19 +214,23 @@ export class SaleorCartService {
     this.cartValidationService.validateApisByStatus([bundle]);
     const openPackTransactionType = getOpenPackTransactionType(openPackUpdates);
     if (openPackTransactionType === OpenPackTransactionTypeEnum.UPDATE) {
-      return await this.updateLines(
-        checkoutId,
-        getOpenPackLinesUpdate(variants, bundle, saleor),
-        token,
-        true,
+      const checkoutLines = getOpenPackLinesUpdate(variants, bundle, saleor);
+      this.logger.log(
+        `Updating checkout lines against ${checkoutId} in open pack update case`,
+        checkoutLines,
       );
+      return await this.updateLines(checkoutId, checkoutLines, token, true);
     }
-    return await this.updateLines(
-      checkoutId,
-      getOpenPackLinesReplace(openPackUpdates, bundle, saleor),
-      token,
-      true,
+    const checkoutLines = getOpenPackLinesReplace(
+      openPackUpdates,
+      bundle,
+      saleor,
     );
+    this.logger.log(
+      `Updating checkout lines against ${checkoutId} in open pack replace case`,
+      checkoutLines,
+    );
+    return await this.updateLines(checkoutId, checkoutLines, token, true);
   }
 
   /**

@@ -45,6 +45,7 @@ export class ShopService {
     token: string,
   ): Promise<any> {
     try {
+      this.logger.log(`Creating store against ${shopId}`, storeInput);
       const storeUrl = this.generateStorefrontUrl(storeInput.name);
       storeInput.url = storeUrl;
       const [createStore, shopDetails] = await Promise.all([
@@ -55,6 +56,7 @@ export class ShopService {
         ),
         getShopDetailsV2Handler({ id: shopId }),
       ]);
+      this.logger.log(`store created ${shopId}`, createStore);
       const storeId = createStore['id'];
       await Promise.all([
         addStoreToShopHandler(createStore, shopDetails, token),
@@ -199,6 +201,7 @@ export class ShopService {
     isB2c = false,
   ): Promise<SuccessResponseType> {
     try {
+      this.logger.log('Creating marketplace shop', shopInput);
       const response = await createStoreHandler(
         validateStoreInput(shopInput),
         token,
@@ -230,6 +233,7 @@ export class ShopService {
     token: string,
   ): Promise<object> {
     try {
+      this.logger.log(`Updating store info ${shopId}`, storeDetails);
       const B2C_ENABLED = true;
       return prepareSuccessResponse(
         await updateStoreInfoHandler(shopId, storeDetails, token, B2C_ENABLED),
@@ -256,9 +260,12 @@ export class ShopService {
    */
   public async autoSync(autoSyncInput: ImportBulkCategoriesDto, token: string) {
     try {
+      this.logger.log('Calling auto sync', autoSyncInput);
       const { shopId } = autoSyncInput;
       await this.validateShopBank(shopId, token);
       const response = await autoSyncHandler(autoSyncInput);
+      this.logger.log('auto sync message sent', response);
+
       return prepareSuccessResponse(
         response,
         'category auto sync message sent',

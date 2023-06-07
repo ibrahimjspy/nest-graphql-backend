@@ -37,6 +37,7 @@ export class MyProductsService {
 
   public async getMyProducts(retailerId: string, filter: myProductsDTO) {
     try {
+      this.logger.log(`My products api called ${retailerId}`, filter);
       let productIds: string[] = [];
       const retailer = await getShopDetailsV2Handler({ id: retailerId });
       const storefrontIds = getFieldValues(retailer['fields'], 'storefrontids');
@@ -56,6 +57,10 @@ export class MyProductsService {
           const shopProductIds = getShopProductIds(shopProducts);
           productIds = productIds.concat(shopProductIds);
         }),
+      );
+      this.logger.log(
+        `Found product ids against storefronts ${storefrontIds}`,
+        productIds,
       );
       if (isEmptyArray(productIds)) {
         const productsList = makeMyProductsResponse(
@@ -79,6 +84,7 @@ export class MyProductsService {
 
   public async removeProductsFromMyProducts(input: removeMyProductsDto, token) {
     try {
+      this.logger.log('Removing products from my products', input);
       const productIds = input.productIds;
       const storeId = input.storeId;
       const isB2c = true;
@@ -86,6 +92,11 @@ export class MyProductsService {
         deleteBulkProductHandler(productIds, token, isB2c),
         removeB2cProductMapping(productIds),
         removeProductsFromShopHandler(productIds, storeId, token, isB2c),
+      ]);
+      this.logger.log('Products removed from my products', [
+        saleor,
+        mapping,
+        multiVendor,
       ]);
       return prepareSuccessResponse({ saleor, mapping, multiVendor });
     } catch (error) {
@@ -99,6 +110,8 @@ export class MyProductsService {
     token: string,
   ) {
     try {
+      this.logger.log('Updating my products', updateMyProduct);
+
       const mediaUpdate = await deleteBulkMediaHandler(
         updateMyProduct.removeMediaIds,
         token,
@@ -131,6 +144,11 @@ export class MyProductsService {
       }
       const b2cProductIds = getProductIds(productsData);
       const productIdsMapping = await getB2bProductMapping(b2cProductIds);
+
+      this.logger.log('Merging b2b product ids with my products', [
+        b2cProductIds,
+        productIdsMapping,
+      ]);
 
       return mergeB2cMappingsWithProductData(
         productIdsMapping,

@@ -22,6 +22,7 @@ export class SaleorCheckoutService {
         checkoutLines,
         token,
       );
+      this.logger.log('Created new checkout', checkoutLines);
       return checkoutCreate['checkout'];
     } catch (error) {
       this.logger.error(error);

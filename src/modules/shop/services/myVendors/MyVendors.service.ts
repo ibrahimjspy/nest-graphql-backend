@@ -19,6 +19,7 @@ export class MyVendorsService {
     token: string,
   ): Promise<SuccessResponseType> {
     try {
+      this.logger.log(`Adding vendors to shop ${shopId}`, vendorIds);
       const shopDetail = await getShopDetailsV2Handler({ id: shopId });
       const response = await addVendorsToShopHandler(
         shopId,
