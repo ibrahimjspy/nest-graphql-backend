@@ -52,10 +52,11 @@ export class ProductFilterDto extends PaginationDto {
 
   @ApiProperty({
     required: false,
-    description: 'how many days before today you want products from',
+    description:
+      'date in iso format -- how many days before you want products from',
   })
   @IsOptional()
-  daysBefore?: number;
+  daysBefore?: string;
 }
 
 export class ProductListDto {

@@ -7,7 +7,6 @@ import { pageInfoFragment } from 'src/graphql/fragments/pageInfo';
 import { pricingFragment } from 'src/graphql/fragments/pricing';
 import { productDetailsFragment } from 'src/graphql/fragments/product';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
-import { getISODateBeforeDays } from 'src/graphql/utils/products';
 import { ProductFilterDto } from 'src/modules/product/dto';
 
 export const b2bQuery = (filter: ProductFilterDto): string => {
@@ -20,7 +19,7 @@ export const b2bQuery = (filter: ProductFilterDto): string => {
     ? 'sortBy: { field: CREATED_AT, direction: DESC}'
     : '';
   const daysBeforeFilter = filter.daysBefore
-    ? `updatedAt: {gte: "${getISODateBeforeDays(filter.daysBefore)}"}`
+    ? `updatedAt: {gte: "${filter.daysBefore}"}`
     : '';
   return gql`
     query {
