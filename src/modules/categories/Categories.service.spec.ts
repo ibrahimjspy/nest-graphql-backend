@@ -153,7 +153,7 @@ describe('newCategoryUpdate', () => {
             },
             {
               node: {
-                name: 'Missing Category 1',
+                name: 'Women',
                 id: 'Q2F0ZWdvcnk6Mg==',
                 slug: 'missing-category-1',
                 products: { totalCount: 123 },
@@ -165,9 +165,7 @@ describe('newCategoryUpdate', () => {
         },
       },
     });
-    expect(categories[0].node.children.edges[1].node.name).toBe(
-      'Missing Category 1',
-    );
+    expect(categories[0].node.children.edges[1].node.name).toBe('Women');
   });
 
   test('handles the case when the new category is not found', () => {

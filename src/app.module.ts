@@ -1,5 +1,5 @@
-import { RouterModule } from '@nestjs/core';
-import { Module } from '@nestjs/common';
+import { APP_INTERCEPTOR, RouterModule } from '@nestjs/core';
+import { CacheInterceptor, CacheModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_ROUTES } from './app.routes';
 import { AppController } from './app.controller';
@@ -13,6 +13,7 @@ import { AccountModule } from './modules/account/Account.module';
 
 @Module({
   imports: [
+    CacheModule.register(),
     ConfigModule.forRoot(),
     RouterModule.register(APP_ROUTES),
     ProductModule,
@@ -23,6 +24,12 @@ import { AccountModule } from './modules/account/Account.module';
     AccountModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
+    },
+  ],
 })
 export class AppModule {}
