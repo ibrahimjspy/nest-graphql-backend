@@ -81,6 +81,7 @@ export class CheckoutService {
     checkoutBundles: string,
     orderDetails: object,
     paymentMethodId: string,
+    paymentIntentId: string,
     token: string,
   ): Promise<object> {
     try {
@@ -91,6 +92,7 @@ export class CheckoutService {
         paymentMethodId,
         orderDetails['billingAddress'],
         orderDetails['deliveryMethod'],
+        paymentIntentId,
         token,
       );
       return await instance.placeExternalOrder();
@@ -131,7 +133,7 @@ export class CheckoutService {
       );
       this.logger.log(
         `Order created against checkout id ${checkoutId}`,
-        createOrder['order'],
+        createOrder['order']['id'],
       );
       const ordersByShop = {
         userEmail: checkoutBundles['data']['userEmail'],
@@ -145,6 +147,7 @@ export class CheckoutService {
           checkoutBundles['data']['checkoutBundles'],
           createOrder['order'],
           paymentMethodId,
+          paymentIntentId,
           token,
         ),
         this.ordersService.addOrderToShop(ordersByShop, token),

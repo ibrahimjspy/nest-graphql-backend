@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import {
   prepareFailedResponse,
   prepareSuccessResponse,
@@ -155,44 +154,39 @@ export class PaymentService {
     userEmail: string,
     token: string,
   ): Promise<object> {
-    try {
-      const checkoutId = checkoutData['id'];
-      const checkoutAmount = this.getCheckoutPreAuthAmount(checkoutData);
-      const paymentIntentData = await this.stripeService.getPaymentIntentId(
-        paymentIntentId,
-      );
-      const paymentMethodId = paymentIntentData.payment_method;
-      const paymentIntentAmount = paymentIntentData.amount;
+    const checkoutId = checkoutData['id'];
+    const checkoutAmount = this.getCheckoutPreAuthAmount(checkoutData);
+    const paymentIntentData = await this.stripeService.getPaymentIntentId(
+      paymentIntentId,
+    );
+    const paymentMethodId = paymentIntentData.payment_method;
+    const paymentIntentAmount = paymentIntentData.amount;
 
-      if (paymentIntentAmountValidate(checkoutAmount, paymentIntentAmount)) {
-        return prepareSuccessResponse(
-          { paymentIntentId },
-          'existing payment intent id is valid',
-          201,
-        );
-      }
-
-      this.logger.log('Creating new payment intent as checkout has updated');
-      await this.stripeService.cancelPaymentIntentById(paymentIntentId);
-      const newPaymentIntentCreate = await this.createPaymentIntent({
-        checkoutId,
-        userEmail,
-        paymentMethodId,
-        totalAmount: checkoutAmount,
-        token,
-      });
-
+    if (paymentIntentAmountValidate(checkoutAmount, paymentIntentAmount)) {
       return prepareSuccessResponse(
-        {
-          paymentIntentId: newPaymentIntentCreate['data']['paymentIntentId'],
-        },
-        'new payment intent created as checkout and intent amount are different',
+        { paymentIntentId },
+        'existing payment intent id is valid',
         201,
       );
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
     }
+
+    this.logger.log('Creating new payment intent as checkout has updated');
+    await this.stripeService.cancelPaymentIntentById(paymentIntentId);
+    const newPaymentIntentCreate = await this.createPaymentIntent({
+      checkoutId,
+      userEmail,
+      paymentMethodId,
+      totalAmount: checkoutAmount,
+      token,
+    });
+
+    return prepareSuccessResponse(
+      {
+        paymentIntentId: newPaymentIntentCreate['data']['paymentIntentId'],
+      },
+      'new payment intent created as checkout and intent amount are different',
+      201,
+    );
   }
   /**
    * @description -- this creates a payment intent in stripe against user by first fetching its total amount from salor
