@@ -135,3 +135,5 @@ export const ENVIRONMENT = process.env.ENVIRONMENT || 'dev';
 
 export const AUTH0_CONNECTION_LAMBDA_URL =
   process.env.AUTH0_CONNECTION_LAMBDA_URL;
+
+export const CATEGORIES_CACHE_TTL = 86400;

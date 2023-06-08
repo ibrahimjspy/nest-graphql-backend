@@ -1,8 +1,9 @@
-import { Controller, Get, Param, Query, Res } from '@nestjs/common';
+import { CacheTTL, Controller, Get, Param, Query, Res } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
 import { CategoriesService } from './Categories.service';
 import { CategoriesDto, SyncCategoriesDto, shopIdDTO } from './dto/categories';
+import { CATEGORIES_CACHE_TTL } from 'src/constants';
 
 @ApiTags('categories')
 @Controller('')
@@ -47,6 +48,7 @@ export class CategoriesController {
   @ApiOperation({
     summary: 'this api will be deprecated',
   })
+  @CacheTTL(CATEGORIES_CACHE_TTL)
   async findMenuCategories(): Promise<object> {
     const categoriesData = await this.appService.menuCategoriesDeprecated();
     return categoriesData['data'];
