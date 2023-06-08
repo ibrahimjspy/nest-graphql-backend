@@ -118,39 +118,33 @@ export class PaymentService {
     totalAmount,
     token,
   }): Promise<object> {
-    try {
-      const paymentIntentResponse =
-        await this.stripeService.createPaymentIntent(
-          userEmail,
-          paymentMethodId,
-          totalAmount,
-        );
-      if (!paymentIntentResponse)
-        throw new PaymentIntentCreationError(userEmail, paymentMethodId);
-      const paymentIntentId = paymentIntentResponse.id;
-      await Promise.all([
-        storePaymentIntentHandler(
-          checkoutId,
-          paymentIntentId,
-          paymentMethodId,
-          token,
-        ),
-        preAuthTransactionHandler(
-          checkoutId,
-          paymentIntentId,
-          totalAmount,
-          B2B_CHECKOUT_APP_TOKEN,
-        ),
-      ]);
-      return prepareSuccessResponse(
-        { paymentIntentId },
-        'new payment intent Id created and added against checkout',
-        201,
-      );
-    } catch (error) {
-      this.logger.error(error.message);
-      return prepareFailedResponse(error.message);
-    }
+    const paymentIntentResponse = await this.stripeService.createPaymentIntent(
+      userEmail,
+      paymentMethodId,
+      totalAmount,
+    );
+    if (!paymentIntentResponse)
+      throw new PaymentIntentCreationError(userEmail, paymentMethodId);
+    const paymentIntentId = paymentIntentResponse.id;
+    await Promise.all([
+      storePaymentIntentHandler(
+        checkoutId,
+        paymentIntentId,
+        paymentMethodId,
+        token,
+      ),
+      preAuthTransactionHandler(
+        checkoutId,
+        paymentIntentId,
+        totalAmount,
+        B2B_CHECKOUT_APP_TOKEN,
+      ),
+    ]);
+    return prepareSuccessResponse(
+      { paymentIntentId },
+      'new payment intent Id created and added against checkout',
+      201,
+    );
   }
   /**
    * @description -- this returns total amount against a checkout id from saleor
