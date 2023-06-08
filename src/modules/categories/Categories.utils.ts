@@ -254,28 +254,67 @@ export const sortCategories = (categories: CategoryType[]) => {
 /**
  * Updates the children of the new arrival category based on the parent category IDs.
  * Replaces the children with corresponding categories from the provided array.
- * @param categories The array of categories to update.
+ * @param {CategoryType[]} categories - The array of categories to update.
  */
-export const updateNewArrivalCategoryChildren = (
-  categories: CategoryType[],
-) => {
+export const updateNewArrivalCategoryChildren = (categories) => {
+  /**
+   * Finds the new arrival category within the categories array.
+   * @type {CategoryType}
+   */
   const newArrivalCategory = categories.find(
     (category) => getCategoryOrderValue(category.node) === 1,
   );
 
+  /**
+   * The updated array of children categories.
+   * @type {CategoryType[]}
+   */
   const updatedChildren = newArrivalCategory.node.children.edges.map(
     (children) => {
+      /**
+       * The parent category ID of the current child category.
+       * @type {string}
+       */
       const parentCategoryId = getCategoryParentId(children.node);
+
+      /**
+       * The corresponding category object for the parent category ID.
+       * @type {CategoryType}
+       */
       const otherCategory = parentCategoryId
         ? categories.find((category) => category.node.id === parentCategoryId)
         : null;
+
       Logger.log(
-        `replacing new arrivals category for ${children.node.name}`,
+        `Replacing new arrivals category for ${children.node.name}`,
         otherCategory,
       );
-      return otherCategory ? otherCategory : children;
+
+      if (otherCategory) {
+        /**
+         * Creates a new object for the updated category.
+         * @type {CategoryType}
+         */
+        const updatedCategory = { ...otherCategory };
+
+        /**
+         * Creates a new object for the node property of the updated category.
+         * @type {object}
+         */
+        updatedCategory.node = { ...otherCategory.node };
+
+        /**
+         * Updates the name property of the updated category to match the child category name.
+         */
+        updatedCategory.node.name = children.node.name;
+
+        return updatedCategory;
+      }
+
+      return children;
     },
   );
 
+  // Updates the children array of the new arrival category with the updated children.
   newArrivalCategory.node.children.edges = updatedChildren;
 };
