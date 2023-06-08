@@ -120,7 +120,7 @@ export default class StripeService {
     return createPaymentMethod;
   }
 
-  public async cancelPaymentIntentById(paymentIntentId: string) {
+  public async cancelPaymentIntent(paymentIntentId: string) {
     const cancelPaymentIntentId = await this.stripe.paymentIntents.cancel(
       paymentIntentId,
     );

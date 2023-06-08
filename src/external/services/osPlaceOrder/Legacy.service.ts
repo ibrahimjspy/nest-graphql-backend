@@ -9,6 +9,7 @@ import {
   MAPPING_SERVICE_TOKEN,
   PAYMENT_TYPE,
   PRE_ORDER,
+  SHAROVE_ORDER_SITE,
   SIGNATURE_REQUESTED,
   SMS_NUMBER,
   STORE_CREDIT,
@@ -51,6 +52,8 @@ export class LegacyService {
   colorsByShops: any[];
   billingInfo: shippingAddressType;
   B2B_ORDER_TYPE = 'B2B';
+  site = SHAROVE_ORDER_SITE;
+  paymentIntentId: string;
   constructor(
     selectedBundles,
     shipping_info,
@@ -58,6 +61,7 @@ export class LegacyService {
     paymentMethodId,
     billingInfo: shippingAddressType,
     deliveryMethod: DeliveryMethodType,
+    paymentIntentId: string,
     token,
   ) {
     this.selectedBundles = selectedBundles;
@@ -69,12 +73,13 @@ export class LegacyService {
     this.baseUrl = `${BASE_EXTERNAL_ENDPOINT}/api/v3`;
     this.elasticSearchUrl = `${ELASTIC_SEARCH_ENDPOINT}/api/as/v1`;
     this.deliveryMethod = deliveryMethod;
+    this.paymentIntentId = paymentIntentId;
   }
   async placeExternalOrder() {
     try {
       const logger = new Logger('LegacyService');
       const payload = await this.getExternalOrderPlacePayload();
-      logger.log('Placing order in os', payload);
+      logger.log('Placing order in os', payload['orders']);
       const URL = `${this.baseUrl}/check-out/`;
       const tokenWithoutBearer = this.token.match(/^(\S+)\s(.*)/).slice(1);
       const header = {
@@ -299,8 +304,10 @@ export class LegacyService {
       spa_id: parseInt(shippingAddressInfo?.data?.user_id),
       sharove_order_id: this.orderId,
       stripe_payment_method_id: this.paymentMethodId,
+      stripe_payment_intent_id: this.paymentIntentId,
       billing: this.transformBillingInformation(),
       order_type: this.B2B_ORDER_TYPE,
+      site: this.site,
     };
   }
 
