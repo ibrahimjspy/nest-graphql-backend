@@ -67,7 +67,7 @@ export const validateCategoriesResponse = (
         childOne.node.children.edges = filteredGrandchildren;
 
         // Keep children categories with at least one non-zero product count grandchild
-        return filteredGrandchildren.length > 0;
+        return filteredGrandchildren;
       },
     );
 
