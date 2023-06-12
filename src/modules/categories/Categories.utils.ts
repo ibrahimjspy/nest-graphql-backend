@@ -55,7 +55,7 @@ export const validateCategoriesResponse = (
     // Filter the children categories
     const filteredChildren = category.node.children?.edges?.filter(
       (childOne) => {
-        if (childOne.node.products.totalCount == 0) return false;
+        if (childOne.node.products.totalCount == 0) return;
         // Filter the grandchildren categories
         const filteredGrandchildren = childOne.node.children.edges.filter(
           (childTwo) => {
