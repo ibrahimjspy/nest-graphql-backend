@@ -11,7 +11,7 @@ import {
 
 describe('Categories Service', () => {
   let service: CategoriesService;
-  let mocks;
+  const mocks = mockCategoriesData;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -20,7 +20,6 @@ describe('Categories Service', () => {
     module.useLogger(false);
 
     service = module.get<CategoriesService>(CategoriesService);
-    mocks = mockCategoriesData;
   });
 
   it('should be defined', async () => {
@@ -30,13 +29,27 @@ describe('Categories Service', () => {
   it('should get all categories', async () => {
     jest
       .spyOn(CategoriesHandler, 'categoriesHandler')
-      .mockImplementation(async () => mocks.allCategories);
+      .mockImplementation(async () => mocks.categoriesMock as any);
 
     const expected: SuccessResponseType = {
       status: 200,
       data: mocks.expectedResults,
     };
     const getCategories = await service.getCategories({ first: 10 });
+    expect(getCategories).toEqual(expected);
+    expect(getCategories).toBeDefined();
+  });
+
+  it('should get all categories by vendor', async () => {
+    jest
+      .spyOn(CategoriesHandler, 'vendorCategoriesHandler')
+      .mockImplementation(async () => mocks.allCategories);
+
+    const expected: SuccessResponseType = {
+      status: 200,
+      data: mocks.allCategories,
+    };
+    const getCategories = await service.getVendorCategories('1');
     expect(getCategories).toEqual(expected);
     expect(getCategories).toBeDefined();
   });
@@ -59,7 +72,7 @@ describe('Categories Service', () => {
 
   it('should move all child categories to there parent categories', async () => {
     const arrangedCategories = await moveChildCategoriesToParents(
-      mocks.unArrangedCategories,
+      mocks.unArrangedCategories as any,
     );
     expect(arrangedCategories).toEqual(mocks.arrangedCategories);
     expect(arrangedCategories).toBeDefined();

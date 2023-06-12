@@ -53,4 +53,19 @@ export class CategoriesController {
     const categoriesData = await this.appService.menuCategoriesDeprecated();
     return categoriesData['data'];
   }
+
+  @Get('api/v1/categories/menu/:shopId')
+  @ApiOperation({
+    summary: 'returns vendor level 1 categories by shop id',
+  })
+  @CacheTTL(CATEGORIES_CACHE_TTL)
+  async findVendorCategories(
+    @Res() res,
+    @Param() params: shopIdDTO,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.getVendorCategories(params.shopId),
+    );
+  }
 }

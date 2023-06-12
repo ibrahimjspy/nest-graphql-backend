@@ -8,6 +8,7 @@ import { syncCategoriesQuery } from '../queries/categories/syncCategories';
 import { SyncCategoriesDto } from 'src/modules/categories/dto/categories';
 import { CategoryListType } from 'src/modules/categories/Categories.types';
 import { menuCategoriesQuery } from '../queries/categories/menu';
+import { vendorCategoriesQuery } from '../queries/categories/vendorCategories';
 
 export const shopCategoryIdsHandler = async (
   shopId: string,
@@ -48,6 +49,15 @@ export const syncCategoriesHandler = async (
 export const menuCategoriesHandler = async (): Promise<CategoryListType> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(menuCategoriesQuery()),
+  );
+  return response['categories'];
+};
+
+export const vendorCategoriesHandler = async (
+  vendorId: string,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(vendorCategoriesQuery(vendorId)),
   );
   return response['categories'];
 };
