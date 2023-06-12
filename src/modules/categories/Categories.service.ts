@@ -11,7 +11,11 @@ import {
   syncCategoriesHandler,
   vendorCategoriesHandler,
 } from 'src/graphql/handlers/categories';
-import { CategoriesDto, SyncCategoriesDto } from './dto/categories';
+import {
+  CategoriesDto,
+  SyncCategoriesDto,
+  VendorCategoriesDto,
+} from './dto/categories';
 import { getSyncCategoriesMapping } from 'src/external/endpoints/syncCategoriesMapping';
 import {
   moveChildCategoriesToParents,
@@ -98,11 +102,13 @@ export class CategoriesService {
   }
 
   /**
-   * @description -- returns first 20 categories of level 1, also filters products total count by vendor using saleor metadata
+   * @description -- returns first 20 categories also filters products total count by vendor using saleor metadata
    */
-  public async getVendorCategories(vendorId: string): Promise<object> {
+  public async getVendorCategories(
+    filter: VendorCategoriesDto,
+  ): Promise<object> {
     try {
-      const categoriesResponse = await vendorCategoriesHandler(vendorId);
+      const categoriesResponse = await vendorCategoriesHandler(filter);
       return prepareSuccessResponse(categoriesResponse);
     } catch (error) {
       this.logger.error(error);

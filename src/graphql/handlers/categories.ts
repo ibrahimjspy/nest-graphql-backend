@@ -5,7 +5,10 @@ import {
 import { categoriesQuery } from '../queries/categories/categories';
 import { shopCategoryIdsQuery } from '../queries/categories/shopCategoryIds';
 import { syncCategoriesQuery } from '../queries/categories/syncCategories';
-import { SyncCategoriesDto } from 'src/modules/categories/dto/categories';
+import {
+  SyncCategoriesDto,
+  VendorCategoriesDto,
+} from 'src/modules/categories/dto/categories';
 import { CategoryListType } from 'src/modules/categories/Categories.types';
 import { menuCategoriesQuery } from '../queries/categories/menu';
 import { vendorCategoriesQuery } from '../queries/categories/vendorCategories';
@@ -54,10 +57,10 @@ export const menuCategoriesHandler = async (): Promise<CategoryListType> => {
 };
 
 export const vendorCategoriesHandler = async (
-  vendorId: string,
+  filter: VendorCategoriesDto,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(vendorCategoriesQuery(vendorId)),
+    await graphqlCall(vendorCategoriesQuery(filter)),
   );
   return response['categories'];
 };

@@ -49,7 +49,10 @@ describe('Categories Service', () => {
       status: 200,
       data: mocks.allCategories,
     };
-    const getCategories = await service.getVendorCategories('1');
+    const getCategories = await service.getVendorCategories({
+      shopId: '1',
+      categoryLevel: 2,
+    });
     expect(getCategories).toEqual(expected);
     expect(getCategories).toBeDefined();
   });
