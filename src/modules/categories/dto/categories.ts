@@ -30,3 +30,13 @@ export class CategoriesDto extends PaginationDto {
   @IsOptional()
   shopId?: string;
 }
+
+export class VendorCategoriesDto extends PaginationDto {
+  @ApiProperty({ type: String })
+  @IsOptional()
+  shopId?: string;
+
+  @ApiProperty({ type: Number, default: 1 })
+  @IsOptional()
+  categoryLevel?: number;
+}

@@ -2,7 +2,12 @@ import { CacheTTL, Controller, Get, Param, Query, Res } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
 import { CategoriesService } from './Categories.service';
-import { CategoriesDto, SyncCategoriesDto, shopIdDTO } from './dto/categories';
+import {
+  CategoriesDto,
+  SyncCategoriesDto,
+  VendorCategoriesDto,
+  shopIdDTO,
+} from './dto/categories';
 import { CATEGORIES_CACHE_TTL } from 'src/constants';
 
 @ApiTags('categories')
@@ -52,5 +57,17 @@ export class CategoriesController {
   async findMenuCategories(): Promise<object> {
     const categoriesData = await this.appService.menuCategoriesDeprecated();
     return categoriesData['data'];
+  }
+
+  @Get('api/v1/categories/menu')
+  @ApiOperation({
+    summary: 'returns vendor categories by shop id',
+  })
+  @CacheTTL(CATEGORIES_CACHE_TTL)
+  async findVendorCategories(
+    @Res() res,
+    @Query() filter: VendorCategoriesDto,
+  ): Promise<object> {
+    return makeResponse(res, await this.appService.getVendorCategories(filter));
   }
 }

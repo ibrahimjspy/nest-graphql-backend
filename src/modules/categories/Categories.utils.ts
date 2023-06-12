@@ -45,11 +45,11 @@ export const validateCategoriesResponse = (
     ) {
       return false;
     }
+    sortCategories(category.node.children.edges);
     if (
       !category.node.children.edges ||
       getCategoryOrderValue(category.node) === 1
     ) {
-      sortCategories(category.node.children.edges);
       return category;
     }
     // Filter the children categories

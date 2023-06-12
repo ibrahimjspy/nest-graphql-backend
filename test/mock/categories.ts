@@ -111,32 +111,43 @@ export const mockCategoriesData = {
   expectedResults: [
     {
       node: {
+        id: 'Q2F0ZWdvcnk6Mg==',
         name: 'Women',
-        id: 'Q2F0ZWdvcnk6MTg=',
         slug: 'women',
-        metadata: [
-          {
-            key: 'order',
-            value: '2',
-          },
-        ],
-        products: { totalCount: 10000 },
+        level: 0,
+        metadata: [{ key: 'order', value: '2' }],
+        products: { totalCount: 7273 },
+        ancestors: { edges: [] },
         children: {
           edges: [
             {
               node: {
-                name: 'LOUNGE WEAR',
                 id: 'Q2F0ZWdvcnk6MjI=',
+                name: 'LOUNGE WEAR',
                 slug: 'lounge-wear',
-                products: { totalCount: 10000 },
+                level: 1,
+                products: { totalCount: 5 },
+                metadata: [],
                 children: {
                   edges: [
                     {
                       node: {
-                        name: 'SETS',
-                        products: { totalCount: 10000 },
+                        id: 'Q2F0ZWdvcnk6NjU=',
+                        name: 'PANTS',
+                        slug: 'pants-2',
+                        level: 2,
+                        products: { totalCount: 1 },
+                        metadata: [],
+                      },
+                    },
+                    {
+                      node: {
                         id: 'Q2F0ZWdvcnk6Njg=',
+                        name: 'SETS',
                         slug: 'sets-2',
+                        level: 2,
+                        products: { totalCount: 3 },
+                        metadata: [],
                       },
                     },
                   ],
@@ -145,18 +156,32 @@ export const mockCategoriesData = {
             },
             {
               node: {
-                name: 'DRESSES',
                 id: 'Q2F0ZWdvcnk6MTI=',
+                name: 'DRESSES',
                 slug: 'dresses',
-                products: { totalCount: 10000 },
+                level: 1,
+                products: { totalCount: 1135 },
+                metadata: [],
                 children: {
                   edges: [
                     {
                       node: {
-                        name: 'CASUAL',
-                        products: { totalCount: 10000 },
                         id: 'Q2F0ZWdvcnk6NDc=',
+                        name: 'CASUAL',
                         slug: 'casual',
+                        level: 2,
+                        products: { totalCount: 294 },
+                        metadata: [],
+                      },
+                    },
+                    {
+                      node: {
+                        id: 'Q2F0ZWdvcnk6NDg=',
+                        name: 'CLASSIC AND CAREER',
+                        slug: 'classic-and-career',
+                        level: 2,
+                        products: { totalCount: 15 },
+                        metadata: [],
                       },
                     },
                   ],
@@ -477,6 +502,105 @@ export const mockCategoriesData = {
                           children: {
                             edges: [],
                           },
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+    ],
+  },
+  categoriesMock: {
+    edges: [
+      {
+        node: {
+          id: 'Q2F0ZWdvcnk6MQ==',
+          name: 'Default Category',
+          slug: 'default-category',
+          level: 0,
+          metadata: [{ key: 'display', value: 'none' }],
+          products: { totalCount: 15 },
+          ancestors: { edges: [] },
+          children: { edges: [] },
+        },
+      },
+      {
+        node: {
+          id: 'Q2F0ZWdvcnk6Mg==',
+          name: 'Women',
+          slug: 'women',
+          level: 0,
+          metadata: [{ key: 'order', value: '2' }],
+          products: { totalCount: 7273 },
+          ancestors: { edges: [] },
+          children: {
+            edges: [
+              {
+                node: {
+                  id: 'Q2F0ZWdvcnk6MjI=',
+                  name: 'LOUNGE WEAR',
+                  slug: 'lounge-wear',
+                  level: 1,
+                  products: { totalCount: 5 },
+                  metadata: [],
+                  children: {
+                    edges: [
+                      {
+                        node: {
+                          id: 'Q2F0ZWdvcnk6NjU=',
+                          name: 'PANTS',
+                          slug: 'pants-2',
+                          level: 2,
+                          products: { totalCount: 1 },
+                          metadata: [],
+                        },
+                      },
+                      {
+                        node: {
+                          id: 'Q2F0ZWdvcnk6Njg=',
+                          name: 'SETS',
+                          slug: 'sets-2',
+                          level: 2,
+                          products: { totalCount: 3 },
+                          metadata: [],
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+              {
+                node: {
+                  id: 'Q2F0ZWdvcnk6MTI=',
+                  name: 'DRESSES',
+                  slug: 'dresses',
+                  level: 1,
+                  products: { totalCount: 1135 },
+                  metadata: [],
+                  children: {
+                    edges: [
+                      {
+                        node: {
+                          id: 'Q2F0ZWdvcnk6NDc=',
+                          name: 'CASUAL',
+                          slug: 'casual',
+                          level: 2,
+                          products: { totalCount: 294 },
+                          metadata: [],
+                        },
+                      },
+                      {
+                        node: {
+                          id: 'Q2F0ZWdvcnk6NDg=',
+                          name: 'CLASSIC AND CAREER',
+                          slug: 'classic-and-career',
+                          level: 2,
+                          products: { totalCount: 15 },
+                          metadata: [],
                         },
                       },
                     ],

@@ -9,8 +9,13 @@ import {
   menuCategoriesHandler,
   shopCategoryIdsHandler,
   syncCategoriesHandler,
+  vendorCategoriesHandler,
 } from 'src/graphql/handlers/categories';
-import { CategoriesDto, SyncCategoriesDto } from './dto/categories';
+import {
+  CategoriesDto,
+  SyncCategoriesDto,
+  VendorCategoriesDto,
+} from './dto/categories';
 import { getSyncCategoriesMapping } from 'src/external/endpoints/syncCategoriesMapping';
 import {
   moveChildCategoriesToParents,
@@ -93,6 +98,21 @@ export class CategoriesService {
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * @description -- returns first 20 categories also filters products total count by vendor using saleor metadata
+   */
+  public async getVendorCategories(
+    filter: VendorCategoriesDto,
+  ): Promise<object> {
+    try {
+      const categoriesResponse = await vendorCategoriesHandler(filter);
+      return prepareSuccessResponse(categoriesResponse);
+    } catch (error) {
+      this.logger.error(error);
+      return prepareFailedResponse(error.message);
     }
   }
 }
