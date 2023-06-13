@@ -4,7 +4,7 @@ import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 const b2bMutation = (productIds: string[], shopId: string) => {
   return gql`
     mutation {
-      deleteProductsFromShop(Input: { productIds: ${JSON.stringify(
+      deleteProductMappings(input: { productIds: ${JSON.stringify(
         productIds,
       )}, shopId: "${shopId}" }) {
         message
