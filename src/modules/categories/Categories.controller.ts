@@ -63,7 +63,6 @@ export class CategoriesController {
   @ApiOperation({
     summary: 'returns vendor categories by shop id',
   })
-  @CacheTTL(CATEGORIES_CACHE_TTL)
   async findVendorCategories(
     @Res() res,
     @Query() filter: VendorCategoriesDto,
