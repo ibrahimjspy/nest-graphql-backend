@@ -551,7 +551,7 @@ export const validateOpenPackUpdate = (
     getOpenPackUpdateMappings(updateOpenBundle);
 
   const oldVariantQuantityMapping: Map<string, number> = new Map();
-  const deleteCheckoutBundles: string[] = [];
+  const deleteCheckoutBundleIds: string[] = [];
   let allReadyExists = false;
   const updatedOldVariantsPack: UpdateOpenPackDto = {
     checkoutId: updateOpenBundle.checkoutId,
@@ -569,7 +569,7 @@ export const validateOpenPackUpdate = (
           `variant id ${variantId} all ready exists in users cart session`,
         );
         oldVariantQuantityMapping.set(variantId, variant.quantity);
-        deleteCheckoutBundles.push(checkoutBundle.checkoutBundleId);
+        deleteCheckoutBundleIds.push(checkoutBundle.checkoutBundleId);
       }
     }
   }
@@ -596,7 +596,7 @@ export const validateOpenPackUpdate = (
 
   return {
     allReadyExists,
-    deleteCheckoutBundles: [...new Set(deleteCheckoutBundles)],
+    deleteCheckoutBundles: [...new Set(deleteCheckoutBundleIds)],
     updatedOldVariantsPack,
   };
 };

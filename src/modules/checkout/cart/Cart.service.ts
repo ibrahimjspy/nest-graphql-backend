@@ -442,9 +442,10 @@ export class CartService {
       if (isEmptyArray(updatedOpenPack)) {
         // Update existing open packs
         updatedOpenBundles = await Promise.all(
-          updatedOpenPack.map(async (updateOpenPack) => {
-            return await this.updateOpenPack(updateOpenPack, token, false);
-          }),
+          updatedOpenPack.map(
+            async (updateOpenPack) =>
+              await this.updateOpenPack(updateOpenPack, token, false),
+          ),
         );
       }
 
