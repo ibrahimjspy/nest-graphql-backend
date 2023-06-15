@@ -10,6 +10,8 @@ import { UpdateBundleDto, UpdateOpenPackDto } from './dto/cart';
 import { SaleorCheckoutInterface } from '../Checkout.utils.type';
 import { CheckoutBundleInterface } from './Cart.types';
 import { checkoutBundlesInterface } from 'src/external/services/osPlaceOrder/Legacy.service.types';
+import { BundleCreateDto } from 'src/modules/product/dto/bundle';
+import { Logger } from '@nestjs/common';
 
 /**
  * parses checkout bundles object and returns bundle ids
@@ -441,4 +443,179 @@ export const validateReplaceCheckoutBundle = (checkoutBundle, bundle) => {
     return false;
   }
   return true;
+};
+
+/**
+ * Validates and processes the creation of open packs based on the existing checkout bundles and open bundles data.
+ * @param checkoutBundles - An array of CheckoutBundleInterface objects representing the existing checkout bundles.
+ * @param openBundles - An array of BundleCreateDto objects representing the open bundles to be created.
+ * @param checkoutId - The ID of the checkout.
+ * @returns An object containing the updated open packs and the filtered open bundles to be created.
+ */
+export const validateOpenPackCreate = (
+  checkoutBundles: CheckoutBundleInterface[],
+  openBundles: BundleCreateDto[],
+  checkoutId: string,
+) => {
+  const updatedOpenPack: UpdateOpenPackDto[] = [];
+  const openBundlesVariantMapping = openPackCreateVariantsMapping(openBundles);
+  const updatedVariants: string[] = [];
+
+  for (const checkoutBundle of checkoutBundles) {
+    const updateBundle: UpdateOpenPackDto = {
+      checkoutId,
+      bundleId: checkoutBundle.bundle.id,
+      variants: [],
+    };
+
+    for (const productVariant of checkoutBundle.bundle.productVariants) {
+      const variantId = productVariant.productVariant.id;
+
+      if (openBundlesVariantMapping.has(variantId)) {
+        const quantity = openBundlesVariantMapping.get(variantId);
+        const updatedQuantity = productVariant.quantity + quantity;
+        updatedVariants.push(variantId);
+
+        updateBundle.variants.push({
+          oldVariantId: variantId,
+          quantity: updatedQuantity,
+        });
+      }
+    }
+
+    if (updateBundle.variants.length) {
+      updatedOpenPack.push(updateBundle);
+    }
+  }
+
+  const openBundlesCreate = filterOpenBundlesCreate(
+    openBundles,
+    updatedVariants,
+  );
+
+  return {
+    updatedOpenPack,
+    openBundlesCreate,
+  };
+};
+
+/**
+ * Creates a mapping of variant IDs to quantities from the open bundles.
+ * @param openBundles - An array of BundleCreateDto objects representing the open bundles.
+ * @returns A Map with variant IDs as keys and quantities as values.
+ */
+export const openPackCreateVariantsMapping = (
+  openBundles: BundleCreateDto[],
+): Map<string, number> => {
+  const quantityMapping: Map<string, number> = new Map();
+
+  for (const openBundle of openBundles) {
+    for (const productVariant of openBundle.productVariants) {
+      quantityMapping.set(
+        productVariant.productVariantId,
+        productVariant.quantity,
+      );
+    }
+  }
+
+  return quantityMapping;
+};
+
+/**
+ * Filters the open bundles based on the updated variant IDs.
+ * @param openBundles - An array of BundleCreateDto objects representing the open bundles.
+ * @param updatedVariants - An array of variant IDs that have been updated.
+ * @returns The filtered array of open bundles.
+ */
+export const filterOpenBundlesCreate = (
+  openBundles: BundleCreateDto[],
+  updatedVariants: string[],
+): BundleCreateDto[] => {
+  return openBundles.filter((openBundle) => {
+    const variantId = openBundle.productVariants[0].productVariantId;
+    return !updatedVariants.includes(variantId);
+  });
+};
+
+/**
+ * Validates and processes open pack update based on the checkout bundles and update data.
+ * @param checkoutBundles - An array of CheckoutBundleInterface objects representing the existing checkout bundles.
+ * @param updateOpenBundle - The UpdateOpenPackDto object representing the open pack update data.
+ * @returns An object containing information about the update operation.
+ */
+export const validateOpenPackUpdate = (
+  checkoutBundles: CheckoutBundleInterface[],
+  updateOpenBundle: UpdateOpenPackDto,
+) => {
+  const { variantMapping, newVariants, oldVariants } =
+    getOpenPackUpdateMappings(updateOpenBundle);
+
+  const oldVariantQuantityMapping: Map<string, number> = new Map();
+  const deleteCheckoutBundleIds: string[] = [];
+  let allReadyExists = false;
+  const updatedOldVariantsPack: UpdateOpenPackDto = {
+    checkoutId: updateOpenBundle.checkoutId,
+    bundleId: null,
+    variants: [],
+  };
+
+  // Process new variants
+  for (const checkoutBundle of checkoutBundles) {
+    for (const variant of checkoutBundle.bundle.productVariants) {
+      const variantId = variant.productVariant.id;
+
+      if (oldVariants.includes(variantId)) {
+        Logger.log(
+          `variant id ${variantId} all ready exists in users cart session`,
+        );
+        oldVariantQuantityMapping.set(variantId, variant.quantity);
+        deleteCheckoutBundleIds.push(checkoutBundle.checkoutBundleId);
+      }
+    }
+  }
+
+  // Process old variants
+  for (const checkoutBundle of checkoutBundles) {
+    for (const variant of checkoutBundle.bundle.productVariants) {
+      const variantId = variant.productVariant.id;
+
+      if (newVariants.includes(variantId)) {
+        allReadyExists = true;
+        const quantity = variant.quantity;
+        const updatedQuantity =
+          quantity +
+          (oldVariantQuantityMapping.get(variantMapping.get(variantId)) || 0);
+        updatedOldVariantsPack.bundleId = checkoutBundle.bundle.id;
+        updatedOldVariantsPack.variants.push({
+          oldVariantId: variantId,
+          quantity: updatedQuantity,
+        });
+      }
+    }
+  }
+
+  return {
+    allReadyExists,
+    deleteCheckoutBundles: [...new Set(deleteCheckoutBundleIds)],
+    updatedOldVariantsPack,
+  };
+};
+
+/**
+ * Retrieves the variant mapping, old variants, and new variants from the UpdateOpenPackDto object.
+ * @param openBundles - The UpdateOpenPackDto object representing the open pack update data.
+ * @returns An object containing the variant mapping, old variants, and new variants.
+ */
+export const getOpenPackUpdateMappings = (openBundles: UpdateOpenPackDto) => {
+  const variantMapping: Map<string, string> = new Map();
+  const oldVariants: string[] = [];
+  const newVariants: string[] = [];
+
+  for (const variant of openBundles.variants) {
+    oldVariants.push(variant.oldVariantId);
+    newVariants.push(variant.newVariantId);
+    variantMapping.set(variant.newVariantId, variant.oldVariantId);
+  }
+
+  return { variantMapping, oldVariants, newVariants };
 };

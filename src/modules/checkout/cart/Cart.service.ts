@@ -18,6 +18,8 @@ import {
   getSelectedCheckoutBundles,
   getUnSelectedCheckoutBundles,
   validateCheckoutVariantMedia,
+  validateOpenPackCreate,
+  validateOpenPackUpdate,
 } from './Cart.utils';
 import { CartResponseService } from './services/Response.service';
 import {
@@ -33,6 +35,7 @@ import {
 import { SuccessResponseType } from 'src/core/utils/response.type';
 import { ProductService } from 'src/modules/product/Product.service';
 import { CartResponseInterface } from './Cart.types';
+import { isEmptyArray } from 'src/modules/product/Product.utils';
 
 @Injectable()
 export class CartService {
@@ -389,18 +392,42 @@ export class CartService {
   }
 
   /**
-   * @description -- creates a new bundle for open pack and adds to cart against existing cart id or userEmail
-   * @pre_condition -- cart id should be valid and a cart session should be active against it
+   * Adds an open pack to the cart.
+   * @param addOpenPackToCart - The AddOpenPackDTO object containing the data for adding the open pack to the cart.
+   * @param token - The authentication token.
+   * @returns A Promise that resolves to an object representing the result of adding the open pack to the cart.
    */
   public async addOpenPackToCart(
     addOpenPackToCart: AddOpenPackDTO,
     token: string,
   ): Promise<object> {
     try {
+      this.logger.log('Adding open packs to cart', addOpenPackToCart.bundles);
       const { userEmail, checkoutId, bundles } = addOpenPackToCart;
       const bundlesResponse = [];
-      const [...checkoutBundles] = await Promise.all(
-        bundles.map(async (bundle) => {
+
+      // Retrieve all checkout bundles from the marketplace service
+      const marketplaceCheckout =
+        (await this.marketplaceService.getAllCheckoutBundles({
+          userEmail,
+          token,
+        })) as CartResponseInterface;
+
+      // Validate and process the open pack creation
+      const { openBundlesCreate, updatedOpenPack } = validateOpenPackCreate(
+        marketplaceCheckout.data.checkoutBundles,
+        bundles,
+        checkoutId,
+      );
+
+      this.logger.log('following bundles are needed to create or update', {
+        openBundlesCreate,
+        updatedOpenPack,
+      });
+
+      // Create new bundles and prepare checkout bundles
+      const checkoutBundles = await Promise.all(
+        openBundlesCreate.map(async (bundle) => {
           const bundleCreate = await this.productService.createBundle(bundle);
           bundlesResponse.push(bundleCreate.data);
           const checkoutBundle = {
@@ -410,15 +437,34 @@ export class CartService {
           return checkoutBundle;
         }),
       );
-      const addToCart = await this.addBundlesToCart(
-        userEmail,
-        checkoutId,
-        checkoutBundles,
-        token,
-      );
+
+      let updatedOpenBundles;
+      if (isEmptyArray(updatedOpenPack)) {
+        // Update existing open packs
+        updatedOpenBundles = await Promise.all(
+          updatedOpenPack.map(
+            async (updateOpenPack) =>
+              await this.updateOpenPack(updateOpenPack, token, false),
+          ),
+        );
+      }
+
+      const createOpenBundles = [];
+      if (isEmptyArray(openBundlesCreate)) {
+        // Create new open packs
+        const createNewBundle = await this.addBundlesToCart(
+          userEmail,
+          checkoutId,
+          checkoutBundles,
+          token,
+        );
+        createOpenBundles.push(createNewBundle);
+      }
+
+      // Build and return the cart response
       return this.cartResponseBuilder.addOpenPackToCart(
-        addToCart,
-        bundlesResponse,
+        createOpenBundles,
+        updatedOpenBundles,
       );
     } catch (error) {
       this.logger.error(error);
@@ -427,25 +473,75 @@ export class CartService {
   }
 
   /**
-   * @description -- updates open pack directly in bundle service, it also maintains state in saleor
-   * @pre_condition -- bundle variants should all ready be added in saleor, it works on following condition on syncing with saleor
-   * @condition -- if you want to replace variant with new variant the quantity should should be same as last variant so we can replace it be removing
-   * old variant
+   * Updates an open pack directly in the bundle service and maintains state in Saleor.
+   * @param updateOpenPack - The UpdateOpenPackDto object containing the data for updating the open pack.
+   * @param token - The authentication token.
+   * @param validate - Optional. Specifies whether to perform validation. Defaults to true.
+   * @returns A Promise that resolves to an object representing the result of the open pack update.
    */
   public async updateOpenPack(
     updateOpenPack: UpdateOpenPackDto,
     token: string,
+    validate = false,
   ): Promise<object> {
     try {
-      const { checkoutId } = updateOpenPack;
+      let updateOpenPackPayload = updateOpenPack;
+      this.logger.log(
+        `Updating open pack ${updateOpenPack.bundleId}`,
+        updateOpenPack.variants,
+      );
+      if (validate) {
+        // Validate and process the open pack update
+        const { checkoutId } = updateOpenPack;
+        const marketplaceCheckout =
+          (await this.marketplaceService.getAllCheckoutBundles({
+            checkoutId,
+            token,
+          })) as CartResponseInterface;
+        const userEmail = marketplaceCheckout.data.userEmail;
+
+        // Validate the open pack update and handle existing open packs
+        const {
+          allReadyExists,
+          deleteCheckoutBundles,
+          updatedOldVariantsPack,
+        } = validateOpenPackUpdate(
+          marketplaceCheckout.data.checkoutBundles,
+          updateOpenPack,
+        );
+
+        this.logger.log('Open pack update validation', {
+          allReadyExists,
+          deleteCheckoutBundles,
+          updatedOldVariantsPack,
+        });
+
+        if (allReadyExists) {
+          // Remove existing open packs
+          await this.deleteBundlesFromCart(
+            userEmail,
+            deleteCheckoutBundles,
+            token,
+          );
+          updateOpenPackPayload = updatedOldVariantsPack;
+        }
+      }
+
+      const { checkoutId } = updateOpenPackPayload;
+
+      // Perform the update in Saleor and retrieve updated data
       const saleor = await this.saleorService.handleOpenPackUpdates(
-        updateOpenPack,
+        updateOpenPackPayload,
         token,
       );
       const [updateBundle, marketplace] = await Promise.all([
-        await this.productService.updateBundle(updateOpenPack),
+        this.productService.updateBundle(updateOpenPackPayload),
         this.marketplaceService.getAllCheckoutBundles({ checkoutId, token }),
       ]);
+
+      this.logger.log('Open pack updated', updateBundle);
+
+      // Build and return the cart response
       return this.cartResponseBuilder.updateOpenPack(
         saleor,
         updateBundle,

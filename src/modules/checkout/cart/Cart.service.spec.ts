@@ -11,6 +11,7 @@ import { SaleorCartService } from './services/saleor/Cart.saleor.service';
 import { CartRollbackService } from './services/Rollback.service';
 import { SaleorCheckoutService } from '../services/Checkout.saleor';
 import { ProductService } from 'src/modules/product/Product.service';
+import { newOpenPackCreateMocks } from '../../../../test/mock/openBundles';
 
 describe('Cart Service', () => {
   let service: CartService;
@@ -278,85 +279,34 @@ describe('Cart Service', () => {
     expect(addToCart).toBeDefined();
   });
 
-  it('should add open bundle to cart', async () => {
+  it('should add open bundle to cart but create new bundle', async () => {
+    const createNewOpenPackMocks = newOpenPackCreateMocks;
     jest
       .spyOn(ProductHandlers, 'createBundleHandler')
-      .mockImplementation(async () => {
-        const bundleCreate = {
-          id: '19c88ba8-7429-45f7-87dd-a9999803d955',
-          name: 'bundleId',
-        };
-        return bundleCreate;
-      });
+      .mockImplementation(async () => createNewOpenPackMocks.createBundle);
     jest
       .spyOn(productService, 'getProductBundles')
-      .mockResolvedValue(mocks.mockProductBundles as any);
+      .mockResolvedValue(createNewOpenPackMocks.bundles as any);
     jest
       .spyOn(SaleorCartHandlers, 'addLinesHandler')
-      .mockImplementation(async () => {
-        return {
-          id: 'Q2hlY2tvdXQ6NDQ4NTE3M2UtNDkzOC00NDZhLWIyNjgtMzAyZDE1N2IyMTg3',
-          lines: [
-            {
-              id: 'Q2hlY2tvdXRMaW5lOmFiMzFhZDI1LWFmNmMtNDdhOC1iNTc4LWIzMTc4Y2YzMjJkMg==',
-              quantity: 4,
-              variant: { id: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI2' },
-            },
-          ],
-        };
-      });
+      .mockImplementation(async () => createNewOpenPackMocks.addLines);
     jest
       .spyOn(MarketplaceCartHandlers, 'addCheckoutBundlesHandler')
-      .mockImplementation(async () => {
-        return { status: 'done' };
-      });
-
+      .mockImplementation(async () => createNewOpenPackMocks.marketplaceResult);
+    jest
+      .spyOn(MarketplaceCartHandlers, 'getCheckoutBundlesHandler')
+      .mockImplementation(
+        async () => createNewOpenPackMocks.marketplaceCheckout,
+      );
     jest
       .spyOn(MarketplaceCartHandlers, 'updateCartBundlesCheckoutIdHandler')
       .mockImplementation(async () => mocks.mockProductBundles);
 
     const addToCart = await service.addOpenPackToCart(
-      {
-        userEmail: 'azhariqbal100@mailinator.com',
-        checkoutId: '123',
-        bundles: [
-          {
-            isOpenBundle: true,
-            shopId: '610',
-            productId: 'UHJvZHVjdDoxMjUxNQ==',
-            description: 'string',
-            name: 'string',
-            productVariants: [
-              {
-                productVariantId: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI2',
-                quantity: 2,
-              },
-            ],
-          },
-        ],
-      },
+      createNewOpenPackMocks.input,
       '',
     );
-    expect(addToCart).toEqual({
-      status: 201,
-      data: {
-        saleor: {
-          id: 'Q2hlY2tvdXQ6NDQ4NTE3M2UtNDkzOC00NDZhLWIyNjgtMzAyZDE1N2IyMTg3',
-          lines: [
-            {
-              id: 'Q2hlY2tvdXRMaW5lOmFiMzFhZDI1LWFmNmMtNDdhOC1iNTc4LWIzMTc4Y2YzMjJkMg==',
-              quantity: 4,
-              variant: { id: 'UHJvZHVjdFZhcmlhbnQ6MTAzMTI2' },
-            },
-          ],
-        },
-        marketplace: { status: 'done' },
-        bundlesResponse: [
-          { id: '19c88ba8-7429-45f7-87dd-a9999803d955', name: 'bundleId' },
-        ],
-      },
-      message: 'open pack added to cart',
-    });
+    expect(addToCart).toEqual(createNewOpenPackMocks.expectedResult);
     expect(addToCart).toBeDefined();
   });
 
@@ -456,6 +406,7 @@ describe('Cart Service', () => {
         ],
       },
       '',
+      false,
     );
 
     expect(updateOpenPack).toEqual({

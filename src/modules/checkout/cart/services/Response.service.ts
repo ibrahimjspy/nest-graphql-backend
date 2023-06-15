@@ -14,6 +14,7 @@ import {
   ReplaceBundleStatusEnum,
   ResponseStatusEnum,
 } from './Response.utils.type';
+import { isEmptyArray } from 'src/modules/product/Product.utils';
 const { SUCCESS, SALEOR_FAILED, MARKETPLACE_FAILED } = ResponseStatusEnum;
 const {
   REPLACED,
@@ -317,14 +318,12 @@ export class CartResponseService {
     }
   }
 
-  public async addOpenPackToCart(addToCart, bundlesResponse) {
+  public async addOpenPackToCart(createOpenBundles, updateOpenBundles) {
     try {
-      const response = addToCart.data;
-      return prepareSuccessResponse(
-        { ...response, bundlesResponse },
-        'open pack added to cart',
-        201,
-      );
+      if (isEmptyArray(createOpenBundles)) {
+        return createOpenBundles[createOpenBundles.length - 1];
+      }
+      return updateOpenBundles[updateOpenBundles.length - 1];
     } catch (error) {
       this.logger.error(error);
       return prepareCheckoutFailedResponse(
