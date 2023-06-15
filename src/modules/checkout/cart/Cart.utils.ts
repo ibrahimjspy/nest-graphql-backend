@@ -11,6 +11,7 @@ import { SaleorCheckoutInterface } from '../Checkout.utils.type';
 import { CheckoutBundleInterface } from './Cart.types';
 import { checkoutBundlesInterface } from 'src/external/services/osPlaceOrder/Legacy.service.types';
 import { BundleCreateDto } from 'src/modules/product/dto/bundle';
+import { Logger } from '@nestjs/common';
 
 /**
  * parses checkout bundles object and returns bundle ids
@@ -563,13 +564,12 @@ export const validateOpenPackUpdate = (
     for (const variant of checkoutBundle.bundle.productVariants) {
       const variantId = variant.productVariant.id;
 
-      if (newVariants.includes(variantId)) {
-        oldVariantQuantityMapping.set(
-          variantMapping.get(variantId),
-          variant.quantity,
+      if (oldVariants.includes(variantId)) {
+        Logger.log(
+          `variant id ${variantId} all ready exists in users cart session`,
         );
+        oldVariantQuantityMapping.set(variantId, variant.quantity);
         deleteCheckoutBundles.push(checkoutBundle.checkoutBundleId);
-        allReadyExists = true;
       }
     }
   }
@@ -579,10 +579,12 @@ export const validateOpenPackUpdate = (
     for (const variant of checkoutBundle.bundle.productVariants) {
       const variantId = variant.productVariant.id;
 
-      if (oldVariants.includes(variantId)) {
+      if (newVariants.includes(variantId)) {
+        allReadyExists = true;
         const quantity = variant.quantity;
         const updatedQuantity =
-          quantity + (oldVariantQuantityMapping.get(variantId) || 0);
+          quantity +
+          (oldVariantQuantityMapping.get(variantMapping.get(variantId)) || 0);
         updatedOldVariantsPack.bundleId = checkoutBundle.bundle.id;
         updatedOldVariantsPack.variants.push({
           oldVariantId: variantId,
@@ -594,7 +596,7 @@ export const validateOpenPackUpdate = (
 
   return {
     allReadyExists,
-    deleteCheckoutBundles,
+    deleteCheckoutBundles: [...new Set(deleteCheckoutBundles)],
     updatedOldVariantsPack,
   };
 };

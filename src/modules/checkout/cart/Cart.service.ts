@@ -402,6 +402,7 @@ export class CartService {
     token: string,
   ): Promise<object> {
     try {
+      this.logger.log('Adding open packs to cart', addOpenPackToCart.bundles);
       const { userEmail, checkoutId, bundles } = addOpenPackToCart;
       const bundlesResponse = [];
 
@@ -419,7 +420,10 @@ export class CartService {
         checkoutId,
       );
 
-      console.dir({ openBundlesCreate, updatedOpenPack }, { depth: null });
+      this.logger.log('following bundles are needed to create or update', {
+        openBundlesCreate,
+        updatedOpenPack,
+      });
 
       // Create new bundles and prepare checkout bundles
       const checkoutBundles = await Promise.all(
@@ -477,11 +481,14 @@ export class CartService {
   public async updateOpenPack(
     updateOpenPack: UpdateOpenPackDto,
     token: string,
-    validate = true,
+    validate = false,
   ): Promise<object> {
     try {
       let updateOpenPackPayload = updateOpenPack;
-
+      this.logger.log(
+        `Updating open pack ${updateOpenPack.bundleId}`,
+        updateOpenPack.variants,
+      );
       if (validate) {
         // Validate and process the open pack update
         const { checkoutId } = updateOpenPack;
@@ -501,6 +508,12 @@ export class CartService {
           marketplaceCheckout.data.checkoutBundles,
           updateOpenPack,
         );
+
+        this.logger.log('Open pack update validation', {
+          allReadyExists,
+          deleteCheckoutBundles,
+          updatedOldVariantsPack,
+        });
 
         if (allReadyExists) {
           // Remove existing open packs
@@ -524,6 +537,8 @@ export class CartService {
         this.productService.updateBundle(updateOpenPackPayload),
         this.marketplaceService.getAllCheckoutBundles({ checkoutId, token }),
       ]);
+
+      this.logger.log('Open pack updated', updateBundle);
 
       // Build and return the cart response
       return this.cartResponseBuilder.updateOpenPack(
