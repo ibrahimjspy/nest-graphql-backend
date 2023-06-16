@@ -16,7 +16,11 @@ import {
   prepareSuccessResponse,
 } from 'src/core/utils/response';
 import { SuccessResponseType } from 'src/core/utils/response.type';
-import { createStoreDTO, shopDetailDto } from '../../dto/shop';
+import {
+  VendorMappingsDto,
+  createStoreDTO,
+  shopDetailDto,
+} from '../../dto/shop';
 import { validateArray, validateStoreInput } from '../../Shop.utils';
 import {
   provisionStoreFront,
@@ -29,6 +33,7 @@ import { autoSyncHandler } from 'src/external/endpoints/autoSync';
 import { NoBankAccountFoundError } from '../../Shop.exceptions';
 import { workflowHandler } from 'src/external/endpoints/workflow';
 import { createAuth0Connection } from 'src/external/endpoints/auth0';
+import { getVendorMapping } from 'src/external/endpoints/vendorMappings';
 @Injectable()
 export class ShopService {
   private readonly logger = new Logger(ShopService.name);
@@ -284,6 +289,19 @@ export class ShopService {
     try {
       const workflowStatus = await workflowHandler(workflowName);
       return prepareSuccessResponse(workflowStatus);
+    } catch (error) {
+      this.logger.error(error);
+      return prepareFailedResponse(error.message);
+    }
+  }
+
+  /**
+   * return vendor mappings from elastic search
+   */
+  public async getVendorMappings(vendorMappingFilters: VendorMappingsDto) {
+    try {
+      const response = await getVendorMapping(vendorMappingFilters);
+      return prepareSuccessResponse(response);
     } catch (error) {
       this.logger.error(error);
       return prepareFailedResponse(error.message);

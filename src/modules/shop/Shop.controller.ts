@@ -14,6 +14,7 @@ import { makeResponse } from '../../core/utils/response';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ShopService } from './services/shop/Shop.service';
 import {
+  VendorMappingsDto,
   WorkflowNameDto,
   accountIdDTO,
   allShopIdsDTO,
@@ -345,5 +346,16 @@ export class ShopController {
       res,
       await this.shopService.getWorkflowStatus(params.workflowName),
     );
+  }
+
+  @Get('/api/v1/shop/mapping')
+  @ApiOperation({
+    summary: 'returns vendor mappings from elastic search',
+  })
+  async getVendorMappings(
+    @Res() res,
+    @Query() filter: VendorMappingsDto,
+  ): Promise<object> {
+    return makeResponse(res, await this.shopService.getVendorMappings(filter));
   }
 }
