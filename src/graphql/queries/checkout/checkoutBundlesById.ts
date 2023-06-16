@@ -52,6 +52,9 @@ export const checkoutBundlesByIdQuery = (
                   id
                   name
                   sku
+                  preorder {
+                    globalThreshold
+                  }
                   media {
                     url
                   }
