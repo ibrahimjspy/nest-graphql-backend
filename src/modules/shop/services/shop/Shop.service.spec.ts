@@ -3,6 +3,7 @@ import * as ShopHandlers from 'src/graphql/handlers/shop';
 import * as Github from 'src/external/endpoints/provisionStorefront';
 import * as AuthO from 'src/external/endpoints/auth0';
 import * as Workflow from 'src/external/endpoints/workflow';
+import * as VendorMappings from 'src/external/endpoints/vendorMappings';
 import { ShopService } from './Shop.service';
 import { ShopType } from 'src/graphql/types/shop.type';
 
@@ -158,5 +159,25 @@ describe('Shop Service Integration test', () => {
       data: { name: 'leoMessi', status: 'Goat' },
     });
     expect(workflowStatus).toBeDefined();
+  });
+
+  it('should return vendor mappings as it is', async () => {
+    jest
+      .spyOn(VendorMappings, 'getVendorMapping')
+      .mockImplementation(async () => {
+        return { sourceId: 'leo', destinationId: 'Goat' } as any;
+      });
+
+    const vendorMappings = await service.getVendorMappings({
+      destinationId: 'Goat',
+      sourceId: 'leo',
+      totalCount: 1,
+      page: 1,
+    });
+    expect(vendorMappings).toEqual({
+      status: 200,
+      data: { sourceId: 'leo', destinationId: 'Goat' },
+    });
+    expect(vendorMappings).toBeDefined();
   });
 });

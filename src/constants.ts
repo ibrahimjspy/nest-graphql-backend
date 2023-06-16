@@ -115,6 +115,8 @@ export const PROMOTION_SHIPPING_METHOD_ID =
   process.env.PROMOTION_SHIPPING_METHOD_ID || 'U2hpcHBpbmdNZXRob2Q6NzA=';
 export const B2B_CHECKOUT_APP_TOKEN = process.env.B2B_CHECKOUT_APP_TOKEN;
 export const ELASTIC_SEARCH_ENDPOINT = process.env.ELASTIC_SEARCH_ENDPOINT;
+
+// TODO fix this for prod
 export const AUTO_SYNC_MAPPING_URL = `${ELASTIC_SEARCH_ENDPOINT}/api/as/v1/engines/auto-sync-category-mapping`;
 
 export const UPS_TRACKING_HEADERS = {
@@ -138,3 +140,7 @@ export const AUTH0_CONNECTION_LAMBDA_URL =
 
 export const CATEGORIES_CACHE_TTL = 86400;
 export const SHAROVE_ORDER_SITE = 'SR';
+export const SHOP_MAPPING_URL =
+  ENVIRONMENT == 'dev'
+    ? `${ELASTIC_SEARCH_ENDPOINT}/api/as/v1/engines/b2b-shop-track-dev`
+    : `${ELASTIC_SEARCH_ENDPOINT}/api/as/v1/engines/b2b-shop-track-prod`;

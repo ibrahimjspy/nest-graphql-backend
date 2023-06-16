@@ -128,3 +128,19 @@ export class WorkflowNameDto {
   @ApiProperty({ type: String, required: true })
   workflowName: string;
 }
+
+export class VendorMappingsDto {
+  @ApiProperty({ type: String, required: false })
+  @IsOptional()
+  sourceId: string;
+
+  @ApiProperty({ type: String, required: false })
+  @IsOptional()
+  destinationId: string;
+
+  @ApiProperty({ type: Number, required: true, default: 1 })
+  page: number;
+
+  @ApiProperty({ type: Number, required: true, default: 1000 })
+  totalCount: number;
+}
