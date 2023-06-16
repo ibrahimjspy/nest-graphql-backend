@@ -140,7 +140,4 @@ export const AUTH0_CONNECTION_LAMBDA_URL =
 
 export const CATEGORIES_CACHE_TTL = 86400;
 export const SHAROVE_ORDER_SITE = 'SR';
-export const SHOP_MAPPING_URL =
-  ENVIRONMENT == 'dev'
-    ? `${ELASTIC_SEARCH_ENDPOINT}/api/as/v1/engines/b2b-shop-track-dev`
-    : `${ELASTIC_SEARCH_ENDPOINT}/api/as/v1/engines/b2b-shop-track-prod`;
+export const SHOP_MAPPING_URL = `${ELASTIC_SEARCH_ENDPOINT}/${process.env.SHOP_ENGINE}`;
