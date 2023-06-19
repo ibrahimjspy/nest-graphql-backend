@@ -79,7 +79,7 @@ export class LegacyService {
     try {
       const logger = new Logger('LegacyService');
       const payload = await this.getExternalOrderPlacePayload();
-      logger.log('Placing order in os', payload['orders']);
+      logger.log('Placing order in os', payload);
       const URL = `${this.baseUrl}/check-out/`;
       const tokenWithoutBearer = this.token.match(/^(\S+)\s(.*)/).slice(1);
       const header = {
@@ -130,7 +130,7 @@ export class LegacyService {
       zipcode: this.shipping_info?.postalCode,
       user_id: this.userId,
       company_name: this.shipping_info?.companyName,
-      country: this.shipping_info?.country.country,
+      country: this.shipping_info?.country.code,
       first_name: this.shipping_info?.firstName,
       last_name: this.shipping_info?.lastName,
       nick_name: this.shipping_info?.firstName,
@@ -476,7 +476,7 @@ export class LegacyService {
       city: this.billingInfo.city || null,
       state: this.billingInfo.countryArea || null,
       zipcode: this.billingInfo.postalCode || null,
-      country: this.billingInfo.country.country || null,
+      country: this.billingInfo.country.code || null,
       phone_number: this.billingInfo.phone || null,
     };
   }
