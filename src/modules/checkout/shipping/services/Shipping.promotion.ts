@@ -6,7 +6,10 @@ import {
   getShippingVouchersHandler,
   removeCheckoutPromoCodeHandler,
 } from 'src/graphql/handlers/checkout/shipping';
-import { vouchersType } from './Shipping.promotion.types';
+import {
+  UpdateDeliveryMethodInterface,
+  vouchersType,
+} from './Shipping.promotion.types';
 import { PROMOTION_SHIPPING_METHOD_ID } from 'src/constants';
 import { preparePromotionResponse } from './Shipping.response';
 
@@ -19,18 +22,31 @@ export class ShippingPromotionService {
   /**
    * @description --  this method fetches applies shipping promo code to checkout based on checkout total amount
    */
-  public async applyPromoCodeToCheckout(checkoutData, token): Promise<object> {
+  public async applyPromoCodeToCheckout(
+    checkoutData: UpdateDeliveryMethodInterface,
+    token: string,
+  ): Promise<object> {
     try {
-      const checkoutSubTotalPrice =
-        checkoutData['subtotalPrice']['gross']['amount'];
-      const checkoutId = checkoutData['id'];
-      const deliveryMethod = checkoutData['deliveryMethod']['id'];
+      const {
+        id: checkoutId,
+        subtotalPrice: {
+          gross: { amount: checkoutSubTotalPrice },
+        },
+        deliveryMethod: { id: checkoutDeliveryMethod },
+        voucherCode,
+      } = checkoutData;
+      this.logger.log('Applying promotion code to checkout', checkoutId);
+
       const vouchersData = await getShippingVouchersHandler(token);
       const promoCode = this.getVoucherIdForCheckout(
         checkoutSubTotalPrice,
         vouchersData,
       );
-      if (promoCode && deliveryMethod == PROMOTION_SHIPPING_METHOD_ID) {
+      const existingVoucherCode = voucherCode || promoCode;
+      if (promoCode && checkoutDeliveryMethod == PROMOTION_SHIPPING_METHOD_ID) {
+        this.logger.log(
+          `Adding voucher code ${promoCode} to checkout ${checkoutId}`,
+        );
         const addPromoCode = await addCheckoutPromoCodeHandler(
           checkoutId,
           promoCode,
@@ -42,9 +58,17 @@ export class ShippingPromotionService {
           201,
         );
       }
+
+      this.logger.log(
+        `Removing voucher code ${existingVoucherCode} from checkout ${checkoutId}`,
+      );
       return prepareSuccessResponse(
         preparePromotionResponse(
-          await removeCheckoutPromoCodeHandler(checkoutId, promoCode, token),
+          await removeCheckoutPromoCodeHandler(
+            checkoutId,
+            existingVoucherCode || promoCode,
+            token,
+          ),
         ),
         'no promo code added against shipping method created',
         201,
@@ -76,6 +100,10 @@ export class ShippingPromotionService {
         voucherAmount = minimumOrderAmount;
       }
     });
+
+    this.logger.log(
+      `Voucher code ${voucherCode} is applicable to checkout amount ${checkoutAmount}`,
+    );
     return voucherCode;
   }
 }
