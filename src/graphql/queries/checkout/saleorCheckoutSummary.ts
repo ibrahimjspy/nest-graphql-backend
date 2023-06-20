@@ -4,6 +4,8 @@ export const saleorCheckoutSummaryQuery = (checkoutId: string): string => {
   return gql`
     query {
       checkout(id: "${checkoutId}") {
+        id
+        voucherCode
         totalPrice {
           gross {
             amount
