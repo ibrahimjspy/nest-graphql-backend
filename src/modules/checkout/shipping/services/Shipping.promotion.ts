@@ -27,9 +27,10 @@ export class ShippingPromotionService {
     token: string,
   ): Promise<object> {
     try {
-      const checkoutSubTotalPrice = checkoutData.subtotalPrice.gross.amount;
-      const checkoutId = checkoutData.id;
-      const deliveryMethod = checkoutData.deliveryMethod.id;
+      const { id, subtotalPrice, deliveryMethod, voucherCode } = checkoutData;
+      const checkoutSubTotalPrice = subtotalPrice.gross.amount;
+      const checkoutId = id;
+      const checkoutDeliveryMethod = deliveryMethod.id;
       this.logger.log('Applying promotion code to checkout', checkoutId);
 
       const vouchersData = await getShippingVouchersHandler(token);
@@ -37,8 +38,8 @@ export class ShippingPromotionService {
         checkoutSubTotalPrice,
         vouchersData,
       );
-      const existingVoucherCode = checkoutData.voucherCode || promoCode;
-      if (promoCode && deliveryMethod == PROMOTION_SHIPPING_METHOD_ID) {
+      const existingVoucherCode = voucherCode || promoCode;
+      if (promoCode && checkoutDeliveryMethod == PROMOTION_SHIPPING_METHOD_ID) {
         this.logger.log(
           `Adding voucher code ${promoCode} to checkout ${checkoutId}`,
         );
