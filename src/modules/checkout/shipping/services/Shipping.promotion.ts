@@ -27,10 +27,14 @@ export class ShippingPromotionService {
     token: string,
   ): Promise<object> {
     try {
-      const { id, subtotalPrice, deliveryMethod, voucherCode } = checkoutData;
-      const checkoutSubTotalPrice = subtotalPrice.gross.amount;
-      const checkoutId = id;
-      const checkoutDeliveryMethod = deliveryMethod.id;
+      const {
+        id: checkoutId,
+        subtotalPrice: {
+          gross: { amount: checkoutSubTotalPrice },
+        },
+        deliveryMethod: { id: checkoutDeliveryMethod },
+        voucherCode,
+      } = checkoutData;
       this.logger.log('Applying promotion code to checkout', checkoutId);
 
       const vouchersData = await getShippingVouchersHandler(token);
