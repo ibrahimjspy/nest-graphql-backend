@@ -37,3 +37,26 @@ export interface promotionResponseType {
     };
   };
 }
+
+export interface UpdateDeliveryMethodInterface {
+  id: string;
+  voucherCode: string;
+  deliveryMethod: {
+    id: string;
+    name: string;
+    metadata: {
+      key: string;
+      value: string;
+    }[];
+  };
+  totalPrice: {
+    gross: {
+      amount: number;
+    };
+  };
+  subtotalPrice: {
+    gross: {
+      amount: number;
+    };
+  };
+}
