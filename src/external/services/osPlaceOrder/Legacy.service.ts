@@ -79,7 +79,7 @@ export class LegacyService {
     try {
       const logger = new Logger('LegacyService');
       const payload = await this.getExternalOrderPlacePayload();
-      logger.log('Placing order in os', payload);
+      logger.log('Placing order in os', payload['orders']);
       const URL = `${this.baseUrl}/check-out/`;
       const tokenWithoutBearer = this.token.match(/^(\S+)\s(.*)/).slice(1);
       const header = {
