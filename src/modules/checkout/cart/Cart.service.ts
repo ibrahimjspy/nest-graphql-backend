@@ -595,13 +595,13 @@ export class CartService {
   public async cartSessionReset(userEmail: string, token: string) {
     try {
       this.logger.log('Resetting cart against user email', userEmail);
-      const checkoutBundles =
+      const checkoutResponse =
         (await this.marketplaceService.getAllCheckoutBundles({
           userEmail,
           token,
         })) as CartResponseInterface;
-      const checkoutBundleIds = checkoutBundles.data.checkoutBundles.map(
-        (checkoutBundle) => checkoutBundle.checkoutBundleId,
+      const checkoutBundleIds = getCheckoutBundleIds(
+        checkoutResponse.data.checkoutBundles,
       );
       const deleteCheckoutBundles = await this.marketplaceService.deleteBundles(
         userEmail,
