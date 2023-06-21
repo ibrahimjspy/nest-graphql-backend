@@ -613,7 +613,7 @@ export class CartService {
    */
   public async cartSessionReset(userEmail: string, token: string) {
     try {
-      this.logger.log('Resetting cart against user email', userEmail);
+      this.logger.log('Resetting cart against user email');
       const checkoutResponse =
         (await this.marketplaceService.getAllCheckoutBundles({
           userEmail,
