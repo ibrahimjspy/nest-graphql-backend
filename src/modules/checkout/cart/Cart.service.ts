@@ -141,6 +141,7 @@ export class CartService {
     } catch (error) {
       this.logger.error(error);
       if (error instanceof CheckoutIdError) {
+        await this.cartSessionReset(userEmail, token);
         return prepareFailedResponse(error.message);
       }
       return graphqlExceptionHandler(error);
@@ -180,6 +181,7 @@ export class CartService {
     } catch (error) {
       this.logger.error(error);
       if (error instanceof CheckoutIdError) {
+        await this.cartSessionReset(userEmail, token);
         return prepareFailedResponse(error.message);
       }
       return graphqlExceptionHandler(error);
@@ -307,6 +309,7 @@ export class CartService {
     } catch (error) {
       this.logger.error(error);
       if (error instanceof CheckoutIdError) {
+        await this.cartSessionReset(replaceBundleData.userEmail, token);
         return prepareFailedResponse(error.message);
       }
       return graphqlExceptionHandler(error);
@@ -579,6 +582,38 @@ export class CartService {
       this.logger.error(error);
       return prepareCheckoutFailedResponse(
         'replace checkout bundles failed',
+        400,
+        error,
+      );
+    }
+  }
+
+  /**
+   * @description -- this method resets cart to empty state
+   * @warn -- this method is not recommended to use unless absolutely necessary
+   */
+  public async cartSessionReset(userEmail: string, token: string) {
+    try {
+      this.logger.log('Resetting cart against user email', userEmail);
+      const checkoutBundles =
+        (await this.marketplaceService.getAllCheckoutBundles({
+          userEmail,
+          token,
+        })) as CartResponseInterface;
+      const checkoutBundleIds = checkoutBundles.data.checkoutBundles.map(
+        (checkoutBundle) => checkoutBundle.checkoutBundleId,
+      );
+      const deleteCheckoutBundles = await this.marketplaceService.deleteBundles(
+        userEmail,
+        checkoutBundleIds,
+        token,
+        true,
+      );
+      return deleteCheckoutBundles;
+    } catch (error) {
+      this.logger.error(error);
+      return prepareCheckoutFailedResponse(
+        'resetting cart state failed',
         400,
         error,
       );
