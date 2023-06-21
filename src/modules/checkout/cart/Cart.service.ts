@@ -74,7 +74,15 @@ export class CartService {
   }
 
   /**
-   * @description -- fetches shopping cart data from bundle service against userEmail
+   * Adds shopping cart bundles for the given user.
+   * If a checkout ID is provided, it runs the saleorService.addBundleLines and marketplaceService.addBundles in parallel.
+   * If no checkout ID is provided, it awaits the marketplaceService.addBundles.
+   *
+   * @param userEmail - The email of the user.
+   * @param checkoutId - The ID of the checkout.
+   * @param bundlesList - The list of bundles to add to the cart.
+   * @param token - The authentication token.
+   * @returns A promise that resolves to a SuccessResponseType.
    */
   public async addBundlesToCart(
     userEmail: string,
@@ -83,18 +91,29 @@ export class CartService {
     token: string,
   ): Promise<SuccessResponseType> {
     try {
-      const [saleor, marketplace] = await Promise.allSettled([
-        this.saleorService.addBundleLines(
-          userEmail,
-          checkoutId,
-          bundlesList,
-          token,
-        ),
-        this.marketplaceService.addBundles(userEmail, bundlesList, token),
+      const marketplacePromise = checkoutId
+        ? this.marketplaceService.addBundles(userEmail, bundlesList, token)
+        : await this.marketplaceService.addBundles(
+            userEmail,
+            bundlesList,
+            token,
+          );
+
+      const saleorPromise = this.saleorService.addBundleLines(
+        userEmail,
+        checkoutId,
+        bundlesList,
+        token,
+      );
+
+      const [marketplaceResult, saleorResult] = await Promise.allSettled([
+        marketplacePromise,
+        saleorPromise,
       ]);
+
       return await this.cartResponseBuilder.addBundlesToCart(
-        saleor,
-        marketplace,
+        saleorResult,
+        marketplaceResult,
         bundlesList,
         token,
       );
@@ -141,6 +160,7 @@ export class CartService {
     } catch (error) {
       this.logger.error(error);
       if (error instanceof CheckoutIdError) {
+        await this.cartSessionReset(userEmail, token);
         return prepareFailedResponse(error.message);
       }
       return graphqlExceptionHandler(error);
@@ -180,6 +200,7 @@ export class CartService {
     } catch (error) {
       this.logger.error(error);
       if (error instanceof CheckoutIdError) {
+        await this.cartSessionReset(userEmail, token);
         return prepareFailedResponse(error.message);
       }
       return graphqlExceptionHandler(error);
@@ -307,6 +328,7 @@ export class CartService {
     } catch (error) {
       this.logger.error(error);
       if (error instanceof CheckoutIdError) {
+        await this.cartSessionReset(replaceBundleData.userEmail, token);
         return prepareFailedResponse(error.message);
       }
       return graphqlExceptionHandler(error);
@@ -579,6 +601,38 @@ export class CartService {
       this.logger.error(error);
       return prepareCheckoutFailedResponse(
         'replace checkout bundles failed',
+        400,
+        error,
+      );
+    }
+  }
+
+  /**
+   * @description -- this method resets cart to empty state
+   * @warn -- this method is not recommended to use unless absolutely necessary
+   */
+  public async cartSessionReset(userEmail: string, token: string) {
+    try {
+      this.logger.log('Resetting cart against user email');
+      const checkoutResponse =
+        (await this.marketplaceService.getAllCheckoutBundles({
+          userEmail,
+          token,
+        })) as CartResponseInterface;
+      const checkoutBundleIds = getCheckoutBundleIds(
+        checkoutResponse.data.checkoutBundles,
+      );
+      const deleteCheckoutBundles = await this.marketplaceService.deleteBundles(
+        userEmail,
+        checkoutBundleIds,
+        token,
+        true,
+      );
+      return deleteCheckoutBundles;
+    } catch (error) {
+      this.logger.error(error);
+      return prepareCheckoutFailedResponse(
+        'resetting cart state failed',
         400,
         error,
       );
