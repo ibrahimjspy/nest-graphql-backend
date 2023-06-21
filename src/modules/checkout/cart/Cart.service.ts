@@ -74,7 +74,15 @@ export class CartService {
   }
 
   /**
-   * @description -- adds shopping cart bundle against email
+   * Adds shopping cart bundles for the given user.
+   * If a checkout ID is provided, it runs the saleorService.addBundleLines and marketplaceService.addBundles in parallel.
+   * If no checkout ID is provided, it awaits the marketplaceService.addBundles.
+   *
+   * @param userEmail - The email of the user.
+   * @param checkoutId - The ID of the checkout.
+   * @param bundlesList - The list of bundles to add to the cart.
+   * @param token - The authentication token.
+   * @returns A promise that resolves to a SuccessResponseType.
    */
   public async addBundlesToCart(
     userEmail: string,
@@ -83,24 +91,29 @@ export class CartService {
     token: string,
   ): Promise<SuccessResponseType> {
     try {
-      const [marketplace, saleor] = await Promise.allSettled([
-        checkoutId
-          ? this.marketplaceService.addBundles(userEmail, bundlesList, token)
-          : await this.marketplaceService.addBundles(
-              userEmail,
-              bundlesList,
-              token,
-            ),
-        this.saleorService.addBundleLines(
-          userEmail,
-          checkoutId,
-          bundlesList,
-          token,
-        ),
+      const marketplacePromise = checkoutId
+        ? this.marketplaceService.addBundles(userEmail, bundlesList, token)
+        : await this.marketplaceService.addBundles(
+            userEmail,
+            bundlesList,
+            token,
+          );
+
+      const saleorPromise = this.saleorService.addBundleLines(
+        userEmail,
+        checkoutId,
+        bundlesList,
+        token,
+      );
+
+      const [marketplaceResult, saleorResult] = await Promise.allSettled([
+        marketplacePromise,
+        saleorPromise,
       ]);
+
       return await this.cartResponseBuilder.addBundlesToCart(
-        saleor,
-        marketplace,
+        saleorResult,
+        marketplaceResult,
         bundlesList,
         token,
       );
