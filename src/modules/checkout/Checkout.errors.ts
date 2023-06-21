@@ -82,3 +82,13 @@ export class NoCheckoutBundleFoundError extends Error {
     this.checkoutBundleId = checkoutBundleId;
   }
 }
+
+export class OsOrderPlaceError extends Error {
+  orderId: string;
+  constructor(orderId, message) {
+    super('Order placement in os failed' + orderId);
+    this.name = 'OsOrderPlaceError';
+    this.orderId = orderId;
+    this.message = `order could not be placed in orangeshine due following error :: ${message}`;
+  }
+}
