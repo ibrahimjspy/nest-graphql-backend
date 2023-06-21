@@ -6,7 +6,7 @@ import {
 } from 'src/core/utils/response';
 import * as CheckoutHandlers from 'src/graphql/handlers/checkout/checkout';
 import { orderCreateFromCheckoutHandler } from 'src/graphql/handlers/checkout/checkout';
-import { NoPaymentIntentError } from './Checkout.errors';
+import { NoPaymentIntentError, OsOrderPlaceError } from './Checkout.errors';
 import { MarketplaceCartService } from './cart/services/marketplace/Cart.marketplace.service';
 import { PaymentService } from './payment/Payment.service';
 import { CreateCheckoutDto } from './dto/createCheckout';
@@ -84,22 +84,17 @@ export class CheckoutService {
     paymentIntentId: string,
     token: string,
   ): Promise<object> {
-    try {
-      const instance = new LegacyService(
-        checkoutBundles,
-        orderDetails['shippingAddress'],
-        orderDetails['number'],
-        paymentMethodId,
-        orderDetails['billingAddress'],
-        orderDetails['deliveryMethod'],
-        paymentIntentId,
-        token,
-      );
-      return await instance.placeExternalOrder();
-    } catch (error) {
-      this.logger.error(error);
-      return prepareFailedResponse(error.me);
-    }
+    const instance = new LegacyService(
+      checkoutBundles,
+      orderDetails['shippingAddress'],
+      orderDetails['number'],
+      paymentMethodId,
+      orderDetails['billingAddress'],
+      orderDetails['deliveryMethod'],
+      paymentIntentId,
+      token,
+    );
+    return await instance.placeExternalOrder();
   }
 
   /**
@@ -124,7 +119,7 @@ export class CheckoutService {
         }),
         this.paymentService.getPaymentDataFromMetadata(checkoutId, token),
       ]);
-      const { paymentIntentId, paymentMethodId } = paymentData;
+      const { paymentIntentId, paymentMethodId } = paymentData || {};
       if (!paymentIntentId || !paymentMethodId)
         throw new NoPaymentIntentError(checkoutId);
       const createOrder = await orderCreateFromCheckoutHandler(
@@ -167,7 +162,10 @@ export class CheckoutService {
       );
     } catch (error) {
       this.logger.error(error);
-      if (error instanceof NoPaymentIntentError) {
+      if (
+        error instanceof NoPaymentIntentError ||
+        error instanceof OsOrderPlaceError
+      ) {
         return prepareFailedResponse(error.message);
       } else {
         return graphqlExceptionHandler(error);
