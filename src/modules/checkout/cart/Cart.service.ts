@@ -74,7 +74,7 @@ export class CartService {
   }
 
   /**
-   * @description -- fetches shopping cart data from bundle service against userEmail
+   * @description -- adds shopping cart bundle against email
    */
   public async addBundlesToCart(
     userEmail: string,
@@ -83,14 +83,20 @@ export class CartService {
     token: string,
   ): Promise<SuccessResponseType> {
     try {
-      const [saleor, marketplace] = await Promise.allSettled([
+      const [marketplace, saleor] = await Promise.allSettled([
+        checkoutId
+          ? this.marketplaceService.addBundles(userEmail, bundlesList, token)
+          : await this.marketplaceService.addBundles(
+              userEmail,
+              bundlesList,
+              token,
+            ),
         this.saleorService.addBundleLines(
           userEmail,
           checkoutId,
           bundlesList,
           token,
         ),
-        this.marketplaceService.addBundles(userEmail, bundlesList, token),
       ]);
       return await this.cartResponseBuilder.addBundlesToCart(
         saleor,
