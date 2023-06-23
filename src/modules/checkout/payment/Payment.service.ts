@@ -243,4 +243,19 @@ export class PaymentService {
       return prepareFailedResponse(error.message);
     }
   }
+
+  /**
+   * @description -- this delete the payment method in stripe using the paymentMethodId
+   */
+  public async paymentMethodDelete(paymentMethodId: string): Promise<object> {
+    try {
+      const deletePaymentMethod = await this.stripeService.paymentMethodDelete(
+        paymentMethodId,
+      );
+      return deletePaymentMethod;
+    } catch (error) {
+      this.logger.error(error);
+      return prepareFailedResponse(error.message);
+    }
+  }
 }

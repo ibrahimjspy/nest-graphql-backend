@@ -135,4 +135,11 @@ export default class StripeService {
       });
     return updatePaymentIntentDescription;
   }
+
+  public async paymentMethodDelete(paymentMethodId: string) {
+    const deletePaymentMethod = await this.stripe.paymentMethods.detach(
+      paymentMethodId,
+    );
+    return deletePaymentMethod;
+  }
 }

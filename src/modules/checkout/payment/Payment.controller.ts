@@ -12,7 +12,11 @@ import {
 import { IsAuthenticated } from 'src/core/utils/decorators';
 import { makeResponse } from 'src/core/utils/response';
 import { UserIdDto } from '../dto';
-import { PaymentCreateDto, PaymentPreAuthDto } from './dto/paymentCreate';
+import {
+  PaymentCreateDto,
+  PaymentPreAuthDto,
+  PaymentDeleteDto,
+} from './dto/paymentCreate';
 import StripeService from 'src/external/services/stripe';
 
 @ApiTags('checkout/payment')
@@ -76,6 +80,22 @@ export class PaymentController {
     return makeResponse(
       res,
       await this.appService.getPaymentMethodsList(userEmail),
+    );
+  }
+
+  @Post('api/v1/checkout/delete/payment/:paymentMethodId')
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'delete a payment method against a user',
+  })
+  async deletePaymentMethod(
+    @Res() res,
+    @Param() param: PaymentDeleteDto,
+  ): Promise<object> {
+    const { paymentMethodId } = param;
+    return makeResponse(
+      res,
+      await this.appService.paymentMethodDelete(paymentMethodId),
     );
   }
 }
