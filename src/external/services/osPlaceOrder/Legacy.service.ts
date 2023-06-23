@@ -18,13 +18,13 @@ import { hash } from 'src/core/utils/helpers';
 import { addShippingAddressInfo } from 'src/external/endpoints/checkout';
 import axios from 'axios';
 import { Logger } from '@nestjs/common';
-import { prepareFailedResponse } from 'src/core/utils/response';
 import {
   DeliveryMethodType,
   checkoutBundlesInterface,
   shippingAddressType,
 } from './Legacy.service.types';
 import { EnvironmentEnum } from 'src/external/endpoints/provisionStorefront';
+import { OsOrderPlaceError } from 'src/modules/checkout/Checkout.errors';
 
 // TODO refactor this class implementation according to nest js classes
 // TODO split down classes based on external services like mapping, os
@@ -88,9 +88,8 @@ export class LegacyService {
       const response = await http.post(URL, payload, header);
       return response?.data;
     } catch (err) {
-      Logger.error(err, err);
-      console.dir(err, { depth: null });
-      return prepareFailedResponse(err.message);
+      Logger.error(err, err.response.data.error);
+      throw new OsOrderPlaceError(this.orderId, err.response.data.error);
     }
   }
 
