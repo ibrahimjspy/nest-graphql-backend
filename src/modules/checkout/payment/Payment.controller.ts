@@ -83,19 +83,20 @@ export class PaymentController {
     );
   }
 
-  @Post('api/v1/checkout/delete/payment/:paymentMethodId')
+  @Post('api/v1/checkout/payment/delete/:paymentMethodId')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({
     summary: 'delete a payment method against a user',
   })
-  async deletePaymentMethod(
+  async deleteCreditCard(
     @Res() res,
     @Param() param: PaymentDeleteDto,
+    @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
     const { paymentMethodId } = param;
     return makeResponse(
       res,
-      await this.appService.paymentMethodDelete(paymentMethodId),
+      await this.appService.deletePaymentMethod(paymentMethodId),
     );
   }
 }
