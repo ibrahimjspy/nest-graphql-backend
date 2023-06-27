@@ -4,9 +4,7 @@ import { attributeFragment } from 'src/graphql/fragments/attributes';
 import { bundleDetailsFragment } from 'src/graphql/fragments/bundle';
 import { resultErrorFragment } from 'src/graphql/fragments/errors';
 import { mediaFragment } from 'src/graphql/fragments/media';
-import { pricingFragment } from 'src/graphql/fragments/pricing';
 import { productDetailsFragment } from 'src/graphql/fragments/product';
-import { productVariantDetailsFragment } from 'src/graphql/fragments/productVariant';
 import { shopDetailsFragment } from 'src/graphql/fragments/shop';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
 import { GetBundlesDto } from 'src/modules/product/dto/product.dto';
@@ -54,16 +52,7 @@ export const getBundlesQuery = (filter: GetBundlesDto) => {
               productVariants {
                 quantity
                 productVariant {
-                  ... ProductVariant
-                  attributes {
-                    ... Attribute
-                  }
-                  media {
-                    ... Media
-                  }
-                  pricing {
-                    ... Price
-                  }
+                  id
                 }
               }
             }
@@ -79,8 +68,6 @@ export const getBundlesQuery = (filter: GetBundlesDto) => {
     ${attributeFragment}
     ${mediaFragment}
     ${productDetailsFragment}
-    ${productVariantDetailsFragment}
-    ${pricingFragment}
     ${bundleDetailsFragment}
   `;
   }
