@@ -243,4 +243,26 @@ export class PaymentService {
       return prepareFailedResponse(error.message);
     }
   }
+
+  /**
+   * @description -- this delete the payment method in stripe using the paymentMethodId and fetch the remaining payment methods from stripe against it's user
+   */
+  public async deletePaymentMethod(
+    paymentMethodId: string,
+    userEmail: string,
+  ): Promise<object> {
+    try {
+      const deletePaymentMethodResponse =
+        await this.stripeService.deletePaymentMethod(paymentMethodId);
+      const paymentMethodsList = await this.getPaymentMethodsList(userEmail);
+      return prepareSuccessResponse(
+        { deletePaymentMethodResponse, paymentMethodsList },
+        'Credit Card has deleted successfully',
+        201,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return prepareFailedResponse(error.message);
+    }
+  }
 }

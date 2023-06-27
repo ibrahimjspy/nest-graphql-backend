@@ -28,3 +28,10 @@ export class PaymentPreAuthDto {
   @IsString()
   userEmail: string;
 }
+
+export class PaymentMethodDeleteDto {
+  @ApiProperty()
+  @IsString()
+  paymentMethodId: string;
+  userEmail: string;
+}
