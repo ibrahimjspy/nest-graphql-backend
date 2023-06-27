@@ -245,14 +245,18 @@ export class PaymentService {
   }
 
   /**
-   * @description -- this delete the payment method in stripe using the paymentMethodId
+   * @description -- this delete the payment method in stripe using the paymentMethodId and fetch the remaining payment methods from stripe against it's user
    */
-  public async deletePaymentMethod(paymentMethodId: string): Promise<object> {
+  public async deletePaymentMethod(
+    paymentMethodId: string,
+    userEmail: string,
+  ): Promise<object> {
     try {
       const deletePaymentMethodResponse =
         await this.stripeService.deletePaymentMethod(paymentMethodId);
+      const paymentMethodsList = await this.getPaymentMethodsList(userEmail);
       return prepareSuccessResponse(
-        { deletePaymentMethodResponse },
+        { deletePaymentMethodResponse, paymentMethodsList },
         'Credit Card has deleted successfully',
         201,
       );

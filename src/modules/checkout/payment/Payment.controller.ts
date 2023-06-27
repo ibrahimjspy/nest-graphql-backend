@@ -15,7 +15,7 @@ import { UserIdDto } from '../dto';
 import {
   PaymentCreateDto,
   PaymentPreAuthDto,
-  PaymentDeleteDto,
+  PaymentMethodDeleteDto,
 } from './dto/paymentCreate';
 import StripeService from 'src/external/services/stripe';
 
@@ -90,13 +90,12 @@ export class PaymentController {
   })
   async deleteCreditCard(
     @Res() res,
-    @Body() body: PaymentDeleteDto,
-    @IsAuthenticated('authorization') token: string,
+    @Body() body: PaymentMethodDeleteDto,
   ): Promise<object> {
-    const { paymentMethodId } = body;
+    const { paymentMethodId, userEmail } = body;
     return makeResponse(
       res,
-      await this.appService.deletePaymentMethod(paymentMethodId),
+      await this.appService.deletePaymentMethod(paymentMethodId, userEmail),
     );
   }
 }
