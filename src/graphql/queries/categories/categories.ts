@@ -5,11 +5,12 @@ import { categoryWithAncestors } from 'src/graphql/fragments/categoryWithAncesto
 import { validatePageFilter } from 'src/graphql/utils/pagination';
 
 const b2cQuery = ({ categoryIds, ...filter }): string => {
+  const categoryLevel = categoryIds.length ? '' : `level: 0`;
   return gql`
   query {
     categories(
       ${validatePageFilter(filter)}
-      level: 0
+      ${categoryLevel}
       filter: {
         ids: ${JSON.stringify(categoryIds || [])}
       }
