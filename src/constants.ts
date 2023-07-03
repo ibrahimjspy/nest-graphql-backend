@@ -141,3 +141,5 @@ export const AUTH0_CONNECTION_LAMBDA_URL =
 export const CATEGORIES_CACHE_TTL = 86400;
 export const SHAROVE_ORDER_SITE = 'SR';
 export const SHOP_MAPPING_URL = `${ELASTIC_SEARCH_ENDPOINT}/${process.env.SHOP_ENGINE}`;
+export const MANDRILL_APP_TOKEN = process.env.MANDRILL_APP_TOKEN;
+export const SHAROVE_EMAIL_ADDRESS = 'noreply@sharove.co';

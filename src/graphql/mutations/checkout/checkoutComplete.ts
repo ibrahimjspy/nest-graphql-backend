@@ -32,6 +32,9 @@ export const orderCreateFromCheckoutMutation = (
           billingAddress {
             ... Address
           }
+          user {
+            firstName
+          }
         }
         errors {
           field

@@ -32,7 +32,10 @@ import { getCheckoutMetadataQuery } from 'src/graphql/queries/checkout/metadata'
 import { marketplaceCheckoutSummaryQuery } from 'src/graphql/queries/checkout/marketplaceCheckoutSummary';
 import { saleorCheckoutSummaryQuery } from 'src/graphql/queries/checkout/saleorCheckoutSummary';
 import { saveFailedOrderMutation } from 'src/graphql/mutations/checkout/placeOrder/failedOrder';
-import { SaleorCheckoutInterface } from 'src/modules/checkout/Checkout.utils.type';
+import {
+  OrderCreateInterface,
+  SaleorCheckoutInterface,
+} from 'src/modules/checkout/Checkout.utils.type';
 
 export const getCheckoutBundlesHandler = async ({
   userEmail,
@@ -160,7 +163,7 @@ export const orderCreateFromCheckoutHandler = async (
   checkoutId: string,
   token: string,
   disableCheckout = true,
-) => {
+): Promise<OrderCreateInterface> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
       orderCreateFromCheckoutMutation(checkoutId, disableCheckout),
