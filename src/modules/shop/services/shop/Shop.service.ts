@@ -104,6 +104,7 @@ export class ShopService {
       const [workflowResponse] = await Promise.all([
         provisionStoreFrontV2(storeInput.url),
         addStoreToShopHandler(createStore, shopDetails, token),
+        createAuth0Connection(createStore['id']),
       ]);
       return prepareSuccessResponse(
         {
