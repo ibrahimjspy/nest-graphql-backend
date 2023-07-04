@@ -97,6 +97,77 @@ describe('Shop Service Integration test', () => {
     expect(createStore).toBeDefined();
   });
 
+  it('provision storefront v2', async () => {
+    jest
+      .spyOn(ShopHandlers, 'createStoreHandler')
+      .mockImplementation(async () => {
+        return {
+          id: 'test',
+          name: 'leoMessi',
+          email: 'leo@gmail.com',
+          url: 'leomessi.sharove.co',
+        } as ShopType;
+      });
+
+    jest
+      .spyOn(ShopHandlers, 'addStoreToShopHandler')
+      .mockImplementation(async () => {
+        return {
+          id: 'testb2b',
+          name: 'leoMessi',
+          email: 'leo@gmail.com',
+        } as ShopType;
+      });
+
+    jest
+      .spyOn(ShopHandlers, 'getShopDetailsV2Handler')
+      .mockImplementation(async () => {
+        return {
+          id: 'testb2b',
+          name: 'leoMessi',
+          email: 'leo@gmail.com',
+          url: 'leomessi.sharove.co',
+        } as ShopType;
+      });
+
+    jest.spyOn(Github, 'provisionStoreFrontV2').mockImplementation(async () => {
+      return {
+        status: 200,
+      } as any;
+    });
+
+    jest.spyOn(AuthO, 'createAuth0Connection').mockImplementation(async () => {
+      return {
+        status: 200,
+      } as any;
+    });
+
+    const createStoreV2 = await service.createStoreV2(
+      '1000',
+      {
+        name: 'leoMessi',
+        email: 'leo@gmail.com',
+      },
+      '',
+    );
+    expect(createStoreV2).toEqual({
+      status: 201,
+      data: {
+        createStore: {
+          id: 'test',
+          name: 'leoMessi',
+          email: 'leo@gmail.com',
+          url: 'leomessi.sharove.co',
+        },
+        workflowResponse:{
+          status: 200
+        },
+      },
+      message: 'new storefront provisioned',
+    });
+    expect(createStoreV2).toBeDefined();
+  });
+
   it('should update shops', async () => {
     jest
       .spyOn(ShopHandlers, 'updateStoreInfoHandler')

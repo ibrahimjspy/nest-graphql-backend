@@ -104,7 +104,7 @@ export class ShopService {
       const [workflowResponse] = await Promise.all([
         provisionStoreFrontV2(storeInput.url),
         addStoreToShopHandler(createStore, shopDetails, token),
-        createAuth0Connection(createStore['id']),
+        createAuth0Connection(createStore.id),
       ]);
       return prepareSuccessResponse(
         {
@@ -115,7 +115,6 @@ export class ShopService {
         201,
       );
     } catch (error) {
-      console.log(error);
       this.logger.error(error);
       return graphqlExceptionHandler(error);
     }
