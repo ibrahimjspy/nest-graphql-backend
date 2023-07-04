@@ -79,28 +79,6 @@ export class ShopController {
     );
   }
 
-  @Post('/api/v1/store/create/:shopId')
-  @ApiBearerAuth('JWT-auth')
-  @ApiOperation({
-    summary: 'create store against given user shop id',
-  })
-  async createStore(
-    @Res() res,
-    @Param() params: shopIdDTO,
-    @Body() storeInput: createStoreDTO,
-    @Headers() headers,
-  ): Promise<object> {
-    const Authorization: string = headers.authorization;
-    return makeResponse(
-      res,
-      await this.shopService.createStore(
-        params.shopId,
-        storeInput,
-        Authorization,
-      ),
-    );
-  }
-
   @Post('/api/v2/store/create/:shopId')
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({

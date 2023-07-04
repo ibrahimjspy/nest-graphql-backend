@@ -64,7 +64,7 @@ describe('Shop Service Integration test', () => {
         } as ShopType;
       });
 
-    jest.spyOn(Github, 'provisionStoreFront').mockImplementation(async () => {
+    jest.spyOn(Github, 'provisionStoreFrontV2').mockImplementation(async () => {
       return {
         status: 200,
       } as any;
@@ -76,7 +76,7 @@ describe('Shop Service Integration test', () => {
       } as any;
     });
 
-    const createStore = await service.createStore(
+    const createStoreV2 = await service.createStoreV2(
       '1000',
       {
         name: 'leoMessi',
@@ -84,17 +84,22 @@ describe('Shop Service Integration test', () => {
       },
       '',
     );
-    expect(createStore).toEqual({
+    expect(createStoreV2).toEqual({
       status: 201,
       data: {
-        id: 'test',
-        name: 'leoMessi',
-        email: 'leo@gmail.com',
-        url: 'leomessi.sharove.co',
+        createStore: {
+          id: 'test',
+          name: 'leoMessi',
+          email: 'leo@gmail.com',
+          url: 'leomessi.sharove.co',
+        },
+        workflowResponse:{
+          status: 200
+        },
       },
       message: 'new storefront provisioned',
     });
-    expect(createStore).toBeDefined();
+    expect(createStoreV2).toBeDefined();
   });
 
   it('should update shops', async () => {
