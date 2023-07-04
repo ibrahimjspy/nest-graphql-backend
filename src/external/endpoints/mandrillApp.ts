@@ -16,11 +16,11 @@ export const sendOrderConfirmationEmail = async (
   const logger = new Logger('OrderConfirmationEmail');
   logger.log('Sending order confirmation email', orderInput.id);
   const mailchimpClient = new MailchimpTransactional(MANDRILL_APP_TOKEN);
-
+  const SENDERS_NAME = 'Sharove';
   const emailContent = {
     subject: 'Order confirmation email',
     from_email: SHAROVE_EMAIL_ADDRESS,
-    from_name: 'Sharove',
+    from_name: SENDERS_NAME,
     to: [
       {
         email: orderInput.email,
