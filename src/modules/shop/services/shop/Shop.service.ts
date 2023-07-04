@@ -44,47 +44,6 @@ export class ShopService {
    * @post_condition -- it creates a new store in b2c database, provisions a new storefront using github actions and adds store
    * information against b2b shop as well
    */
-  public async createStore(
-    shopId: string,
-    storeInput: createStoreDTO,
-    token: string,
-  ): Promise<any> {
-    try {
-      this.logger.log(`Creating store against ${shopId}`, storeInput);
-      const storeUrl = this.generateStorefrontUrl(storeInput.name);
-      storeInput.url = storeUrl;
-      const [createStore, shopDetails] = await Promise.all([
-        createStoreHandler(
-          validateStoreInput(storeInput),
-          B2C_DEVELOPMENT_TOKEN,
-          true,
-        ),
-        getShopDetailsV2Handler({ id: shopId }),
-      ]);
-      this.logger.log(`store created ${shopId}`, createStore);
-      const storeId = createStore['id'];
-      await Promise.all([
-        addStoreToShopHandler(createStore, shopDetails, token),
-        provisionStoreFront(storeInput.url),
-        createAuth0Connection(storeId),
-      ]);
-      return prepareSuccessResponse(
-        createStore,
-        'new storefront provisioned',
-        201,
-      );
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
-  }
-
-  /**
-   * @description -- this method creates a new storefront in b2c against a b2b shop
-   * @pre_condition -- you should provide valid create shop input
-   * @post_condition -- it creates a new store in b2c database, provisions a new storefront using github actions and adds store
-   * information against b2b shop as well
-   */
   public async createStoreV2(
     shopId: string,
     storeInput: createStoreDTO,
