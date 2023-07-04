@@ -131,6 +131,7 @@ export interface OrderCreateInterface {
     billingAddress: shippingAddressType;
     user: {
       firstName: string;
+      lastName: string;
     };
   };
   errors: any[];

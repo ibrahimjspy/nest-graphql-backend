@@ -26,6 +26,7 @@ import {
   extractOsOrderNumber,
   getLessInventoryProducts,
   getProductIds,
+  getUserFullName,
 } from './Checkout.utils';
 import OsOrderService from 'src/external/services/osOrder/osOrder.service';
 import { OsOrderResponseInterface, ProductType } from './Checkout.utils.type';
@@ -160,7 +161,7 @@ export class CheckoutService {
       sendOrderConfirmationEmail({
         id: saleorOrderId,
         email: checkoutBundles['data']['userEmail'],
-        name: createOrder.order.user.firstName,
+        name: getUserFullName(createOrder),
       });
       return prepareSuccessResponse(
         { createOrder, osOrderResponse },

@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
 import {
   MetadataType,
+  OrderCreateInterface,
   OsOrderResponseInterface,
   ProductType,
   SaleorCheckoutInterface,
@@ -129,4 +130,14 @@ export const getProductIds = (products: ProductType[]): string[] => {
  */
 export const extractOsOrderNumber = (orderData: OsOrderResponseInterface) => {
   return orderData.data.orders[0].order_number || null;
+};
+
+/**
+ * @description -- this return user full name from order data
+ * @pre_condition -- this assumes that order data includes user information in form of first name and last name
+ */
+export const getUserFullName = (orderData: OrderCreateInterface) => {
+  return `${orderData.order.user.firstName || ''} ${
+    orderData.order.user.lastName || ''
+  }`;
 };
