@@ -137,7 +137,7 @@ export const extractOsOrderNumber = (orderData: OsOrderResponseInterface) => {
  * @pre_condition -- this assumes that order data includes user information in form of first name and last name
  */
 export const getUserFullName = (orderData: OrderCreateInterface) => {
-  return `${orderData.order.user.firstName || ''} ${
-    orderData.order.user.lastName || ''
+  return `${orderData.order.user?.firstName || ''} ${
+    orderData.order.user?.lastName || ''
   }`;
 };
