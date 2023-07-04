@@ -1,3 +1,4 @@
+import { shippingAddressType } from 'src/external/services/osPlaceOrder/Legacy.service.types';
 import { BundleType } from 'src/graphql/types/bundle.type';
 
 export interface CheckoutShippingMethodType {
@@ -111,4 +112,27 @@ export interface OsOrderResponseInterface {
   };
   message: any;
   status: string;
+}
+export interface OrderCreateInterface {
+  order: {
+    id: string;
+    number: string;
+    deliveryMethod: {
+      id: string;
+      name: string;
+    };
+    lines: {
+      id: string;
+      variant: {
+        id: string;
+      };
+    }[];
+    shippingAddress: shippingAddressType;
+    billingAddress: shippingAddressType;
+    user: {
+      firstName: string;
+      lastName: string;
+    };
+  };
+  errors: any[];
 }

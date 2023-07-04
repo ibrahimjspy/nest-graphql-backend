@@ -141,3 +141,13 @@ export const AUTH0_CONNECTION_LAMBDA_URL =
 export const CATEGORIES_CACHE_TTL = 86400;
 export const SHAROVE_ORDER_SITE = 'SR';
 export const SHOP_MAPPING_URL = `${ELASTIC_SEARCH_ENDPOINT}/${process.env.SHOP_ENGINE}`;
+
+/**
+ * @description - this is app token used to send order confirmation email -- mandrill is an email service
+ */
+export const MANDRILL_APP_TOKEN = process.env.MANDRILL_APP_TOKEN;
+
+/**
+ * @description - this is email address which will be used to send order confirmation email
+ */
+export const SHAROVE_EMAIL_ADDRESS = process.env.SHAROVE_EMAIL_ADDRESS;

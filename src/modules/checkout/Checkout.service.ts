@@ -26,6 +26,7 @@ import {
   extractOsOrderNumber,
   getLessInventoryProducts,
   getProductIds,
+  getUserFullName,
 } from './Checkout.utils';
 import OsOrderService from 'src/external/services/osOrder/osOrder.service';
 import { OsOrderResponseInterface, ProductType } from './Checkout.utils.type';
@@ -34,6 +35,7 @@ import { getOsProductMapping } from 'src/external/endpoints/b2bMapping';
 import { authenticateAuth0User } from 'src/external/endpoints/auth0';
 import { getUserByToken } from '../account/user/User.utils';
 import { ProductIdsMappingType } from 'src/external/endpoints/b2bMapping.types';
+import { sendOrderConfirmationEmail } from 'src/external/endpoints/mandrillApp';
 
 @Injectable()
 export class CheckoutService {
@@ -126,9 +128,10 @@ export class CheckoutService {
         checkoutId,
         B2B_CHECKOUT_APP_TOKEN,
       );
+      const saleorOrderId = createOrder.order.id;
       this.logger.log(
         `Order created against checkout id ${checkoutId}`,
-        createOrder['order']['id'],
+        saleorOrderId,
       );
       const ordersByShop = {
         userEmail: checkoutBundles['data']['userEmail'],
@@ -155,6 +158,11 @@ export class CheckoutService {
         `Os order id ${osOrderId} created against checkout id ${checkoutId}`,
       );
       await this.paymentService.paymentIntentUpdate(paymentIntentId, osOrderId);
+      sendOrderConfirmationEmail({
+        id: saleorOrderId,
+        email: checkoutBundles['data']['userEmail'],
+        name: getUserFullName(createOrder),
+      });
       return prepareSuccessResponse(
         { createOrder, osOrderResponse },
         'order created against checkout',
