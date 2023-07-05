@@ -88,7 +88,6 @@ export class LegacyService {
       const response = await http.post(URL, payload, header);
       return response?.data;
     } catch (err) {
-      console.dir(err, { depth: null });
       Logger.error(err, err.response.data.error);
       throw new OsOrderPlaceError(this.orderId, err.response.data.error);
     }
