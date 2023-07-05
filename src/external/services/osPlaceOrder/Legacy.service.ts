@@ -138,6 +138,7 @@ export class LegacyService {
 
     const shippingAddressInfo = await this.createOsShippingAddress(
       shippingData,
+      this.token,
     );
 
     const payload = this.payloadBuilder(
@@ -240,12 +241,6 @@ export class LegacyService {
       };
       this.osShopIdList.push(obj);
     }
-  }
-
-  async validate_order_quantity(payload) {
-    const URL = `${this.baseUrl}/product/quantity-validator`;
-    const response = await http.post(URL, payload);
-    return response?.data;
   }
 
   payloadBuilder(productMappings, shopSizeMappings, shippingAddressInfo) {
@@ -364,8 +359,10 @@ export class LegacyService {
     return response?.data;
   }
 
-  async createOsShippingAddress(shipping_info) {
-    return await addShippingAddressInfo(shipping_info);
+  async createOsShippingAddress(shipping_info, token: string) {
+    Logger.log('Creating shipping address in os', shipping_info);
+    const tokenWithoutBearer = token.match(/^(\S+)\s(.*)/).slice(1);
+    return await addShippingAddressInfo(shipping_info, tokenWithoutBearer[1]);
   }
 
   getColorAttribute(attributes) {

@@ -33,9 +33,9 @@ import { OsOrderResponseInterface, ProductType } from './Checkout.utils.type';
 import { getB2bProductMapping } from 'src/external/endpoints/b2cMapping';
 import { getOsProductMapping } from 'src/external/endpoints/b2bMapping';
 import { authenticateAuth0User } from 'src/external/endpoints/auth0';
-import { getUserByToken } from '../account/user/User.utils';
 import { ProductIdsMappingType } from 'src/external/endpoints/b2bMapping.types';
 import { sendOrderConfirmationEmail } from 'src/external/endpoints/mandrillApp';
+import { getTokenWithoutBearer } from '../account/user/User.utils';
 
 @Injectable()
 export class CheckoutService {
@@ -226,8 +226,6 @@ export class CheckoutService {
         SHAROVE_PASSWORD,
       );
       const userAccessToken = userAuthReponse?.access_token;
-      const userDetail = getUserByToken(userAccessToken);
-      const osUserId = userDetail['os_user_id'];
       const orderDetail: any = await this.ordersService.getOrderDetailsById(
         orderId,
         token,
@@ -246,10 +244,12 @@ export class CheckoutService {
       );
       const osProductIds = Array.from(osProductMapping.values());
       const osShippingAddress: any =
-        await this.osOrderService.createShippingAddress({
-          ...SHAROVE_BILLING_ADDRESS,
-          user_id: osUserId,
-        });
+        await this.osOrderService.createShippingAddress(
+          {
+            ...SHAROVE_BILLING_ADDRESS,
+          },
+          getTokenWithoutBearer(userAccessToken),
+        );
       const osProductsBundles = await this.osOrderService.getBundles(
         osProductIds,
       );
