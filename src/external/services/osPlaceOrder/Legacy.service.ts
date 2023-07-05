@@ -88,6 +88,7 @@ export class LegacyService {
       const response = await http.post(URL, payload, header);
       return response?.data;
     } catch (err) {
+      console.dir(err, { depth: null });
       Logger.error(err, err.response.data.error);
       throw new OsOrderPlaceError(this.orderId, err.response.data.error);
     }
@@ -339,9 +340,12 @@ export class LegacyService {
   }
 
   async getLegacyColorMappingIDs(colorObject) {
-    const URL = `${this.baseUrl}/product/details?color-mapping=${JSON.stringify(
-      colorObject,
-    )}`;
+    const encodedColorObject = encodeURIComponent(JSON.stringify(colorObject));
+    const URL = `${this.baseUrl}/product/details?color-mapping=${encodedColorObject}`;
+    Logger.log(
+      `Fetching color mappings against ${JSON.stringify(colorObject)}`,
+      URL,
+    );
     const response = await axios.get(URL);
     const colorsData = response?.data?.data;
     this.colorsByShops = this.getColorsByShop(colorObject, colorsData);
