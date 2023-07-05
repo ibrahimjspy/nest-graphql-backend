@@ -76,8 +76,11 @@ export default class OsOrderService {
     }
   }
 
-  async createShippingAddress(shippingAddressInfo: OsShippingAddressType) {
-    const response = await addShippingAddressInfo(shippingAddressInfo);
+  async createShippingAddress(
+    shippingAddressInfo: OsShippingAddressType,
+    token: string,
+  ) {
+    const response = await addShippingAddressInfo(shippingAddressInfo, token);
     return response;
   }
 

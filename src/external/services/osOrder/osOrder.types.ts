@@ -42,7 +42,6 @@ export interface OsShippingAddressType {
   city: string;
   state: string;
   zipcode: string;
-  user_id: string;
   company_name: string;
   country: string;
   first_name: string;
