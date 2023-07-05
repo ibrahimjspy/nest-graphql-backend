@@ -339,9 +339,12 @@ export class LegacyService {
   }
 
   async getLegacyColorMappingIDs(colorObject) {
-    const URL = `${this.baseUrl}/product/details?color-mapping=${JSON.stringify(
-      colorObject,
-    )}`;
+    const encodedColorObject = encodeURIComponent(JSON.stringify(colorObject));
+    const URL = `${this.baseUrl}/product/details?color-mapping=${encodedColorObject}`;
+    Logger.log(
+      `Fetching color mappings against ${JSON.stringify(colorObject)}`,
+      URL,
+    );
     const response = await axios.get(URL);
     const colorsData = response?.data?.data;
     this.colorsByShops = this.getColorsByShop(colorObject, colorsData);
