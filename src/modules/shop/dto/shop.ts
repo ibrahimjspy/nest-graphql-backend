@@ -129,7 +129,7 @@ export class WorkflowNameDto {
   workflowName: string;
 }
 
-export class VendorMappingsDto {
+export class GetMappingDto {
   @ApiProperty({ type: String, required: false })
   @IsOptional()
   sourceId: string;

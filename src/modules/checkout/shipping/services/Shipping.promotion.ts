@@ -32,6 +32,7 @@ export class ShippingPromotionService {
         subtotalPrice: {
           gross: { amount: checkoutSubTotalPrice },
         },
+        discount: { amount: discountAmount },
         deliveryMethod: { id: checkoutDeliveryMethod },
         voucherCode,
       } = checkoutData;
@@ -39,7 +40,7 @@ export class ShippingPromotionService {
 
       const vouchersData = await getShippingVouchersHandler(token);
       const promoCode = this.getVoucherIdForCheckout(
-        checkoutSubTotalPrice,
+        checkoutSubTotalPrice + (discountAmount || 0),
         vouchersData,
       );
       const existingVoucherCode = voucherCode || promoCode;

@@ -1,15 +1,13 @@
 import { Logger } from '@nestjs/common';
 import { MAPPING_SERVICE_HEADERS, SHOP_MAPPING_URL } from 'src/constants';
-import { VendorMappingsDto } from 'src/modules/shop/dto/shop';
+import { GetMappingDto } from 'src/modules/shop/dto/shop';
 import http from 'src/core/proxies/restHandler';
 
 /**
  * @description -- this method connects with mapping service and returns vendor mappings
  * which include source id, destination id and vendor name
  */
-export const getVendorMapping = async (
-  vendorMappingFilters: VendorMappingsDto,
-) => {
+export const getVendorMapping = async (vendorMappingFilters: GetMappingDto) => {
   const { sourceId, destinationId, totalCount, page } = vendorMappingFilters;
   const FILTERS = JSON.stringify({
     query: '',

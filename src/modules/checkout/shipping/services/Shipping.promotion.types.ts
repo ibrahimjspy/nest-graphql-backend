@@ -54,6 +54,9 @@ export interface UpdateDeliveryMethodInterface {
       amount: number;
     };
   };
+  discount: {
+    amount: number;
+  };
   subtotalPrice: {
     gross: {
       amount: number;
