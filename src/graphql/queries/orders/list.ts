@@ -8,6 +8,10 @@ import { pageInfoFragment } from 'src/graphql/fragments/pageInfo';
 const b2bQuery = (filter: OrdersListFiltersDTO): string => {
   const filters = orderListFilterValidation(filter);
   const pagination = validatePageFilter(filter);
+  const userEmailFilter = filter.userEmail ? `{key:"userEmail", value: "${filter.userEmail}"}` : '';
+  const shopIdFilter = filter.shopId ? `{key:"storeId", value: "${filter.shopId}"}` : '';
+  const orderTypeFilter = filter.orderType ? `{key:"orderType", value: "${filter.orderType}"}` : '';
+
   return gql`
     query {
       orders(
@@ -19,17 +23,9 @@ const b2bQuery = (filter: OrdersListFiltersDTO): string => {
           customer: "${filters.customer}"
           created: { gte: "${filters.startDate}", lte: "${filters.endDate}" }
           metadata:[
-            ${
-              filter.userEmail
-                ? `{key:"userEmail", value: "${filter.userEmail}"}`
-                : ''
-            },
-            ${
-              filter.shopId ? `{key:"storeId", value: "${filter.shopId}"}` : ''
-            },
-            ${
-              filter.orderType ? `{key:"orderType", value: "${filter.orderType}"}` : ''
-            },
+            ${userEmailFilter},
+            ${shopIdFilter},
+            ${orderTypeFilter},
           ]
         }
       ) {
