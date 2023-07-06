@@ -47,8 +47,8 @@ export const getOsProductMapping = async (productIds: string[]) => {
 };
 
 /**
- * @description -- this method connects with mapping service and returns vendor mappings
- * which include source id, destination id and vendor name
+ * @description -- this method connects with mapping service and returns product mappings
+ * which include source id, destination id
  */
 export const getOsProductMappingV2 = async (
   vendorMappingFilters: GetMappingDto,
