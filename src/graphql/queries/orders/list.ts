@@ -8,9 +8,15 @@ import { pageInfoFragment } from 'src/graphql/fragments/pageInfo';
 const b2bQuery = (filter: OrdersListFiltersDTO): string => {
   const filters = orderListFilterValidation(filter);
   const pagination = validatePageFilter(filter);
-  const userEmailFilter = filter.userEmail ? `{key:"userEmail", value: "${filter.userEmail}"}` : '';
-  const shopIdFilter = filter.shopId ? `{key:"storeId", value: "${filter.shopId}"}` : '';
-  const orderTypeFilter = filter.orderType ? `{key:"orderType", value: "${filter.orderType}"}` : '';
+  const userEmailFilter = filter.userEmail
+    ? `{key:"userEmail", value: "${filter.userEmail}"}`
+    : '';
+  const shopIdFilter = filter.shopId
+    ? `{key:"storeId", value: "${filter.shopId}"}`
+    : '';
+  const orderTypeFilter = filter.orderType
+    ? `{key:"orderType", value: "${filter.orderType}"}`
+    : '';
 
   return gql`
     query {
