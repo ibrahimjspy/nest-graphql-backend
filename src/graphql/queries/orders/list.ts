@@ -27,6 +27,9 @@ const b2bQuery = (filter: OrdersListFiltersDTO): string => {
             ${
               filter.shopId ? `{key:"storeId", value: "${filter.shopId}"}` : ''
             },
+            ${
+              filter.orderType ? `{key:"orderType", value: "${filter.orderType}"}` : ''
+            },
           ]
         }
       ) {

@@ -75,6 +75,10 @@ export class OrdersListDTO extends IntersectionType(b2cDto, PaginationDto) {
   @IsOptional()
   @IsEmail()
   userEmail?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  orderType?: string;
 }
 
 export class OrdersListFiltersDTO extends OrdersListDTO {
