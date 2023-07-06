@@ -28,6 +28,9 @@ export const checkoutDeliveryMethodUpdateMutation = (
               amount
             }
           }
+          discount {
+            amount
+          }
           subtotalPrice {
             gross {
               amount

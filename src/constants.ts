@@ -151,3 +151,4 @@ export const MANDRILL_APP_TOKEN = process.env.MANDRILL_APP_TOKEN;
  * @description - this is email address which will be used to send order confirmation email
  */
 export const SHAROVE_EMAIL_ADDRESS = process.env.SHAROVE_EMAIL_ADDRESS;
+export const B2B_PRODUCT_MAPPING_URL = `${ELASTIC_SEARCH_ENDPOINT}/${process.env.ELASTIC_SEARCH_PRODUCT_ENGINE}`;

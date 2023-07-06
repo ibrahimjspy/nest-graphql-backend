@@ -28,6 +28,8 @@ import {
 } from './Product.types';
 import { BundleCreateDto } from './dto/bundle';
 import { UpdateOpenPackDto } from '../checkout/cart/dto/cart';
+import { getOsProductMappingV2 } from 'src/external/endpoints/b2bMapping';
+import { GetMappingDto } from '../shop/dto/shop';
 @Injectable()
 export class ProductService {
   private readonly logger = new Logger(ProductService.name);
@@ -241,6 +243,14 @@ export class ProductService {
       return prepareSuccessResponse(
         await ProductsHandlers.getBundleHandler(id),
       ) as unknown as GetBundleResponseType;
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+  public async getProductMappings(filter: GetMappingDto): Promise<object> {
+    try {
+      return prepareSuccessResponse(await getOsProductMappingV2(filter));
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
