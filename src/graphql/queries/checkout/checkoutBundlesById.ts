@@ -43,8 +43,8 @@ export const checkoutBundlesByIdQuery = (
                 thumbnail {
                   url
                 }
-                media(size:${DEFAULT_MEDIA_LARGE_SIZE}) {
-                  url
+                media {
+                  url(size:${DEFAULT_MEDIA_LARGE_SIZE})
                 }
               }
               productVariants {
@@ -56,8 +56,8 @@ export const checkoutBundlesByIdQuery = (
                   preorder {
                     globalThreshold
                   }
-                  media(size:${DEFAULT_MEDIA_LARGE_SIZE}) {
-                    url
+                  media {
+                    url(size:${DEFAULT_MEDIA_LARGE_SIZE})
                   }
                   attributes {
                     attribute {
