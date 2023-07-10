@@ -1,5 +1,8 @@
 import { gql } from 'graphql-request';
-import { DEFAULT_THUMBNAIL_SIZE } from 'src/constants';
+import {
+  DEFAULT_MEDIA_LARGE_SIZE,
+  DEFAULT_THUMBNAIL_SIZE,
+} from 'src/constants';
 import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
 
 const b2bQuery = (id: string): string => {
@@ -94,7 +97,7 @@ const b2bQuery = (id: string): string => {
                   }
                 }
                 media {
-                  url
+                  url(size:${DEFAULT_MEDIA_LARGE_SIZE})
                 }
                 product {
                   id
@@ -103,7 +106,7 @@ const b2bQuery = (id: string): string => {
                   }
                   name
                   media {
-                      url
+                      url(size:${DEFAULT_MEDIA_LARGE_SIZE})
                     }
                   attributes {
                     attribute {
@@ -165,12 +168,12 @@ const b2bQuery = (id: string): string => {
               }
             }
             media {
-              url
+              url(size:${DEFAULT_MEDIA_LARGE_SIZE})
             }
             product {
               id
               media {
-                url
+                url(size:${DEFAULT_MEDIA_LARGE_SIZE})
               }
               attributes {
                 attribute {
@@ -303,7 +306,7 @@ const b2cQuery = (id: string): string => {
                   }
                 }
                 media {
-                  url
+                  url(size:${DEFAULT_MEDIA_LARGE_SIZE})
                 }
                 product {
                   id
@@ -316,7 +319,7 @@ const b2cQuery = (id: string): string => {
                   }
                   name
                   media {
-                      url
+                      url(size:${DEFAULT_MEDIA_LARGE_SIZE})
                     }
                   attributes {
                     attribute {
@@ -378,12 +381,12 @@ const b2cQuery = (id: string): string => {
               }
             }
             media {
-              url
+              url(size:${DEFAULT_MEDIA_LARGE_SIZE})
             }
             product {
               id
               media {
-                url
+                url(size:${DEFAULT_MEDIA_LARGE_SIZE})
               }
               thumbnail(size: ${DEFAULT_THUMBNAIL_SIZE}) {
                 url
