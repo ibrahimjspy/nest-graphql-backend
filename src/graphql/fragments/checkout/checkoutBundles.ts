@@ -6,6 +6,7 @@ import { selectedShippingMethodsFragment } from './shipping/shippingMethod';
 import { checkoutPricingFragment } from '../pricing';
 import { bundleDetailsFragment } from '../bundle';
 import { productVariantDetailsFragment } from '../productVariant';
+import { DEFAULT_MEDIA_LARGE_SIZE } from 'src/constants';
 
 export const checkoutBundlesFragment = gql`
   fragment CheckoutBundles on CheckoutBundlesType {
@@ -28,7 +29,7 @@ export const checkoutBundlesFragment = gql`
           thumbnail {
             url
           }
-          media {
+          media(size:${DEFAULT_MEDIA_LARGE_SIZE}) {
             url
           }
         }
@@ -39,7 +40,7 @@ export const checkoutBundlesFragment = gql`
             attributes {
               ...Attribute
             }
-            media {
+            media(size:${DEFAULT_MEDIA_LARGE_SIZE}) {
               url
             }
             pricing {
