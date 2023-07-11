@@ -20,6 +20,7 @@ export const B2BClientPlatform = 'sharove@sharove.com';
 export const STRIPE_RETURN_URL = process.env.B2B_ENDPOINT;
 export const DEFAULT_THUMBNAIL_SIZE = 512;
 export const DEFAULT_MEDIA_LARGE_SIZE = 1024;
+export const DEFAULT_MEDIA_SIZE = 0;
 export const SQS_MESSAGE_GROUPID = '1';
 //
 export const COMMON_HEADERS = {
