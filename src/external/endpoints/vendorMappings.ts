@@ -1,14 +1,23 @@
 import { Logger } from '@nestjs/common';
 import { MAPPING_SERVICE_HEADERS, SHOP_MAPPING_URL } from 'src/constants';
-import { GetMappingDto } from 'src/modules/shop/dto/shop';
+import { GetShopMapping } from 'src/modules/shop/dto/shop';
 import http from 'src/core/proxies/restHandler';
 
 /**
  * @description -- this method connects with mapping service and returns vendor mappings
  * which include source id, destination id and vendor name
  */
-export const getVendorMapping = async (vendorMappingFilters: GetMappingDto) => {
-  const { sourceId, destinationId, totalCount, page } = vendorMappingFilters;
+export const getVendorMapping = async (
+  vendorMappingFilters: GetShopMapping,
+) => {
+  const {
+    sourceId,
+    destinationId,
+    totalCount,
+    page,
+    isSharoveFulfillment,
+    isPopular,
+  } = vendorMappingFilters;
   const FILTERS = JSON.stringify({
     query: '',
     page: {
@@ -19,6 +28,10 @@ export const getVendorMapping = async (vendorMappingFilters: GetMappingDto) => {
       all: [
         sourceId && { os_vendor_id: [sourceId] },
         destinationId && { shr_shop_id: [destinationId] },
+        isSharoveFulfillment && {
+          is_sharove_fulfillment: [isSharoveFulfillment],
+        },
+        isPopular && { is_popular: [isPopular] },
       ],
     },
   });
