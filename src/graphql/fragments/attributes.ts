@@ -4,9 +4,12 @@ export const attributeFragment = gql`
   fragment Attribute on SelectedAttribute {
     attribute {
       name
+      slug
     }
     values {
+      slug
       name
+      boolean
     }
   }
 `;

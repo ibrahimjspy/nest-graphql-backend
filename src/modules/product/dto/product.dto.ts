@@ -58,6 +58,12 @@ export class ProductFilterDto extends PaginationDto {
 
   @ApiProperty({
     required: false,
+    description: 'whether a product is open pack',
+  })
+  isOpenPack?: boolean;
+
+  @ApiProperty({
+    required: false,
     description: 'date in iso format -- return product after this date',
   })
   @IsOptional()
