@@ -16,7 +16,7 @@ import {
   prepareSuccessResponse,
 } from 'src/core/utils/response';
 import { SuccessResponseType } from 'src/core/utils/response.type';
-import { GetMappingDto, createStoreDTO, shopDetailDto } from '../../dto/shop';
+import { GetShopMapping, createStoreDTO, shopDetailDto } from '../../dto/shop';
 import { validateArray, validateStoreInput } from '../../Shop.utils';
 import {
   provisionStoreFront,
@@ -253,7 +253,7 @@ export class ShopService {
   /**
    * return vendor mappings from elastic search
    */
-  public async getVendorMappings(vendorMappingFilters: GetMappingDto) {
+  public async getVendorMappings(vendorMappingFilters: GetShopMapping) {
     try {
       const response = await getVendorMapping(vendorMappingFilters);
       return prepareSuccessResponse(response);

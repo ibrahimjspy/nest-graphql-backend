@@ -41,6 +41,7 @@ export class ProductService {
   public async getProducts(filter: ProductFilterDto): Promise<object> {
     try {
       const retailerId = filter.retailerId;
+      this.logger.log('Fetching products data', JSON.stringify(filter));
       const productsData = await ProductsHandlers.productsHandler(filter);
 
       return prepareGQLPaginatedResponse(

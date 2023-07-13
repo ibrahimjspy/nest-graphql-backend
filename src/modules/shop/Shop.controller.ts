@@ -14,7 +14,7 @@ import { makeResponse } from '../../core/utils/response';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ShopService } from './services/shop/Shop.service';
 import {
-  GetMappingDto,
+  GetShopMapping,
   WorkflowNameDto,
   accountIdDTO,
   allShopIdsDTO,
@@ -332,7 +332,7 @@ export class ShopController {
   })
   async getVendorMappings(
     @Res() res,
-    @Query() filter: GetMappingDto,
+    @Query() filter: GetShopMapping,
   ): Promise<object> {
     return makeResponse(res, await this.shopService.getVendorMappings(filter));
   }

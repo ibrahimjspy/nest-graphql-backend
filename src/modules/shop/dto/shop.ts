@@ -144,3 +144,17 @@ export class GetMappingDto {
   @ApiProperty({ type: Number, required: true, default: 1000 })
   totalCount: number;
 }
+
+enum BooleanEnum {
+  true = 'true',
+  false = 'false',
+}
+export class GetShopMapping extends GetMappingDto {
+  @ApiProperty({ type: String, enum: BooleanEnum, required: false })
+  @IsOptional()
+  isSharoveFulfillment?: BooleanEnum;
+
+  @ApiProperty({ type: String, enum: BooleanEnum, required: false })
+  @IsOptional()
+  isPopular?: BooleanEnum;
+}

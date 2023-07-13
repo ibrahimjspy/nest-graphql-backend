@@ -8,6 +8,12 @@ import {
   IsString,
 } from 'class-validator';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
+import {
+  ColorsFiltersEnum,
+  PatternsFilterEnum,
+  SleevesFilterEnum,
+  StyleFiltersEnum,
+} from './product.enums';
 
 export enum ProductFilterTypeEnum {
   POPULAR_ITEMS = 'popular',
@@ -56,6 +62,68 @@ export class ProductFilterDto extends PaginationDto {
   })
   @IsOptional()
   date?: string;
+
+  @ApiProperty({ required: false, type: Number })
+  @IsOptional()
+  startPrice?: number;
+
+  @ApiProperty({ required: false, type: Number })
+  @IsOptional()
+  endPrice?: number;
+
+  @ApiProperty({
+    required: false,
+    isArray: true,
+    enum: ColorsFiltersEnum,
+    description: 'color of product, you can provide multiple colors',
+  })
+  @Type(() => String)
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]), {
+    toClassOnly: true,
+  })
+  color?: ColorsFiltersEnum[];
+
+  @ApiProperty({
+    required: false,
+    isArray: true,
+    enum: StyleFiltersEnum,
+    description: 'style of product, you can provide multiple styles',
+  })
+  @Type(() => String)
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]), {
+    toClassOnly: true,
+  })
+  styles?: StyleFiltersEnum[];
+
+  @ApiProperty({
+    required: false,
+    isArray: true,
+    enum: PatternsFilterEnum,
+    description: 'pattern of product, you can provide multiple patterns',
+  })
+  @Type(() => String)
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]), {
+    toClassOnly: true,
+  })
+  patterns?: PatternsFilterEnum[];
+
+  @ApiProperty({
+    required: false,
+    isArray: true,
+    enum: SleevesFilterEnum,
+    description: 'sleeves of product, you can provide multiple sleeves',
+  })
+  @Type(() => String)
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]), {
+    toClassOnly: true,
+  })
+  sleeves?: SleevesFilterEnum[];
+
+  @ApiProperty({
+    required: false,
+    description: 'whether a product is fulfilled by sharove or vendor himself',
+  })
+  isSharoveFulfillment?: boolean;
 }
 
 export class ProductListDto {

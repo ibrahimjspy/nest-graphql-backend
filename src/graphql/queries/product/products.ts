@@ -7,6 +7,7 @@ import { pageInfoFragment } from 'src/graphql/fragments/pageInfo';
 import { pricingFragment } from 'src/graphql/fragments/pricing';
 import { productDetailsFragment } from 'src/graphql/fragments/product';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
+import { getProductAttributeFilter } from 'src/graphql/utils/products';
 import { ProductFilterDto } from 'src/modules/product/dto';
 
 export const b2bQuery = (filter: ProductFilterDto): string => {
@@ -18,6 +19,10 @@ export const b2bQuery = (filter: ProductFilterDto): string => {
   const daysBeforeFilter = filter.date
     ? `updatedAt: {gte: "${filter.date}"}`
     : '';
+  const attributeFilter = getProductAttributeFilter(filter);
+  const priceFilter = `price: {${
+    filter.startPrice ? `gte: ${filter.startPrice}` : ''
+  } ${filter.endPrice ? `lte: ${filter.endPrice}` : ''}}`;
   return gql`
     query {
       products(
@@ -29,6 +34,8 @@ export const b2bQuery = (filter: ProductFilterDto): string => {
           categories: [${categoryFilter}]
           ${metadataFilter}
           ${daysBeforeFilter}
+          ${attributeFilter}
+          ${priceFilter}
         }
       ) {
         pageInfo {
