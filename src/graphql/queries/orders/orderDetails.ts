@@ -290,11 +290,9 @@ const b2cQuery = (id: string): string => {
               variant {
                 id
                 sku
-                pricing {
+                channelListings {
                   price {
-                    gross {
-                      amount
-                    }
+                    amount
                   }
                 }
                 attributes {
@@ -370,14 +368,9 @@ const b2cQuery = (id: string): string => {
                 name
               }
             }
-            pricing {
+            channelListings {
               price {
-                gross {
-                  amount
-                }
-                net {
-                  amount
-                }
+                amount
               }
             }
             media {
