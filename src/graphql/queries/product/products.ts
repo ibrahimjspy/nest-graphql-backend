@@ -89,6 +89,11 @@ export const b2cQuery = (filter: ProductFilterDto): string => {
             }
             defaultVariant {
               id
+              channelListings {
+                price {
+                  amount
+                }
+              }
               pricing {
                 ... Price
               }

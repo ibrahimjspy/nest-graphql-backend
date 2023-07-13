@@ -33,14 +33,21 @@ import {
   updateBundlePricingMutation,
 } from '../mutations/product/bundleUpdate';
 import { getBundleQuery } from '../queries/product/getBundle';
+import {
+  B2B_DEVELOPMENT_TOKEN,
+  B2C_DEVELOPMENT_TOKEN,
+  B2C_ENABLED,
+} from 'src/constants';
 
 export const productsHandler = async (
   filter: ProductFilterDto,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(productsQuery(filter)),
+    await graphqlCall(
+      productsQuery(filter),
+      B2C_ENABLED ? B2C_DEVELOPMENT_TOKEN : B2B_DEVELOPMENT_TOKEN, // TODO fix this to product app token
+    ),
   );
-
   return response?.products;
 };
 
