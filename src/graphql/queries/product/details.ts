@@ -87,6 +87,11 @@ const b2cQuery = (filter: ProductDetailsDto): string => {
           attributes {
             ... Attribute
           }
+          channelListings {
+            price {
+              amount
+            }
+          }
           pricing {
             ... Price
           }
