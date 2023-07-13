@@ -5,7 +5,7 @@ export const getProductAttributeFilter = (filter: ProductFilterDto) => {
   attributes:[
     ${
       filter.color
-        ? `{slug:"color", values:${JSON.stringify(filter.color)}},`
+        ? `{slug:"colors", values:${JSON.stringify(filter.color)}},`
         : ''
     }
     ${
@@ -20,7 +20,7 @@ export const getProductAttributeFilter = (filter: ProductFilterDto) => {
       }
       ${
         filter.isSharoveFulfillment
-          ? `{slug:"isSharoveFulfillment", boolean:${filter.isSharoveFulfillment}},`
+          ? `{slug:"issharovefulfillment", boolean:${filter.isSharoveFulfillment}},`
           : ''
       }
     ]

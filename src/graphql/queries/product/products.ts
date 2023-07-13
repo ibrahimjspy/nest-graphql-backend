@@ -23,6 +23,9 @@ export const b2bQuery = (filter: ProductFilterDto): string => {
   const priceFilter = `price: {${
     filter.startPrice ? `gte: ${filter.startPrice}` : ''
   } ${filter.endPrice ? `lte: ${filter.endPrice}` : ''}}`;
+  const openPackFilter = filter.isOpenPack
+    ? ` metadata: [{ key: "isOpenPack", value: "${filter.isOpenPack}" }]`
+    : '';
   return gql`
     query {
       products(
@@ -36,6 +39,7 @@ export const b2bQuery = (filter: ProductFilterDto): string => {
           ${daysBeforeFilter}
           ${attributeFilter}
           ${priceFilter}
+          ${openPackFilter}
         }
       ) {
         pageInfo {
@@ -45,6 +49,9 @@ export const b2bQuery = (filter: ProductFilterDto): string => {
         edges {
           node {
             ... Product
+            attributes {
+              ... Attribute
+            }
             defaultVariant {
               id
               pricing {
