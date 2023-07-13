@@ -92,9 +92,6 @@ const b2cQuery = (filter: ProductDetailsDto): string => {
               amount
             }
           }
-          pricing {
-            ... Price
-          }
         }
         variants {
           ... ProductVariant
@@ -104,8 +101,10 @@ const b2cQuery = (filter: ProductDetailsDto): string => {
           attributes {
             ... Attribute
           }
-          pricing{
-            ... Price
+          channelListings {
+            price {
+              amount
+            }
           }
         }
       }
@@ -113,7 +112,6 @@ const b2cQuery = (filter: ProductDetailsDto): string => {
     ${categoryWithAncestors}
     ${attributeFragment}
     ${mediaFragment}
-    ${pricingFragment}
     ${productVariantDetailsFragment}
     ${productDetailsFragment}
   `;
