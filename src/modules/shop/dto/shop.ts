@@ -152,9 +152,9 @@ enum BooleanEnum {
 export class GetShopMapping extends GetMappingDto {
   @ApiProperty({ type: String, enum: BooleanEnum, required: false })
   @IsOptional()
-  isSharoveFulfillment: BooleanEnum;
+  isSharoveFulfillment?: BooleanEnum;
 
   @ApiProperty({ type: String, enum: BooleanEnum, required: false })
   @IsOptional()
-  isPopular: BooleanEnum;
+  isPopular?: BooleanEnum;
 }
