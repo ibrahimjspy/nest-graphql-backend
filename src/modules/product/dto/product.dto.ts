@@ -8,6 +8,12 @@ import {
   IsString,
 } from 'class-validator';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
+import {
+  ColorsFiltersEnum,
+  PatternsFilterEnum,
+  SleevesFilterEnum,
+  StyleFiltersEnum,
+} from './product.enums';
 
 export enum ProductFilterTypeEnum {
   POPULAR_ITEMS = 'popular',
@@ -56,6 +62,45 @@ export class ProductFilterDto extends PaginationDto {
   })
   @IsOptional()
   date?: string;
+
+  @ApiProperty({ required: false, type: Number })
+  @IsOptional()
+  startPrice?: number;
+
+  @ApiProperty({ required: false, type: Number })
+  @IsOptional()
+  endPrice?: number;
+
+  @ApiProperty({ required: false, isArray: true, enum: ColorsFiltersEnum })
+  @Type(() => String)
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]), {
+    toClassOnly: true,
+  })
+  color?: ColorsFiltersEnum[];
+
+  @ApiProperty({ required: false, isArray: true, enum: StyleFiltersEnum })
+  @Type(() => String)
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]), {
+    toClassOnly: true,
+  })
+  styles?: StyleFiltersEnum[];
+
+  @ApiProperty({ required: false, isArray: true, enum: PatternsFilterEnum })
+  @Type(() => String)
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]), {
+    toClassOnly: true,
+  })
+  patterns?: PatternsFilterEnum[];
+
+  @ApiProperty({ required: false, isArray: true, enum: SleevesFilterEnum })
+  @Type(() => String)
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]), {
+    toClassOnly: true,
+  })
+  sleeves?: SleevesFilterEnum[];
+
+  @ApiProperty({ required: false })
+  isSharoveFulfillment?: boolean;
 }
 
 export class ProductListDto {
