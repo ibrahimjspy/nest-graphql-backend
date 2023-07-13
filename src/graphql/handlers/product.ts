@@ -159,7 +159,11 @@ export const getProductDetailsHandler = async (
   isB2c = false,
 ): Promise<object> => {
   try {
-    return await graphqlCall(getProductDetailsQuery(filter, isB2c), '', isB2c);
+    return await graphqlCall(
+      getProductDetailsQuery(filter, isB2c),
+      B2C_ENABLED ? B2C_DEVELOPMENT_TOKEN : B2B_DEVELOPMENT_TOKEN,
+      isB2c,
+    );
   } catch (error) {
     return graphqlExceptionHandler(error);
   }
