@@ -77,7 +77,11 @@ export const getMyProductsHandler = async (
   filter: myProductsDTO,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(getMyProductsQuery(productIds, filter, true), '', true),
+    await graphqlCall(
+      getMyProductsQuery(productIds, filter, true),
+      B2C_ENABLED ? B2C_DEVELOPMENT_TOKEN : B2B_DEVELOPMENT_TOKEN,
+      true,
+    ),
   );
   return response['products'];
 };
