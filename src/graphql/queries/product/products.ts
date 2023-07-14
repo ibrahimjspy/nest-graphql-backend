@@ -11,6 +11,7 @@ import { getProductAttributeFilter } from 'src/graphql/utils/products';
 import { ProductFilterDto } from 'src/modules/product/dto';
 
 export const b2bQuery = (filter: ProductFilterDto): string => {
+  const SHAROVE_FULFILLMENT_ATTRIBUTE_SLUG = 'issharovefulfillment';
   const pageFilter = validatePageFilter(filter);
   const categoryFilter = filter['category'] ? `"${filter['category']}"` : '';
   const metadataFilter = filter.vendorId
@@ -49,7 +50,7 @@ export const b2bQuery = (filter: ProductFilterDto): string => {
         edges {
           node {
             ... Product
-            attributes {
+            attribute(slug:"${SHAROVE_FULFILLMENT_ATTRIBUTE_SLUG}") {
               ... Attribute
             }
             defaultVariant {
