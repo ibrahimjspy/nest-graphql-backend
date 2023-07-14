@@ -6,7 +6,7 @@ import { selectedShippingMethodsFragment } from './shipping/shippingMethod';
 import { checkoutPricingFragment } from '../pricing';
 import { bundleDetailsFragment } from '../bundle';
 import { productVariantDetailsFragment } from '../productVariant';
-import { DEFAULT_MEDIA_SIZE } from 'src/constants';
+import { DEFAULT_MEDIA_SIZE, DEFAULT_THUMBNAIL_SIZE } from 'src/constants';
 
 export const checkoutBundlesFragment = gql`
   fragment CheckoutBundles on CheckoutBundlesType {
@@ -26,7 +26,7 @@ export const checkoutBundlesFragment = gql`
         ...Bundle
         product {
           ...Product
-          thumbnail {
+          thumbnail(size: ${DEFAULT_THUMBNAIL_SIZE}) {
             url
           }
           media {

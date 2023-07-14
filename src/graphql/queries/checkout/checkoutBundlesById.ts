@@ -1,5 +1,9 @@
 import { gql } from 'graphql-request';
-import { DEFAULT_MEDIA_LARGE_SIZE } from 'src/constants';
+import {
+  DEFAULT_MEDIA_LARGE_SIZE,
+  DEFAULT_MEDIA_SIZE,
+  DEFAULT_THUMBNAIL_SIZE,
+} from 'src/constants';
 import { metadataFragment } from 'src/graphql/fragments/attributes';
 import { checkoutShopDetailsFragment } from 'src/graphql/fragments/shop';
 
@@ -40,7 +44,7 @@ export const checkoutBundlesByIdQuery = (
                 metadata {
                   ...Metadata
                 }
-                thumbnail {
+                thumbnail(size: ${DEFAULT_THUMBNAIL_SIZE}) {
                   url
                 }
                 media {
@@ -57,7 +61,7 @@ export const checkoutBundlesByIdQuery = (
                     globalThreshold
                   }
                   media {
-                    url(size:${DEFAULT_MEDIA_LARGE_SIZE})
+                    url(size:${DEFAULT_MEDIA_SIZE})
                   }
                   attributes {
                     attribute {
