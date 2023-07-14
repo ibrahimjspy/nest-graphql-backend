@@ -5,7 +5,6 @@ import { attributeFragment } from 'src/graphql/fragments/attributes';
 import { categoryFragment } from 'src/graphql/fragments/category';
 import { mediaFragment } from 'src/graphql/fragments/media';
 import { pageInfoFragment } from 'src/graphql/fragments/pageInfo';
-import { pricingFragment } from 'src/graphql/fragments/pricing';
 import { productDetailsFragment } from 'src/graphql/fragments/product';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
 import { myProductsDTO } from 'src/modules/shop/dto/myProducts';
@@ -63,7 +62,6 @@ const b2cQuery = (productIds, filter: myProductsDTO): string => {
     }
     ${productDetailsFragment}
     ${attributeFragment}
-    ${pricingFragment}
     ${pageInfoFragment}
     ${categoryFragment}
     ${mediaFragment}
