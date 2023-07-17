@@ -40,6 +40,5 @@ export const provisionStoreFrontV2 = async (domainName: string) => {
   const response = await http.post(PROVISION_STOREFRONT_WORKFLOW_URL, {
     domainName: subDomainName,
   });
-  Logger.log(response);
   return response.data;
 };

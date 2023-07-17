@@ -93,8 +93,8 @@ describe('Shop Service Integration test', () => {
           email: 'leo@gmail.com',
           url: 'leomessi.sharove.co',
         },
-        workflowResponse:{
-          status: 200
+        workflowResponse: {
+          status: 200,
         },
       },
       message: 'new storefront provisioned',

@@ -18,10 +18,7 @@ import {
 import { SuccessResponseType } from 'src/core/utils/response.type';
 import { GetShopMapping, createStoreDTO, shopDetailDto } from '../../dto/shop';
 import { validateArray, validateStoreInput } from '../../Shop.utils';
-import {
-  provisionStoreFront,
-  provisionStoreFrontV2,
-} from 'src/external/endpoints/provisionStorefront';
+import { provisionStoreFrontV2 } from 'src/external/endpoints/provisionStorefront';
 import { B2C_DEVELOPMENT_TOKEN, B2C_STOREFRONT_TLD } from 'src/constants';
 import { shopInfoDto } from '../../../orders/dto';
 import { ImportBulkCategoriesDto } from '../../dto/autoSync';
@@ -46,6 +43,7 @@ export class ShopService {
     token: string,
   ): Promise<any> {
     try {
+      this.logger.log(`Creating store against shop id ${shopId}`, storeInput);
       const storeUrl = this.generateStorefrontUrl(storeInput.name);
       storeInput.url = storeUrl;
       const [createStore, shopDetails] = await Promise.all([
