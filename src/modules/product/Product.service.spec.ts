@@ -4,6 +4,7 @@ import * as Mapping from 'src/external/endpoints/b2cMapping';
 
 import { ProductService } from './Product.service';
 import { productIntegrationMocks } from '../../../test/mock/product';
+import SearchService from 'src/external/services/search';
 
 describe('Product Service', () => {
   let service: ProductService;
@@ -11,7 +12,7 @@ describe('Product Service', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ProductService],
+      providers: [ProductService, SearchService],
     }).compile();
     module.useLogger(false);
 
