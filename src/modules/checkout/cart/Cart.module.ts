@@ -8,6 +8,7 @@ import { ProductService } from 'src/modules/product/Product.service';
 import { CartResponseService } from './services/Response.service';
 import { CartRollbackService } from './services/Rollback.service';
 import { CartValidationService } from './services/Validation.service';
+import SearchService from 'src/external/services/search';
 
 @Module({
   controllers: [CartController],
@@ -20,6 +21,7 @@ import { CartValidationService } from './services/Validation.service';
     CartResponseService,
     CartRollbackService,
     CartValidationService,
+    SearchService,
   ],
   exports: [CartService],
 })

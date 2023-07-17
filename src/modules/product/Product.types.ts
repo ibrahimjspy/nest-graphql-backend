@@ -236,3 +236,53 @@ export enum ProductOriginEnum {
   B2B = 'B2B',
   B2C = 'B2C',
 }
+
+export interface ElasticSearchProductsType {
+  took: number;
+  timed_out: boolean;
+  _shards: {
+    total: number;
+    successful: number;
+    skipped: number;
+    failed: number;
+  };
+  hits: {
+    total: {
+      value: number;
+      relation: string;
+    };
+    max_score: number;
+    hits: {
+      _index: string;
+      _id: string;
+      _score: number;
+      _ignored: string[];
+      _source: {
+        name: string;
+        slug: string;
+        description: string;
+        rating: string;
+        thumbnail: string;
+        sku_list: string[];
+        preorder: string;
+        created_at: string;
+        updated_at: string;
+        product_type_id: string;
+        product_type_name: string;
+        category_ids: string[];
+        category_names: string[];
+        category_slugs: string[];
+        default_variant_id: string;
+        default_variant_image: null;
+        default_variant_cost: string;
+        channel_slugs: string[];
+        channel_prices: string[];
+        channel_publishings: string[];
+        color_names: string[];
+        color_slugs: string[];
+        color_images: undefined[];
+        id: string;
+      };
+    }[];
+  };
+}

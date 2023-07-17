@@ -154,3 +154,9 @@ export const MANDRILL_APP_TOKEN = process.env.MANDRILL_APP_TOKEN;
  */
 export const SHAROVE_EMAIL_ADDRESS = process.env.SHAROVE_EMAIL_ADDRESS;
 export const B2B_PRODUCT_MAPPING_URL = `${ELASTIC_SEARCH_ENDPOINT}/${process.env.ELASTIC_SEARCH_B2B_PRODUCT_ENGINE}`;
+
+/**
+ * @description - engine name of elastic search b2b/b2c products;
+ */
+export const PRODUCTS_SEARCH_ENGINE_NAME =
+  process.env.PRODUCTS_SEARCH_ENGINE_NAME || 'b2b-product-dev';

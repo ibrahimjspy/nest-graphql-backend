@@ -17,7 +17,11 @@ import {
   mergeB2cMappingsWithProductData,
   storeB2cMapping,
 } from './Product.utils';
-import { GetBundlesDto, ProductDetailsDto } from './dto/product.dto';
+import {
+  GetBundlesDto,
+  GetMoreLikeThisDto,
+  ProductDetailsDto,
+} from './dto/product.dto';
 import {
   BundleCreateResponseType,
   BundlesResponseType,
@@ -30,10 +34,13 @@ import { BundleCreateDto } from './dto/bundle';
 import { UpdateOpenPackDto } from '../checkout/cart/dto/cart';
 import { getOsProductMappingV2 } from 'src/external/endpoints/b2bMapping';
 import { GetMappingDto } from '../shop/dto/shop';
+import SearchService from 'src/external/services/search';
 @Injectable()
 export class ProductService {
   private readonly logger = new Logger(ProductService.name);
-
+  constructor(private readonly searchService: SearchService) {
+    return;
+  }
   /**
    * Get products list from PIM
    * @returns products list
@@ -252,6 +259,17 @@ export class ProductService {
   public async getProductMappings(filter: GetMappingDto): Promise<object> {
     try {
       return prepareSuccessResponse(await getOsProductMappingV2(filter));
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async getMoreLikeThis(filter: GetMoreLikeThisDto): Promise<object> {
+    try {
+      return prepareSuccessResponse(
+        await this.searchService.getMoreLikeThis(filter),
+      );
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

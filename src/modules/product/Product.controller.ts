@@ -3,7 +3,11 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ProductService } from './Product.service';
 import { ProductFilterDto, ProductFilterTypeEnum } from './dto';
 import { makeResponse } from 'src/core/utils/response';
-import { GetBundlesDto, ProductDetailsDto } from './dto/product.dto';
+import {
+  GetBundlesDto,
+  GetMoreLikeThisDto,
+  ProductDetailsDto,
+} from './dto/product.dto';
 import { IsAuthenticated } from 'src/core/utils/decorators';
 import { ProductVariantStockUpdateDTO } from './dto/variant';
 import { GetMappingDto } from '../shop/dto/shop';
@@ -100,5 +104,16 @@ export class ProductController {
     @Query() filter: GetMappingDto,
   ): Promise<any> {
     return makeResponse(res, await this.appService.getProductMappings(filter));
+  }
+
+  @Get('/api/v1/products/more/like/this')
+  @ApiOperation({
+    summary: 'return products more like given product id from elastic search',
+  })
+  async getMoreLikeThis(
+    @Res() res,
+    @Query() filter: GetMoreLikeThisDto,
+  ): Promise<any> {
+    return makeResponse(res, await this.appService.getMoreLikeThis(filter));
   }
 }

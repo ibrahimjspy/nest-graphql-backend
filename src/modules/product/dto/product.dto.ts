@@ -221,3 +221,23 @@ export class ProductDetailsDto extends b2cDTO {
   @IsOptional()
   productSlug?: string;
 }
+
+export class GetMoreLikeThisDto {
+  @ApiProperty({
+    required: false,
+    description: 'product id in encoded format ',
+  })
+  @IsOptional()
+  productId?: string;
+
+  @ApiProperty({
+    type: Number,
+    required: true,
+    default: 1,
+    description: 'Number of document after which you need documents from',
+  })
+  page: number;
+
+  @ApiProperty({ type: Number, required: true, default: 6 })
+  totalCount: number;
+}
