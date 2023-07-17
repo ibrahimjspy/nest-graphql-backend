@@ -12,6 +12,7 @@ import { CartRollbackService } from './services/Rollback.service';
 import { SaleorCheckoutService } from '../services/Checkout.saleor';
 import { ProductService } from 'src/modules/product/Product.service';
 import { newOpenPackCreateMocks } from '../../../../test/mock/openBundles';
+import SearchService from 'src/external/services/search';
 
 describe('Cart Service', () => {
   let service: CartService;
@@ -67,6 +68,7 @@ describe('Cart Service', () => {
         SaleorCheckoutService,
         CartRollbackService,
         ProductService,
+        SearchService,
       ],
     }).compile();
     module.useLogger(false);
