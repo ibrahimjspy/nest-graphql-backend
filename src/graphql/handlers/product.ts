@@ -79,7 +79,7 @@ export const getMyProductsHandler = async (
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
       getMyProductsQuery(productIds, filter, true),
-      getGraphqlAllAccessToken(),
+      getGraphqlAllAccessToken(true),
       true,
     ),
   );

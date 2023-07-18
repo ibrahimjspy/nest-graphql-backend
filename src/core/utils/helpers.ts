@@ -66,7 +66,11 @@ export const isBoolean = (val) => {
  * checks which environment you are in and returns suitable all access token
  * @warn -- this relies on an env named B2C_ENABLED
  * @warn -- this token should be used with very care
+ * @param -- specific B2c -- this is optional param we use to force our environment to change
  */
-export const getGraphqlAllAccessToken = (): string => {
-  return B2C_ENABLED == 'true' ? B2C_DEVELOPMENT_TOKEN : B2B_DEVELOPMENT_TOKEN;
+export const getGraphqlAllAccessToken = (specificB2c?: boolean): string => {
+  if (B2C_ENABLED == 'true' || specificB2c == true) {
+    return B2C_DEVELOPMENT_TOKEN;
+  }
+  return B2B_DEVELOPMENT_TOKEN;
 };
