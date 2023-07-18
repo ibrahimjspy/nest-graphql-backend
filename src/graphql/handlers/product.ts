@@ -44,7 +44,7 @@ export const productsHandler = async (
   filter: ProductFilterDto,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(productsQuery(filter), getGraphqlAllAccessToken()),
+    await graphqlCall(productsQuery(filter), getGraphqlAllAccessToken(true)), // We only need access token in b2c apis for now
   );
   return response?.products;
 };

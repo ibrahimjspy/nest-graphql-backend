@@ -14,7 +14,6 @@ import {
 import { ProductFilterDto } from 'src/modules/product/dto';
 
 export const b2bQuery = (filter: ProductFilterDto): string => {
-  const PRODUCT_LISTING_CHANNEL = 'default-channel';
   const SHAROVE_FULFILLMENT_ATTRIBUTE_SLUG = 'issharovefulfillment';
   const pageFilter = validatePageFilter(filter);
   const categoryFilter = filter['category'] ? `"${filter['category']}"` : '';
@@ -40,7 +39,6 @@ export const b2bQuery = (filter: ProductFilterDto): string => {
         filter: {
           ids: ${JSON.stringify(filter.productIds || [])}
           isAvailable: true,
-          channel:"${PRODUCT_LISTING_CHANNEL}"
           categories: [${categoryFilter}]
           ${metadataFilter}
           ${daysBeforeFilter}
