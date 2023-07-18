@@ -7,7 +7,10 @@ import { categoryWithAncestors } from 'src/graphql/fragments/categoryWithAncesto
 import { mediaFragment } from 'src/graphql/fragments/media';
 import { pricingFragment } from 'src/graphql/fragments/pricing';
 import { productDetailsFragment } from 'src/graphql/fragments/product';
-import { productVariantDetailsFragment } from 'src/graphql/fragments/productVariant';
+import {
+  productVariantDetailsFragment,
+  productVariantStockFragment,
+} from 'src/graphql/fragments/productVariant';
 import { ProductDetailsDto } from 'src/modules/product/dto/product.dto';
 
 const b2bQuery = (filter: ProductDetailsDto): string => {
@@ -101,6 +104,9 @@ const b2cQuery = (filter: ProductDetailsDto): string => {
           attributes {
             ... Attribute
           }
+          stocks {
+            ... Stock
+          }
           channelListings {
             price {
               amount
@@ -114,6 +120,7 @@ const b2cQuery = (filter: ProductDetailsDto): string => {
     ${mediaFragment}
     ${productVariantDetailsFragment}
     ${productDetailsFragment}
+    ${productVariantStockFragment}
   `;
 };
 

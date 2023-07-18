@@ -10,7 +10,6 @@ import { downloadProductImagesHandler } from 'src/external/services/downloadImag
 import { getB2cProductMapping } from 'src/external/endpoints/b2cMapping';
 import {
   getProductIds,
-  getProductIdsByVariants,
   getShopProductIds,
   isEmptyArray,
   makeGetBundlesResponse,
@@ -70,13 +69,12 @@ export class ProductService {
    */
   public async getPopularItems(filter: ProductFilterDto): Promise<object> {
     try {
-      const popularItems = await ProductsHandlers.popularItemsHandler(filter);
-      const uniqueProductIds = getProductIdsByVariants(popularItems);
+      const popularProductIds = await ProductsHandlers.popularItemsHandler();
 
       return prepareGQLPaginatedResponse(
         await ProductsHandlers.productsHandler({
           ...filter,
-          productIds: uniqueProductIds,
+          productIds: popularProductIds,
         }),
       );
     } catch (error) {

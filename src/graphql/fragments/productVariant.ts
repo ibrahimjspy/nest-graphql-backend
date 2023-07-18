@@ -43,9 +43,9 @@ export const bundleVariantFragment = gql`
 `;
 
 export const productVariantStockFragment = gql`
-  fragment ProductVariant on ProductVariant {
-    id
-    name
-    sku
+  fragment Stock on Stock {
+    quantity
+    quantityReserved
+    quantityAllocated
   }
 `;

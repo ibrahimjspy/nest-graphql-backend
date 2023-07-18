@@ -22,7 +22,10 @@ import {
 } from 'src/modules/product/dto/product.dto';
 import { getBundlesQuery } from '../queries/product/getBundles';
 import { getProductDetailsQuery } from '../queries/product/details';
-import { MarketplaceProductsResponseType } from 'src/modules/product/Product.types';
+import {
+  MarketplaceProductsResponseType,
+  PopularItemsInterface,
+} from 'src/modules/product/Product.types';
 import { popularItemsQuery } from '../queries/product/popularItems';
 import { productsQuery } from '../queries/product/products';
 import { BundleCreateDto } from 'src/modules/product/dto/bundle';
@@ -39,6 +42,9 @@ import {
   B2C_ENABLED,
 } from 'src/constants';
 import { getGraphqlAllAccessToken } from 'src/core/utils/helpers';
+import { hasNextPage } from '../utils/orders';
+import { getProductIdsByVariants } from 'src/modules/product/Product.utils';
+import { Logger } from '@nestjs/common';
 
 export const productsHandler = async (
   filter: ProductFilterDto,
@@ -49,14 +55,44 @@ export const productsHandler = async (
   return response?.products;
 };
 
+/**
+ * Fetches popular product IDs recursively using GraphQL queries.
+ * @param after - Cursor indicating the starting point for pagination (optional).
+ * @param productIds - Accumulated array of product IDs (optional).
+ * @returns Promise that resolves to an array of popular product IDs.
+ */
 export const popularItemsHandler = async (
-  filter: ProductFilterDto,
-): Promise<object> => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(popularItemsQuery(filter), getGraphqlAllAccessToken()),
+  after = '',
+  productIds: string[] = [],
+): Promise<string[]> => {
+  Logger.log('Fetching popular products', after);
+
+  // Make a GraphQL query to fetch popular items
+  const response = await graphqlCall(
+    popularItemsQuery({ first: 100, after }),
+    getGraphqlAllAccessToken(),
   );
 
-  return response?.reportProductSales;
+  // Handle potential GraphQL errors and retrieve popular items data
+  const popularItems = (await graphqlResultErrorHandler(
+    response,
+  )) as PopularItemsInterface;
+
+  // Check if there is a next page for pagination
+  const nextPage = hasNextPage(popularItems.reportProductSales.pageInfo);
+
+  // Add product IDs from the current page to the accumulated array
+  productIds = productIds.concat(
+    getProductIdsByVariants(popularItems.reportProductSales),
+  );
+
+  // If there is a next page, recursively call the function with the next cursor and accumulated product IDs
+  if (nextPage) {
+    return popularItemsHandler(nextPage, productIds);
+  }
+
+  // Return the final array of popular product IDs
+  return productIds;
 };
 
 export const getBundlesHandler = async (

@@ -286,3 +286,21 @@ export interface ElasticSearchProductsType {
     }[];
   };
 }
+
+export interface PopularItemsInterface {
+  reportProductSales: {
+    pageInfo: {
+      hasNextPage: boolean;
+      hasPreviousPage: boolean;
+      endCursor: string;
+      startCursor: string;
+    };
+    edges: {
+      node: {
+        product: {
+          id: string;
+        };
+      };
+    }[];
+  };
+}
