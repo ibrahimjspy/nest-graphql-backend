@@ -20,6 +20,12 @@ export enum ProductFilterTypeEnum {
   NEW_ARRIVALS = 'new',
 }
 
+export enum ProductSortFilters {
+  HIGHEST_PRICE = 'highestPrice',
+  LOWEST_PRICE = 'lowestPrice',
+  NEWEST = 'newest',
+}
+
 export class RetailerIdDto {
   @ApiProperty({ required: false })
   @IsOptional()
@@ -130,6 +136,14 @@ export class ProductFilterDto extends PaginationDto {
     description: 'whether a product is fulfilled by sharove or vendor himself',
   })
   isSharoveFulfillment?: boolean;
+
+  @ApiProperty({
+    enum: ProductSortFilters,
+    required: false,
+  })
+  @IsEnum(ProductSortFilters)
+  @IsOptional()
+  sortBy?: ProductSortFilters;
 }
 
 export class ProductListDto {

@@ -7,7 +7,10 @@ import { pageInfoFragment } from 'src/graphql/fragments/pageInfo';
 import { pricingFragment } from 'src/graphql/fragments/pricing';
 import { productDetailsFragment } from 'src/graphql/fragments/product';
 import { validatePageFilter } from 'src/graphql/utils/pagination';
-import { getProductAttributeFilter } from 'src/graphql/utils/products';
+import {
+  getProductAttributeFilter,
+  getProductsSortBy,
+} from 'src/graphql/utils/products';
 import { ProductFilterDto } from 'src/modules/product/dto';
 
 export const b2bQuery = (filter: ProductFilterDto): string => {
@@ -27,11 +30,12 @@ export const b2bQuery = (filter: ProductFilterDto): string => {
   const openPackFilter = filter.isOpenPack
     ? ` metadata: [{ key: "isOpenPack", value: "${filter.isOpenPack}" }]`
     : '';
+  const productSortBy = getProductsSortBy(filter);
   return gql`
     query {
       products(
         ${pageFilter}
-        sortBy: { field: CREATED_AT, direction: DESC}
+        ${productSortBy}
         filter: {
           ids: ${JSON.stringify(filter.productIds || [])}
           isAvailable: true,

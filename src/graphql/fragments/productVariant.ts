@@ -6,6 +6,7 @@ import { checkoutPricingFragmentV2 } from './pricing';
 export const productVariantDetailsFragment = gql`
   fragment ProductVariant on ProductVariant {
     id
+    name
     sku
   }
 `;
@@ -39,4 +40,12 @@ export const bundleVariantFragment = gql`
     }
   }
   ${checkoutProductVariantFragment}
+`;
+
+export const productVariantStockFragment = gql`
+  fragment ProductVariant on ProductVariant {
+    id
+    name
+    sku
+  }
 `;

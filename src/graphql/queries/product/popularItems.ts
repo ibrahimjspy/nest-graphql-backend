@@ -1,16 +1,19 @@
 import { gql } from 'graphql-request';
 import { DEFAULT_CHANNEL } from 'src/constants';
-import { graphqlQueryCheck } from 'src/core/proxies/graphqlQueryToggle';
+import { validatePageFilter } from 'src/graphql/utils/pagination';
+import { ProductFilterDto } from 'src/modules/product/dto';
 
 /**
  * Query for Top selling products.
  * @returns {string} - query
  */
-export const federationQuery = (): string => {
+export const popularItemsQuery = (filter: ProductFilterDto): string => {
+  const pageFilter = validatePageFilter(filter);
+
   return gql`
     query {
       reportProductSales(
-        first: 100
+        ${pageFilter}
         channel: "${DEFAULT_CHANNEL}"
         period: THIS_MONTH
       ) {
@@ -30,9 +33,4 @@ export const federationQuery = (): string => {
       }
     }
   `;
-};
-
-export const popularItemsQuery = () => {
-  const query = federationQuery();
-  return graphqlQueryCheck(query, query);
 };

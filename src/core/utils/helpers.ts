@@ -1,3 +1,9 @@
+import {
+  B2B_DEVELOPMENT_TOKEN,
+  B2C_DEVELOPMENT_TOKEN,
+  B2C_ENABLED,
+} from 'src/constants';
+
 /**
  * It takes an array and a key, and returns an object with the key as the key and the value as the
  * value
@@ -54,4 +60,13 @@ export const isObject = (obj) => {
  */
 export const isBoolean = (val) => {
   return val === false || val === true;
+};
+
+/**
+ * checks which environment you are in and returns suitable all access token
+ * @warn -- this relies on an env named B2C_ENABLED
+ * @warn -- this token should be used with very care
+ */
+export const getGraphqlAllAccessToken = (): string => {
+  return B2C_ENABLED == 'true' ? B2C_DEVELOPMENT_TOKEN : B2B_DEVELOPMENT_TOKEN;
 };

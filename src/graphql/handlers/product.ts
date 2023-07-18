@@ -38,22 +38,22 @@ import {
   B2C_DEVELOPMENT_TOKEN,
   B2C_ENABLED,
 } from 'src/constants';
+import { getGraphqlAllAccessToken } from 'src/core/utils/helpers';
 
 export const productsHandler = async (
   filter: ProductFilterDto,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(
-      productsQuery(filter),
-      B2C_ENABLED ? B2C_DEVELOPMENT_TOKEN : B2B_DEVELOPMENT_TOKEN, // TODO fix this to product app token
-    ),
+    await graphqlCall(productsQuery(filter), getGraphqlAllAccessToken()),
   );
   return response?.products;
 };
 
-export const popularItemsHandler = async (): Promise<object> => {
+export const popularItemsHandler = async (
+  filter: ProductFilterDto,
+): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(popularItemsQuery()),
+    await graphqlCall(popularItemsQuery(filter), getGraphqlAllAccessToken()),
   );
 
   return response?.reportProductSales;
@@ -79,7 +79,7 @@ export const getMyProductsHandler = async (
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
       getMyProductsQuery(productIds, filter, true),
-      B2C_ENABLED ? B2C_DEVELOPMENT_TOKEN : B2B_DEVELOPMENT_TOKEN,
+      getGraphqlAllAccessToken(),
       true,
     ),
   );

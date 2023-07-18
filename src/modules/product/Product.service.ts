@@ -70,7 +70,7 @@ export class ProductService {
    */
   public async getPopularItems(filter: ProductFilterDto): Promise<object> {
     try {
-      const popularItems = await ProductsHandlers.popularItemsHandler();
+      const popularItems = await ProductsHandlers.popularItemsHandler(filter);
       const uniqueProductIds = getProductIdsByVariants(popularItems);
 
       return prepareGQLPaginatedResponse(
