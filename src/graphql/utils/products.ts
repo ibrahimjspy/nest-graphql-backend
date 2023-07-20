@@ -28,6 +28,11 @@ export const getProductAttributeFilter = (filter: ProductFilterDto) => {
           ? `{slug:"issharovefulfillment", boolean:${filter.isSharoveFulfillment}},`
           : ''
       }
+      ${
+        filter.vendorId?.length > 1
+          ? `{slug:"shopid",values:${JSON.stringify(filter.vendorId)}},`
+          : ''
+      }
     ]
     `;
 };
@@ -57,4 +62,14 @@ export const getProductsSortBy = (filter: ProductFilterDto) => {
         : ''
     } 
     `;
+};
+
+/**
+ * returns vendor id filter in case if vendor id is one,
+ * @deprecated -- use attribute filter in products
+ */
+export const getVendorIdMetadataFilter = (filter: ProductFilterDto) => {
+  return filter.vendorId?.length < 2
+    ? ` metadata: [{ key: "vendorId", value: "${filter.vendorId}" }]`
+    : '';
 };

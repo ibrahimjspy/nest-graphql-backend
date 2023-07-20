@@ -54,9 +54,13 @@ export class ProductFilterDto extends PaginationDto {
   @IsOptional()
   storeId?: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, isArray: true })
   @IsOptional()
-  vendorId?: string;
+  @Type(() => String)
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]), {
+    toClassOnly: true,
+  })
+  vendorId?: string[];
 
   @ApiProperty({ required: false })
   @IsOptional()
