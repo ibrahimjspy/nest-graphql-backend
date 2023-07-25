@@ -148,6 +148,17 @@ export class ProductFilterDto extends PaginationDto {
   @IsEnum(ProductSortFilters)
   @IsOptional()
   sortBy?: ProductSortFilters;
+
+  @ApiProperty({
+    required: false,
+    isArray: true,
+    description: 'collection id against which products to return',
+  })
+  @Type(() => String)
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]), {
+    toClassOnly: true,
+  })
+  collections?: PatternsFilterEnum[];
 }
 
 export class ProductListDto {

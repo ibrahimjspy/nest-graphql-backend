@@ -12,6 +12,9 @@ import {
 import { CategoryListType } from 'src/modules/categories/Categories.types';
 import { menuCategoriesQuery } from '../queries/categories/menu';
 import { vendorCategoriesQuery } from '../queries/categories/vendorCategories';
+import { PaginationDto } from '../dto/pagination.dto';
+import { collectionsQuery } from '../queries/categories/collections';
+import { getGraphqlAllAccessToken } from 'src/core/utils/helpers';
 
 export const shopCategoryIdsHandler = async (
   shopId: string,
@@ -63,4 +66,13 @@ export const vendorCategoriesHandler = async (
     await graphqlCall(vendorCategoriesQuery(filter)),
   );
   return response['categories'];
+};
+
+export const collectionsHandler = async (
+  pagination: PaginationDto,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(collectionsQuery(pagination), getGraphqlAllAccessToken()),
+  );
+  return response['collections'];
 };

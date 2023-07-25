@@ -9,6 +9,7 @@ import {
   shopIdDTO,
 } from './dto/categories';
 import { CATEGORIES_CACHE_TTL } from 'src/constants';
+import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 
 @ApiTags('categories')
 @Controller('')
@@ -68,5 +69,16 @@ export class CategoriesController {
     @Query() filter: VendorCategoriesDto,
   ): Promise<object> {
     return makeResponse(res, await this.appService.getVendorCategories(filter));
+  }
+
+  @Get('/api/v1/collections')
+  @ApiOperation({
+    summary: 'this api returns collections from saleor',
+  })
+  async findCollections(
+    @Res() res,
+    @Query() filter: PaginationDto,
+  ): Promise<object> {
+    return makeResponse(res, await this.appService.getCollections(filter));
   }
 }

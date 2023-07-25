@@ -6,6 +6,7 @@ import {
 } from 'src/core/utils/response';
 import {
   categoriesHandler,
+  collectionsHandler,
   menuCategoriesHandler,
   shopCategoryIdsHandler,
   syncCategoriesHandler,
@@ -23,6 +24,7 @@ import {
   updateNewArrivalCategoryChildren,
   validateCategoriesResponse,
 } from './Categories.utils';
+import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -113,6 +115,19 @@ export class CategoriesService {
     } catch (error) {
       this.logger.error(error);
       return prepareFailedResponse(error.message);
+    }
+  }
+
+  /**
+   * @description -- returns collections from saleor
+   */
+  public async getCollections(pagination: PaginationDto): Promise<object> {
+    try {
+      const collectionsResponse = await collectionsHandler(pagination);
+      return prepareSuccessResponse(collectionsResponse);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
     }
   }
 }
