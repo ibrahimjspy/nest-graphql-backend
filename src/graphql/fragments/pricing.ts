@@ -63,3 +63,19 @@ export const taxedPricingFragment = gql`
     }
   }
 `;
+
+/**
+ * List of price information in channels for the product.
+
+  Requires one of the following permissions: AUTHENTICATED_APP, AUTHENTICATED_STAFF_USER.
+  fragment name == ChannelPricing
+ */
+export const channelListingPricingFragment = gql`
+  fragment ChannelPricing on ProductVariantChannelListing {
+    id
+    price {
+      amount
+      currency
+    }
+  }
+`;

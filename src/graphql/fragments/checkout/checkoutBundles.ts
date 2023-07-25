@@ -3,7 +3,10 @@ import { productDetailsFragment } from '../product';
 import { attributeFragment } from '../attributes';
 import { checkoutShopDetailsFragment } from '../shop';
 import { selectedShippingMethodsFragment } from './shipping/shippingMethod';
-import { checkoutPricingFragment } from '../pricing';
+import {
+  channelListingPricingFragment,
+  checkoutPricingFragment,
+} from '../pricing';
 import { bundleDetailsFragment } from '../bundle';
 import { productVariantDetailsFragment } from '../productVariant';
 import { DEFAULT_MEDIA_SIZE, DEFAULT_THUMBNAIL_SIZE } from 'src/constants';
@@ -46,6 +49,9 @@ export const checkoutBundlesFragment = gql`
             pricing {
               ...Price
             }
+            channelListings {
+              ... ChannelPricing
+            }
           }
         }
         shop {
@@ -64,4 +70,5 @@ export const checkoutBundlesFragment = gql`
   ${checkoutPricingFragment}
   ${bundleDetailsFragment}
   ${productVariantDetailsFragment}
+  ${channelListingPricingFragment}
 `;

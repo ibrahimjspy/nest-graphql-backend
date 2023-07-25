@@ -60,6 +60,11 @@ export const checkoutBundlesByIdQuery = (
                   preorder {
                     globalThreshold
                   }
+                  channelListings {
+                    price {
+                      amount
+                    }
+                  }
                   media {
                     url(size:${DEFAULT_MEDIA_SIZE})
                   }
