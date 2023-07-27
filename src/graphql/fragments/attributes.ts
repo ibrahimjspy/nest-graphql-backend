@@ -20,3 +20,16 @@ export const metadataFragment = gql`
     value
   }
 `;
+
+export const attributeDetailsFragment = gql`
+  fragment Attribute on Attribute {
+    name
+    id
+    type
+    inputType
+    metadata {
+      ...Metadata
+    }
+  }
+  ${metadataFragment}
+`;

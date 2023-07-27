@@ -42,7 +42,7 @@ export const getProductAttributeFilter = (filter: ProductFilterDto) => {
  * @params filters: product filters we use for filtering product which includes sorting
  */
 export const getProductsSortBy = (filter: ProductFilterDto) => {
-  if (!filter.sortBy) {
+  if (!filter.sortBy && !filter.popularityAttributeId) {
     return `sortBy: { field: CREATED_AT, direction: DESC}`;
   }
   return `sortBy:
@@ -59,6 +59,11 @@ export const getProductsSortBy = (filter: ProductFilterDto) => {
     ${
       filter.sortBy == ProductSortFilters.NEWEST
         ? `{ field: CREATED_AT, direction: DESC}`
+        : ''
+    } 
+    ${
+      filter.popularityAttributeId
+        ? `{ attributeId: "${filter.popularityAttributeId}", direction: DESC}`
         : ''
     } 
     `;

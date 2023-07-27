@@ -34,6 +34,7 @@ import { UpdateOpenPackDto } from '../checkout/cart/dto/cart';
 import { getOsProductMappingV2 } from 'src/external/endpoints/b2bMapping';
 import { GetMappingDto } from '../shop/dto/shop';
 import SearchService from 'src/external/services/search';
+import { getAttributeHandler } from 'src/graphql/handlers/attribute';
 @Injectable()
 export class ProductService {
   private readonly logger = new Logger(ProductService.name);
@@ -69,12 +70,16 @@ export class ProductService {
    */
   public async getPopularItems(filter: ProductFilterDto): Promise<object> {
     try {
-      const popularProductIds = await ProductsHandlers.popularItemsHandler();
+      const POPULARITY_ATTRIBUTE_SLUG = 'sixty-days-popularity';
+      const attributeId = await this.getAttributeIdBySlug(
+        POPULARITY_ATTRIBUTE_SLUG,
+      );
 
+      this.logger.log('fetching popular products', attributeId);
       return prepareGQLPaginatedResponse(
         await ProductsHandlers.productsHandler({
           ...filter,
-          productIds: popularProductIds,
+          popularityAttributeId: attributeId,
         }),
       );
     } catch (error) {
@@ -268,6 +273,22 @@ export class ProductService {
       return prepareSuccessResponse(
         await this.searchService.getMoreLikeThis(filter),
       );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * Fetches the attribute ID based on the provided slug.
+   *
+   * @param {string} slug - The slug of the attribute.
+   * @returns {Promise<string>} - A promise that resolves to the attribute ID.
+   */
+  private async getAttributeIdBySlug(slug: string): Promise<string> {
+    try {
+      const attributeDetails = await getAttributeHandler(slug);
+      return attributeDetails.id;
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

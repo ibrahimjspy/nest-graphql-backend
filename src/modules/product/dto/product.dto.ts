@@ -159,6 +159,14 @@ export class ProductFilterDto extends PaginationDto {
     toClassOnly: true,
   })
   collections?: PatternsFilterEnum[];
+
+  @ApiProperty({
+    required: false,
+    description:
+      'Attribute where we store os popularity when this is passed products will be sorted by using it',
+  })
+  @IsOptional()
+  popularityAttributeId?: string;
 }
 
 export class ProductListDto {
