@@ -247,15 +247,11 @@ export class ProductService {
   }
 
   public async getBundle(id: string): Promise<GetBundleResponseType> {
-    try {
-      return prepareSuccessResponse(
-        await ProductsHandlers.getBundleHandler(id),
-      ) as unknown as GetBundleResponseType;
-    } catch (error) {
-      this.logger.error(error);
-      return graphqlExceptionHandler(error);
-    }
+    return prepareSuccessResponse(
+      await ProductsHandlers.getBundleHandler(id),
+    ) as unknown as GetBundleResponseType;
   }
+
   public async getProductMappings(filter: GetMappingDto): Promise<object> {
     try {
       return prepareSuccessResponse(await getOsProductMappingV2(filter));

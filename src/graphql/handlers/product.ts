@@ -224,7 +224,10 @@ export const updateBundleHandler = async (
 };
 
 export const getBundleHandler = async (id: string): Promise<object> => {
-  const response = await graphqlCall(getBundleQuery(id));
+  const response = await graphqlCall(
+    getBundleQuery(id),
+    getGraphqlAllAccessToken(), // TODO fix this
+  );
   return response['bundle'];
 };
 
