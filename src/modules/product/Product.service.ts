@@ -61,11 +61,8 @@ export class ProductService {
   }
 
   /**
-   * // FIXME: Need to create custom solution, due to Saleor is providing product-variants as
-   * popular items and we need to show products and its breaking the pagination.
-   *
-   * It gets the popular items from the database, gets the product ids from the variants, and then gets
-   * the products from the database
+   * fetches popular items based on popularity attribute imported from os
+   * slug of popular items is currently -- 'sixty-days-popularity'
    * @param {ProductFilterDto} filter - filters for products
    */
   public async getPopularItems(filter: ProductFilterDto): Promise<object> {
