@@ -1,4 +1,5 @@
 import { gql } from 'graphql-request';
+import { metadataFragment } from '../../attributes';
 const shippingMethodChannelListingFragment = gql`
   fragment ShippingMethodChannelListing on ShippingMethodChannelListing {
     channel {
@@ -34,7 +35,11 @@ export const checkoutShippingMethodFragment = gql`
     price {
       amount
     }
+    metadata {
+      ...Metadata
+    }
   }
+  ${metadataFragment}
 `;
 
 export const selectedShippingMethodsFragment = gql`

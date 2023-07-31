@@ -32,6 +32,41 @@ export const checkoutShippingMethodsSort = (
 };
 
 /**
+ * @description -- this function filters shipping method with flat rate
+ * @pre -- it relies on shipping method metadata to determine whether shipping method is flat or not
+ */
+export const filterFlatShippingMethods = (
+  checkoutData: SaleorCheckoutInterface,
+) => {
+  if (
+    !checkoutData ||
+    !checkoutData.shippingMethods ||
+    !Array.isArray(checkoutData.shippingMethods)
+  ) {
+    Logger.error('Invalid or missing shippingMethods data in checkoutData.');
+    return [];
+  }
+
+  const flatShippingMethods = checkoutData.shippingMethods.filter(
+    (shippingMethod) => {
+      if (!shippingMethod.metadata || !Array.isArray(shippingMethod.metadata)) {
+        Logger.error(
+          `Invalid metadata for shipping method ID: ${shippingMethod.id}`,
+        );
+        return false;
+      }
+
+      const isFlat = shippingMethod.metadata.some((meta) => {
+        return meta.key === 'is_flat' && meta.value === 'true';
+      });
+
+      return isFlat;
+    },
+  );
+  checkoutData.shippingMethods = flatShippingMethods;
+};
+
+/**
  * @description -- this function takes checkout response and pre auth amount and adds preauth amount in checkout response
  */
 export const addPreAuthInCheckoutResponse = (

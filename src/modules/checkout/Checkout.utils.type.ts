@@ -49,6 +49,10 @@ export interface SaleorCheckoutInterface {
       amount: number;
       currency: string;
     };
+    metadata: {
+      key: string;
+      value: string;
+    }[];
   }[];
   deliveryMethod: {
     __typename: string;

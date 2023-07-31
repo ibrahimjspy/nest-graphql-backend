@@ -21,6 +21,7 @@ import { ShippingPromotionService } from './services/Shipping.promotion';
 import {
   addPreAuthInCheckoutResponse,
   checkoutShippingMethodsSort,
+  filterFlatShippingMethods,
 } from '../Checkout.utils';
 import { PaymentService } from '../payment/Payment.service';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
@@ -91,6 +92,7 @@ export class ShippingService {
         isB2c,
       );
       checkoutShippingMethodsSort(shippingMethods);
+      filterFlatShippingMethods(shippingMethods);
       return prepareSuccessResponse(shippingMethods);
     } catch (error) {
       this.logger.error(error);
