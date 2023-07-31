@@ -49,7 +49,7 @@ export interface SaleorCheckoutInterface {
       amount: number;
       currency: string;
     };
-    metadata: {
+    metadata?: {
       key: string;
       value: string;
     }[];
