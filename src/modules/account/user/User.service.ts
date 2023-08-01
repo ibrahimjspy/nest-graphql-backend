@@ -78,7 +78,7 @@ export class UserService {
       const userDetail: Auth0UserDetailType = getUserByToken(token);
       const userAuth0Id = userDetail?.sub;
       const userEmail = userDetail?.email;
-      let checkoutId: unknown = null;
+      let checkoutIds: unknown = null;
       let shopDetails: unknown = null;
 
       const [saleor, auth0] = await Promise.all([
@@ -90,11 +90,12 @@ export class UserService {
         shopDetails = await this.shopService.getShopDetailsV2({
           email: userEmail,
         });
-        checkoutId = await AccountHandlers.getCheckoutIdFromMarketplaceHandler(
+        checkoutIds = await AccountHandlers.getCheckoutIdFromMarketplaceHandler(
           userEmail,
         );
       }
-      saleor['checkoutId'] = checkoutId;
+      saleor['checkoutId'] = checkoutIds[0] || null;
+      saleor['checkoutIds'] = checkoutIds;
       return prepareSuccessResponse({
         saleor,
         auth0,

@@ -81,3 +81,8 @@ export interface CartResponseInterface {
     selectedMethods: any[];
   };
 }
+
+export interface UpdateMarketplaceCheckoutIdType {
+  checkoutId: string;
+  bundleId: string;
+}

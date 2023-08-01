@@ -107,11 +107,6 @@ export class SaleorCartService {
       checkoutLines,
       token,
     );
-    await this.marketplaceService.addCheckoutIdToMarketplace(
-      userEmail,
-      token,
-      createCheckout['id'],
-    );
     return createCheckout;
   }
 
@@ -145,11 +140,6 @@ export class SaleorCartService {
     }
     const response = await this.addLines(checkoutId, saleorLines, token);
     // TODO remove this call after marketplace service start to persist checkout id
-    this.marketplaceService.addCheckoutIdToMarketplace(
-      userEmail,
-      token,
-      checkoutId,
-    );
     return response as SaleorCheckoutInterface;
   }
 

@@ -36,6 +36,7 @@ import {
   OrderCreateInterface,
   SaleorCheckoutInterface,
 } from 'src/modules/checkout/Checkout.utils.type';
+import { UpdateMarketplaceCheckoutIdType } from 'src/modules/checkout/cart/Cart.types';
 
 export const getCheckoutBundlesHandler = async ({
   userEmail,
@@ -204,12 +205,15 @@ export const updateCheckoutBundleState = async (
 };
 export const updateCartBundlesCheckoutIdHandler = async (
   userEmail: string,
+  updateMarketplaceCheckoutIdInput: UpdateMarketplaceCheckoutIdType[],
   token: string,
-  checkoutID: string,
 ) => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(
-      updateCartBundlesCheckoutIdMutation(userEmail, checkoutID),
+      updateCartBundlesCheckoutIdMutation(
+        userEmail,
+        updateMarketplaceCheckoutIdInput,
+      ),
       token,
     ),
   );

@@ -29,6 +29,7 @@ import { MarketplaceBundlesType } from './Cart.marketplace.types';
 import { checkoutBundlesInterface } from 'src/external/services/osPlaceOrder/Legacy.service.types';
 import { ReplaceBundleDto } from '../../dto/cart';
 import { isEmptyArray } from 'src/modules/product/Product.utils';
+import { UpdateMarketplaceCheckoutIdType } from '../../Cart.types';
 
 @Injectable()
 export class MarketplaceCartService {
@@ -194,16 +195,19 @@ export class MarketplaceCartService {
    */
   public async addCheckoutIdToMarketplace(
     userEmail: string,
+    updateMarketplaceCheckoutIdInput: UpdateMarketplaceCheckoutIdType[],
     token: string,
-    checkoutId: string,
   ) {
     try {
-      this.logger.log('Adding checkout id to marketplace', checkoutId);
+      this.logger.log(
+        'Adding checkout id to marketplace',
+        updateMarketplaceCheckoutIdInput,
+      );
 
       const response = await updateCartBundlesCheckoutIdHandler(
         userEmail,
+        updateMarketplaceCheckoutIdInput,
         token,
-        checkoutId,
       );
 
       return response;

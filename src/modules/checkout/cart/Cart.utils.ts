@@ -619,3 +619,15 @@ export const getOpenPackUpdateMappings = (openBundles: UpdateOpenPackDto) => {
 
   return { variantMapping, oldVariants, newVariants };
 };
+
+export const getUpdateMarketplaceCheckoutBundles = (
+  bundlesList: CheckoutBundleInputType[],
+  checkoutId: string,
+) => {
+  return bundlesList.map((bundle) => {
+    return {
+      checkoutId,
+      bundleId: bundle.bundleId,
+    };
+  });
+};

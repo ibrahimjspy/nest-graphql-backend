@@ -17,6 +17,7 @@ import {
   getNewBundlesToAdd,
   getSelectedCheckoutBundles,
   getUnSelectedCheckoutBundles,
+  getUpdateMarketplaceCheckoutBundles,
   validateCheckoutVariantMedia,
   validateOpenPackCreate,
   validateOpenPackUpdate,
@@ -110,6 +111,15 @@ export class CartService {
         marketplacePromise,
         saleorPromise,
       ]);
+
+      this.marketplaceService.addCheckoutIdToMarketplace(
+        userEmail,
+        getUpdateMarketplaceCheckoutBundles(
+          bundlesList,
+          saleorResult.status == 'fulfilled' ? saleorResult.value.id : '',
+        ),
+        token,
+      );
 
       return await this.cartResponseBuilder.addBundlesToCart(
         saleorResult,
