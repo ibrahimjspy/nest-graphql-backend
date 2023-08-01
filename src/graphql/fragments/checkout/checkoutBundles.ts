@@ -2,7 +2,6 @@ import { gql } from 'graphql-request';
 import { productDetailsFragment } from '../product';
 import { attributeFragment } from '../attributes';
 import { checkoutShopDetailsFragment } from '../shop';
-import { selectedShippingMethodsFragment } from './shipping/shippingMethod';
 import {
   channelListingPricingFragment,
   checkoutPricingFragment,
@@ -59,14 +58,10 @@ export const checkoutBundlesFragment = gql`
         }
       }
     }
-    selectedMethods {
-      ...CheckoutShippingMethods
-    }
   }
   ${productDetailsFragment}
   ${attributeFragment}
   ${checkoutShopDetailsFragment}
-  ${selectedShippingMethodsFragment}
   ${checkoutPricingFragment}
   ${bundleDetailsFragment}
   ${productVariantDetailsFragment}

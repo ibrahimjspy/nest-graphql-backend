@@ -39,5 +39,9 @@ export const checkoutShopDetailsFragment = gql`
       shippingMethodId
       shippingMethodTypeId
     }
+    fields {
+      name
+      values
+    }
   }
 `;
