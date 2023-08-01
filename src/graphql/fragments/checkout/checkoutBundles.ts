@@ -19,7 +19,7 @@ export const checkoutBundlesFragment = gql`
     subTotal
     taxes
     discounts
-    checkoutId
+    checkoutIds
     checkoutBundles {
       checkoutBundleId
       isSelected

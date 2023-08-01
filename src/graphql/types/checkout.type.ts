@@ -15,3 +15,17 @@ export interface FailedOrderInterface {
   errorShortDesc: string;
   orderPayload: any;
 }
+
+export interface MarketplaceShippingMethodsType {
+  checkoutBundles: {
+    checkoutId: string;
+    bundle: {
+      shop: {
+        shippingMethods: {
+          id: string;
+          shippingMethodId: string;
+        }[];
+      };
+    };
+  }[];
+}

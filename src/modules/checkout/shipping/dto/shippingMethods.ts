@@ -12,6 +12,11 @@ export class GetShippingMethodsDto extends b2cDTO {
   @IsString()
   checkoutId: string;
 }
+export class GetShippingMethodsV2Dto extends b2cDTO {
+  @ApiProperty()
+  @IsString()
+  userEmail: string;
+}
 
 export class SelectShippingMethodDto {
   @ApiProperty()

@@ -39,24 +39,25 @@ export class UserService {
     isB2c = false,
   ): Promise<SuccessResponseType> {
     try {
-      let checkoutId = null;
+      let checkoutIds = null;
       const userDetails = await AccountHandlers.getUserDetailsHandler(token);
       const shopDetails = await this.shopService.getShopDetailsV2({
         email: userDetails['email'],
       });
       if (!isB2c) {
-        checkoutId = await AccountHandlers.getCheckoutIdFromMarketplaceHandler(
+        checkoutIds = await AccountHandlers.getCheckoutIdFromMarketplaceHandler(
           userDetails['email'],
         );
       }
       if (shopDetails['status'] == 200) {
-        userDetails['checkoutId'] = checkoutId;
+        userDetails['checkoutId'] = checkoutIds[0] || null;
+        userDetails['checkoutIds'] = checkoutIds;
         return prepareSuccessResponse({
           ...userDetails,
           shopDetails: shopDetails['data'],
         });
       }
-      userDetails['checkoutId'] = checkoutId;
+      userDetails['checkoutId'] = checkoutIds;
       return prepareSuccessResponse({
         ...userDetails,
         shopDetails: shopDetails,

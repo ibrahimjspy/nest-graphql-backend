@@ -5,6 +5,7 @@ import {
 import { addCheckoutBundlesV2Mutation } from 'src/graphql/mutations/checkout/cart/marketplace/addBundles';
 import { replaceCheckoutBundleMutation } from 'src/graphql/mutations/checkout/cart/marketplace/replaceBundle';
 import { deleteCheckoutBundlesMutation } from 'src/graphql/mutations/checkout/deleteCheckoutBundle';
+import { getCheckoutIdsQuery } from 'src/graphql/queries/checkout/cart/getCheckoutIds';
 import { getCartV2Query } from 'src/graphql/queries/checkout/cart/marketplace.cart';
 import { ReplaceBundleDto } from 'src/modules/checkout/cart/dto/cart';
 import { MarketplaceBundlesType } from 'src/modules/checkout/cart/services/marketplace/Cart.marketplace.types';
@@ -58,4 +59,14 @@ export const replaceCheckoutBundleHandler = async (
     ),
   );
   return response['updateCheckoutBundle'];
+};
+
+export const getCheckoutIdsHandler = async (
+  userEmail: string,
+  token: string,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(getCheckoutIdsQuery(userEmail), token),
+  );
+  return response['checkoutBundles'];
 };

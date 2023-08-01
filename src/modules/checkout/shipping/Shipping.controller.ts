@@ -13,12 +13,14 @@ import {
 } from '@nestjs/common';
 import { makeResponse } from 'src/core/utils/response';
 import {
+  AddUserShippingAddressDto,
   BillingAddressDto,
   ShippingAddressCreateDto,
 } from './dto/shippingAddress';
 import { CheckoutIdDto } from '../dto/checkoutId';
 import {
   GetShippingMethodsDto,
+  GetShippingMethodsV2Dto,
   SelectShippingMethodDto,
   UpdateShippingMethodPriceDto,
 } from './dto/shippingMethods';
@@ -160,6 +162,57 @@ export class ShippingController {
     return makeResponse(
       res,
       await this.appService.updateShippingMethodPrice(body, Authorization),
+    );
+  }
+
+  @Post('api/v1/checkout/shipping/address/user')
+  @ApiOperation({
+    summary: 'adds shipping address against all checkout sessions of user',
+  })
+  @ApiBearerAuth('JWT-auth')
+  async addShippingAddressForUser(
+    @Res() res,
+    @Body() body: AddUserShippingAddressDto,
+    @Headers() headers,
+  ): Promise<any> {
+    const Authorization: string = headers.authorization;
+    return makeResponse(
+      res,
+      await this.appService.addShippingAddressForUser(body, Authorization),
+    );
+  }
+
+  @Post('api/v1/checkout/shipping/address/user')
+  @ApiOperation({
+    summary: 'adds shipping address against all checkout sessions of user',
+  })
+  @ApiBearerAuth('JWT-auth')
+  async addBillingAddressForUser(
+    @Res() res,
+    @Body() body: AddUserShippingAddressDto,
+    @Headers() headers,
+  ): Promise<any> {
+    const Authorization: string = headers.authorization;
+    return makeResponse(
+      res,
+      await this.appService.addShippingAddressForUser(body, Authorization),
+    );
+  }
+
+  @Get('api/v2/checkout/shipping/methods')
+  @ApiOperation({
+    summary: 'returns shipping address against a checkout id',
+  })
+  @ApiBearerAuth('JWT-auth')
+  async getShippingMethodsV2(
+    @Res() res,
+    @Headers() headers,
+    @Query() filter: GetShippingMethodsV2Dto,
+  ): Promise<object> {
+    const Authorization: string = headers.authorization;
+    return makeResponse(
+      res,
+      await this.appService.getShippingMethodsV2(filter, Authorization),
     );
   }
 }

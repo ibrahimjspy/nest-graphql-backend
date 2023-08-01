@@ -21,7 +21,7 @@ export const checkoutBundlesByIdQuery = (
       ) {
         ... on CheckoutBundlesType {
           __typename
-          checkoutId
+          checkoutIds
           totalAmount
           subTotal
           taxes

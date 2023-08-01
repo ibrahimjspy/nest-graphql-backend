@@ -46,5 +46,5 @@ export const getCheckoutIdFromMarketplaceHandler = async (
   const response = await graphqlCall(
     getCheckoutIdFromMarketplaceQuery(userEmail),
   );
-  return response['checkoutBundles']['checkoutId'];
+  return response['checkoutBundles']['checkoutIds'];
 };

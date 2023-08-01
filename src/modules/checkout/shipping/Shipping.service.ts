@@ -9,14 +9,16 @@ import {
 import {
   getCheckoutShippingAddressHandler,
   getCheckoutShippingMethodsHandler,
+  getMarketplaceShippingMethods,
   getShippingZonesHandler,
   updateShippingMethodPriceHandler,
 } from 'src/graphql/handlers/checkout/shipping';
 import {
   GetShippingMethodsDto,
+  GetShippingMethodsV2Dto,
   UpdateShippingMethodPriceDto,
 } from './dto/shippingMethods';
-import { AddressDto } from './dto/shippingAddress';
+import { AddUserShippingAddressDto, AddressDto } from './dto/shippingAddress';
 import { ShippingPromotionService } from './services/Shipping.promotion';
 import {
   addPreAuthInCheckoutResponse,
@@ -26,6 +28,7 @@ import {
 import { PaymentService } from '../payment/Payment.service';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 import { SuccessResponseType } from 'src/core/utils/response.type';
+import { marketplaceShippingMethodsMap } from './Shipping.utils';
 
 @Injectable()
 export class ShippingService {
@@ -200,6 +203,72 @@ export class ShippingService {
         token,
       );
       return prepareSuccessResponse(updateShippingMethodPrice);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async getShippingMethodsV2(
+    filter: GetShippingMethodsV2Dto,
+    token: string,
+  ): Promise<object> {
+    try {
+      const marketplaceShippingMethods = await getMarketplaceShippingMethods(
+        filter.userEmail,
+        token,
+      );
+      return prepareSuccessResponse(
+        marketplaceShippingMethodsMap(marketplaceShippingMethods),
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async addShippingAddressForUser(
+    shippingAddressInput: AddUserShippingAddressDto,
+    token: string,
+  ): Promise<object> {
+    try {
+      const checkoutIds = ['123'];
+      const response = checkoutIds.map(async (checkoutId) => {
+        return await shippingAddressUpdateHandler(
+          checkoutId,
+          shippingAddressInput.addressDetails,
+          token,
+        );
+      });
+      return prepareSuccessResponse(
+        response,
+        'Shipping address added against all user cart sessions',
+        201,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  public async addBillingAddressForUser(
+    shippingAddressInput: AddUserShippingAddressDto,
+    token: string,
+  ): Promise<object> {
+    try {
+      const checkoutIds = ['123'];
+      const response = checkoutIds.map(async (checkoutId) => {
+        return await billingAddressUpdateHandler(
+          checkoutId,
+          shippingAddressInput.addressDetails,
+          token,
+        );
+      });
+      return prepareSuccessResponse(
+        response,
+        'Billing address added against all user cart sessions',
+        201,
+      );
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

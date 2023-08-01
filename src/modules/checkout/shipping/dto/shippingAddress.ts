@@ -56,6 +56,15 @@ export class ShippingAddressCreateDto {
   shippingMethodId?: string;
 }
 
+export class AddUserShippingAddressDto {
+  @ApiProperty()
+  @IsString()
+  userEmail: string;
+
+  @ApiProperty()
+  addressDetails: AddressDto;
+}
+
 export class BillingAddressDto {
   @ApiProperty()
   @IsString()
