@@ -1,6 +1,7 @@
 export interface checkoutBundlesInterface {
   checkoutBundleId: string;
   isSelected: boolean;
+  checkoutId: string;
   quantity: number;
   price: number;
   bundle: {

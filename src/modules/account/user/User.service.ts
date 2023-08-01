@@ -57,7 +57,9 @@ export class UserService {
           shopDetails: shopDetails['data'],
         });
       }
-      userDetails['checkoutId'] = checkoutIds;
+      userDetails['checkoutId'] = checkoutIds[0] || null;
+      userDetails['checkoutIds'] = checkoutIds;
+
       return prepareSuccessResponse({
         ...userDetails,
         shopDetails: shopDetails,

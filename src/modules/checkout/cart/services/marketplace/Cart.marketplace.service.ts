@@ -69,16 +69,17 @@ export class MarketplaceCartService {
       token,
       productDetails,
     });
-    const checkoutId = marketplaceCheckout['data']['checkoutId'];
-    if (!checkoutId && throwException) {
+    let checkoutId = marketplaceCheckout['data']['checkoutIds'];
+    if (!checkoutId.length && throwException) {
       throw new CheckoutIdError(userEmail);
     }
     // TODO replace this with get bundles by checkout bundles id
     const checkoutBundlesData = getTargetBundleByCheckoutBundleId(
       marketplaceCheckout['data']['checkoutBundles'],
       checkoutBundleIds,
-    ) as checkoutBundlesInterface;
+    ) as checkoutBundlesInterface[];
     const validateCheckoutBundles = isEmptyArray(checkoutBundlesData);
+    checkoutId = checkoutBundlesData[0].checkoutId;
     if (!validateCheckoutBundles)
       throw new NoCheckoutBundleFoundError(checkoutBundleIds);
 

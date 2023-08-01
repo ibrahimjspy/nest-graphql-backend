@@ -448,6 +448,7 @@ describe('getClosePackLinesReplace', () => {
   const checkoutBundle = {
     checkoutBundleId: 'bundleId',
     isSelected: true,
+    checkoutId: 'test',
     quantity: 2,
     price: 10,
     bundle: {
