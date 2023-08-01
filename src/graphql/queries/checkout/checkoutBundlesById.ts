@@ -29,6 +29,7 @@ export const checkoutBundlesByIdQuery = (
           userEmail
           checkoutBundles {
             checkoutBundleId
+            checkoutId
             isSelected
             quantity
             price

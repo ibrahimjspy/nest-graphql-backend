@@ -31,9 +31,10 @@ export const getCheckoutBundleQuery = (
       ) {
         ... on CheckoutBundlesType {
           __typename
-          checkoutId
+          checkoutIds
           userEmail
           checkoutBundles {
+            checkoutId
             checkoutBundleId
             isSelected
             quantity

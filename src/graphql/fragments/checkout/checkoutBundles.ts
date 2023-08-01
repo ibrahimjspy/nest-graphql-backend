@@ -20,6 +20,7 @@ export const checkoutBundlesFragment = gql`
     discounts
     checkoutIds
     checkoutBundles {
+      checkoutId
       checkoutBundleId
       isSelected
       quantity

@@ -5,7 +5,7 @@ export const marketplaceCheckoutSummaryQuery = (checkoutId: string): string => {
     query {
       checkoutBundles(Filter: { checkoutId: "${checkoutId}" }) {
         ... on CheckoutBundlesType {
-          checkoutId
+          checkoutIds
           totalAmount
           subTotal
           discounts
