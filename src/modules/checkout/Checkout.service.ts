@@ -76,6 +76,29 @@ export class CheckoutService {
       return graphqlExceptionHandler(error);
     }
   }
+
+  public async getCheckoutSummaryV2(userEmail: string, token: string) {
+    try {
+      const USER_INPUT_TYPE = 'email';
+      const [MarketplaceCheckoutSummary, preAuthData] = await Promise.all([
+        CheckoutHandlers.marketplaceCheckoutSummaryHandler(
+          userEmail,
+          token,
+          USER_INPUT_TYPE,
+        ),
+        this.paymentService.getCheckoutPreAuthInformation(userEmail, token),
+      ]);
+      const { checkoutAmount } = preAuthData;
+      return prepareSuccessResponse({
+        MarketplaceCheckoutSummary,
+        CheckoutPreAuthAmount: checkoutAmount,
+      });
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
   /**
    * @description -- this method is called at the end of order placement in sharove to place order in OS
    */
@@ -285,6 +308,80 @@ export class CheckoutService {
     } catch (error) {
       this.logger.error(error);
       if (error instanceof NoPaymentIntentError) {
+        return prepareFailedResponse(error.message);
+      } else {
+        return graphqlExceptionHandler(error);
+      }
+    }
+  }
+
+  public async checkoutCompleteV2(
+    token: string,
+    userEmail: string,
+  ): Promise<object> {
+    try {
+      const [checkoutBundles] = await Promise.all([
+        this.marketplaceCartService.getAllCheckoutBundles({
+          userEmail,
+          token,
+          isSelected: true,
+        }),
+      ]);
+      const checkoutIds = checkoutBundles['data']['checkoutIds'];
+      const paymentData = await this.paymentService.getPaymentDataFromMetadata(
+        checkoutIds[0],
+        token,
+      );
+      const { paymentIntentId, paymentMethodId } = paymentData || {};
+      if (!paymentIntentId || !paymentMethodId)
+        throw new NoPaymentIntentError(checkoutIds[0]);
+      const orders = Promise.all(
+        checkoutIds.map(async (checkoutId) => {
+          return await orderCreateFromCheckoutHandler(
+            checkoutId,
+            B2B_CHECKOUT_APP_TOKEN,
+          );
+        }),
+      );
+
+      const saleorOrderId = orders[0].order.id;
+      this.logger.log(
+        `Order created against checkout id ${checkoutIds}`,
+        saleorOrderId,
+      );
+      const [osOrderResponse] = await Promise.all([
+        this.placeOrderOs(
+          checkoutBundles['data']['checkoutBundles'],
+          orders[0]['order'],
+          paymentMethodId,
+          paymentIntentId,
+          token,
+        ),
+        CheckoutHandlers.disableCheckoutSession(checkoutIds, token),
+      ]);
+      const osOrderId = extractOsOrderNumber(
+        osOrderResponse as OsOrderResponseInterface,
+      );
+      this.logger.log(
+        `Os order id ${osOrderId} created against checkout id ${checkoutIds}`,
+      );
+      await this.paymentService.paymentIntentUpdate(paymentIntentId, osOrderId);
+      sendOrderConfirmationEmail({
+        id: saleorOrderId,
+        email: checkoutBundles['data']['userEmail'],
+        name: getUserFullName(saleorOrderId),
+      });
+      return prepareSuccessResponse(
+        { createOrder: orders, osOrderResponse },
+        'order created against checkout',
+        201,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      if (
+        error instanceof NoPaymentIntentError ||
+        error instanceof OsOrderPlaceError
+      ) {
         return prepareFailedResponse(error.message);
       } else {
         return graphqlExceptionHandler(error);

@@ -17,6 +17,7 @@ import {
 import { getCheckoutMetadataHandler } from 'src/graphql/handlers/checkout/checkout';
 import { B2B_CHECKOUT_APP_TOKEN } from 'src/constants';
 import { SaleorCheckoutInterface } from '../Checkout.utils.type';
+import { MarketplaceCartService } from '../cart/services/marketplace/Cart.marketplace.service';
 
 @Injectable()
 export class PaymentService {
@@ -24,6 +25,7 @@ export class PaymentService {
   constructor(
     private stripeService: StripeService,
     private saleorCheckoutService: SaleorCheckoutService,
+    private marketplaceCartService: MarketplaceCartService,
   ) {
     return;
   }
@@ -264,5 +266,166 @@ export class PaymentService {
       this.logger.error(error);
       return prepareFailedResponse(error.message);
     }
+  }
+
+  /**
+   * Get pre-authorization information for the user's checkout sessions.
+   * @param {string} userEmail - The email of the user to retrieve checkout information.
+   * @param {string} token - The authentication token required for API calls.
+   * @returns {Promise<{ checkoutAmount: number; paymentIntentId: string | null }>}
+   * A promise that resolves to an object containing the total checkout amount and paymentIntentId.
+   */
+  public async getCheckoutPreAuthInformation(
+    userEmail: string,
+    token: string,
+  ): Promise<{ checkoutAmount: number; paymentIntentId: string | null }> {
+    // Get an array of checkout IDs with flat fulfillment from the marketplace cart service.
+    const checkoutIds =
+      await this.marketplaceCartService.getFlatFulfillmentCheckoutIds(
+        userEmail,
+        token,
+      );
+
+    // Initialize variables to hold the paymentIntentId and total checkout amount.
+    let paymentIntentId = null;
+    let checkoutAmount = 0;
+
+    // Use 'Promise.all' to execute operations for all checkout IDs concurrently.
+    await Promise.all(
+      checkoutIds.map(async (checkoutId) => {
+        // Get the checkout data for the current checkout ID.
+        const checkoutData: SaleorCheckoutInterface =
+          await this.saleorCheckoutService.getCheckout(checkoutId, token);
+
+        // Get the pre-authorization amount for the current checkout session.
+        const checkoutSessionAmount =
+          this.getCheckoutPreAuthAmount(checkoutData);
+
+        // Increment the total checkout amount with the amount from the current session.
+        checkoutAmount = checkoutAmount + checkoutSessionAmount;
+
+        // Get the paymentIntentId from the checkout metadata if available.
+        const paymentData = getPaymentDataFromMetadata(
+          checkoutData['metadata'],
+        );
+        paymentIntentId = paymentData.paymentIntentId;
+      }),
+    );
+
+    // Return an object containing the total checkout amount and paymentIntentId.
+    return { checkoutAmount, paymentIntentId };
+  }
+
+  public async preAuthV2(
+    paymentMethodId: string,
+    userEmail: string,
+    token: string,
+  ): Promise<object> {
+    try {
+      const checkoutPreAuthData = await this.getCheckoutPreAuthInformation(
+        userEmail,
+        token,
+      );
+      const checkoutAmount = checkoutPreAuthData.checkoutAmount;
+      const paymentIntentId = checkoutPreAuthData.paymentIntentId;
+      if (paymentIntentId) {
+        return this.validatePaymentIntentV2(
+          checkoutAmount,
+          paymentIntentId,
+          userEmail,
+          token,
+        );
+      }
+      return await this.createPaymentIntentV2({
+        userEmail,
+        token,
+        totalAmount: checkoutAmount,
+        paymentMethodId,
+      });
+    } catch (error) {
+      this.logger.error(error);
+      return prepareFailedResponse(error.message);
+    }
+  }
+
+  protected async validatePaymentIntentV2(
+    checkoutAmount: number,
+    paymentIntentId: string,
+    userEmail: string,
+    token: string,
+  ): Promise<object> {
+    const paymentIntentData = await this.stripeService.getPaymentIntentId(
+      paymentIntentId,
+    );
+    const paymentMethodId = paymentIntentData.payment_method;
+    const paymentIntentAmount = paymentIntentData.amount;
+
+    if (paymentIntentAmountValidate(checkoutAmount, paymentIntentAmount)) {
+      return prepareSuccessResponse(
+        { paymentIntentId },
+        'existing payment intent id is valid',
+        201,
+      );
+    }
+
+    this.logger.log('Creating new payment intent as checkout has updated');
+    await this.stripeService.cancelPaymentIntent(paymentIntentId);
+    const newPaymentIntentCreate = await this.createPaymentIntentV2({
+      userEmail,
+      paymentMethodId,
+      totalAmount: checkoutAmount,
+      token,
+    });
+
+    return prepareSuccessResponse(
+      {
+        paymentIntentId: newPaymentIntentCreate['data']['paymentIntentId'],
+      },
+      'new payment intent created as checkout and intent amount are different',
+      201,
+    );
+  }
+
+  protected async createPaymentIntentV2({
+    userEmail,
+    paymentMethodId,
+    totalAmount,
+    token,
+  }): Promise<object> {
+    const paymentIntentResponse = await this.stripeService.createPaymentIntent(
+      userEmail,
+      paymentMethodId,
+      totalAmount,
+    );
+    const checkoutIds =
+      await this.marketplaceCartService.getMarketplaceCheckoutIds(
+        userEmail,
+        token,
+      );
+    if (!paymentIntentResponse)
+      throw new PaymentIntentCreationError(userEmail, paymentMethodId);
+    const paymentIntentId = paymentIntentResponse.id;
+    checkoutIds.map(async (checkoutId) => {
+      await Promise.all([
+        storePaymentIntentHandler(
+          checkoutId,
+          paymentIntentId,
+          paymentMethodId,
+          token,
+        ),
+        preAuthTransactionHandler(
+          checkoutId,
+          paymentIntentId,
+          totalAmount,
+          B2B_CHECKOUT_APP_TOKEN,
+        ),
+      ]);
+    });
+
+    return prepareSuccessResponse(
+      { paymentIntentId },
+      'new payment intent Id created and added against user',
+      201,
+    );
   }
 }

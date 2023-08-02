@@ -13,13 +13,21 @@ export const storePaymentIntentHandler = async (
   paymentMethodId: string,
   token: string,
 ): Promise<object> => {
-  const response = await graphqlResultErrorHandler(
-    await graphqlCall(
-      storePaymentIntentMutation(checkoutId, paymentIntentId, paymentMethodId),
-      token,
-    ),
-  );
-  return response['updateMetadata'];
+  try {
+    const response = await graphqlResultErrorHandler(
+      await graphqlCall(
+        storePaymentIntentMutation(
+          checkoutId,
+          paymentIntentId,
+          paymentMethodId,
+        ),
+        token,
+      ),
+    );
+    return response['updateMetadata'];
+  } catch (error) {
+    Logger.log(error);
+  }
 };
 
 export const preAuthTransactionHandler = async (

@@ -255,9 +255,10 @@ export const getCheckoutMetadataHandler = async (
 export const marketplaceCheckoutSummaryHandler = async (
   checkoutId: string,
   token: string,
+  type = 'id',
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(marketplaceCheckoutSummaryQuery(checkoutId), token),
+    await graphqlCall(marketplaceCheckoutSummaryQuery(checkoutId, type), token),
   );
   return response['checkoutBundles'];
 };

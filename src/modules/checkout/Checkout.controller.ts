@@ -6,6 +6,7 @@ import { IsAuthenticated } from 'src/core/utils/decorators';
 import { B2BClientPlatform } from 'src/constants';
 import { CheckoutIdDto, OsPlaceOrderDto } from './dto/checkoutId';
 import { CreateCheckoutDto } from './dto/createCheckout';
+import { UserIdDto } from './dto';
 
 @ApiTags('checkout')
 @Controller('')
@@ -83,6 +84,24 @@ export class CheckoutController {
     return makeResponse(
       res,
       await this.appService.osPlaceOrder(orderId, token),
+    );
+  }
+
+  @Post('api/v2/checkout/complete')
+  @ApiOperation({
+    summary:
+      'this completes checkout against all sessions of user in both Saleor and Shop service',
+  })
+  @ApiBearerAuth('JWT-auth')
+  async checkoutCompleteV2(
+    @Res() res,
+    @Body() body: UserIdDto,
+    @IsAuthenticated('authorization') token: string,
+  ): Promise<object> {
+    const { userEmail } = body;
+    return makeResponse(
+      res,
+      await this.appService.checkoutCompleteV2(token, userEmail),
     );
   }
 }

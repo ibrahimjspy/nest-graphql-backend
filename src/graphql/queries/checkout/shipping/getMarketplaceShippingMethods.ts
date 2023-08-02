@@ -14,6 +14,7 @@ export const getMarketplaceShippingMethodsQuery = (
                 shippingMethods {
                   id
                   shippingMethodId
+                  shippingMethodTypeId
                 }
               }
             }

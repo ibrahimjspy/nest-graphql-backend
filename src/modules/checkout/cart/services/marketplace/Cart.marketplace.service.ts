@@ -17,9 +17,13 @@ import {
   addCheckoutBundlesV2Handler,
   deleteCheckoutBundlesHandler,
   getCartV2Handler,
+  getCheckoutIdsHandler,
   replaceCheckoutBundleHandler,
 } from 'src/graphql/handlers/checkout/cart/cart.marketplace';
-import { getTargetBundleByCheckoutBundleId } from '../../Cart.utils';
+import {
+  getFlatFulfillmentCheckoutIds,
+  getTargetBundleByCheckoutBundleId,
+} from '../../Cart.utils';
 import {
   CheckoutIdError,
   NoCheckoutBundleFoundError,
@@ -278,5 +282,68 @@ export class MarketplaceCartService {
       token,
     );
     return replaceCheckoutBundles;
+  }
+
+  /**
+   * Get marketplace checkout IDs associated with the given user email.
+   * @param {string} userEmail - The email of the user to retrieve checkout IDs.
+   * @param {string} token - The authentication token required for API calls.
+   * @returns {Promise<string[]>} A promise that resolves to an array containing checkout IDs.
+   */
+  public async getMarketplaceCheckoutIds(
+    userEmail: string,
+    token: string,
+  ): Promise<string[]> {
+    try {
+      this.logger.log('Fetching checkout IDs from marketplace');
+
+      // Use the 'getCheckoutIdsHandler' function to retrieve checkout IDs from the marketplace API.
+      const checkoutIds = await getCheckoutIdsHandler(userEmail, token);
+
+      // Return the array of checkout IDs.
+      return checkoutIds;
+    } catch (error) {
+      // Log any errors that occur during the process.
+      this.logger.error(error);
+
+      // Return an exception response in case of errors.
+      throw error;
+    }
+  }
+
+  /**
+   * Get checkout IDs associated with flat fulfillment for the given user email.
+   * @param {string} userEmail - The email of the user to retrieve flat fulfillment checkout IDs.
+   * @param {string} token - The authentication token required for API calls.
+   * @returns {Promise<string[]>} A promise that resolves to an array containing flat fulfillment checkout IDs.
+   */
+  public async getFlatFulfillmentCheckoutIds(
+    userEmail: string,
+    token: string,
+  ): Promise<string[]> {
+    try {
+      this.logger.log('Fetching checkout IDs from marketplace');
+
+      // Use 'getAllCheckoutBundles' function to retrieve all checkout bundles for the user.
+      const checkout = await this.getAllCheckoutBundles({
+        userEmail,
+        token,
+        throwException: true,
+      });
+
+      // Get flat fulfillment checkout IDs from the retrieved checkout bundles.
+      const flatFulfillmentCheckoutIds = getFlatFulfillmentCheckoutIds(
+        checkout['checkoutBundles'],
+      );
+
+      // Return the array of flat fulfillment checkout IDs.
+      return flatFulfillmentCheckoutIds;
+    } catch (error) {
+      // Log any errors that occur during the process.
+      this.logger.error(error);
+
+      // Return an exception response in case of errors.
+      throw error;
+    }
   }
 }

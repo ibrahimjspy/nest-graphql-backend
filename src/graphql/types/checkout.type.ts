@@ -24,6 +24,7 @@ export interface MarketplaceShippingMethodsType {
         shippingMethods: {
           id: string;
           shippingMethodId: string;
+          shippingMethodTypeId: string;
         }[];
       };
     };

@@ -631,3 +631,43 @@ export const getUpdateMarketplaceCheckoutBundles = (
     };
   });
 };
+
+/**
+ * Retrieves flat fulfillment checkout IDs from an array of checkout bundles.
+ * Flat fulfillment checkout IDs are added to the result array if either
+ * 'issharovefulfillment' or 'isownflatshipping' field is set to 'true' in the checkout bundle.
+ * @param {checkoutBundlesInterface[]} checkoutBundles - An array of checkout bundles.
+ * @returns {string[]} An array containing unique flat fulfillment checkout IDs.
+ */
+export const getFlatFulfillmentCheckoutIds = (
+  checkoutBundles: checkoutBundlesInterface[],
+) => {
+  // Initialize an empty array to store the checkout IDs with flat fulfillment.
+  const checkoutIds: string[] = [];
+
+  // Loop through each checkout bundle in the input array.
+  checkoutBundles.map((checkoutBundle) => {
+    // Find the 'issharovefulfillment' field in the shop fields of the checkout bundle.
+    const sharoveFlatShippingField = checkoutBundle.bundle.shop.fields.find(
+      (field) => field.name == 'issharovefulfillment',
+    );
+
+    // Find the 'isownflatshipping' field in the shop fields of the checkout bundle.
+    const vendorFlatShippingField = checkoutBundle.bundle.shop.fields.find(
+      (field) => field.name == 'isownflatshipping',
+    );
+
+    // Check if either 'issharovefulfillment' or 'isownflatshipping' is set to 'true'.
+    if (
+      sharoveFlatShippingField?.values[0] === 'true' ||
+      vendorFlatShippingField?.values[0] === 'true'
+    ) {
+      // If either is 'true', add the checkout ID to the result array.
+      checkoutIds.push(checkoutBundle.checkoutId);
+    }
+  });
+
+  // Return an array containing unique checkout IDs with flat fulfillment.
+  // Using the 'Set' data structure to remove duplicate values, then converting it back to an array.
+  return Array.from(new Set(checkoutIds));
+};

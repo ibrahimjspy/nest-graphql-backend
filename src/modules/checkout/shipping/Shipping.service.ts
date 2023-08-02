@@ -29,6 +29,7 @@ import { PaymentService } from '../payment/Payment.service';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 import { SuccessResponseType } from 'src/core/utils/response.type';
 import { marketplaceShippingMethodsMap } from './Shipping.utils';
+import { MarketplaceCartService } from '../cart/services/marketplace/Cart.marketplace.service';
 
 @Injectable()
 export class ShippingService {
@@ -36,6 +37,7 @@ export class ShippingService {
   constructor(
     private readonly shippingPromotionService: ShippingPromotionService,
     private readonly paymentService: PaymentService,
+    private readonly marketplaceService: MarketplaceCartService,
   ) {
     return;
   }
@@ -209,37 +211,72 @@ export class ShippingService {
     }
   }
 
+  /**
+   * Retrieve shipping methods based on the provided filter and token.
+   * @param {GetShippingMethodsV2Dto} filter - The filter criteria for retrieving shipping methods.
+   * @param {string} token - The authentication token required for API calls.
+   * @returns {Promise<object>} A promise that resolves to an object containing the shipping methods.
+   */
   public async getShippingMethodsV2(
     filter: GetShippingMethodsV2Dto,
     token: string,
   ): Promise<object> {
     try {
+      // Retrieve shipping zones with a limit of 1 from the API using the provided token.
+      const shippingZones = await getShippingZonesHandler({ first: 1 }, token);
+
+      // Get marketplace shipping methods based on the provided user email and token.
       const marketplaceShippingMethods = await getMarketplaceShippingMethods(
         filter.userEmail,
         token,
       );
-      return prepareSuccessResponse(
-        marketplaceShippingMethodsMap(marketplaceShippingMethods),
+
+      // Map and prepare the shipping methods data using the marketplaceShippingMethodsMap function.
+      const mappedShippingMethods = marketplaceShippingMethodsMap(
+        marketplaceShippingMethods,
+        shippingZones['edges'][0].node.shippingMethods,
       );
+
+      // Prepare a success response containing the mapped shipping methods.
+      return prepareSuccessResponse(mappedShippingMethods);
     } catch (error) {
       this.logger.error(error);
+
+      // Return an exception response in case of errors.
       return graphqlExceptionHandler(error);
     }
   }
 
+  /**
+   * Add a shipping address for the user to all marketplace cart sessions.
+   * @param {AddUserShippingAddressDto} shippingAddressInput - The shipping address input data.
+   * @param {string} token - The authentication token required for API calls.
+   * @returns {Promise<object>} A promise that resolves to an object containing the response data.
+   */
   public async addShippingAddressForUser(
     shippingAddressInput: AddUserShippingAddressDto,
     token: string,
   ): Promise<object> {
     try {
-      const checkoutIds = ['123'];
-      const response = checkoutIds.map(async (checkoutId) => {
-        return await shippingAddressUpdateHandler(
-          checkoutId,
-          shippingAddressInput.addressDetails,
+      // Retrieve all marketplace cart session IDs associated with the user's email.
+      const checkoutIds =
+        await this.marketplaceService.getMarketplaceCheckoutIds(
+          shippingAddressInput.userEmail,
           token,
         );
-      });
+
+      // Use 'Promise.all' to execute 'shippingAddressUpdateHandler' for all checkout IDs concurrently.
+      const response = await Promise.all(
+        checkoutIds.map(async (checkoutId) => {
+          return await shippingAddressUpdateHandler(
+            checkoutId,
+            shippingAddressInput.addressDetails,
+            token,
+          );
+        }),
+      );
+
+      // Prepare a success response with the response data.
       return prepareSuccessResponse(
         response,
         'Shipping address added against all user cart sessions',
@@ -251,19 +288,36 @@ export class ShippingService {
     }
   }
 
+  /**
+   * Add a billing address for the user to all marketplace cart sessions.
+   * @param {AddUserShippingAddressDto} shippingAddressInput - The billing address input data.
+   * @param {string} token - The authentication token required for API calls.
+   * @returns {Promise<object>} A promise that resolves to an object containing the response data.
+   */
   public async addBillingAddressForUser(
     shippingAddressInput: AddUserShippingAddressDto,
     token: string,
   ): Promise<object> {
     try {
-      const checkoutIds = ['123'];
-      const response = checkoutIds.map(async (checkoutId) => {
-        return await billingAddressUpdateHandler(
-          checkoutId,
-          shippingAddressInput.addressDetails,
+      // Retrieve all marketplace cart session IDs associated with the user's email.
+      const checkoutIds =
+        await this.marketplaceService.getMarketplaceCheckoutIds(
+          shippingAddressInput.userEmail,
           token,
         );
-      });
+
+      // Use 'Promise.all' to execute 'billingAddressUpdateHandler' for all checkout IDs concurrently.
+      const response = await Promise.all(
+        checkoutIds.map(async (checkoutId) => {
+          return await billingAddressUpdateHandler(
+            checkoutId,
+            shippingAddressInput.addressDetails,
+            token,
+          );
+        }),
+      );
+
+      // Prepare a success response with the response data.
       return prepareSuccessResponse(
         response,
         'Billing address added against all user cart sessions',

@@ -64,9 +64,9 @@ export const replaceCheckoutBundleHandler = async (
 export const getCheckoutIdsHandler = async (
   userEmail: string,
   token: string,
-): Promise<object> => {
+): Promise<string[]> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(getCheckoutIdsQuery(userEmail), token),
   );
-  return response['checkoutBundles'];
+  return response['checkoutBundles']['checkoutIds'];
 };

@@ -58,6 +58,10 @@ export interface checkoutBundlesInterface {
       id: string;
       name: string;
       madeIn: string;
+      fields?: {
+        name: string;
+        values: string[];
+      }[];
       shippingMethods: {
         id: string;
         shippingMethodId: string;
