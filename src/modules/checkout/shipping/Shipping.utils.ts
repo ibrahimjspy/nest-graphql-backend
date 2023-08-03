@@ -1,3 +1,5 @@
+import { Logger } from '@nestjs/common';
+import { PROMOTION_SHIPPING_METHOD_ID } from 'src/constants';
 import { MarketplaceShippingMethodsType } from 'src/graphql/types/checkout.type';
 import { ShippingMethodSaleorType } from 'src/graphql/types/shipping';
 interface ShippingMethodType {
@@ -56,7 +58,37 @@ export const marketplaceShippingMethodsMap = (
     // Return an object containing the checkoutId and mappedShippingMethods.
     return {
       checkoutId,
-      shippingMethods: mappedShippingMethods,
+      shippingMethods: checkoutShippingMethodsFilter(mappedShippingMethods),
     };
   });
+};
+
+/**
+ * Filters and re-sorts shipping methods to accommodate a promotion shipping method.
+ *
+ * @param {Array} shippingMethods - An array of shipping methods to be filtered and re-sorted.
+ * @returns {Array} - The filtered and re-sorted shipping methods array.
+ */
+const checkoutShippingMethodsFilter = (
+  shippingMethods: {
+    shippingMethodId: string;
+    name: string;
+  }[],
+) => {
+  shippingMethods = shippingMethods.filter(
+    (shippingMethod) => !!shippingMethod.name,
+  );
+
+  shippingMethods.map((shippingMethod, key) => {
+    if (shippingMethod.shippingMethodId === PROMOTION_SHIPPING_METHOD_ID) {
+      Logger.log(
+        'ReSorting shipping methods to accommodate promotion shipping method',
+        PROMOTION_SHIPPING_METHOD_ID,
+      );
+      shippingMethods.splice(key, 1);
+      shippingMethods.splice(0, 0, shippingMethod);
+    }
+  });
+
+  return shippingMethods;
 };
