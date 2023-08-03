@@ -35,3 +35,13 @@ export class PaymentMethodDeleteDto {
   paymentMethodId: string;
   userEmail: string;
 }
+
+export class PaymentPreAuthV2Dto {
+  @ApiProperty()
+  @IsString()
+  paymentMethodId: string;
+
+  @ApiProperty()
+  @IsString()
+  userEmail: string;
+}

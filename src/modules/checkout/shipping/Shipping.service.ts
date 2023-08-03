@@ -258,6 +258,7 @@ export class ShippingService {
     token: string,
   ): Promise<object> {
     try {
+      this.logger.log('Adding shipping address against a user');
       // Retrieve all marketplace cart session IDs associated with the user's email.
       const checkoutIds =
         await this.marketplaceService.getMarketplaceCheckoutIds(

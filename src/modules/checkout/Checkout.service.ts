@@ -45,6 +45,7 @@ import { authenticateAuth0User } from 'src/external/endpoints/auth0';
 import { ProductIdsMappingType } from 'src/external/endpoints/b2bMapping.types';
 import { sendOrderConfirmationEmail } from 'src/external/endpoints/mandrillApp';
 import { getTokenWithoutBearer } from '../account/user/User.utils';
+import RecordNotFound from 'src/core/exceptions/recordNotFound';
 
 @Injectable()
 export class CheckoutService {
@@ -99,7 +100,7 @@ export class CheckoutService {
         CheckoutHandlers.marketplaceCheckoutSummaryHandler(
           userEmail,
           token,
-          CheckoutSummaryInputEnum.id,
+          CheckoutSummaryInputEnum.email,
         ),
         this.paymentService.getCheckoutPreAuthInformation(userEmail, token),
       ]);
@@ -110,6 +111,9 @@ export class CheckoutService {
       });
     } catch (error) {
       this.logger.error(error);
+      if (error instanceof RecordNotFound) {
+        return prepareFailedResponse(error.message);
+      }
       return graphqlExceptionHandler(error);
     }
   }
@@ -124,6 +128,7 @@ export class CheckoutService {
     paymentIntentId: string,
     token: string,
   ): Promise<object> {
+    console.dir({ orderDetails, checkoutBundles, token }, { depth: null });
     const instance = new LegacyService(
       checkoutBundles,
       orderDetails['shippingAddress'],
@@ -153,7 +158,7 @@ export class CheckoutService {
     try {
       const [checkoutBundles, paymentData] = await Promise.all([
         this.marketplaceCartService.getAllCheckoutBundles({
-          checkoutId,
+          checkoutIds: [checkoutId],
           token,
           isSelected: true,
         }),
@@ -187,7 +192,7 @@ export class CheckoutService {
           token,
         ),
         this.ordersService.addOrderToShop(ordersByShop, token),
-        CheckoutHandlers.disableCheckoutSession(checkoutId, token),
+        CheckoutHandlers.disableCheckoutSession([checkoutId], token),
       ]);
       const osOrderId = extractOsOrderNumber(
         osOrderResponse as OsOrderResponseInterface,
@@ -341,6 +346,7 @@ export class CheckoutService {
       const checkoutBundles =
         await this.marketplaceCartService.getAllCheckoutBundles({
           userEmail,
+          checkoutIds: [],
           token,
           isSelected: true,
         });
@@ -366,17 +372,17 @@ export class CheckoutService {
       );
 
       if (orders.length === 0) throw new OrderCreationError(userEmail);
-
-      const saleorOrderId = orders[0].order.id;
+      const defaultOrder = orders[0];
+      const saleorOrderId = defaultOrder.order.id;
       this.logger.log(
         `Order created against checkout id ${checkoutIds}`,
         saleorOrderId,
       );
 
-      const [osOrderResponse] = await Promise.allSettled([
+      const [osOrderResponse] = await Promise.all([
         this.placeOrderOs(
           checkoutBundles['data'].checkoutBundles,
-          orders[0].order,
+          defaultOrder.order,
           paymentMethodId,
           paymentIntentId,
           token,
@@ -384,7 +390,9 @@ export class CheckoutService {
         CheckoutHandlers.disableCheckoutSession(checkoutIds, token),
       ]);
 
-      const osOrderId = extractOsOrderNumber(osOrderResponse[0].value);
+      const osOrderId = extractOsOrderNumber(
+        osOrderResponse as OsOrderResponseInterface,
+      );
       this.logger.log(
         `Os order id ${osOrderId} created against checkout id ${checkoutIds}`,
       );
@@ -393,7 +401,7 @@ export class CheckoutService {
       sendOrderConfirmationEmail({
         id: saleorOrderId,
         email: checkoutBundles['data'].userEmail,
-        name: getUserFullName(saleorOrderId),
+        name: getUserFullName(defaultOrder),
       });
 
       return prepareSuccessResponse(

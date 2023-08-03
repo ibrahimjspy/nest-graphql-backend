@@ -27,3 +27,8 @@ export enum OpenPackTransactionTypeEnum {
    */
   UPDATE = 'UPDATE',
 }
+
+export class UserEmailDto {
+  @ApiProperty({ required: true })
+  userEmail: string;
+}

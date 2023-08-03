@@ -8,14 +8,18 @@ import { metadataFragment } from 'src/graphql/fragments/attributes';
 import { checkoutShopDetailsFragment } from 'src/graphql/fragments/shop';
 
 export const checkoutBundlesByIdQuery = (
-  checkoutId: string,
+  userEmail: string,
+  checkoutIds: string[],
   isSelected: any,
 ): string => {
+  const userFilter = userEmail
+    ? `userEmail: "${userEmail}"`
+    : `checkoutIds: ${JSON.stringify(checkoutIds)}`;
   return gql`
     query {
       checkoutBundles(
         Filter: {
-          checkoutId: "${checkoutId}"
+          ${userFilter}
           isSelected: ${isSelected}
         }
       ) {
@@ -111,17 +115,6 @@ export const checkoutBundlesByIdQuery = (
               shop {
                 ... Shop
               }
-            }
-          }
-          selectedMethods {
-            method {
-              id
-              shippingMethodId
-              shippingMethodTypeId
-            }
-            shop {
-              id
-              name
             }
           }
         }

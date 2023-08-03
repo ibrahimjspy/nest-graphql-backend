@@ -355,7 +355,7 @@ export class CartService {
   ): Promise<object> {
     try {
       return await this.marketplaceService.getCheckoutBundlesV2({
-        checkoutId,
+        checkoutIds: [checkoutId],
         token,
         isSelected,
       });
@@ -527,7 +527,7 @@ export class CartService {
         const { checkoutId } = updateOpenPack;
         const marketplaceCheckout =
           (await this.marketplaceService.getAllCheckoutBundles({
-            checkoutId,
+            checkoutIds: [checkoutId],
             token,
           })) as CartResponseInterface;
         const userEmail = marketplaceCheckout.data.userEmail;
@@ -568,7 +568,10 @@ export class CartService {
       );
       const [updateBundle, marketplace] = await Promise.all([
         await this.productService.updateBundle(updateOpenPackPayload),
-        this.marketplaceService.getAllCheckoutBundles({ checkoutId, token }),
+        this.marketplaceService.getAllCheckoutBundles({
+          checkoutIds: [checkoutId],
+          token,
+        }),
       ]);
 
       this.logger.log('Open pack updated', updateBundle);

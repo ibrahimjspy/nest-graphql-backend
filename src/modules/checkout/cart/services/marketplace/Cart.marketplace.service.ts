@@ -45,13 +45,13 @@ export class MarketplaceCartService {
   public async getAllCheckoutBundles({
     userEmail,
     token,
-    checkoutId,
+    checkoutIds,
     productDetails = true,
     isSelected = null,
   }: CheckoutBundlesDto): Promise<object> {
     const checkoutData = await getCheckoutBundlesHandler({
       userEmail,
-      checkoutId,
+      checkoutIds,
       token,
       productDetails,
       isSelected,
@@ -225,13 +225,13 @@ export class MarketplaceCartService {
    * @description -- fetches shopping cart data from bundle service against checkoutId
    */
   public async getCheckoutBundlesV2({
-    checkoutId,
+    checkoutIds,
     token,
     isSelected = null,
   }: CheckoutBundlesDto): Promise<object> {
     try {
       const checkoutData = await getCartV2Handler(
-        checkoutId,
+        checkoutIds[0],
         token,
         isSelected,
       );
@@ -333,7 +333,7 @@ export class MarketplaceCartService {
 
       // Get flat fulfillment checkout IDs from the retrieved checkout bundles.
       const flatFulfillmentCheckoutIds = getFlatFulfillmentCheckoutIds(
-        checkout['checkoutBundles'],
+        checkout['data']['checkoutBundles'],
       );
 
       // Return the array of flat fulfillment checkout IDs.

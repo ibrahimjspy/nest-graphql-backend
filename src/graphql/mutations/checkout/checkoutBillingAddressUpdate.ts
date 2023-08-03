@@ -34,6 +34,7 @@ export const checkoutBillingAddressUpdateMutation = (
         }
       ) {
         checkout {
+          id
           billingAddress {
             firstName
             lastName

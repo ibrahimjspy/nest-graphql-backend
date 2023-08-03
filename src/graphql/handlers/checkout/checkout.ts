@@ -42,16 +42,16 @@ import { UpdateMarketplaceCheckoutIdType } from 'src/modules/checkout/cart/Cart.
 export const getCheckoutBundlesHandler = async ({
   userEmail,
   token,
-  checkoutId,
+  checkoutIds,
   productDetails = true,
   throwException = true,
   isSelected = true,
 }: CheckoutBundlesDto): Promise<object> => {
   let response = {};
-  if (checkoutId) {
+  if (checkoutIds) {
     response = await graphqlResultErrorHandler(
       await graphqlCall(
-        checkoutBundlesByIdQuery(checkoutId, isSelected),
+        checkoutBundlesByIdQuery(userEmail, checkoutIds, isSelected),
         token,
       ),
       throwException,
@@ -177,11 +177,11 @@ export const orderCreateFromCheckoutHandler = async (
 };
 
 export const disableCheckoutSession = async (
-  checkoutId: string,
+  checkoutIds: string[],
   token: string,
 ) => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(disableUserCartSessionMutation(checkoutId), token),
+    await graphqlCall(disableUserCartSessionMutation(checkoutIds), token),
   );
 
   return response['disableUserCartSession'];

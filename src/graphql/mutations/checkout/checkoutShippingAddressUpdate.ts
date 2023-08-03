@@ -34,6 +34,7 @@ export const checkoutShippingAddressUpdateMutation = (
         }
       ) {
         checkout {
+          id
           shippingAddress {
             firstName
             lastName

@@ -1,11 +1,11 @@
 import { gql } from 'graphql-request';
 
-export const disableUserCartSessionMutation = (checkoutId: string) => {
+export const disableUserCartSessionMutation = (checkoutIds: string[]) => {
   return gql`
     mutation {
       disableUserCartSession(
         Input: {
-          checkoutId: "${checkoutId}"
+          checkoutIds: ${JSON.stringify(checkoutIds)}
         }
       ) {
         ... on ResultData {

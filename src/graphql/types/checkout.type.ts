@@ -1,6 +1,6 @@
 export interface CheckoutBundlesDto {
   userEmail?: string;
-  checkoutId?: string;
+  checkoutIds?: string[];
   throwException?: boolean;
   productDetails?: boolean;
   isSelected?: boolean;

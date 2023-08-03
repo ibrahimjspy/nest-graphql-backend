@@ -182,9 +182,9 @@ export class ShippingController {
     );
   }
 
-  @Post('api/v1/checkout/shipping/address/user')
+  @Post('api/v1/checkout/billing/address/user')
   @ApiOperation({
-    summary: 'adds shipping address against all checkout sessions of user',
+    summary: 'adds billing address against all checkout sessions of user',
   })
   @ApiBearerAuth('JWT-auth')
   async addBillingAddressForUser(
@@ -195,7 +195,7 @@ export class ShippingController {
     const Authorization: string = headers.authorization;
     return makeResponse(
       res,
-      await this.appService.addShippingAddressForUser(body, Authorization),
+      await this.appService.addBillingAddressForUser(body, Authorization),
     );
   }
 

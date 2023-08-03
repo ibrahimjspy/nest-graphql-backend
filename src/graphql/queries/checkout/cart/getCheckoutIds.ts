@@ -5,7 +5,7 @@ export const getCheckoutIdsQuery = (userEmail: string): string => {
     query {
       checkoutBundles(Filter: { userEmail: "${userEmail}" }) {
         ... on CheckoutBundlesType {
-          checkoutId
+          checkoutIds
         }
       }
     }

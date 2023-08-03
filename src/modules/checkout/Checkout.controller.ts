@@ -6,7 +6,7 @@ import { IsAuthenticated } from 'src/core/utils/decorators';
 import { B2BClientPlatform } from 'src/constants';
 import { CheckoutIdDto, OsPlaceOrderDto } from './dto/checkoutId';
 import { CreateCheckoutDto } from './dto/createCheckout';
-import { UserIdDto } from './dto';
+import { UserEmailDto } from './cart/dto/common.dto';
 
 @ApiTags('checkout')
 @Controller('')
@@ -28,6 +28,22 @@ export class CheckoutController {
     return makeResponse(
       res,
       await this.appService.getCheckoutSummary(filter.checkoutId, token),
+    );
+  }
+
+  @Get('api/v2/checkout/summary')
+  @ApiOperation({
+    summary: 'returns checkout summary against user email',
+  })
+  @ApiBearerAuth('JWT-auth')
+  async getCheckoutSummaryV2(
+    @Res() res,
+    @Query() filter: UserEmailDto,
+    @IsAuthenticated('authorization') token: string,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.getCheckoutSummaryV2(filter.userEmail, token),
     );
   }
 
@@ -95,7 +111,7 @@ export class CheckoutController {
   @ApiBearerAuth('JWT-auth')
   async checkoutCompleteV2(
     @Res() res,
-    @Body() body: UserIdDto,
+    @Body() body: UserEmailDto,
     @IsAuthenticated('authorization') token: string,
   ): Promise<object> {
     const { userEmail } = body;

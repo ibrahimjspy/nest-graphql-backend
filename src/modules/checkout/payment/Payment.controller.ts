@@ -14,8 +14,9 @@ import { makeResponse } from 'src/core/utils/response';
 import { UserIdDto } from '../dto';
 import {
   PaymentCreateDto,
-  PaymentPreAuthDto,
   PaymentMethodDeleteDto,
+  PaymentPreAuthDto,
+  PaymentPreAuthV2Dto,
 } from './dto/paymentCreate';
 import StripeService from 'src/external/services/stripe';
 
@@ -96,6 +97,24 @@ export class PaymentController {
     return makeResponse(
       res,
       await this.appService.deletePaymentMethod(paymentMethodId, userEmail),
+    );
+  }
+
+  @Post('api/v2/checkout/payment/preauth')
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'creates a payment preauth against a user',
+  })
+  async preAuthV2(
+    @Res() res,
+    @Body() body: PaymentPreAuthV2Dto,
+    @IsAuthenticated('authorization') token: string,
+  ): Promise<object> {
+    const { userEmail, paymentMethodId } = body;
+
+    return makeResponse(
+      res,
+      await this.appService.preAuthV2(paymentMethodId, userEmail, token),
     );
   }
 }

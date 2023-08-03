@@ -285,6 +285,7 @@ export class PaymentService {
         userEmail,
         token,
       );
+    this.logger.log('fetched checkout ids for preauth', checkoutIds);
 
     // Initialize variables to hold the paymentIntentId and total checkout amount.
     let paymentIntentId = null;
