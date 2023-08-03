@@ -6,7 +6,12 @@ import {
 } from 'src/core/utils/response';
 import * as CheckoutHandlers from 'src/graphql/handlers/checkout/checkout';
 import { orderCreateFromCheckoutHandler } from 'src/graphql/handlers/checkout/checkout';
-import { NoPaymentIntentError, OsOrderPlaceError } from './Checkout.errors';
+import {
+  CheckoutIdError,
+  NoPaymentIntentError,
+  OrderCreationError,
+  OsOrderPlaceError,
+} from './Checkout.errors';
 import { MarketplaceCartService } from './cart/services/marketplace/Cart.marketplace.service';
 import { PaymentService } from './payment/Payment.service';
 import { CreateCheckoutDto } from './dto/createCheckout';
@@ -29,7 +34,11 @@ import {
   getUserFullName,
 } from './Checkout.utils';
 import OsOrderService from 'src/external/services/osOrder/osOrder.service';
-import { OsOrderResponseInterface, ProductType } from './Checkout.utils.type';
+import {
+  CheckoutSummaryInputEnum,
+  OsOrderResponseInterface,
+  ProductType,
+} from './Checkout.utils.type';
 import { getB2bProductMapping } from 'src/external/endpoints/b2cMapping';
 import { getOsProductMapping } from 'src/external/endpoints/b2bMapping';
 import { authenticateAuth0User } from 'src/external/endpoints/auth0';
@@ -53,7 +62,11 @@ export class CheckoutService {
     try {
       const [MarketplaceCheckoutSummary, SaleorCheckoutSummary] =
         await Promise.all([
-          CheckoutHandlers.marketplaceCheckoutSummaryHandler(checkoutId, token),
+          CheckoutHandlers.marketplaceCheckoutSummaryHandler(
+            checkoutId,
+            token,
+            CheckoutSummaryInputEnum.id,
+          ),
           CheckoutHandlers.saleorCheckoutSummaryHandler(checkoutId, token),
         ]);
       preparePromotionResponse({
@@ -77,14 +90,16 @@ export class CheckoutService {
     }
   }
 
+  /**
+   * @description -- returns checkout summary against user email
+   */
   public async getCheckoutSummaryV2(userEmail: string, token: string) {
     try {
-      const USER_INPUT_TYPE = 'email';
       const [MarketplaceCheckoutSummary, preAuthData] = await Promise.all([
         CheckoutHandlers.marketplaceCheckoutSummaryHandler(
           userEmail,
           token,
-          USER_INPUT_TYPE,
+          CheckoutSummaryInputEnum.id,
         ),
         this.paymentService.getCheckoutPreAuthInformation(userEmail, token),
       ]);
@@ -315,19 +330,24 @@ export class CheckoutService {
     }
   }
 
+  /**
+   * @description -- this method completes checkout against all checkout session of user and places an order in os against default checkout
+   */
   public async checkoutCompleteV2(
     token: string,
     userEmail: string,
   ): Promise<object> {
     try {
-      const [checkoutBundles] = await Promise.all([
-        this.marketplaceCartService.getAllCheckoutBundles({
+      const checkoutBundles =
+        await this.marketplaceCartService.getAllCheckoutBundles({
           userEmail,
           token,
           isSelected: true,
-        }),
-      ]);
-      const checkoutIds = checkoutBundles['data']['checkoutIds'];
+        });
+
+      const checkoutIds = checkoutBundles['data'].checkoutIds;
+      if (!checkoutIds.length) throw new CheckoutIdError(userEmail);
+
       const paymentData = await this.paymentService.getPaymentDataFromMetadata(
         checkoutIds[0],
         token,
@@ -335,42 +355,47 @@ export class CheckoutService {
       const { paymentIntentId, paymentMethodId } = paymentData || {};
       if (!paymentIntentId || !paymentMethodId)
         throw new NoPaymentIntentError(checkoutIds[0]);
-      const orders = Promise.all(
-        checkoutIds.map(async (checkoutId) => {
-          return await orderCreateFromCheckoutHandler(
+
+      const orders = await Promise.all(
+        checkoutIds.map((checkoutId) => {
+          return orderCreateFromCheckoutHandler(
             checkoutId,
             B2B_CHECKOUT_APP_TOKEN,
           );
         }),
       );
 
+      if (orders.length === 0) throw new OrderCreationError(userEmail);
+
       const saleorOrderId = orders[0].order.id;
       this.logger.log(
         `Order created against checkout id ${checkoutIds}`,
         saleorOrderId,
       );
-      const [osOrderResponse] = await Promise.all([
+
+      const [osOrderResponse] = await Promise.allSettled([
         this.placeOrderOs(
-          checkoutBundles['data']['checkoutBundles'],
-          orders[0]['order'],
+          checkoutBundles['data'].checkoutBundles,
+          orders[0].order,
           paymentMethodId,
           paymentIntentId,
           token,
         ),
         CheckoutHandlers.disableCheckoutSession(checkoutIds, token),
       ]);
-      const osOrderId = extractOsOrderNumber(
-        osOrderResponse as OsOrderResponseInterface,
-      );
+
+      const osOrderId = extractOsOrderNumber(osOrderResponse[0].value);
       this.logger.log(
         `Os order id ${osOrderId} created against checkout id ${checkoutIds}`,
       );
+
       await this.paymentService.paymentIntentUpdate(paymentIntentId, osOrderId);
       sendOrderConfirmationEmail({
         id: saleorOrderId,
-        email: checkoutBundles['data']['userEmail'],
+        email: checkoutBundles['data'].userEmail,
         name: getUserFullName(saleorOrderId),
       });
+
       return prepareSuccessResponse(
         { createOrder: orders, osOrderResponse },
         'order created against checkout',

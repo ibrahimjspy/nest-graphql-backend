@@ -92,3 +92,12 @@ export class OsOrderPlaceError extends Error {
     this.message = `order could not be placed in orangeshine due following error :: ${message}`;
   }
 }
+
+export class OrderCreationError extends Error {
+  userEmail: string;
+  constructor(userEmail) {
+    super('no order created against ' + userEmail);
+    this.name = 'OrderCreationError';
+    this.userEmail = userEmail;
+  }
+}

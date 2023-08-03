@@ -1,11 +1,14 @@
 import { gql } from 'graphql-request';
+import { CheckoutSummaryInputEnum } from 'src/modules/checkout/Checkout.utils.type';
 
 export const marketplaceCheckoutSummaryQuery = (
   user: string,
-  type: string,
+  type: CheckoutSummaryInputEnum,
 ): string => {
   const filter =
-    type == 'id' ? `{ checkoutId: "${user}" }` : `{ userEmail: "${user}" }`;
+    type === CheckoutSummaryInputEnum.id
+      ? `{ checkoutId: "${user}" }`
+      : `{ userEmail: "${user}" }`;
   return gql`
     query {
       checkoutBundles(Filter: ${filter}) {

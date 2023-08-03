@@ -140,3 +140,8 @@ export interface OrderCreateInterface {
   };
   errors: any[];
 }
+
+export enum CheckoutSummaryInputEnum {
+  id = 'id',
+  email = 'email',
+}

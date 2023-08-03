@@ -642,6 +642,10 @@ export const getUpdateMarketplaceCheckoutBundles = (
 export const getFlatFulfillmentCheckoutIds = (
   checkoutBundles: checkoutBundlesInterface[],
 ) => {
+  enum FlatShippingEnum {
+    SharoveFulfillment = 'issharovefulfillment',
+    VendorFulfillment = 'isownflatshipping',
+  }
   // Initialize an empty array to store the checkout IDs with flat fulfillment.
   const checkoutIds: string[] = [];
 
@@ -649,12 +653,12 @@ export const getFlatFulfillmentCheckoutIds = (
   checkoutBundles.map((checkoutBundle) => {
     // Find the 'issharovefulfillment' field in the shop fields of the checkout bundle.
     const sharoveFlatShippingField = checkoutBundle.bundle.shop.fields.find(
-      (field) => field.name == 'issharovefulfillment',
+      (field) => field.name == FlatShippingEnum.SharoveFulfillment,
     );
 
     // Find the 'isownflatshipping' field in the shop fields of the checkout bundle.
     const vendorFlatShippingField = checkoutBundle.bundle.shop.fields.find(
-      (field) => field.name == 'isownflatshipping',
+      (field) => field.name == FlatShippingEnum.VendorFulfillment,
     );
 
     // Check if either 'issharovefulfillment' or 'isownflatshipping' is set to 'true'.

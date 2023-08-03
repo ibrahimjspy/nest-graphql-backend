@@ -33,6 +33,7 @@ import { marketplaceCheckoutSummaryQuery } from 'src/graphql/queries/checkout/ma
 import { saleorCheckoutSummaryQuery } from 'src/graphql/queries/checkout/saleorCheckoutSummary';
 import { saveFailedOrderMutation } from 'src/graphql/mutations/checkout/placeOrder/failedOrder';
 import {
+  CheckoutSummaryInputEnum,
   OrderCreateInterface,
   SaleorCheckoutInterface,
 } from 'src/modules/checkout/Checkout.utils.type';
@@ -255,7 +256,7 @@ export const getCheckoutMetadataHandler = async (
 export const marketplaceCheckoutSummaryHandler = async (
   checkoutId: string,
   token: string,
-  type = 'id',
+  type: CheckoutSummaryInputEnum,
 ): Promise<object> => {
   const response = await graphqlResultErrorHandler(
     await graphqlCall(marketplaceCheckoutSummaryQuery(checkoutId, type), token),
