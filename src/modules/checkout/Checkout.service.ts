@@ -128,7 +128,6 @@ export class CheckoutService {
     paymentIntentId: string,
     token: string,
   ): Promise<object> {
-    console.dir({ orderDetails, checkoutBundles, token }, { depth: null });
     const instance = new LegacyService(
       checkoutBundles,
       orderDetails['shippingAddress'],
