@@ -127,6 +127,7 @@ describe('Cart utility tests', () => {
     {
       checkoutBundleId: 'bundle1',
       isSelected: true,
+      checkoutId: 'test',
       quantity: 1,
       price: 10,
       bundle: {
@@ -180,6 +181,7 @@ describe('Cart utility tests', () => {
           name: 'Shop 1',
           madeIn: 'Country',
           minOrder: 1,
+          fields: [],
           shippingMethods: [],
         },
       },
