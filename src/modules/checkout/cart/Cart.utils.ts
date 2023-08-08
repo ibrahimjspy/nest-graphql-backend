@@ -692,17 +692,17 @@ export const getBundleCheckoutId = (
   let vendorKey: string;
   const checkoutIdsMap: Map<string, string> = new Map();
   marketplaceCheckout.checkoutBundles.map((checkoutBundle) => {
-    const newBundle = bundles.find(
+    const createdBundle = bundles.find(
       (bundle) => bundle.bundleId === checkoutBundle.bundle.id,
     );
-    if (newBundle) {
+    if (createdBundle) {
       vendorKey = getVendorFulfillmentType(checkoutBundle.bundle.shop);
       return;
     }
-    const checkoutIdVendorKey = getVendorFulfillmentType(
+    const vendorFulfillmentType = getVendorFulfillmentType(
       checkoutBundle.bundle.shop,
     );
-    checkoutIdsMap.set(checkoutIdVendorKey, checkoutBundle.checkoutId);
+    checkoutIdsMap.set(vendorFulfillmentType, checkoutBundle.checkoutId);
   });
   return checkoutIdsMap.get(vendorKey);
 };
@@ -717,7 +717,7 @@ export const getVendorFulfillmentType = (vendorData: {
   fields: { name: string; values: string[] }[];
 }) => {
   let sharoveFlatShippingField;
-
+  const SHAROVE_FULFILLMENT_ATTRIBUTE_SLUG = 'SHR';
   vendorData.fields.map((field) => {
     if (field.name == FlatShippingEnum.SharoveFulfillment) {
       sharoveFlatShippingField = field.values[0];
@@ -725,8 +725,7 @@ export const getVendorFulfillmentType = (vendorData: {
   });
 
   if (sharoveFlatShippingField) {
-    return 'SHR';
-  } else {
-    return vendorData.id;
+    return SHAROVE_FULFILLMENT_ATTRIBUTE_SLUG;
   }
+  return vendorData.id;
 };
