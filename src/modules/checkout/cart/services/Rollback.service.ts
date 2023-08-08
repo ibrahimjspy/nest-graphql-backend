@@ -235,7 +235,6 @@ export class CartRollbackService {
       );
       return await this.cartService.addBundlesToCart(
         userEmail,
-        checkoutId,
         addBundles,
         token,
       );

@@ -34,9 +34,15 @@ export class ProductController {
     @Res() res,
     @Query() filter: ProductFilterDto,
   ): Promise<object> {
-    const { storeId } = filter;
+    const { storeId, collections } = filter;
     if (storeId) {
       return makeResponse(res, await this.appService.getShopProducts(filter));
+    }
+    if (collections) {
+      return makeResponse(
+        res,
+        await this.appService.getProductByCollections(filter),
+      );
     }
     const typeMethod =
       {

@@ -152,7 +152,8 @@ export class ProductFilterDto extends PaginationDto {
   @ApiProperty({
     required: false,
     isArray: true,
-    description: 'collection id against which products to return',
+    description:
+      'collection id against which products to return -- warn contract of api changes when passed multiple collections filter',
   })
   @Type(() => String)
   @Transform(({ value }) => (Array.isArray(value) ? value : [value]), {

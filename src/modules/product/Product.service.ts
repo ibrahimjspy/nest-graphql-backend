@@ -35,6 +35,7 @@ import { getOsProductMappingV2 } from 'src/external/endpoints/b2bMapping';
 import { GetMappingDto } from '../shop/dto/shop';
 import SearchService from 'src/external/services/search';
 import { getAttributeHandler } from 'src/graphql/handlers/attribute';
+import { getCollectionProductsHandler } from 'src/graphql/handlers/product';
 @Injectable()
 export class ProductService {
   private readonly logger = new Logger(ProductService.name);
@@ -282,6 +283,34 @@ export class ProductService {
     try {
       const attributeDetails = await getAttributeHandler(slug);
       return attributeDetails.id;
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * Fetches products against collections and product filters
+   *
+   * @param {filters} filters - product filters to filter on
+   * @returns {Promise<string>} - A promise that resolves to the attribute ID.
+   */
+  public async getProductByCollections(
+    filter: ProductFilterDto,
+  ): Promise<object> {
+    try {
+      this.logger.log(
+        'fetching products by collections',
+        JSON.stringify(filter),
+      );
+      const collectionProducts = await getCollectionProductsHandler(filter);
+
+      if (filter.collections.length == 1) {
+        return prepareSuccessResponse(
+          collectionProducts['edges'][0]?.node?.products,
+        );
+      }
+      return prepareSuccessResponse(collectionProducts);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

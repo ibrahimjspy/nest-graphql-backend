@@ -3,6 +3,7 @@ export interface CheckoutBundleInterface {
   isSelected: boolean;
   quantity: number;
   price: number;
+  checkoutId: string;
   bundle: {
     id: string;
     name: string;
@@ -58,6 +59,10 @@ export interface CheckoutBundleInterface {
       name: string;
       madeIn: string;
       minOrder: number;
+      fields: {
+        name: string;
+        values: string[];
+      }[];
       shippingMethods: {
         id: string;
         shippingMethodId: string;
@@ -85,4 +90,15 @@ export interface CartResponseInterface {
 export interface UpdateMarketplaceCheckoutIdType {
   checkoutId: string;
   bundleId: string;
+}
+
+export interface UpdateMarketplaceCheckoutType {
+  __typename: string;
+  userEmail: string;
+  totalAmount: number;
+  subTotal: number;
+  taxes: number;
+  discounts: number;
+  checkoutIds: string[];
+  checkoutBundles: CheckoutBundleInterface[];
 }

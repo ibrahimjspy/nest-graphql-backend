@@ -11,6 +11,7 @@ import { AddBundleDto, UpdateBundleStateDto } from '../dto/add-bundle.dto';
 import { SaleorCartService } from './services/saleor/Cart.saleor.service';
 import { MarketplaceCartService } from './services/marketplace/Cart.marketplace.service';
 import {
+  getBundleCheckoutId,
   getBundleIdFromBundleCreate,
   getBundlesFromCheckout,
   getCheckoutBundleIds,
@@ -78,6 +79,7 @@ export class CartService {
    * Adds shopping cart bundles for the given user.
    * If a checkout ID is provided, it runs the saleorService.addBundleLines and marketplaceService.addBundles in parallel.
    * If no checkout ID is provided, it awaits the marketplaceService.addBundles.
+   * checkout id is resolved based on vendor fulfillment type
    *
    * @param userEmail - The email of the user.
    * @param checkoutId - The ID of the checkout.
@@ -87,43 +89,42 @@ export class CartService {
    */
   public async addBundlesToCart(
     userEmail: string,
-    checkoutId: string,
     bundlesList: CheckoutBundleInputType[],
     token: string,
   ): Promise<SuccessResponseType> {
     try {
-      const marketplacePromise = checkoutId
-        ? this.marketplaceService.addBundles(userEmail, bundlesList, token)
-        : await this.marketplaceService.addBundles(
-            userEmail,
-            bundlesList,
-            token,
-          );
+      this.logger.log('Adding bundles to cart', bundlesList);
+      const [marketplaceResult] = await Promise.allSettled([
+        this.marketplaceService.addBundles(userEmail, bundlesList, token),
+      ]);
 
-      const saleorPromise = this.saleorService.addBundleLines(
-        userEmail,
-        checkoutId,
+      const checkoutId = getBundleCheckoutId(
+        marketplaceResult['value'],
         bundlesList,
-        token,
       );
+      this.logger.log('Adding items to cart against checkout id', checkoutId);
 
-      const [marketplaceResult, saleorResult] = await Promise.allSettled([
-        marketplacePromise,
-        saleorPromise,
+      const [saleorResult] = await Promise.allSettled([
+        this.saleorService.addBundleLines(
+          userEmail,
+          checkoutId,
+          bundlesList,
+          token,
+        ),
       ]);
 
       this.marketplaceService.addCheckoutIdToMarketplace(
         userEmail,
         getUpdateMarketplaceCheckoutBundles(
           bundlesList,
-          saleorResult.status == 'fulfilled' ? saleorResult.value.id : '',
+          saleorResult['value'].id,
         ),
         token,
       );
 
       return await this.cartResponseBuilder.addBundlesToCart(
-        saleorResult,
         marketplaceResult,
+        saleorResult,
         bundlesList,
         token,
       );
@@ -327,7 +328,7 @@ export class CartService {
       const newBundles = getNewBundlesToAdd(checkoutBundlesData, newBundleId);
       const [deletePreviousBundle, createNewBundle] = await Promise.allSettled([
         await this.deleteBundlesFromCart(userEmail, [checkoutBundleId], token),
-        this.addBundlesToCart(userEmail, checkoutId, newBundles, token),
+        this.addBundlesToCart(userEmail, newBundles, token),
       ]);
       return await this.cartResponseBuilder.replaceCheckoutBundle(
         deletePreviousBundle,
@@ -486,7 +487,6 @@ export class CartService {
         // Create new open packs
         const createNewBundle = await this.addBundlesToCart(
           userEmail,
-          checkoutId,
           checkoutBundles,
           token,
         );

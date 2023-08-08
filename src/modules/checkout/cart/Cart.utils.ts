@@ -8,10 +8,18 @@ import { NoBundleCreatedError } from '../Checkout.errors';
 import { OpenPackTransactionTypeEnum } from './dto/common.dto';
 import { UpdateBundleDto, UpdateOpenPackDto } from './dto/cart';
 import { SaleorCheckoutInterface } from '../Checkout.utils.type';
-import { CheckoutBundleInterface } from './Cart.types';
+import {
+  CheckoutBundleInterface,
+  UpdateMarketplaceCheckoutType,
+} from './Cart.types';
 import { checkoutBundlesInterface } from 'src/external/services/osPlaceOrder/Legacy.service.types';
 import { BundleCreateDto } from 'src/modules/product/dto/bundle';
 import { Logger } from '@nestjs/common';
+
+enum FlatShippingEnum {
+  SharoveFulfillment = 'issharovefulfillment',
+  VendorFulfillment = 'isownflatshipping',
+}
 
 /**
  * parses checkout bundles object and returns bundle ids
@@ -642,10 +650,6 @@ export const getUpdateMarketplaceCheckoutBundles = (
 export const getFlatFulfillmentCheckoutIds = (
   checkoutBundles: checkoutBundlesInterface[],
 ) => {
-  enum FlatShippingEnum {
-    SharoveFulfillment = 'issharovefulfillment',
-    VendorFulfillment = 'isownflatshipping',
-  }
   // Initialize an empty array to store the checkout IDs with flat fulfillment.
   const checkoutIds: string[] = [];
 
@@ -674,4 +678,55 @@ export const getFlatFulfillmentCheckoutIds = (
   // Return an array containing unique checkout IDs with flat fulfillment.
   // Using the 'Set' data structure to remove duplicate values, then converting it back to an array.
   return Array.from(new Set(checkoutIds));
+};
+
+/**
+ * Retrieves the checkout ID from the checkout bundle based on vendor fulfillment type
+ * @param {checkoutBundlesInterface} checkoutBundle - A checkout bundle.
+ * @returns {string} The checkout ID.
+ */
+export const getBundleCheckoutId = (
+  marketplaceCheckout: UpdateMarketplaceCheckoutType,
+  bundles: CheckoutBundleInputType[],
+) => {
+  let vendorKey: string;
+  const checkoutIdsMap: Map<string, string> = new Map();
+  marketplaceCheckout.checkoutBundles.map((checkoutBundle) => {
+    const newBundle = bundles.find(
+      (bundle) => bundle.bundleId === checkoutBundle.bundle.id,
+    );
+    if (newBundle) {
+      vendorKey = getVendorFulfillmentType(checkoutBundle.bundle.shop);
+      return;
+    }
+    const checkoutIdVendorKey = getVendorFulfillmentType(
+      checkoutBundle.bundle.shop,
+    );
+    checkoutIdsMap.set(checkoutIdVendorKey, checkoutBundle.checkoutId);
+  });
+  return checkoutIdsMap.get(vendorKey);
+};
+
+/**
+ * Retrieves the vendor fulfillment type from the shop fields of the checkout bundle.
+ * @param {shop} shop - The shop fields of the checkout bundle.
+ * @returns {string} The vendor fulfillment type.
+ */
+export const getVendorFulfillmentType = (vendorData: {
+  id: string;
+  fields: { name: string; values: string[] }[];
+}) => {
+  let sharoveFlatShippingField;
+
+  vendorData.fields.map((field) => {
+    if (field.name == FlatShippingEnum.SharoveFulfillment) {
+      sharoveFlatShippingField = field.values[0];
+    }
+  });
+
+  if (sharoveFlatShippingField) {
+    return 'SHR';
+  } else {
+    return vendorData.id;
+  }
 };

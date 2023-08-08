@@ -33,7 +33,10 @@ import { MarketplaceBundlesType } from './Cart.marketplace.types';
 import { checkoutBundlesInterface } from 'src/external/services/osPlaceOrder/Legacy.service.types';
 import { ReplaceBundleDto } from '../../dto/cart';
 import { isEmptyArray } from 'src/modules/product/Product.utils';
-import { UpdateMarketplaceCheckoutIdType } from '../../Cart.types';
+import {
+  UpdateMarketplaceCheckoutIdType,
+  UpdateMarketplaceCheckoutType,
+} from '../../Cart.types';
 
 @Injectable()
 export class MarketplaceCartService {
@@ -100,7 +103,7 @@ export class MarketplaceCartService {
     checkoutBundles: CheckoutBundleInputType[],
     token: string,
     throwException = true,
-  ) {
+  ): Promise<UpdateMarketplaceCheckoutType> {
     try {
       this.logger.log('Adding checkout bundles', checkoutBundles);
 

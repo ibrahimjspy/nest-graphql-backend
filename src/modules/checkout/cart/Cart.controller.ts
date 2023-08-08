@@ -59,7 +59,6 @@ export class CartController {
       res,
       await this.appService.addBundlesToCart(
         addBundleDto.userEmail,
-        addBundleDto.checkoutId,
         addBundleDto.bundles,
         token,
       ),

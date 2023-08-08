@@ -30,9 +30,6 @@ export const b2bQuery = (filter: ProductFilterDto): string => {
     ? ` metadata: [{ key: "isOpenPack", value: "${filter.isOpenPack}" }]`
     : '';
   const productSortBy = getProductsSortBy(filter);
-  const collectionsFilter = filter.collections
-    ? `collections: ${JSON.stringify(filter.collections)}`
-    : '';
 
   return gql`
     query {
@@ -48,7 +45,6 @@ export const b2bQuery = (filter: ProductFilterDto): string => {
           ${attributeFilter}
           ${priceFilter}
           ${openPackFilter}
-          ${collectionsFilter}
         }
       ) {
         pageInfo {

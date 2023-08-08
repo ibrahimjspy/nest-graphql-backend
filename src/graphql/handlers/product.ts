@@ -45,6 +45,7 @@ import { getGraphqlAllAccessToken } from 'src/core/utils/helpers';
 import { hasNextPage } from '../utils/orders';
 import { getProductIdsByVariants } from 'src/modules/product/Product.utils';
 import { Logger } from '@nestjs/common';
+import { productByCollectionsQuery } from '../queries/product/productByCollections';
 
 export const productsHandler = async (
   filter: ProductFilterDto,
@@ -236,4 +237,16 @@ export const updateBundlePricingHandler = async (
 ): Promise<object> => {
   const response = await graphqlCall(updateBundlePricingMutation(id));
   return response['updateBundlesPricing'];
+};
+
+export const getCollectionProductsHandler = async (
+  filter: ProductFilterDto,
+): Promise<object> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      productByCollectionsQuery(filter),
+      getGraphqlAllAccessToken(true),
+    ), // We only need access token in b2c apis for now
+  );
+  return response?.collections;
 };
