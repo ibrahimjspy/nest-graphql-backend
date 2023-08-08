@@ -134,7 +134,6 @@ export class ProductService {
     retailerId: string,
   ): Promise<object> {
     try {
-      console.log(productsData);
       if (!retailerId) {
         // returns products list as it is if retailer id is not valid
         return productsData;

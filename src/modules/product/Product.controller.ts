@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Query, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Logger,
+  Post,
+  Query,
+  Res,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ProductService } from './Product.service';
 import { ProductFilterDto, ProductFilterTypeEnum } from './dto';
@@ -11,11 +19,16 @@ import {
 import { IsAuthenticated } from 'src/core/utils/decorators';
 import { ProductVariantStockUpdateDTO } from './dto/variant';
 import { GetMappingDto } from '../shop/dto/shop';
+import { CachingService } from 'src/app.cache.service';
 
 @ApiTags('product')
 @Controller()
 export class ProductController {
-  constructor(private readonly appService: ProductService) {
+  private readonly logger = new Logger(ProductService.name);
+  constructor(
+    private readonly appService: ProductService,
+    private readonly cacheManager: CachingService,
+  ) {
     return;
   }
 
@@ -34,23 +47,36 @@ export class ProductController {
     @Res() res,
     @Query() filter: ProductFilterDto,
   ): Promise<object> {
-    const { storeId, collections } = filter;
-    if (storeId) {
-      return makeResponse(res, await this.appService.getShopProducts(filter));
-    }
-    if (collections) {
-      return makeResponse(
-        res,
-        await this.appService.getProductByCollections(filter),
-      );
-    }
-    const typeMethod =
-      {
-        [ProductFilterTypeEnum.POPULAR_ITEMS]: this.appService.getPopularItems,
-        [ProductFilterTypeEnum.NEW_ARRIVALS]: this.appService.getProducts,
-      }[filter.type] || this.appService.getProducts;
+    const productCacheKey = `products_list_${JSON.stringify(filter)}`;
+    const cachedProducts = await this.cacheManager.get(productCacheKey);
 
-    return makeResponse(res, await typeMethod.call(this.appService, filter));
+    if (cachedProducts) {
+      this.logger.log('found cached products');
+      return makeResponse(res, cachedProducts as object);
+    }
+    this.logger.log('making expensive call to retrieve products');
+    let response;
+    const { storeId, collections, type } = filter;
+
+    if (storeId) {
+      response = await this.appService.getShopProducts(filter);
+    } else if (collections) {
+      response = await this.appService.getProductByCollections(filter);
+    } else {
+      const typeMethod =
+        {
+          [ProductFilterTypeEnum.POPULAR_ITEMS]:
+            this.appService.getPopularItems,
+          [ProductFilterTypeEnum.NEW_ARRIVALS]: this.appService.getProducts,
+        }[type] || this.appService.getProducts;
+
+      response = await typeMethod.call(this.appService, filter);
+    }
+    if (response.status === 200) {
+      this.cacheManager.set(productCacheKey, response);
+    }
+
+    return makeResponse(res, response);
   }
 
   @Get('api/v1/product')

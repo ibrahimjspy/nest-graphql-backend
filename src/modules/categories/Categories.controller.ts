@@ -1,4 +1,4 @@
-import { CacheTTL, Controller, Get, Param, Query, Res } from '@nestjs/common';
+import { Controller, Get, Logger, Param, Query, Res } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
 import { CategoriesService } from './Categories.service';
@@ -8,13 +8,18 @@ import {
   VendorCategoriesDto,
   shopIdDTO,
 } from './dto/categories';
-import { CATEGORIES_CACHE_TTL } from 'src/constants';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
+import { CachingService } from 'src/app.cache.service';
 
 @ApiTags('categories')
 @Controller('')
 export class CategoriesController {
-  constructor(private readonly appService: CategoriesService) {}
+  private readonly logger = new Logger(CategoriesController.name);
+
+  constructor(
+    private readonly appService: CategoriesService,
+    private readonly cacheManager: CachingService,
+  ) {}
 
   @Get('/api/v1/categories')
   @ApiOperation({
@@ -54,10 +59,19 @@ export class CategoriesController {
   @ApiOperation({
     summary: 'this api will be deprecated',
   })
-  @CacheTTL(CATEGORIES_CACHE_TTL)
   async findMenuCategories(): Promise<object> {
+    const categoriesCacheKey = `categories_menu`;
+    const cachedCategories = await this.cacheManager.get(categoriesCacheKey);
+
+    if (cachedCategories) {
+      this.logger.verbose('found cached categories');
+      return cachedCategories;
+    }
+    this.logger.log(`Making expensive call to fetch categories`);
     const categoriesData = await this.appService.menuCategoriesDeprecated();
-    return categoriesData['data'];
+    const response = categoriesData['data'];
+    this.cacheManager.set(categoriesCacheKey, response);
+    return response;
   }
 
   @Get('api/v1/categories/menu')
@@ -79,6 +93,20 @@ export class CategoriesController {
     @Res() res,
     @Query() filter: PaginationDto,
   ): Promise<object> {
-    return makeResponse(res, await this.appService.getCollections(filter));
+    const collectionsCacheKey = `categories_collections_${JSON.stringify(
+      filter,
+    )}`;
+    const cachedCollections = await this.cacheManager.get(collectionsCacheKey);
+    if (cachedCollections) {
+      this.logger.verbose('found cached categories');
+      return cachedCollections;
+    }
+    this.logger.log(`Making expensive call to fetch collections`);
+    const response = makeResponse(
+      res,
+      await this.appService.getCollections(filter),
+    );
+    this.cacheManager.set(collectionsCacheKey, response);
+    return response;
   }
 }

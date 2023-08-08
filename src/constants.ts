@@ -160,3 +160,5 @@ export const B2B_PRODUCT_MAPPING_URL = `${ELASTIC_SEARCH_ENDPOINT}/${process.env
  */
 export const PRODUCTS_SEARCH_ENGINE_NAME =
   process.env.PRODUCTS_SEARCH_ENGINE_NAME || 'b2b-product-dev';
+
+export const CACHE_ENABLED = process.env.CACHE_ENABLED == 'true';
