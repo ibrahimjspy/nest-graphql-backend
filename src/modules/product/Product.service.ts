@@ -303,12 +303,13 @@ export class ProductService {
         'fetching products by collections',
         JSON.stringify(filter),
       );
+      const filteredProductsLength = filter.collections.length;
       const collectionProducts = await getCollectionProductsHandler(filter);
 
-      if (filter.collections.length == 1) {
-        return prepareSuccessResponse(
-          collectionProducts['edges'][0]?.node?.products,
-        );
+      if (filteredProductsLength == 1) {
+        const firstCollectionProducts =
+          collectionProducts['edges'][0]?.node?.products;
+        return prepareSuccessResponse(firstCollectionProducts);
       }
       return prepareSuccessResponse(collectionProducts);
     } catch (error) {
