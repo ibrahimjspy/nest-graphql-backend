@@ -736,7 +736,7 @@ export const getVendorFulfillmentType = (vendorData: {
  * @returns {string} isMultiCheckout
  */
 export const isMultiCheckoutBundles = (
-  bundlesList: CheckoutBundleInterface[],
+  bundlesList: checkoutBundlesInterface[],
 ) => {
   const checkoutId: string = bundlesList[0].checkoutId;
   let isMultiCheckout = false;

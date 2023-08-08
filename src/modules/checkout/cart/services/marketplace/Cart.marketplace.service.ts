@@ -89,9 +89,7 @@ export class MarketplaceCartService {
     ) as checkoutBundlesInterface[];
     const validateCheckoutBundles = isEmptyArray(checkoutBundlesData);
     checkoutId = checkoutBundlesData[0].checkoutId;
-    const isMultiCheckout = isMultiCheckoutBundles(
-      marketplaceCheckout['data']['checkoutBundles'],
-    );
+    const isMultiCheckout = isMultiCheckoutBundles(checkoutBundlesData);
     if (!validateCheckoutBundles)
       throw new NoCheckoutBundleFoundError(checkoutBundleIds);
 
