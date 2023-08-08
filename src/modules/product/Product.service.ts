@@ -134,6 +134,7 @@ export class ProductService {
     retailerId: string,
   ): Promise<object> {
     try {
+      console.log(productsData);
       if (!retailerId) {
         // returns products list as it is if retailer id is not valid
         return productsData;
@@ -303,13 +304,17 @@ export class ProductService {
         'fetching products by collections',
         JSON.stringify(filter),
       );
+      const retailerId = filter.retailerId;
       const filteredProductsLength = filter.collections.length;
       const collectionProducts = await getCollectionProductsHandler(filter);
 
       if (filteredProductsLength == 1) {
-        const firstCollectionProducts =
-          collectionProducts['edges'][0]?.node?.products;
-        return prepareSuccessResponse(firstCollectionProducts);
+        const firstCollectionProducts = collectionProducts['edges'].length
+          ? collectionProducts['edges'][0]?.node?.products
+          : [];
+        return prepareGQLPaginatedResponse(
+          await this.addProductsMapping(firstCollectionProducts, retailerId),
+        );
       }
       return prepareSuccessResponse(collectionProducts);
     } catch (error) {
