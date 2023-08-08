@@ -47,7 +47,7 @@ export class LegacyService {
   shoesVendorIds = [];
   userId: string;
   token: string;
-  deliveryMethod: DeliveryMethodType;
+  deliveryMethodMap: Map<string, DeliveryMethodType>;
   paymentMethodId: string;
   colorsByShops: any[];
   billingInfo: shippingAddressType;
@@ -60,7 +60,7 @@ export class LegacyService {
     orderId,
     paymentMethodId,
     billingInfo: shippingAddressType,
-    deliveryMethod: DeliveryMethodType,
+    deliveryMethodMap: Map<string, DeliveryMethodType>,
     paymentIntentId: string,
     token,
   ) {
@@ -72,7 +72,7 @@ export class LegacyService {
     this.token = token;
     this.baseUrl = `${BASE_EXTERNAL_ENDPOINT}/api/v3`;
     this.elasticSearchUrl = `${ELASTIC_SEARCH_ENDPOINT}/api/as/v1`;
-    this.deliveryMethod = deliveryMethod;
+    this.deliveryMethodMap = deliveryMethodMap;
     this.paymentIntentId = paymentIntentId;
   }
   async placeExternalOrder() {
@@ -269,6 +269,7 @@ export class LegacyService {
         });
         const itemId = productMappings[productId]['legacyProductId'];
         const compositeKey = `${itemId}_${colorId}`;
+        const shippingMethod = this.deliveryMethodMap.get(elements.checkoutId);
         if (productId && !(compositeKey in payloadObject)) {
           const tempObj = {
             item_id: itemId,
@@ -279,7 +280,7 @@ export class LegacyService {
             ...(bundleType ? { size_run: sizeRun } : {}),
             sms_number: SMS_NUMBER,
             spa_id: shippingAddressInfo?.data?.user_id,
-            spm_name: this.deliveryMethod.name,
+            spm_name: shippingMethod.name,
             store_credit: STORE_CREDIT,
             signature_requested: SIGNATURE_REQUESTED,
           };

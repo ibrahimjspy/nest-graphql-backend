@@ -8,6 +8,7 @@ import {
   attributeType,
 } from './Checkout.utils.type';
 import { PROMOTION_SHIPPING_METHOD_ID } from 'src/constants';
+import { DeliveryMethodType } from 'src/external/services/osPlaceOrder/Legacy.service.types';
 
 export const toCents = (amount: number) => {
   return Math.round(amount * 100);
@@ -175,4 +176,20 @@ export const getUserFullName = (orderData: OrderCreateInterface) => {
   return `${orderData.order.user?.firstName || ''} ${
     orderData.order.user?.lastName || ''
   }`;
+};
+
+/**
+ * returns shipping method mapping against order id
+ * @param orders
+ * @returns
+ */
+export const getOrdersShippingMethodMapping = (
+  orders: OrderCreateInterface[],
+) => {
+  const ordersShippingMethodMapping: Map<string, DeliveryMethodType> =
+    new Map();
+  orders.forEach((order) => {
+    ordersShippingMethodMapping.set(order.order.id, order.order.deliveryMethod);
+  });
+  return ordersShippingMethodMapping;
 };

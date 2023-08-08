@@ -30,12 +30,14 @@ import {
   checkoutShippingMethodsSort,
   extractOsOrderNumber,
   getLessInventoryProducts,
+  getOrdersShippingMethodMapping,
   getProductIds,
   getUserFullName,
 } from './Checkout.utils';
 import OsOrderService from 'src/external/services/osOrder/osOrder.service';
 import {
   CheckoutSummaryInputEnum,
+  OrderCreateInterface,
   OsOrderResponseInterface,
   ProductType,
 } from './Checkout.utils.type';
@@ -123,18 +125,19 @@ export class CheckoutService {
    */
   protected async placeOrderOs(
     checkoutBundles: string,
-    orderDetails: object,
+    orders: OrderCreateInterface[],
     paymentMethodId: string,
     paymentIntentId: string,
     token: string,
   ): Promise<object> {
+    const defaultOrder = orders[0];
     const instance = new LegacyService(
       checkoutBundles,
-      orderDetails['shippingAddress'],
-      orderDetails['number'],
+      defaultOrder['shippingAddress'],
+      defaultOrder['number'],
       paymentMethodId,
-      orderDetails['billingAddress'],
-      orderDetails['deliveryMethod'],
+      defaultOrder['billingAddress'],
+      getOrdersShippingMethodMapping(orders),
       paymentIntentId,
       token,
     );
@@ -185,7 +188,7 @@ export class CheckoutService {
       const [osOrderResponse] = await Promise.all([
         this.placeOrderOs(
           checkoutBundles['data']['checkoutBundles'],
-          createOrder['order'],
+          [createOrder],
           paymentMethodId,
           paymentIntentId,
           token,
@@ -381,7 +384,7 @@ export class CheckoutService {
       const [osOrderResponse] = await Promise.all([
         this.placeOrderOs(
           checkoutBundles['data'].checkoutBundles,
-          defaultOrder.order,
+          orders,
           paymentMethodId,
           paymentIntentId,
           token,
