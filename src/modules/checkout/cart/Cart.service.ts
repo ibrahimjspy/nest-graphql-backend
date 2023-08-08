@@ -123,8 +123,8 @@ export class CartService {
       );
 
       return await this.cartResponseBuilder.addBundlesToCart(
-        marketplaceResult,
         saleorResult,
+        marketplaceResult,
         bundlesList,
         token,
       );
