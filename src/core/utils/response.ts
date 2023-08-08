@@ -76,7 +76,7 @@ export const prepareFailedResponse = async (
 export const prepareGQLPaginatedResponse = async (input): Promise<any> => {
   if (!input) return null;
   const output = {};
-  output['status'] = 200;
+  output['status'] = HttpStatus.OK;
 
   await Promise.all(
     Object.keys(input).map(async (key) => {

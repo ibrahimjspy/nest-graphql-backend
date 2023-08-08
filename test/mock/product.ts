@@ -246,6 +246,7 @@ export const productIntegrationMocks = {
     ],
   },
   expectedProducts: {
+    status: 200,
     totalCount: 10072,
     pageInfo: {
       hasNextPage: true,
@@ -615,6 +616,7 @@ export const productIntegrationMocks = {
     },
   ],
   productsWithMappings: {
+    status: 200,
     totalCount: 10072,
     pageInfo: {
       hasNextPage: true,
