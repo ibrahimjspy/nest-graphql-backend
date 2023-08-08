@@ -76,8 +76,6 @@ export const prepareFailedResponse = async (
 export const prepareGQLPaginatedResponse = async (input): Promise<any> => {
   if (!input) return null;
   const output = {};
-  output['status'] = HttpStatus.OK;
-
   await Promise.all(
     Object.keys(input).map(async (key) => {
       if (input[key] && key === GQL_EDGES) {
@@ -113,5 +111,13 @@ export const prepareCheckoutFailedResponse = async (
   response.message = message;
   response.errors = errors;
   response.status = status ? status : HttpStatus.BAD_REQUEST;
+  return response;
+};
+
+export const prepareProductsSuccessResponse = async (
+  response,
+): Promise<object> => {
+  console.log(response);
+  response.status = HttpStatus.OK;
   return response;
 };

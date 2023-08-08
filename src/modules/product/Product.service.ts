@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { graphqlExceptionHandler } from 'src/core/proxies/graphqlHandler';
 import {
   prepareGQLPaginatedResponse,
+  prepareProductsSuccessResponse,
   prepareSuccessResponse,
 } from 'src/core/utils/response';
 import { ProductFilterDto } from './dto';
@@ -51,9 +52,10 @@ export class ProductService {
       const retailerId = filter.retailerId;
       this.logger.log('Fetching products data', JSON.stringify(filter));
       const productsData = await ProductsHandlers.productsHandler(filter);
+      const productsResponse = prepareProductsSuccessResponse(productsData);
 
       return prepareGQLPaginatedResponse(
-        await this.addProductsMapping(productsData, retailerId),
+        await this.addProductsMapping(productsResponse, retailerId),
       );
     } catch (error) {
       this.logger.error(error);
@@ -311,8 +313,11 @@ export class ProductService {
         const firstCollectionProducts = collectionProducts['edges'].length
           ? collectionProducts['edges'][0]?.node?.products
           : [];
+        const productsResponse = prepareProductsSuccessResponse(
+          firstCollectionProducts,
+        );
         return prepareGQLPaginatedResponse(
-          await this.addProductsMapping(firstCollectionProducts, retailerId),
+          await this.addProductsMapping(productsResponse, retailerId),
         );
       }
       return prepareSuccessResponse(collectionProducts);
