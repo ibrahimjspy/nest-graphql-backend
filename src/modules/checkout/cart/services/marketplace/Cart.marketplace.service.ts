@@ -23,6 +23,7 @@ import {
 import {
   getFlatFulfillmentCheckoutIds,
   getTargetBundleByCheckoutBundleId,
+  isMultiCheckoutBundles,
 } from '../../Cart.utils';
 import {
   CheckoutIdError,
@@ -88,10 +89,13 @@ export class MarketplaceCartService {
     ) as checkoutBundlesInterface[];
     const validateCheckoutBundles = isEmptyArray(checkoutBundlesData);
     checkoutId = checkoutBundlesData[0].checkoutId;
+    const isMultiCheckout = isMultiCheckoutBundles(
+      marketplaceCheckout['data']['checkoutBundles'],
+    );
     if (!validateCheckoutBundles)
       throw new NoCheckoutBundleFoundError(checkoutBundleIds);
 
-    return { checkoutId, checkoutBundlesData };
+    return { checkoutId, checkoutBundlesData, isMultiCheckout };
   }
 
   /**

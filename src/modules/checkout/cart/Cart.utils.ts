@@ -724,8 +724,27 @@ export const getVendorFulfillmentType = (vendorData: {
     }
   });
 
-  if (sharoveFlatShippingField) {
+  if (sharoveFlatShippingField == 'true') {
     return SHAROVE_FULFILLMENT_ATTRIBUTE_SLUG;
   }
   return vendorData.id;
+};
+
+/**
+ * Returns a boolean value indicating whether checkout bundles that are given are of multiple checkout session or single checkout
+ * @param {checkoutBundlesInterface} checkoutBundle - A checkout bundle.
+ * @returns {string} isMultiCheckout
+ */
+export const isMultiCheckoutBundles = (
+  bundlesList: CheckoutBundleInterface[],
+) => {
+  const checkoutId: string = bundlesList[0].checkoutId;
+  let isMultiCheckout = false;
+  for (let i = 0; i < bundlesList.length; i++) {
+    const checkoutBundle = bundlesList[i];
+    if (checkoutId !== checkoutBundle.checkoutId) {
+      isMultiCheckout = true;
+    }
+  }
+  return isMultiCheckout;
 };

@@ -184,12 +184,14 @@ export class CartService {
     token: string,
   ): Promise<object> {
     try {
-      const { checkoutId, checkoutBundlesData } =
+      const { checkoutId, checkoutBundlesData, isMultiCheckout } =
         await this.marketplaceService.getCheckoutBundlesByIds(
           userEmail,
           checkoutBundleIds,
           token,
         );
+      // TODO fix this to handle checkout bundles separately
+      if (isMultiCheckout) return this.cartSessionReset(userEmail, token); // in case of multi checkout we remove cart session
       const [saleor, marketplace] = await Promise.allSettled([
         this.saleorService.removeBundleLines(
           checkoutId,
