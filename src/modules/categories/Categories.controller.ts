@@ -18,7 +18,6 @@ import {
 } from './dto/categories';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 import { CacheService } from 'src/app.cache.service';
-import { SuccessResponseType } from 'src/core/utils/response.type';
 
 @ApiTags('categories')
 @Controller('')
@@ -82,7 +81,9 @@ export class CategoriesController {
     this.logger.log(`Making expensive call to fetch categories`);
     const categoriesData = await this.appService.menuCategoriesDeprecated();
     const response = categoriesData['data'];
-    this.addToCache(categoriesCacheKey, response);
+    if (categoriesData.status == HttpStatus.OK) {
+      this.cacheManager.set(categoriesCacheKey, response);
+    }
     return response;
   }
 
@@ -121,11 +122,5 @@ export class CategoriesController {
       this.cacheManager.set(collectionsCacheKey, response);
     }
     return response;
-  }
-
-  addToCache(key: string, response: SuccessResponseType) {
-    if (response.status === HttpStatus.OK) {
-      this.cacheManager.set(key, response);
-    }
   }
 }
