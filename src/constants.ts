@@ -162,4 +162,4 @@ export const PRODUCTS_SEARCH_ENGINE_NAME =
   process.env.PRODUCTS_SEARCH_ENGINE_NAME || 'b2b-product-dev';
 
 export const IS_CACHE_ENABLED =
-  process.env.CACHE_ENABLED.toLowerCase() == 'true';
+  String(process.env.CACHE_ENABLED).toLowerCase() == 'true';
