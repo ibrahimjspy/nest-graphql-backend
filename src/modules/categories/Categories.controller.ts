@@ -109,6 +109,7 @@ export class CategoriesController {
     const collectionsCacheKey = this.cacheManager.generateCacheKey(
       'categories',
       'collections',
+      JSON.stringify(filter),
     );
     const cachedCollections = await this.cacheManager.get(collectionsCacheKey);
     if (cachedCollections) {
