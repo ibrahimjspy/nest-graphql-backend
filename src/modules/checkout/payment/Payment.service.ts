@@ -393,6 +393,13 @@ export class PaymentService {
     totalAmount,
     token,
   }): Promise<object> {
+    if (!totalAmount) {
+      return prepareSuccessResponse(
+        { paymentIntentId: null },
+        'No payment intent created',
+        201,
+      );
+    }
     const paymentIntentResponse = await this.stripeService.createPaymentIntent(
       userEmail,
       paymentMethodId,

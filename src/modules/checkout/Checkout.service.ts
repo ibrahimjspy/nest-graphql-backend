@@ -361,8 +361,6 @@ export class CheckoutService {
         token,
       );
       const { paymentIntentId, paymentMethodId } = paymentData || {};
-      if (!paymentIntentId || !paymentMethodId)
-        throw new NoPaymentIntentError(checkoutIds[0]);
 
       const orders = await Promise.all(
         checkoutIds.map((checkoutId) => {
