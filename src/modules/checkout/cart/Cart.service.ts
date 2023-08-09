@@ -643,7 +643,7 @@ export class CartService {
         token,
         true,
       );
-      return deleteCheckoutBundles;
+      return prepareSuccessResponse({ marketplace: deleteCheckoutBundles });
     } catch (error) {
       this.logger.error(error);
       return prepareCheckoutFailedResponse(
