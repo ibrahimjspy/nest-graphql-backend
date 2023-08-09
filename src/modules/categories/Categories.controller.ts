@@ -1,4 +1,12 @@
-import { Controller, Get, Logger, Param, Query, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Logger,
+  Param,
+  Query,
+  Res,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { makeResponse } from 'src/core/utils/response';
 import { CategoriesService } from './Categories.service';
@@ -9,7 +17,8 @@ import {
   shopIdDTO,
 } from './dto/categories';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
-import { CachingService } from 'src/app.cache.service';
+import { CacheService } from 'src/app.cache.service';
+import { SuccessResponseType } from 'src/core/utils/response.type';
 
 @ApiTags('categories')
 @Controller('')
@@ -18,7 +27,7 @@ export class CategoriesController {
 
   constructor(
     private readonly appService: CategoriesService,
-    private readonly cacheManager: CachingService,
+    private readonly cacheManager: CacheService,
   ) {}
 
   @Get('/api/v1/categories')
@@ -60,7 +69,10 @@ export class CategoriesController {
     summary: 'this api will be deprecated',
   })
   async findMenuCategories(): Promise<object> {
-    const categoriesCacheKey = `categories_menu`;
+    const categoriesCacheKey = this.cacheManager.generateCacheKey(
+      'categories',
+      'menu',
+    );
     const cachedCategories = await this.cacheManager.get(categoriesCacheKey);
 
     if (cachedCategories) {
@@ -70,7 +82,7 @@ export class CategoriesController {
     this.logger.log(`Making expensive call to fetch categories`);
     const categoriesData = await this.appService.menuCategoriesDeprecated();
     const response = categoriesData['data'];
-    this.cacheManager.set(categoriesCacheKey, response);
+    this.addToCache(categoriesCacheKey, response);
     return response;
   }
 
@@ -93,20 +105,27 @@ export class CategoriesController {
     @Res() res,
     @Query() filter: PaginationDto,
   ): Promise<object> {
-    const collectionsCacheKey = `categories_collections_${JSON.stringify(
-      filter,
-    )}`;
+    const collectionsCacheKey = this.cacheManager.generateCacheKey(
+      'categories',
+      'collections',
+    );
     const cachedCollections = await this.cacheManager.get(collectionsCacheKey);
     if (cachedCollections) {
       this.logger.verbose('found cached categories');
       return cachedCollections;
     }
     this.logger.log(`Making expensive call to fetch collections`);
-    const response = makeResponse(
-      res,
-      await this.appService.getCollections(filter),
-    );
-    this.cacheManager.set(collectionsCacheKey, response);
+    const collectionsData = await this.appService.getCollections(filter);
+    const response = makeResponse(res, collectionsData);
+    if (collectionsData.data) {
+      this.cacheManager.set(collectionsCacheKey, response);
+    }
     return response;
+  }
+
+  addToCache(key: string, response: SuccessResponseType) {
+    if (response.status === HttpStatus.OK) {
+      this.cacheManager.set(key, response);
+    }
   }
 }

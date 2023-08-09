@@ -74,3 +74,16 @@ export const getGraphqlAllAccessToken = (specificB2c?: boolean): string => {
   }
   return B2B_DEVELOPMENT_TOKEN;
 };
+
+/**
+ * Converts the CACHE_ENABLED environment variable to a boolean value.
+ *
+ * @param {string} value - The value of the environment variable.
+ * @returns {boolean} The converted boolean value.
+ *
+ * @example
+ * const isCacheEnabled = convertToBoolean(process.env.CACHE_ENABLED); // Returns true
+ */
+export const convertToBoolean = (value: string): boolean => {
+  return value.toLowerCase() === 'true';
+};

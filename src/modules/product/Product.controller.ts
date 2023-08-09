@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpStatus,
   Logger,
   Post,
   Query,
@@ -19,7 +20,8 @@ import {
 import { IsAuthenticated } from 'src/core/utils/decorators';
 import { ProductVariantStockUpdateDTO } from './dto/variant';
 import { GetMappingDto } from '../shop/dto/shop';
-import { CachingService } from 'src/app.cache.service';
+import { CacheService } from 'src/app.cache.service';
+import { SuccessResponseType } from 'src/core/utils/response.type';
 
 @ApiTags('product')
 @Controller()
@@ -27,7 +29,7 @@ export class ProductController {
   private readonly logger = new Logger(ProductService.name);
   constructor(
     private readonly appService: ProductService,
-    private readonly cacheManager: CachingService,
+    private readonly cacheManager: CacheService,
   ) {
     return;
   }
@@ -47,7 +49,11 @@ export class ProductController {
     @Res() res,
     @Query() filter: ProductFilterDto,
   ): Promise<object> {
-    const productCacheKey = `products_list_${JSON.stringify(filter)}`;
+    const productCacheKey = this.cacheManager.generateCacheKey(
+      'products',
+      'list',
+      JSON.stringify(filter),
+    );
     const cachedProducts = await this.cacheManager.get(productCacheKey);
 
     if (cachedProducts) {
@@ -72,10 +78,7 @@ export class ProductController {
 
       response = await typeMethod.call(this.appService, filter);
     }
-    if (response.status === 200) {
-      this.cacheManager.set(productCacheKey, response);
-    }
-
+    this.addToCache(productCacheKey, response);
     return makeResponse(res, response);
   }
 
@@ -147,5 +150,11 @@ export class ProductController {
     @Query() filter: GetMoreLikeThisDto,
   ): Promise<any> {
     return makeResponse(res, await this.appService.getMoreLikeThis(filter));
+  }
+
+  addToCache(key: string, response: SuccessResponseType) {
+    if (response.status === HttpStatus.OK) {
+      this.cacheManager.set(key, response);
+    }
   }
 }

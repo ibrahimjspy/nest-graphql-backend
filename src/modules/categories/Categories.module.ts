@@ -2,7 +2,7 @@ import { CacheModule, Module } from '@nestjs/common';
 import { CategoriesController } from './Categories.controller';
 import { CategoriesService } from './Categories.service';
 import { redisStore } from 'cache-manager-redis-store';
-import { CachingService } from 'src/app.cache.service';
+import { CacheService } from 'src/app.cache.service';
 import { RedisConfig } from 'src/app.cache.constants';
 
 @Module({
@@ -15,7 +15,7 @@ import { RedisConfig } from 'src/app.cache.constants';
     }),
   ],
   controllers: [CategoriesController],
-  providers: [CategoriesService, CachingService],
+  providers: [CategoriesService, CacheService],
   exports: [CategoriesService],
 })
 export class CategoriesModule {}

@@ -117,7 +117,6 @@ export const prepareCheckoutFailedResponse = async (
 export const prepareProductsSuccessResponse = async (
   response,
 ): Promise<object> => {
-  console.log(response);
   response.status = HttpStatus.OK;
   return response;
 };

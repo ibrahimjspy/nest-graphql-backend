@@ -25,12 +25,13 @@ import {
   validateCategoriesResponse,
 } from './Categories.utils';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
+import { SuccessResponseType } from 'src/core/utils/response.type';
 
 @Injectable()
 export class CategoriesService {
   private readonly logger = new Logger(CategoriesService.name);
 
-  public async menuCategoriesDeprecated(): Promise<object> {
+  public async menuCategoriesDeprecated(): Promise<SuccessResponseType> {
     try {
       const categoriesResponse = validateCategoriesResponse(
         await menuCategoriesHandler(),
@@ -121,10 +122,12 @@ export class CategoriesService {
   /**
    * @description -- returns collections from saleor
    */
-  public async getCollections(pagination: PaginationDto): Promise<object> {
+  public async getCollections(
+    pagination: PaginationDto,
+  ): Promise<SuccessResponseType> {
     try {
       const collectionsResponse = await collectionsHandler(pagination);
-      return prepareSuccessResponse(collectionsResponse);
+      return await prepareSuccessResponse(collectionsResponse);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
