@@ -113,13 +113,13 @@ export class CategoriesController {
     const cachedCollections = await this.cacheManager.get(collectionsCacheKey);
     if (cachedCollections) {
       this.logger.verbose('found cached categories');
-      return cachedCollections;
+      return makeResponse(res, cachedCollections);
     }
     this.logger.log(`Making expensive call to fetch collections`);
     const collectionsData = await this.appService.getCollections(filter);
     const response = makeResponse(res, collectionsData);
     if (collectionsData.data) {
-      this.cacheManager.set(collectionsCacheKey, response);
+      this.cacheManager.set(collectionsCacheKey, collectionsData);
     }
     return response;
   }

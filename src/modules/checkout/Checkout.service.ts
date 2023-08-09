@@ -130,7 +130,7 @@ export class CheckoutService {
     paymentIntentId: string,
     token: string,
   ): Promise<object> {
-    const defaultOrder = orders[0];
+    const defaultOrder = orders[0].order;
     const instance = new LegacyService(
       checkoutBundles,
       defaultOrder['shippingAddress'],
