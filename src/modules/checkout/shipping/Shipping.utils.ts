@@ -2,6 +2,10 @@ import { Logger } from '@nestjs/common';
 import { PROMOTION_SHIPPING_METHOD_ID } from 'src/constants';
 import { MarketplaceShippingMethodsType } from 'src/graphql/types/checkout.type';
 import { ShippingMethodSaleorType } from 'src/graphql/types/shipping';
+import {
+  CheckoutShippingMethodType,
+  MappedShippingMethodsType,
+} from './Shipping.types';
 interface ShippingMethodType {
   id: string;
   shippingMethodId: string;
@@ -91,4 +95,63 @@ const checkoutShippingMethodsFilter = (
   });
 
   return shippingMethods;
+};
+
+/**
+ * Adds and sorts shipping methods in the given `mappedShippingMethods` array
+ * based on checkout data and delivery methods.
+ *
+ * @param {MappedShippingMethodsType[]} mappedShippingMethods - Array of mapped shipping methods.
+ * @param {CheckoutShippingMethodType[]} checkoutShippingMethods - Array of checkout shipping methods data.
+ * @returns {MappedShippingMethodsType[]} Updated mapped shipping methods array with sorted shipping methods.
+ */
+export const addCheckoutShippingMethod = (
+  mappedShippingMethods: MappedShippingMethodsType[],
+  checkoutShippingMethods: CheckoutShippingMethodType[],
+): MappedShippingMethodsType[] => {
+  return mappedShippingMethods.map((mappedMethod) => {
+    // Find the checkout shipping method data for the current mapped method
+    const checkoutMethod = checkoutShippingMethods.find(
+      (checkout) => checkout.data.id === mappedMethod.checkoutId,
+    );
+
+    if (checkoutMethod && checkoutMethod.data.deliveryMethod) {
+      // If checkout data and delivery method are present
+      const deliveryMethodId = checkoutMethod.data.deliveryMethod.id;
+      const existingShippingMethods = mappedMethod.shippingMethods;
+
+      // Sort the existing shipping methods based on the delivery method's ID
+      const sortedMethods = existingShippingMethods.sort((a, b) => {
+        if (a.shippingMethodId === deliveryMethodId) return -1;
+        if (b.shippingMethodId === deliveryMethodId) return 1;
+        return 0;
+      });
+
+      return {
+        checkoutId: mappedMethod.checkoutId,
+        shippingMethods: sortedMethods,
+      };
+    } else if (!mappedMethod.shippingMethods.length) {
+      // If checkout data is present but no delivery method is specified
+      // Replace empty shippingMethods with checkout shipping methods and sort by checkout ID
+
+      const sortedMethods = checkoutMethod.data.shippingMethods.map(
+        (checkoutShippingMethod) => ({
+          shippingMethodId: checkoutShippingMethod.id,
+          name: checkoutShippingMethod.name,
+        }),
+      );
+
+      return {
+        checkoutId: mappedMethod.checkoutId,
+        shippingMethods: sortedMethods,
+      };
+    } else {
+      // If there's no checkout method, keep the shipping methods as is
+      return {
+        checkoutId: mappedMethod.checkoutId,
+        shippingMethods: mappedMethod.shippingMethods,
+      };
+    }
+  });
 };

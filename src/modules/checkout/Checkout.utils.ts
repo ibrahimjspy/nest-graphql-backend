@@ -189,7 +189,10 @@ export const getOrdersShippingMethodMapping = (
   const ordersShippingMethodMapping: Map<string, DeliveryMethodType> =
     new Map();
   orders.forEach((order) => {
-    ordersShippingMethodMapping.set(order.order.id, order.order.deliveryMethod);
+    ordersShippingMethodMapping.set(
+      order.order.checkoutId,
+      order.order.deliveryMethod,
+    );
   });
   return ordersShippingMethodMapping;
 };

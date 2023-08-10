@@ -397,7 +397,12 @@ export class CheckoutService {
         `Os order id ${osOrderId} created against checkout id ${checkoutIds}`,
       );
 
-      await this.paymentService.paymentIntentUpdate(paymentIntentId, osOrderId);
+      if (paymentIntentId && paymentIntentId !== '') {
+        await this.paymentService.paymentIntentUpdate(
+          paymentIntentId,
+          osOrderId,
+        );
+      }
       sendOrderConfirmationEmail({
         id: saleorOrderId,
         email: checkoutBundles['data'].userEmail,

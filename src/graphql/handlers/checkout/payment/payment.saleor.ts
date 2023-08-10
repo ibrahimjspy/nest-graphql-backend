@@ -9,17 +9,17 @@ import { storePaymentIntentMutation } from 'src/graphql/mutations/checkout/payme
 
 export const storePaymentIntentHandler = async (
   checkoutId: string,
-  paymentIntentId: string,
   paymentMethodId: string,
   token: string,
+  paymentIntentId?: string,
 ): Promise<object> => {
   try {
     const response = await graphqlResultErrorHandler(
       await graphqlCall(
         storePaymentIntentMutation(
           checkoutId,
-          paymentIntentId,
           paymentMethodId,
+          paymentIntentId,
         ),
         token,
       ),

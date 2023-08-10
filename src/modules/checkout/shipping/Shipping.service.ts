@@ -28,8 +28,15 @@ import {
 import { PaymentService } from '../payment/Payment.service';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 import { SuccessResponseType } from 'src/core/utils/response.type';
-import { marketplaceShippingMethodsMap } from './Shipping.utils';
+import {
+  addCheckoutShippingMethod,
+  marketplaceShippingMethodsMap,
+} from './Shipping.utils';
 import { MarketplaceCartService } from '../cart/services/marketplace/Cart.marketplace.service';
+import {
+  CheckoutShippingMethodType,
+  MappedShippingMethodsType,
+} from './Shipping.types';
 
 @Injectable()
 export class ShippingService {
@@ -237,11 +244,25 @@ export class ShippingService {
         shippingZones['edges'][0].node.shippingMethods,
       );
 
+      const checkoutIds = mappedShippingMethods.map(
+        (method) => method.checkoutId,
+      );
+
+      const checkoutShippingMethods = (await Promise.all(
+        checkoutIds.map(async (id) => {
+          return await this.getShippingMethods({ checkoutId: id }, token);
+        }),
+      )) as CheckoutShippingMethodType[];
+
+      const validateCheckoutShippingMethods = addCheckoutShippingMethod(
+        mappedShippingMethods,
+        checkoutShippingMethods,
+      );
+      this.selectDefaultShippingMethods(validateCheckoutShippingMethods, token);
       // Prepare a success response containing the mapped shipping methods.
-      return prepareSuccessResponse(mappedShippingMethods);
+      return prepareSuccessResponse(validateCheckoutShippingMethods);
     } catch (error) {
       this.logger.error(error);
-
       // Return an exception response in case of errors.
       return graphqlExceptionHandler(error);
     }
@@ -324,6 +345,37 @@ export class ShippingService {
         'Billing address added against all user cart sessions',
         201,
       );
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+
+  /**
+   * Selects default shipping methods for each mapped checkout ID and returns the results.
+   *
+   * @param {MappedShippingMethodsType[]} mappedShippingMethods - Array of mapped shipping methods.
+   * @param {Logger} logger - Logger instance for logging errors.
+   * @returns {Promise<object[]>} An array of promises representing the results of shipping method selection.
+   */
+  protected async selectDefaultShippingMethods(
+    mappedShippingMethods: MappedShippingMethodsType[],
+    token: string,
+  ): Promise<object[]> {
+    try {
+      this.logger.log(
+        ' selecting default shipping methods',
+        mappedShippingMethods,
+      );
+      const promises = mappedShippingMethods.map((mapping) => {
+        return this.selectShippingMethods(
+          mapping.checkoutId,
+          mapping.shippingMethods[0].shippingMethodId,
+          token,
+        );
+      });
+
+      return await Promise.allSettled(promises);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

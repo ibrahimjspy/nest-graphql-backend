@@ -18,6 +18,7 @@ import { getCheckoutMetadataHandler } from 'src/graphql/handlers/checkout/checko
 import { B2B_CHECKOUT_APP_TOKEN } from 'src/constants';
 import { SaleorCheckoutInterface } from '../Checkout.utils.type';
 import { MarketplaceCartService } from '../cart/services/marketplace/Cart.marketplace.service';
+import { PaymentMetadataDto } from './dto/paymentMetadata';
 
 @Injectable()
 export class PaymentService {
@@ -329,7 +330,7 @@ export class PaymentService {
       );
       const checkoutAmount = checkoutPreAuthData.checkoutAmount;
       const paymentIntentId = checkoutPreAuthData.paymentIntentId;
-      if (paymentIntentId) {
+      if (paymentIntentId && paymentIntentId !== '') {
         return this.validatePaymentIntentV2(
           checkoutAmount,
           paymentIntentId,
@@ -393,33 +394,30 @@ export class PaymentService {
     totalAmount,
     token,
   }): Promise<object> {
-    if (!totalAmount) {
-      return prepareSuccessResponse(
-        { paymentIntentId: null },
-        'No payment intent created',
-        201,
-      );
+    let paymentIntentId = '';
+    if (totalAmount) {
+      const paymentIntentResponse =
+        await this.stripeService.createPaymentIntent(
+          userEmail,
+          paymentMethodId,
+          totalAmount,
+        );
+      if (!paymentIntentResponse)
+        throw new PaymentIntentCreationError(userEmail, paymentMethodId);
+      paymentIntentId = paymentIntentResponse.id;
     }
-    const paymentIntentResponse = await this.stripeService.createPaymentIntent(
-      userEmail,
-      paymentMethodId,
-      totalAmount,
-    );
     const checkoutIds =
       await this.marketplaceCartService.getMarketplaceCheckoutIds(
         userEmail,
         token,
       );
-    if (!paymentIntentResponse)
-      throw new PaymentIntentCreationError(userEmail, paymentMethodId);
-    const paymentIntentId = paymentIntentResponse.id;
     checkoutIds.map(async (checkoutId) => {
       await Promise.all([
         storePaymentIntentHandler(
           checkoutId,
-          paymentIntentId,
           paymentMethodId,
           token,
+          paymentIntentId,
         ),
         preAuthTransactionHandler(
           checkoutId,
@@ -432,7 +430,37 @@ export class PaymentService {
 
     return prepareSuccessResponse(
       { paymentIntentId },
-      'new payment intent Id created and added against user',
+      totalAmount
+        ? 'new payment intent Id created and added against user'
+        : 'no payment intent Id created and added against user',
+      201,
+    );
+  }
+
+  public async saveUserPaymentMetadata(
+    paymentMetadata: PaymentMetadataDto,
+    token: string,
+  ): Promise<object> {
+    const { userEmail, paymentIntentId, paymentMethodId } = paymentMetadata;
+
+    const checkoutIds =
+      await this.marketplaceCartService.getMarketplaceCheckoutIds(
+        userEmail,
+        token,
+      );
+    const saveMetadata = await Promise.all(
+      checkoutIds.map(async (checkoutId) => {
+        return await storePaymentIntentHandler(
+          checkoutId,
+          paymentMethodId,
+          token,
+          paymentIntentId,
+        );
+      }),
+    );
+    return prepareSuccessResponse(
+      { saveMetadata },
+      'payment metadata saved',
       201,
     );
   }

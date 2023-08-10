@@ -2,14 +2,17 @@ import { gql } from 'graphql-request';
 
 export const storePaymentIntentMutation = (
   checkoutId: string,
-  paymentIntentId: string,
   paymentMethodId: string,
+  paymentIntentId?: string,
 ) => {
+  const paymentIntentMetadata = paymentIntentId
+    ? `,{ key: "paymentIntentId", value: "${paymentIntentId}" }`
+    : '';
   return gql`
     mutation {
       updateMetadata(
         id: "${checkoutId}"
-        input: [{ key: "paymentIntentId", value: "${paymentIntentId}" }, { key: "paymentMethodId", value: "${paymentMethodId}" }]
+        input: [ { key: "paymentMethodId", value: "${paymentMethodId}" } ${paymentIntentMetadata}]
       ) {
         item {
           metadata {

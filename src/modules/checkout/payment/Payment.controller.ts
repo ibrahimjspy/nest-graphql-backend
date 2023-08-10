@@ -19,6 +19,7 @@ import {
   PaymentPreAuthV2Dto,
 } from './dto/paymentCreate';
 import StripeService from 'src/external/services/stripe';
+import { PaymentMetadataDto } from './dto/paymentMetadata';
 
 @ApiTags('checkout/payment')
 @Controller('')
@@ -115,6 +116,22 @@ export class PaymentController {
     return makeResponse(
       res,
       await this.appService.preAuthV2(paymentMethodId, userEmail, token),
+    );
+  }
+
+  @Post('api/v1/payment/metadata')
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'stores payment metadata',
+  })
+  async addPaymentMetadata(
+    @Res() res,
+    @Body() body: PaymentMetadataDto,
+    @IsAuthenticated('authorization') token: string,
+  ): Promise<object> {
+    return makeResponse(
+      res,
+      await this.appService.saveUserPaymentMetadata(body, token),
     );
   }
 }

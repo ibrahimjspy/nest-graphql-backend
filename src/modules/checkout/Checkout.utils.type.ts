@@ -121,6 +121,7 @@ export interface OrderCreateInterface {
   order: {
     id: string;
     number: string;
+    checkoutId: string;
     deliveryMethod: {
       id: string;
       name: string;

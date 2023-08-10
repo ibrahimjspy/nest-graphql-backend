@@ -5,6 +5,20 @@ import { checkoutShippingMethodFragment } from '../../../fragments/checkout/ship
 const checkoutShippingMethodsFragment = gql`
   fragment Checkout on Checkout {
     id
+    deliveryMethod {
+      ... on ShippingMethod {
+        id
+        metadata {
+          key
+          value
+        }
+      }
+      ... on Warehouse {
+        __typename
+        id
+        name
+      }
+    }
     shippingMethods {
       ...ShippingMethod
     }

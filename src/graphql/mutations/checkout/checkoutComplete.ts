@@ -15,6 +15,7 @@ export const orderCreateFromCheckoutMutation = (
         order {
           id
           number
+          checkoutId
           deliveryMethod {
             ... on ShippingMethod {
               id
