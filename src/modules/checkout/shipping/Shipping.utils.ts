@@ -115,9 +115,9 @@ export const addCheckoutShippingMethod = (
       (checkout) => checkout.data.id === mappedMethod.checkoutId,
     );
 
-    if (checkoutMethod && checkoutMethod.data.deliveryMethod.id) {
+    if (checkoutMethod && checkoutMethod.data.deliveryMethod?.id) {
       // If checkout data and delivery method are present
-      const deliveryMethodId = checkoutMethod.data.deliveryMethod.id;
+      const deliveryMethodId = checkoutMethod.data.deliveryMethod?.id;
       let existingShippingMethods = mappedMethod.shippingMethods;
       // If there are no existing shipping methods then use checkout shipping methods
       if (!existingShippingMethods.length) {
