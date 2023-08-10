@@ -748,3 +748,27 @@ export const isMultiCheckoutBundles = (
   }
   return isMultiCheckout;
 };
+
+/**
+ * Updates the checkout ID in the checkout bundles based on the created bundle's ID.
+ *
+ * @param {UpdateMarketplaceCheckoutType} checkoutBundles - Object containing checkout bundles.
+ * @param {SaleorCheckoutInterface} saleorResponse - Response object from Saleor.
+ * @param {CheckoutBundleInputType[]} bundlesList - List of checkout bundle input data.
+ */
+export const updateMarketplaceResponseCheckoutId = (
+  checkoutBundles: UpdateMarketplaceCheckoutType,
+  saleorResponse: SaleorCheckoutInterface,
+  bundlesList: CheckoutBundleInputType[],
+): void => {
+  const createdBundleId = bundlesList[0]?.bundleId; // Safely access bundleId
+  if (!createdBundleId) {
+    return; // Exit early if bundleId is missing
+  }
+
+  checkoutBundles.checkoutBundles.forEach((checkoutBundle) => {
+    if (checkoutBundle.bundle.id === createdBundleId) {
+      checkoutBundle.checkoutId = saleorResponse.id;
+    }
+  });
+};

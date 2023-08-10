@@ -15,6 +15,7 @@ import {
   ResponseStatusEnum,
 } from './Response.utils.type';
 import { isEmptyArray } from 'src/modules/product/Product.utils';
+import { updateMarketplaceResponseCheckoutId } from '../Cart.utils';
 const { SUCCESS, SALEOR_FAILED, MARKETPLACE_FAILED } = ResponseStatusEnum;
 const {
   REPLACED,
@@ -44,8 +45,13 @@ export class CartResponseService {
       const marketplaceErrors = marketplaceResponse?.reason;
 
       if (status == SUCCESS) {
+        const updatedMarketplaceResponse = updateMarketplaceResponseCheckoutId(
+          marketplace,
+          saleor,
+          userBundles,
+        );
         return prepareSuccessResponse(
-          { saleor, marketplace },
+          { saleor, marketplace: updatedMarketplaceResponse },
           'bundles added to cart',
           201,
         );
