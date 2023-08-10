@@ -58,6 +58,7 @@ export class ProductController {
 
     if (cachedProducts) {
       this.logger.log('found cached products');
+      this.revalidateProductsCache(productCacheKey, filter);
       return makeResponse(res, cachedProducts as object);
     }
     this.logger.log('making expensive call to retrieve products');
@@ -155,6 +156,34 @@ export class ProductController {
   addToCache(key: string, response: SuccessResponseType) {
     if (response.status === HttpStatus.OK) {
       this.cacheManager.set(key, response);
+    }
+  }
+
+  /**
+   * this api re validates cache, we are using this until we have valid eviction policy for products list
+   */
+  async revalidateProductsCache(key: string, filter: ProductFilterDto) {
+    try {
+      this.logger.log('revalidateProductsCache', filter);
+      const { storeId, collections, type } = filter;
+      let response;
+      if (storeId) {
+        response = await this.appService.getShopProducts(filter);
+      } else if (collections) {
+        response = await this.appService.getProductByCollections(filter);
+      } else {
+        const typeMethod =
+          {
+            [ProductFilterTypeEnum.POPULAR_ITEMS]:
+              this.appService.getPopularItems,
+            [ProductFilterTypeEnum.NEW_ARRIVALS]: this.appService.getProducts,
+          }[type] || this.appService.getProducts;
+
+        response = await typeMethod.call(this.appService, filter);
+      }
+      this.addToCache(key, response);
+    } catch (error) {
+      this.logger.error(error);
     }
   }
 }
