@@ -62,12 +62,6 @@ export const b2bQuery = (filter: ProductFilterDto): string => {
                 ... Price
               }
             }
-            variants {
-              id
-              attributes {
-                ... Attribute
-              }
-            }
             thumbnail(size: ${DEFAULT_THUMBNAIL_SIZE}) {
               url
             }
