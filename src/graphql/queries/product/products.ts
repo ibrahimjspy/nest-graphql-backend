@@ -15,7 +15,6 @@ import {
 import { ProductFilterDto } from 'src/modules/product/dto';
 
 export const b2bQuery = (filter: ProductFilterDto): string => {
-  const SHAROVE_FULFILLMENT_ATTRIBUTE_SLUG = 'issharovefulfillment';
   const pageFilter = validatePageFilter(filter);
   const categoryFilter = filter['category'] ? `"${filter['category']}"` : '';
   const metadataFilter = getVendorIdMetadataFilter(filter);
@@ -54,19 +53,13 @@ export const b2bQuery = (filter: ProductFilterDto): string => {
         edges {
           node {
             ... Product
-            attribute(slug:"${SHAROVE_FULFILLMENT_ATTRIBUTE_SLUG}") {
+            attributes {
               ... Attribute
             }
             defaultVariant {
               id
               pricing {
                 ... Price
-              }
-            }
-            variants {
-              id
-              attributes {
-                ... Attribute
               }
             }
             thumbnail(size: ${DEFAULT_THUMBNAIL_SIZE}) {
