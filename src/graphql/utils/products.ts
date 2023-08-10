@@ -10,7 +10,7 @@ export const getProductAttributeFilter = (filter: ProductFilterDto) => {
   attributes:[
     ${
       filter.color
-        ? `{slug:"availableColors", values:${JSON.stringify(filter.color)}},`
+        ? `{slug:"color", values:${JSON.stringify(filter.color)}},`
         : ''
     }
     ${
