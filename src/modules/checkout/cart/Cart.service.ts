@@ -561,8 +561,6 @@ export class CartService {
         }
       }
 
-      const { checkoutId } = updateOpenPackPayload;
-
       // Perform the update in Saleor and retrieve updated data
       const saleor = await this.saleorService.handleOpenPackUpdates(
         updateOpenPackPayload,
@@ -571,7 +569,7 @@ export class CartService {
       const [updateBundle, marketplace] = await Promise.all([
         await this.productService.updateBundle(updateOpenPackPayload),
         this.marketplaceService.getAllCheckoutBundles({
-          checkoutIds: [checkoutId],
+          userEmail: saleor.user.email,
           token,
         }),
       ]);

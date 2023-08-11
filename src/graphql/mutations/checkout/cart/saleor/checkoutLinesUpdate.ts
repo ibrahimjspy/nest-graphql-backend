@@ -15,6 +15,9 @@ const b2bQuery = (checkoutId: string, lines: CheckoutLinesInterface) => {
         ) {
           checkout {
             id
+            user {
+              email
+            }
           }
           errors {
             message
