@@ -45,13 +45,9 @@ export class CartResponseService {
       const marketplaceErrors = marketplaceResponse?.reason;
 
       if (status == SUCCESS) {
-        const updatedMarketplaceResponse = updateMarketplaceResponseCheckoutId(
-          marketplace,
-          saleor,
-          userBundles,
-        );
+        updateMarketplaceResponseCheckoutId(marketplace, saleor, userBundles);
         return prepareSuccessResponse(
-          { saleor, marketplace: updatedMarketplaceResponse },
+          { saleor, marketplace },
           'bundles added to cart',
           201,
         );
