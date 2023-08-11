@@ -24,7 +24,8 @@ import {
   shippingAddressType,
 } from './Legacy.service.types';
 import { EnvironmentEnum } from 'src/external/endpoints/provisionStorefront';
-import { OsOrderPlaceError } from 'src/modules/checkout/Checkout.errors';
+import { saveFailedOrderHandler } from 'src/graphql/handlers/checkout/checkout';
+import { OsOrderResponseInterface } from 'src/modules/checkout/Checkout.utils.type';
 
 // TODO refactor this class implementation according to nest js classes
 // TODO split down classes based on external services like mapping, os
@@ -54,6 +55,7 @@ export class LegacyService {
   B2B_ORDER_TYPE = 'B2B';
   site = SHAROVE_ORDER_SITE;
   paymentIntentId: string;
+  userEmail: string;
   constructor(
     selectedBundles,
     shipping_info,
@@ -62,6 +64,7 @@ export class LegacyService {
     billingInfo: shippingAddressType,
     deliveryMethodMap: Map<string, DeliveryMethodType>,
     paymentIntentId: string,
+    userEmail: string,
     token,
   ) {
     this.selectedBundles = selectedBundles;
@@ -74,6 +77,7 @@ export class LegacyService {
     this.elasticSearchUrl = `${ELASTIC_SEARCH_ENDPOINT}/api/as/v1`;
     this.deliveryMethodMap = deliveryMethodMap;
     this.paymentIntentId = paymentIntentId;
+    this.userEmail = userEmail;
   }
   async placeExternalOrder() {
     try {
@@ -88,8 +92,24 @@ export class LegacyService {
       const response = await http.post(URL, payload, header);
       return response?.data;
     } catch (err) {
+      const failedResponse = {
+        data: { orders: [] },
+        message: err.response.data.error,
+        status: err.status || 400,
+      } as OsOrderResponseInterface;
+      saveFailedOrderHandler(
+        {
+          errorShortDesc: err.response.data.error,
+          exception: JSON.stringify(err),
+          orderId: this.orderId,
+          orderPayload: this.selectedBundles,
+          source: 'order',
+          email: this.userEmail,
+        },
+        this.token,
+      );
       Logger.error(err, err.response.data.error);
-      throw new OsOrderPlaceError(this.orderId, err.response.data.error);
+      return failedResponse;
     }
   }
 

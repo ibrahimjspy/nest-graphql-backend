@@ -68,24 +68,6 @@ export class CheckoutController {
     );
   }
 
-  @Post('api/v1/checkout/complete')
-  @ApiOperation({
-    summary:
-      'this completes checkout against checkout id in both Saleor and Shop service',
-  })
-  @ApiBearerAuth('JWT-auth')
-  async checkoutComplete(
-    @Res() res,
-    @Body() body: CheckoutIdDto,
-    @IsAuthenticated('authorization') token: string,
-  ): Promise<object> {
-    const { checkoutId } = body;
-    return makeResponse(
-      res,
-      await this.appService.checkoutComplete(token, checkoutId),
-    );
-  }
-
   @Post('api/v1/os/order/place')
   @ApiOperation({
     summary: 'Place order on orangeshine as sharove against B2C order',

@@ -21,7 +21,6 @@ import {
   SHAROVE_EMAIL,
   SHAROVE_PASSWORD,
 } from 'src/constants';
-import { getOrdersByShopId } from '../orders/Orders.utils';
 import { OrdersService } from '../orders/Orders.service';
 import { LegacyService } from 'src/external/services/osPlaceOrder/Legacy.service';
 import { preparePromotionResponse } from './shipping/services/Shipping.response';
@@ -128,6 +127,7 @@ export class CheckoutService {
     orders: OrderCreateInterface[],
     paymentMethodId: string,
     paymentIntentId: string,
+    userEmail: string,
     token: string,
   ): Promise<object> {
     const defaultOrder = orders[0].order;
@@ -139,91 +139,10 @@ export class CheckoutService {
       defaultOrder['billingAddress'],
       getOrdersShippingMethodMapping(orders),
       paymentIntentId,
+      userEmail,
       token,
     );
     return await instance.placeExternalOrder();
-  }
-
-  /**
-   * @description -- this method is called after shipping methods and payment methods assignment with Checkout to create an order
-   * at the end of process
-   * @step - it validates if payment intent is created using preAuth method in payment service
-   * @step - it then creates order by just giving checkout id and Auth token
-   * @step - it triggers an sqs event to add that order to shop
-   * @step - disables checkout session from shop service checkout
-   * @step - it takes order and bundle information and then store that order to shop using addOrderToShop
-   */
-  public async checkoutComplete(
-    token: string,
-    checkoutId: string,
-  ): Promise<object> {
-    try {
-      const [checkoutBundles, paymentData] = await Promise.all([
-        this.marketplaceCartService.getAllCheckoutBundles({
-          checkoutIds: [checkoutId],
-          token,
-          isSelected: true,
-        }),
-        this.paymentService.getPaymentDataFromMetadata(checkoutId, token),
-      ]);
-      const { paymentIntentId, paymentMethodId } = paymentData || {};
-      if (!paymentIntentId || !paymentMethodId)
-        throw new NoPaymentIntentError(checkoutId);
-      const createOrder = await orderCreateFromCheckoutHandler(
-        checkoutId,
-        B2B_CHECKOUT_APP_TOKEN,
-      );
-      const saleorOrderId = createOrder.order.id;
-      this.logger.log(
-        `Order created against checkout id ${checkoutId}`,
-        saleorOrderId,
-      );
-      const ordersByShop = {
-        userEmail: checkoutBundles['data']['userEmail'],
-        marketplaceOrders: getOrdersByShopId(
-          checkoutBundles['data'],
-          createOrder['order'],
-        ),
-      };
-      const [osOrderResponse] = await Promise.all([
-        this.placeOrderOs(
-          checkoutBundles['data']['checkoutBundles'],
-          [createOrder],
-          paymentMethodId,
-          paymentIntentId,
-          token,
-        ),
-        this.ordersService.addOrderToShop(ordersByShop, token),
-        CheckoutHandlers.disableCheckoutSession([checkoutId], token),
-      ]);
-      const osOrderId = extractOsOrderNumber(
-        osOrderResponse as OsOrderResponseInterface,
-      );
-      this.logger.log(
-        `Os order id ${osOrderId} created against checkout id ${checkoutId}`,
-      );
-      await this.paymentService.paymentIntentUpdate(paymentIntentId, osOrderId);
-      sendOrderConfirmationEmail({
-        id: saleorOrderId,
-        email: checkoutBundles['data']['userEmail'],
-        name: getUserFullName(createOrder),
-      });
-      return prepareSuccessResponse(
-        { createOrder, osOrderResponse },
-        'order created against checkout',
-        201,
-      );
-    } catch (error) {
-      this.logger.error(error);
-      if (
-        error instanceof NoPaymentIntentError ||
-        error instanceof OsOrderPlaceError
-      ) {
-        return prepareFailedResponse(error.message);
-      } else {
-        return graphqlExceptionHandler(error);
-      }
-    }
   }
 
   /**
@@ -385,6 +304,7 @@ export class CheckoutService {
           orders,
           paymentMethodId,
           paymentIntentId,
+          userEmail,
           token,
         ),
         CheckoutHandlers.disableCheckoutSession(checkoutIds, token),
@@ -397,7 +317,7 @@ export class CheckoutService {
         `Os order id ${osOrderId} created against checkout id ${checkoutIds}`,
       );
 
-      if (paymentIntentId && paymentIntentId !== '') {
+      if (paymentIntentId && paymentIntentId !== '' && osOrderId) {
         await this.paymentService.paymentIntentUpdate(
           paymentIntentId,
           osOrderId,

@@ -165,7 +165,7 @@ export const getProductIds = (products: ProductType[]): string[] => {
  * @pre_condition -- this assumes that all orders in os data have same order number
  */
 export const extractOsOrderNumber = (orderData: OsOrderResponseInterface) => {
-  return orderData.data.orders[0].order_number || null;
+  return orderData.data.orders[0]?.order_number || null;
 };
 
 /**
