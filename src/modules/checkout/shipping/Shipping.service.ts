@@ -30,6 +30,7 @@ import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 import { SuccessResponseType } from 'src/core/utils/response.type';
 import {
   addCheckoutShippingMethod,
+  internationalShippingMethodsFilter,
   marketplaceShippingMethodsMap,
 } from './Shipping.utils';
 import { MarketplaceCartService } from '../cart/services/marketplace/Cart.marketplace.service';
@@ -37,6 +38,7 @@ import {
   CheckoutShippingMethodType,
   MappedShippingMethodsType,
 } from './Shipping.types';
+import { shippingAddressType } from 'src/external/services/osPlaceOrder/Legacy.service.types';
 
 @Injectable()
 export class ShippingService {
@@ -229,16 +231,17 @@ export class ShippingService {
     token: string,
   ): Promise<object> {
     try {
-      // Retrieve shipping zones with a limit of 1 from the API using the provided token.
-      const shippingZones = await getShippingZonesHandler({ first: 1 }, token);
-
-      // Get marketplace shipping methods based on the provided user email and token.
-      const marketplaceShippingMethods = await getMarketplaceShippingMethods(
+      const shippingZonesPromise = getShippingZonesHandler({ first: 1 }, token);
+      const marketplaceShippingMethodsPromise = getMarketplaceShippingMethods(
         filter.userEmail,
         token,
       );
 
-      // Map and prepare the shipping methods data using the marketplaceShippingMethodsMap function.
+      const [shippingZones, marketplaceShippingMethods] = await Promise.all([
+        shippingZonesPromise,
+        marketplaceShippingMethodsPromise,
+      ]);
+
       const mappedShippingMethods = marketplaceShippingMethodsMap(
         marketplaceShippingMethods,
         shippingZones['edges'][0].node.shippingMethods,
@@ -248,22 +251,39 @@ export class ShippingService {
         (method) => method.checkoutId,
       );
 
-      const checkoutShippingMethods = (await Promise.all(
-        checkoutIds.map(async (id) => {
-          return await this.getShippingMethods({ checkoutId: id }, token);
-        }),
-      )) as CheckoutShippingMethodType[];
+      const checkoutShippingMethodsPromises = checkoutIds.map((id) =>
+        this.getShippingMethods({ checkoutId: id }, token),
+      );
+
+      const checkoutShippingMethods = await Promise.all(
+        checkoutShippingMethodsPromises,
+      );
+
+      const shippingAddressPromise = this.getCheckoutShippingAddress(
+        checkoutIds[0],
+        token,
+      );
+
+      const [shippingAddress] = await Promise.all([shippingAddressPromise]);
 
       const validateCheckoutShippingMethods = addCheckoutShippingMethod(
         mappedShippingMethods,
-        checkoutShippingMethods,
+        checkoutShippingMethods as CheckoutShippingMethodType[],
       );
-      this.selectDefaultShippingMethods(validateCheckoutShippingMethods, token);
-      // Prepare a success response containing the mapped shipping methods.
+
+      internationalShippingMethodsFilter(
+        validateCheckoutShippingMethods,
+        shippingAddress['data']['shippingAddress'] as shippingAddressType,
+      );
+
+      await this.selectDefaultShippingMethods(
+        validateCheckoutShippingMethods,
+        token,
+      );
+
       return prepareSuccessResponse(validateCheckoutShippingMethods);
     } catch (error) {
       this.logger.error(error);
-      // Return an exception response in case of errors.
       return graphqlExceptionHandler(error);
     }
   }

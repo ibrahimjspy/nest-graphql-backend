@@ -6,6 +6,7 @@ import {
   CheckoutShippingMethodType,
   MappedShippingMethodsType,
 } from './Shipping.types';
+import { shippingAddressType } from 'src/external/services/osPlaceOrder/Legacy.service.types';
 interface ShippingMethodType {
   id: string;
   shippingMethodId: string;
@@ -166,5 +167,36 @@ export const addCheckoutShippingMethod = (
         shippingMethods: mappedMethod.shippingMethods,
       };
     }
+  });
+};
+
+/**
+ * Filters international shipping methods based on the shipping address country code.
+ * @param mappedShippingMethods - An array of mapped shipping methods.
+ * @param shippingAddress - The shipping address containing country code.
+ */
+export const internationalShippingMethodsFilter = (
+  mappedShippingMethods: MappedShippingMethodsType[],
+  shippingAddress: shippingAddressType,
+) => {
+  const countryCode = shippingAddress.country.code;
+
+  const IS_INTERNATIONAL_KEY = 'is_international';
+
+  mappedShippingMethods.forEach((mappedShippingMethod) => {
+    mappedShippingMethod.shippingMethods =
+      mappedShippingMethod.shippingMethods.filter((shippingMethod) => {
+        const shippingMethodType = shippingMethod.metadata.find(
+          (metadata) => metadata.key === IS_INTERNATIONAL_KEY,
+        );
+
+        if (!shippingMethodType) {
+          return true;
+        }
+
+        return countryCode === 'US'
+          ? shippingMethodType.value !== 'true'
+          : shippingMethodType.value !== 'false';
+      });
   });
 };
