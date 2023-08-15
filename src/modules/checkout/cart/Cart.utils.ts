@@ -761,14 +761,17 @@ export const updateMarketplaceResponseCheckoutId = (
   saleorResponse: SaleorCheckoutInterface,
   bundlesList: CheckoutBundleInputType[],
 ): void => {
-  const createdBundleId = bundlesList[0]?.bundleId; // Safely access bundleId
-  if (!createdBundleId) {
-    return; // Exit early if bundleId is missing
+  const bundleIdMap = new Map<string, boolean>(); // Use a map to keep track of processed bundle IDs
+
+  for (const bundleInput of bundlesList) {
+    const bundleId = bundleInput.bundleId;
+    bundleIdMap.set(bundleId, true); // Mark this bundle ID as processed
   }
 
-  checkoutBundles.checkoutBundles.forEach((checkoutBundle) => {
-    if (checkoutBundle.bundle.id === createdBundleId) {
+  for (const checkoutBundle of checkoutBundles.checkoutBundles) {
+    const bundleId = checkoutBundle.bundle.id;
+    if (bundleIdMap.has(bundleId)) {
       checkoutBundle.checkoutId = saleorResponse.id;
     }
-  });
+  }
 };
