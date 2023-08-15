@@ -29,7 +29,10 @@ export const b2bQuery = (filter: ProductFilterDto): string => {
     ? ` metadata: [{ key: "isOpenPack", value: "${filter.isOpenPack}" }]`
     : '';
   const productSortBy = getProductsSortBy(filter);
-
+  /**
+   * if products call is paginated then not return total count
+   */
+  const totalCountQuery = filter.after ? ` ` : `totalCount`;
   return gql`
     query {
       products(
@@ -49,7 +52,7 @@ export const b2bQuery = (filter: ProductFilterDto): string => {
         pageInfo {
           ... PageInfo
         }
-        totalCount
+        ${totalCountQuery}
         edges {
           node {
             ... Product
