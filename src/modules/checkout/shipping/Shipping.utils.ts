@@ -55,6 +55,7 @@ export const marketplaceShippingMethodsMap = (
         return {
           shippingMethodId: checkoutShippingMethod.shippingMethodId,
           name: saleorShippingMethod?.name, // Use optional chaining to handle undefined names.
+          metadata: saleorShippingMethod?.metadata,
         };
       },
     );
@@ -77,6 +78,7 @@ const checkoutShippingMethodsFilter = (
   shippingMethods: {
     shippingMethodId: string;
     name: string;
+    metadata: any[];
   }[],
 ) => {
   shippingMethods = shippingMethods.filter(
@@ -125,6 +127,7 @@ export const addCheckoutShippingMethod = (
           (checkoutShippingMethod) => ({
             shippingMethodId: checkoutShippingMethod.id,
             name: checkoutShippingMethod.name,
+            metadata: checkoutShippingMethod.metadata,
           }),
         );
       }
@@ -148,6 +151,7 @@ export const addCheckoutShippingMethod = (
         (checkoutShippingMethod) => ({
           shippingMethodId: checkoutShippingMethod.id,
           name: checkoutShippingMethod.name,
+          metadata: checkoutShippingMethod.metadata,
         }),
       );
 

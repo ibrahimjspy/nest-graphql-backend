@@ -4,7 +4,10 @@ export interface CheckoutShippingMethodType {
     id: string;
     deliveryMethod: {
       id: string;
-      metadata: any[];
+      metadata: {
+        key: string;
+        value: string;
+      }[];
     };
     shippingMethods: {
       id: string;
@@ -12,6 +15,10 @@ export interface CheckoutShippingMethodType {
       description: any;
       maximumDeliveryDays: any;
       minimumDeliveryDays: any;
+      metadata: {
+        key: string;
+        value: string;
+      }[];
     }[];
   };
 }
@@ -21,5 +28,9 @@ export interface MappedShippingMethodsType {
   shippingMethods: {
     shippingMethodId: string;
     name: string;
+    metadata: {
+      key: string;
+      value: string;
+    }[];
   }[];
 }

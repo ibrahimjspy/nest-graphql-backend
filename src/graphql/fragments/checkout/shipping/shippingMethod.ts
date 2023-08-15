@@ -21,6 +21,10 @@ export const shippingMethodFragment = gql`
     description
     maximumDeliveryDays
     minimumDeliveryDays
+    metadata {
+      key
+      value
+    }
   }
   ${shippingMethodChannelListingFragment}
 `;

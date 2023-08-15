@@ -10,6 +10,10 @@ export interface ShippingMethodSaleorType {
   id: string;
   name: string;
   description: any;
+  metadata: {
+    key: string;
+    value: string;
+  }[];
   maximumDeliveryDays: any;
   minimumDeliveryDays: any;
 }
