@@ -114,6 +114,7 @@ export class CategoriesController {
     const cachedCollections = await this.cacheManager.get(collectionsCacheKey);
     if (cachedCollections) {
       this.logger.verbose('found cached categories');
+      this.revalidateCollectionsCache(collectionsCacheKey, filter);
       return makeResponse(res, cachedCollections);
     }
     this.logger.log(`Making expensive call to fetch collections`);
@@ -123,5 +124,19 @@ export class CategoriesController {
       this.cacheManager.set(collectionsCacheKey, collectionsData);
     }
     return response;
+  }
+
+  /**
+   * this api re validates cache, we are using this until we have valid eviction policy for products list
+   */
+  async revalidateCollectionsCache(key: string, filter: PaginationDto) {
+    try {
+      const collectionsData = await this.appService.getCollections(filter);
+      if (collectionsData.data) {
+        this.cacheManager.set(key, collectionsData);
+      }
+    } catch (error) {
+      this.logger.error(error);
+    }
   }
 }
