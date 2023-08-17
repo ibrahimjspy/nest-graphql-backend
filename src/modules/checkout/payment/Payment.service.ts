@@ -87,13 +87,9 @@ export class PaymentService {
     checkoutData: SaleorCheckoutInterface,
   ): number {
     const checkoutTotalGrossAmount = checkoutData?.totalPrice?.gross?.amount;
-    if (checkoutData.voucherCode !== FREE_SHIPPING_VOUCHER_CODE) {
-      const checkoutShippingPreAuthAmount =
-        this.getDeliveryMethodPreAuth(checkoutData);
-      return checkoutTotalGrossAmount + checkoutShippingPreAuthAmount;
-    }
-
-    return checkoutTotalGrossAmount;
+    const checkoutShippingPreAuthAmount =
+      this.getDeliveryMethodPreAuth(checkoutData);
+    return checkoutTotalGrossAmount + checkoutShippingPreAuthAmount;
   }
 
   /**

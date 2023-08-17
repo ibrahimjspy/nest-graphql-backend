@@ -47,6 +47,7 @@ import { ProductIdsMappingType } from 'src/external/endpoints/b2bMapping.types';
 import { sendOrderConfirmationEmail } from 'src/external/endpoints/mandrillApp';
 import { getTokenWithoutBearer } from '../account/user/User.utils';
 import RecordNotFound from 'src/core/exceptions/recordNotFound';
+import { getUserOrderCountHandler } from 'src/graphql/handlers/account/user';
 
 @Injectable()
 export class CheckoutService {
@@ -97,19 +98,22 @@ export class CheckoutService {
    */
   public async getCheckoutSummaryV2(userEmail: string, token: string) {
     try {
-      const [MarketplaceCheckoutSummary, preAuthData] = await Promise.all([
-        CheckoutHandlers.marketplaceCheckoutSummaryHandler(
-          userEmail,
-          token,
-          CheckoutSummaryInputEnum.email,
-        ),
-        this.paymentService.getCheckoutPreAuthInformation(userEmail, token),
-      ]);
+      const [MarketplaceCheckoutSummary, preAuthData, orderCount] =
+        await Promise.all([
+          CheckoutHandlers.marketplaceCheckoutSummaryHandler(
+            userEmail,
+            token,
+            CheckoutSummaryInputEnum.email,
+          ),
+          this.paymentService.getCheckoutPreAuthInformation(userEmail, token),
+          getUserOrderCountHandler(token),
+        ]);
       const { checkoutAmount, checkoutDiscounts } = preAuthData;
       MarketplaceCheckoutSummary['discounts'] = checkoutDiscounts;
       return prepareSuccessResponse({
         MarketplaceCheckoutSummary,
         CheckoutPreAuthAmount: checkoutAmount,
+        isFreeShipping: orderCount == 0,
       });
     } catch (error) {
       this.logger.error(error);
