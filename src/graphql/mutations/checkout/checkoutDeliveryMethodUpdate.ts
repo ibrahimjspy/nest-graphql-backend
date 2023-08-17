@@ -12,6 +12,9 @@ export const checkoutDeliveryMethodUpdateMutation = (
       ) {
         checkout {
           id
+          user {
+            email
+          }
           voucherCode
           deliveryMethod {
             ... on ShippingMethod {

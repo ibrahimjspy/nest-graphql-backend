@@ -21,11 +21,9 @@ import {
 import { AddUserShippingAddressDto, AddressDto } from './dto/shippingAddress';
 import { ShippingPromotionService } from './services/Shipping.promotion';
 import {
-  addPreAuthInCheckoutResponse,
   checkoutShippingMethodsSort,
   filterFlatShippingMethods,
 } from '../Checkout.utils';
-import { PaymentService } from '../payment/Payment.service';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 import { SuccessResponseType } from 'src/core/utils/response.type';
 import {
@@ -39,13 +37,14 @@ import {
   MappedShippingMethodsType,
 } from './Shipping.types';
 import { shippingAddressType } from 'src/external/services/osPlaceOrder/Legacy.service.types';
+import { CheckoutService } from '../Checkout.service';
 
 @Injectable()
 export class ShippingService {
   private readonly logger = new Logger(ShippingService.name);
   constructor(
     private readonly shippingPromotionService: ShippingPromotionService,
-    private readonly paymentService: PaymentService,
+    private readonly checkoutService: CheckoutService,
     private readonly marketplaceService: MarketplaceCartService,
   ) {
     return;
@@ -128,19 +127,14 @@ export class ShippingService {
         shippingMethodId,
         token,
       );
-      const applyPromotions =
-        await this.shippingPromotionService.applyPromoCodeToCheckout(
-          updateDeliveryMethod['checkout'],
-          token,
-        );
-      const preAuthAmount = this.paymentService.getCheckoutPreAuthAmount(
-        applyPromotions['data']['checkout'],
+      await this.shippingPromotionService.applyPromoCodeToCheckout(
+        updateDeliveryMethod['checkout'],
+        token,
       );
-      addPreAuthInCheckoutResponse(
-        preAuthAmount,
-        applyPromotions['data']['checkout'],
+      return await this.checkoutService.getCheckoutSummaryV2(
+        updateDeliveryMethod['checkout']['user']['email'],
+        token,
       );
-      return applyPromotions;
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);
