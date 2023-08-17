@@ -276,10 +276,7 @@ export class ShippingService {
         shippingAddress['data']['shippingAddress'] as shippingAddressType,
       );
 
-      await this.selectDefaultShippingMethods(
-        validateCheckoutShippingMethods,
-        token,
-      );
+      this.selectDefaultShippingMethods(validateCheckoutShippingMethods, token);
 
       return prepareSuccessResponse(validateCheckoutShippingMethods);
     } catch (error) {

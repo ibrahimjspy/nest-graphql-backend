@@ -32,6 +32,9 @@ export interface SaleorCheckoutInterface {
       amount: number;
     };
   };
+  discount: {
+    amount: number;
+  };
   metadata: {
     key: string;
     value: string;
@@ -41,6 +44,7 @@ export interface SaleorCheckoutInterface {
       amount: number;
     };
   };
+  voucherCode?: string;
   shippingMethods: {
     id: string;
     name: string;

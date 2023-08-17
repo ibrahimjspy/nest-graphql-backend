@@ -196,3 +196,12 @@ export const getOrdersShippingMethodMapping = (
   });
   return ordersShippingMethodMapping;
 };
+
+/**
+ * Checks if the user's order count is zero, indicating eligibility for free shipping.
+ * @param {number} userOrderCount - The number of orders made by the user.
+ * @returns {boolean} True if the user's order count is zero, indicating free shipping eligibility.
+ */
+export const isFreeShippingOrder = (userOrderCount: number): boolean => {
+  return userOrderCount === 0;
+};

@@ -15,6 +15,7 @@ export const checkoutPromoCodeAddMutation = (
           discount {
             amount
           }
+          voucherCode
           deliveryMethod {
             ... on ShippingMethod {
               id

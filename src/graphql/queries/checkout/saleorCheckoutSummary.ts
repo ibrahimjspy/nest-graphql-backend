@@ -18,6 +18,7 @@ export const saleorCheckoutSummaryQuery = (checkoutId: string): string => {
         discount {
           amount
         }
+        voucherCode
         discountName
         shippingPrice {
           gross {

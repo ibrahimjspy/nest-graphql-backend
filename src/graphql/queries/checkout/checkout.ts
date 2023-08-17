@@ -17,6 +17,10 @@ const federationQuery = (checkoutId: string) => {
             amount
           }
         }
+        discount {
+          amount
+        }
+        voucherCode
         shippingMethods {
           id,
           name,

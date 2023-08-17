@@ -1,4 +1,8 @@
-import { addPreAuthInCheckoutResponse, toCents } from './Checkout.utils';
+import {
+  addPreAuthInCheckoutResponse,
+  isFreeShippingOrder,
+  toCents,
+} from './Checkout.utils';
 
 describe('Checkout utility tests', () => {
   it('is get cents utility working properly', () => {
@@ -16,5 +20,15 @@ describe('Checkout utility tests', () => {
       preAuth: { gross: { amount: 200 } },
     });
     expect(checkoutResponse).toBeTruthy();
+  });
+
+  it('should return true for userOrderCount of 0', () => {
+    const result = isFreeShippingOrder(0);
+    expect(result).toBe(true);
+  });
+
+  it('should return false for non-zero userOrderCount', () => {
+    const result = isFreeShippingOrder(3);
+    expect(result).toBe(false);
   });
 });

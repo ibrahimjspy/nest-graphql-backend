@@ -105,7 +105,8 @@ export class CheckoutService {
         ),
         this.paymentService.getCheckoutPreAuthInformation(userEmail, token),
       ]);
-      const { checkoutAmount } = preAuthData;
+      const { checkoutAmount, checkoutDiscounts } = preAuthData;
+      MarketplaceCheckoutSummary['discounts'] = checkoutDiscounts;
       return prepareSuccessResponse({
         MarketplaceCheckoutSummary,
         CheckoutPreAuthAmount: checkoutAmount,

@@ -163,3 +163,4 @@ export const PRODUCTS_SEARCH_ENGINE_NAME =
 
 export const IS_CACHE_ENABLED =
   String(process.env.CACHE_ENABLED).toLowerCase() == 'true';
+export const FREE_SHIPPING_VOUCHER_CODE = '00FS00';

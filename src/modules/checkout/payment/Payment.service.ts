@@ -15,7 +15,10 @@ import {
   storePaymentIntentHandler,
 } from 'src/graphql/handlers/checkout/payment/payment.saleor';
 import { getCheckoutMetadataHandler } from 'src/graphql/handlers/checkout/checkout';
-import { B2B_CHECKOUT_APP_TOKEN } from 'src/constants';
+import {
+  B2B_CHECKOUT_APP_TOKEN,
+  FREE_SHIPPING_VOUCHER_CODE,
+} from 'src/constants';
 import { SaleorCheckoutInterface } from '../Checkout.utils.type';
 import { MarketplaceCartService } from '../cart/services/marketplace/Cart.marketplace.service';
 import { PaymentMetadataDto } from './dto/paymentMetadata';
@@ -84,9 +87,13 @@ export class PaymentService {
     checkoutData: SaleorCheckoutInterface,
   ): number {
     const checkoutTotalGrossAmount = checkoutData?.totalPrice?.gross?.amount;
-    const checkoutShippingPreAuthAmount =
-      this.getDeliveryMethodPreAuth(checkoutData);
-    return checkoutTotalGrossAmount + checkoutShippingPreAuthAmount;
+    if (checkoutData.voucherCode !== FREE_SHIPPING_VOUCHER_CODE) {
+      const checkoutShippingPreAuthAmount =
+        this.getDeliveryMethodPreAuth(checkoutData);
+      return checkoutTotalGrossAmount + checkoutShippingPreAuthAmount;
+    }
+
+    return checkoutTotalGrossAmount;
   }
 
   /**
@@ -279,7 +286,11 @@ export class PaymentService {
   public async getCheckoutPreAuthInformation(
     userEmail: string,
     token: string,
-  ): Promise<{ checkoutAmount: number; paymentIntentId: string | null }> {
+  ): Promise<{
+    checkoutAmount: number;
+    paymentIntentId: string | null;
+    checkoutDiscounts: number;
+  }> {
     // Get an array of checkout IDs with flat fulfillment from the marketplace cart service.
     const checkoutIds =
       await this.marketplaceCartService.getFlatFulfillmentCheckoutIds(
@@ -291,6 +302,7 @@ export class PaymentService {
     // Initialize variables to hold the paymentIntentId and total checkout amount.
     let paymentIntentId = null;
     let checkoutAmount = 0;
+    let checkoutDiscounts = 0;
 
     // Use 'Promise.all' to execute operations for all checkout IDs concurrently.
     await Promise.all(
@@ -298,7 +310,9 @@ export class PaymentService {
         // Get the checkout data for the current checkout ID.
         const checkoutData: SaleorCheckoutInterface =
           await this.saleorCheckoutService.getCheckout(checkoutId, token);
-
+        if (checkoutData.voucherCode == FREE_SHIPPING_VOUCHER_CODE) {
+          checkoutDiscounts = checkoutDiscounts + checkoutData.discount.amount;
+        }
         // Get the pre-authorization amount for the current checkout session.
         const checkoutSessionAmount =
           this.getCheckoutPreAuthAmount(checkoutData);
@@ -315,7 +329,7 @@ export class PaymentService {
     );
 
     // Return an object containing the total checkout amount and paymentIntentId.
-    return { checkoutAmount, paymentIntentId };
+    return { checkoutAmount, paymentIntentId, checkoutDiscounts };
   }
 
   public async preAuthV2(

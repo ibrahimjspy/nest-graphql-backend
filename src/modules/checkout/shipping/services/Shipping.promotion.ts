@@ -10,8 +10,13 @@ import {
   UpdateDeliveryMethodInterface,
   vouchersType,
 } from './Shipping.promotion.types';
-import { PROMOTION_SHIPPING_METHOD_ID } from 'src/constants';
+import {
+  FREE_SHIPPING_VOUCHER_CODE,
+  PROMOTION_SHIPPING_METHOD_ID,
+} from 'src/constants';
 import { preparePromotionResponse } from './Shipping.response';
+import { getUserOrderCountHandler } from 'src/graphql/handlers/account/user';
+import { isFreeShippingOrder } from '../../Checkout.utils';
 
 @Injectable()
 export class ShippingPromotionService {
@@ -36,6 +41,10 @@ export class ShippingPromotionService {
         deliveryMethod: { id: checkoutDeliveryMethod },
         voucherCode,
       } = checkoutData;
+      const userOrderCount = await getUserOrderCountHandler(token);
+      if (isFreeShippingOrder(userOrderCount)) {
+        return await this.addFreeShippingPromo(checkoutId, token);
+      }
       this.logger.log('Applying promotion code to checkout', checkoutId);
 
       const vouchersData = await getShippingVouchersHandler(token);
@@ -106,5 +115,38 @@ export class ShippingPromotionService {
       `Voucher code ${voucherCode} is applicable to checkout amount ${checkoutAmount}`,
     );
     return voucherCode;
+  }
+
+  /**
+   * Adds a free shipping promo code to the checkout and prepares a response.
+   *
+   * @param {string} checkoutId - The ID of the checkout where the promo code will be added.
+   * @param {string} token - The authorization token.
+   * @returns {object} A success response indicating that the checkout promo code was added and a shipping method was selected.
+   * @remarks The free shipping voucher code should be the same for the system to apply it. This function assumes that the promo code is created with the value '00FS00'.
+   * @example
+   * // Adding a free shipping promo code to the checkout
+   * const checkoutId = '123456';
+   * const authToken = 'your_auth_token';
+   * const response = await addFreeShippingPromo(checkoutId, authToken);
+   * console.log(response); // Success response
+   */
+  public async addFreeShippingPromo(checkoutId: string, token: string) {
+    this.logger.log(
+      'Applying free shipping promo for first time user',
+      checkoutId,
+    );
+    const addPromoCode = await addCheckoutPromoCodeHandler(
+      checkoutId,
+      FREE_SHIPPING_VOUCHER_CODE,
+      token,
+    );
+
+    // Prepare and return the success response
+    return prepareSuccessResponse(
+      addPromoCode,
+      'Free shipping Checkout promo code added and shipping method selected',
+      201,
+    );
   }
 }
