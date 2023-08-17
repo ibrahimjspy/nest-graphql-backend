@@ -32,7 +32,7 @@ export interface SaleorCheckoutInterface {
       amount: number;
     };
   };
-  discount: {
+  discount?: {
     amount: number;
   };
   metadata: {
