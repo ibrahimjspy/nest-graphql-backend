@@ -532,6 +532,7 @@ export class CartService {
           (await this.marketplaceService.getAllCheckoutBundles({
             checkoutIds: [checkoutId],
             token,
+            productDetails: false,
           })) as CartResponseInterface;
         const userEmail = marketplaceCheckout.data.userEmail;
 
