@@ -113,7 +113,7 @@ export class CartService {
         ),
       ]);
 
-      this.marketplaceService.addCheckoutIdToMarketplace(
+      await this.marketplaceService.addCheckoutIdToMarketplace(
         userEmail,
         getUpdateMarketplaceCheckoutBundles(
           bundlesList,
@@ -446,6 +446,7 @@ export class CartService {
         (await this.marketplaceService.getAllCheckoutBundles({
           userEmail,
           token,
+          productDetails: false,
         })) as CartResponseInterface;
 
       // Validate and process the open pack creation
@@ -631,6 +632,7 @@ export class CartService {
         (await this.marketplaceService.getAllCheckoutBundles({
           userEmail,
           token,
+          productDetails: false,
         })) as CartResponseInterface;
       const checkoutBundleIds = getCheckoutBundleIds(
         checkoutResponse.data.checkoutBundles,

@@ -104,12 +104,18 @@ export class MarketplaceCartService {
     userEmail: string,
     checkoutBundles: CheckoutBundleInputType[],
     token: string,
+    productDetails = false,
     throwException = true,
   ): Promise<UpdateMarketplaceCheckoutType> {
     try {
       this.logger.log('Adding checkout bundles', checkoutBundles);
 
-      return await addCheckoutBundlesHandler(userEmail, checkoutBundles, token);
+      return await addCheckoutBundlesHandler(
+        userEmail,
+        checkoutBundles,
+        token,
+        productDetails,
+      );
     } catch (error) {
       this.logger.error(error);
       if (throwException) {

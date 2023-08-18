@@ -119,6 +119,7 @@ export class SaleorCartService {
     const bundleIds = getBundleIds(checkoutBundleLines);
     const bundlesData: unknown = await this.productService.getProductBundles({
       bundleIds: bundleIds,
+      getProductDetails: false,
       first: 100,
     });
     this.cartValidationService.validateBundlesByStatus(

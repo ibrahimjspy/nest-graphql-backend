@@ -89,9 +89,13 @@ export const addCheckoutBundlesHandler = async (
   userEmail: string,
   bundles: CheckoutBundleInputType[],
   token: string,
+  productDetails = false,
 ) => {
   const response = await graphqlResultErrorHandler(
-    await graphqlCall(addCheckoutBundleQuery(userEmail, bundles), token),
+    await graphqlCall(
+      addCheckoutBundleQuery(userEmail, bundles, productDetails),
+      token,
+    ),
     false,
   );
   return response['addCheckoutBundles'];

@@ -2,10 +2,7 @@ import { gql } from 'graphql-request';
 import { productDetailsFragment } from '../product';
 import { attributeFragment } from '../attributes';
 import { checkoutShopDetailsFragment } from '../shop';
-import {
-  channelListingPricingFragment,
-  checkoutPricingFragment,
-} from '../pricing';
+import { channelListingPricingFragment } from '../pricing';
 import { bundleDetailsFragment } from '../bundle';
 import { productVariantDetailsFragment } from '../productVariant';
 import { DEFAULT_MEDIA_SIZE, DEFAULT_THUMBNAIL_SIZE } from 'src/constants';
@@ -32,9 +29,6 @@ export const checkoutBundlesFragment = gql`
           thumbnail(size: ${DEFAULT_THUMBNAIL_SIZE}) {
             url
           }
-          media {
-            url(size:${DEFAULT_MEDIA_SIZE})
-          }
         }
         productVariants {
           quantity
@@ -45,9 +39,6 @@ export const checkoutBundlesFragment = gql`
             }
             media {
               url(size:${DEFAULT_MEDIA_SIZE})
-            }
-            pricing {
-              ...Price
             }
             channelListings {
               ... ChannelPricing
@@ -63,7 +54,6 @@ export const checkoutBundlesFragment = gql`
   ${productDetailsFragment}
   ${attributeFragment}
   ${checkoutShopDetailsFragment}
-  ${checkoutPricingFragment}
   ${bundleDetailsFragment}
   ${productVariantDetailsFragment}
   ${channelListingPricingFragment}

@@ -11,7 +11,43 @@ const federationQuery = (
     isSelected?: boolean;
     lines?: Array<string>;
   }>,
+  productDetails,
 ): string => {
+  if (!productDetails) {
+    return gql`
+    mutation {
+      addCheckoutBundles(
+        Input: {
+          userEmail: "${userEmail}"
+          bundles: ${graphqlObjectTransform(bundles)}
+        }
+      ) {
+        ... on CheckoutBundlesType {
+          userEmail
+          checkoutIds
+          checkoutBundles{
+            checkoutBundleId
+            checkoutId
+            bundle {
+              id
+              shop {
+                id
+                fields {
+                  name
+                  values
+                }
+              }
+            }
+          }
+        }
+        ... on ResultError {
+          ... ResultError
+        }
+      }
+    }
+    ${resultErrorFragment}
+  `;
+  }
   return gql`
     mutation {
       addCheckoutBundles(
@@ -36,9 +72,10 @@ const federationQuery = (
 export const addCheckoutBundleQuery = (
   userEmail: string,
   bundles: Array<{ bundleId: string; quantity: number }>,
+  productDetails = false,
 ) => {
   return graphqlQueryCheck(
-    federationQuery(userEmail, bundles),
-    federationQuery(userEmail, bundles),
+    federationQuery(userEmail, bundles, productDetails),
+    federationQuery(userEmail, bundles, productDetails),
   );
 };
