@@ -16,7 +16,15 @@ export const updateCartBundlesCheckoutIdMutation = (
         )}, userEmail: "${email}" }
       ) {
         ... on CheckoutBundlesType {
-          ... CheckoutBundles
+          userEmail
+          checkoutIds
+          checkoutBundles{
+            checkoutBundleId
+            checkoutId
+            bundle {
+              id
+            }
+          }
         }
         ... on ResultError {
           ... ResultError
