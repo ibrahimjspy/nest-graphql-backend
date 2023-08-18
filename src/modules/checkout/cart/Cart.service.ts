@@ -11,8 +11,10 @@ import { AddBundleDto, UpdateBundleStateDto } from '../dto/add-bundle.dto';
 import { SaleorCartService } from './services/saleor/Cart.saleor.service';
 import { MarketplaceCartService } from './services/marketplace/Cart.marketplace.service';
 import {
+  filterOpenPackBundles,
   getBundleCheckoutId,
   getBundleIdFromBundleCreate,
+  getBundleIds,
   getBundlesFromCheckout,
   getCheckoutBundleIds,
   getNewBundlesToAdd,
@@ -94,8 +96,15 @@ export class CartService {
   ): Promise<SuccessResponseType> {
     try {
       this.logger.log('Adding bundles to cart', bundlesList);
-      const [marketplaceResult] = await Promise.allSettled([
+      const bundleIds = getBundleIds(bundlesList);
+
+      const [marketplaceResult, bundlesData] = await Promise.allSettled([
         this.marketplaceService.addBundles(userEmail, bundlesList, token),
+        this.productService.getProductBundles({
+          bundleIds: bundleIds,
+          getProductDetails: false,
+          first: 100,
+        }),
       ]);
 
       const checkoutId = getBundleCheckoutId(
@@ -110,6 +119,7 @@ export class CartService {
           checkoutId,
           bundlesList,
           token,
+          bundlesData['value'],
         ),
       ]);
 
@@ -439,16 +449,30 @@ export class CartService {
     try {
       this.logger.log('Adding open packs to cart', addOpenPackToCart.bundles);
       const { userEmail, checkoutId, bundles } = addOpenPackToCart;
-      const bundlesResponse = [];
+      const checkoutBundleMapping = new Map();
 
+      const checkoutBundlesPromise = Promise.all(
+        addOpenPackToCart.bundles.map(async (bundle) => {
+          const bundleCreate = await this.productService.createBundle(bundle);
+          const checkoutBundle = {
+            bundleId: getBundleIdFromBundleCreate(bundleCreate),
+            quantity: 1,
+          };
+          checkoutBundleMapping.set(bundle, checkoutBundle);
+          return checkoutBundle;
+        }),
+      );
       // Retrieve all checkout bundles from the marketplace service
-      const marketplaceCheckout =
-        (await this.marketplaceService.getAllCheckoutBundles({
+      const marketplaceCheckoutPromise =
+        this.marketplaceService.getAllCheckoutBundles({
           userEmail,
           token,
           productDetails: false,
-        })) as CartResponseInterface;
-
+        });
+      const [checkoutBundles, marketplaceCheckout] = await Promise.all([
+        checkoutBundlesPromise,
+        marketplaceCheckoutPromise as unknown as CartResponseInterface,
+      ]);
       // Validate and process the open pack creation
       const { openBundlesCreate, updatedOpenPack } = validateOpenPackCreate(
         marketplaceCheckout.data.checkoutBundles,
@@ -459,20 +483,10 @@ export class CartService {
       this.logger.log('following bundles are needed to create or update', {
         openBundlesCreate,
         updatedOpenPack,
+        checkoutBundles,
       });
 
       // Create new bundles and prepare checkout bundles
-      const checkoutBundles = await Promise.all(
-        openBundlesCreate.map(async (bundle) => {
-          const bundleCreate = await this.productService.createBundle(bundle);
-          bundlesResponse.push(bundleCreate.data);
-          const checkoutBundle = {
-            bundleId: getBundleIdFromBundleCreate(bundleCreate),
-            quantity: 1,
-          };
-          return checkoutBundle;
-        }),
-      );
 
       let updatedOpenBundles;
       if (isEmptyArray(updatedOpenPack)) {
@@ -490,7 +504,7 @@ export class CartService {
         // Create new open packs
         const createNewBundle = await this.addBundlesToCart(
           userEmail,
-          checkoutBundles,
+          filterOpenPackBundles(checkoutBundleMapping, openBundlesCreate),
           token,
         );
         createOpenBundles.push(createNewBundle);

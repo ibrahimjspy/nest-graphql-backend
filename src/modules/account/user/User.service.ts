@@ -81,9 +81,10 @@ export class UserService {
       let checkoutIds: unknown = null;
       let shopDetails: unknown = null;
 
-      const [saleor, auth0] = await Promise.all([
+      const [saleor, auth0, orderCount] = await Promise.all([
         AccountHandlers.getUserDetailsHandler(token),
         this.auth0Service.getUser(userAuth0Id),
+        AccountHandlers.getUserOrderCountHandler(token),
       ]);
 
       if (B2C_ENABLED == 'false') {
@@ -99,6 +100,7 @@ export class UserService {
       return prepareSuccessResponse({
         saleor,
         auth0,
+        isFreeShipping: orderCount == 0,
         ...(shopDetails && { shopDetails }),
       });
     } catch (error) {

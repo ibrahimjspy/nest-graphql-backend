@@ -775,3 +775,26 @@ export const updateMarketplaceResponseCheckoutId = (
     }
   }
 };
+
+/**
+ * Filters and retrieves open pack bundles from a list of created bundles.
+ * these bundles are ones we need to add to cart as they dont include bundles which include variants
+ * @param {Map<any, any>} createdBundlesMapping - Mapping of bundles to checkout bundles.
+ * @param {BundleCreateDto[]} checkoutBundles - List of checkout bundles.
+ * @returns {BundleCreateDto[]} Filtered list of open pack checkout bundles.
+ */
+export const filterOpenPackBundles = (
+  createdBundlesMapping: Map<any, any>,
+  checkoutBundles: BundleCreateDto[],
+) => {
+  const filteredCheckoutBundles = [];
+
+  checkoutBundles.forEach((bundle) => {
+    const checkoutBundle = createdBundlesMapping.get(bundle);
+    if (checkoutBundle) {
+      filteredCheckoutBundles.push(checkoutBundle);
+    }
+  });
+
+  return filteredCheckoutBundles;
+};

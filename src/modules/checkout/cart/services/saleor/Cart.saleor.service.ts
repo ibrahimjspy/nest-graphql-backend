@@ -115,13 +115,19 @@ export class SaleorCartService {
     checkoutId: string,
     checkoutBundleLines: CheckoutBundleInputType[],
     token: string,
+    createBundlesData?: object,
   ): Promise<SaleorCheckoutInterface> {
     const bundleIds = getBundleIds(checkoutBundleLines);
-    const bundlesData: unknown = await this.productService.getProductBundles({
-      bundleIds: bundleIds,
-      getProductDetails: false,
-      first: 100,
-    });
+    let bundlesData = createBundlesData;
+    if (!bundlesData) {
+      this.logger.log('Fetching bundles in saleor service');
+      bundlesData = await this.productService.getProductBundles({
+        bundleIds: bundleIds,
+        getProductDetails: false,
+        first: 100,
+      });
+    }
+
     this.cartValidationService.validateBundlesByStatus(
       bundlesData as ProductBundlesResponseType,
     );
