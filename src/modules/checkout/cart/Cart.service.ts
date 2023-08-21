@@ -93,6 +93,7 @@ export class CartService {
     userEmail: string,
     bundlesList: CheckoutBundleInputType[],
     token: string,
+    isOpenBundles = false,
   ): Promise<SuccessResponseType> {
     try {
       this.logger.log('Adding bundles to cart', bundlesList);
@@ -123,14 +124,16 @@ export class CartService {
         ),
       ]);
 
-      await this.marketplaceService.addCheckoutIdToMarketplace(
-        userEmail,
-        getUpdateMarketplaceCheckoutBundles(
-          bundlesList,
-          saleorResult['value'].id,
-        ),
-        token,
-      );
+      const addCheckoutIdToBundles =
+        this.marketplaceService.addCheckoutIdToMarketplace(
+          userEmail,
+          getUpdateMarketplaceCheckoutBundles(
+            bundlesList,
+            saleorResult['value'].id,
+          ),
+          token,
+        );
+      if (isOpenBundles) await addCheckoutIdToBundles;
 
       return await this.cartResponseBuilder.addBundlesToCart(
         saleorResult,

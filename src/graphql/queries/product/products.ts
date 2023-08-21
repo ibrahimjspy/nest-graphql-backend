@@ -18,7 +18,9 @@ export const b2bQuery = (filter: ProductFilterDto): string => {
   const pageFilter = validatePageFilter(filter);
   const categoryFilter = filter['category'] ? `"${filter['category']}"` : '';
   const metadataFilter = getVendorIdMetadataFilter(filter);
-  const daysBeforeFilter = filter.date ? `availableFrom: "${filter.date}"` : '';
+  const daysBeforeFilter = filter.date
+    ? `updatedAt: {gte: "${filter.date}"}`
+    : '';
   const attributeFilter = getProductAttributeFilter(filter);
   const priceFilter = `price: {${
     filter.startPrice ? `gte: ${filter.startPrice}` : ''
