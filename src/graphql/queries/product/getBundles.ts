@@ -100,7 +100,6 @@ export const getBundlesQuery = (filter: GetBundlesDto) => {
       }
     }
     ${resultErrorFragment}
-    ${shopDetailsFragment}
     ${bundleDetailsFragment}
   `;
 };
