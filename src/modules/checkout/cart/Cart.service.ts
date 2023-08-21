@@ -509,6 +509,7 @@ export class CartService {
           userEmail,
           filterOpenPackBundles(checkoutBundleMapping, openBundlesCreate),
           token,
+          true,
         );
         createOpenBundles.push(createNewBundle);
       }
