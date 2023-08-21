@@ -51,6 +51,7 @@ export class MarketplaceCartService {
     token,
     checkoutIds,
     productDetails = true,
+    shopDetails = false,
     isSelected = null,
   }: CheckoutBundlesDto): Promise<object> {
     const checkoutData = await getCheckoutBundlesHandler({
@@ -59,6 +60,7 @@ export class MarketplaceCartService {
       token,
       productDetails,
       isSelected,
+      shopDetails,
     });
     return prepareSuccessResponse(checkoutData);
   }

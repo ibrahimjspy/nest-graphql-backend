@@ -798,3 +798,19 @@ export const filterOpenPackBundles = (
 
   return filteredCheckoutBundles;
 };
+
+/**
+ * Transforms an array of bundles into a response object.
+ *
+ * @param {Array} bundles - An array of bundles to be transformed.
+ * @returns {Object} - The transformed response object.
+ */
+export const bundlesListTransform = (bundles) => {
+  const bundlesListResponse = { edges: [] };
+
+  for (const bundle of bundles) {
+    bundlesListResponse.edges.push({ node: bundle.data });
+  }
+
+  return { data: bundlesListResponse, status: 200 };
+};

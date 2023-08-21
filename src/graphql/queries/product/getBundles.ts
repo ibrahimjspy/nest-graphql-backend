@@ -24,7 +24,7 @@ export const getBundlesQuery = (filter: GetBundlesDto) => {
         Filter: {
           productVariantIds: ${JSON.stringify(productVariantIds)}
           productId: ${productId}
-          bundleIds: ${JSON.stringify(bundleIds)}
+        bundleIds: ${JSON.stringify(bundleIds)} 
         }
       ) {
         ... on BundleConnectionType {
@@ -85,9 +85,6 @@ export const getBundlesQuery = (filter: GetBundlesDto) => {
           edges {
             node {
               ... Bundle
-              shop {
-                ... Shop
-              }
               productVariants {
                 quantity
                 productVariant{

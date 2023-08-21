@@ -11,6 +11,7 @@ import { AddBundleDto, UpdateBundleStateDto } from '../dto/add-bundle.dto';
 import { SaleorCartService } from './services/saleor/Cart.saleor.service';
 import { MarketplaceCartService } from './services/marketplace/Cart.marketplace.service';
 import {
+  bundlesListTransform,
   filterOpenPackBundles,
   getBundleCheckoutId,
   getBundleIdFromBundleCreate,
@@ -38,7 +39,10 @@ import {
 } from './dto/cart';
 import { SuccessResponseType } from 'src/core/utils/response.type';
 import { ProductService } from 'src/modules/product/Product.service';
-import { CartResponseInterface } from './Cart.types';
+import {
+  CartResponseInterface,
+  UpdateMarketplaceCheckoutType,
+} from './Cart.types';
 import { isEmptyArray } from 'src/modules/product/Product.utils';
 
 @Injectable()
@@ -453,6 +457,7 @@ export class CartService {
       this.logger.log('Adding open packs to cart', addOpenPackToCart.bundles);
       const { userEmail, checkoutId, bundles } = addOpenPackToCart;
       const checkoutBundleMapping = new Map();
+      const createdBundles = [];
 
       const checkoutBundlesPromise = Promise.all(
         addOpenPackToCart.bundles.map(async (bundle) => {
@@ -461,6 +466,7 @@ export class CartService {
             bundleId: getBundleIdFromBundleCreate(bundleCreate),
             quantity: 1,
           };
+          createdBundles.push(bundleCreate);
           checkoutBundleMapping.set(bundle, checkoutBundle);
           return checkoutBundle;
         }),
@@ -471,6 +477,7 @@ export class CartService {
           userEmail,
           token,
           productDetails: false,
+          shopDetails: true,
         });
       const [checkoutBundles, marketplaceCheckout] = await Promise.all([
         checkoutBundlesPromise,
@@ -504,14 +511,42 @@ export class CartService {
 
       const createOpenBundles = [];
       if (isEmptyArray(openBundlesCreate)) {
-        // Create new open packs
-        const createNewBundle = await this.addBundlesToCart(
-          userEmail,
-          filterOpenPackBundles(checkoutBundleMapping, openBundlesCreate),
-          token,
-          true,
+        const newBundles = filterOpenPackBundles(
+          checkoutBundleMapping,
+          openBundlesCreate,
         );
-        createOpenBundles.push(createNewBundle);
+        const checkoutId = getBundleCheckoutId(
+          marketplaceCheckout.data as unknown as UpdateMarketplaceCheckoutType,
+          newBundles,
+        );
+        const bundlesListResponse = bundlesListTransform(createdBundles);
+
+        const [marketplaceResult, saleorResult] = await Promise.allSettled([
+          this.marketplaceService.addBundles(userEmail, newBundles, token),
+          this.saleorService.addBundleLines(
+            userEmail,
+            checkoutId,
+            newBundles,
+            token,
+            bundlesListResponse,
+          ),
+        ]);
+        const createOpenBundle =
+          await this.cartResponseBuilder.addBundlesToCart(
+            saleorResult,
+            marketplaceResult,
+            newBundles,
+            token,
+          );
+        await this.marketplaceService.addCheckoutIdToMarketplace(
+          userEmail,
+          getUpdateMarketplaceCheckoutBundles(
+            newBundles,
+            saleorResult['value'].id,
+          ),
+          token,
+        );
+        createOpenBundles.push(createOpenBundle);
       }
 
       // Build and return the cart response

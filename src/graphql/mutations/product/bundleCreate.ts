@@ -11,6 +11,12 @@ export const bundleCreateMutation = (bundleCreateInput: BundleCreateDto) => {
       ) {
         ... on BundleViewType {
           ...Bundle
+          productVariants {
+            quantity
+            productVariant{
+              id
+            }
+          }
         }
       }
     }

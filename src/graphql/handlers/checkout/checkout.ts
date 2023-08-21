@@ -45,6 +45,7 @@ export const getCheckoutBundlesHandler = async ({
   checkoutIds,
   productDetails = true,
   throwException = true,
+  shopDetails = false,
   isSelected = true,
 }: CheckoutBundlesDto): Promise<object> => {
   let response = {};
@@ -60,7 +61,12 @@ export const getCheckoutBundlesHandler = async ({
   }
   response = await graphqlResultErrorHandler(
     await graphqlCall(
-      getCheckoutBundleQuery(userEmail, isSelected, productDetails),
+      getCheckoutBundleQuery(
+        userEmail,
+        isSelected,
+        productDetails,
+        shopDetails,
+      ),
       token,
     ),
     throwException,

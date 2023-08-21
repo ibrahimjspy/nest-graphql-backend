@@ -5,6 +5,7 @@ export const getCheckoutBundleQuery = (
   userEmail: string,
   isSelected: any,
   productDetails = true,
+  shopDetails = false,
 ) => {
   if (productDetails) {
     return gql`
@@ -24,6 +25,15 @@ export const getCheckoutBundleQuery = (
     ${resultErrorFragment}
   `;
   }
+  const shopDetailsQuery = shopDetails
+    ? `shop{
+        id
+        fields {
+          name
+          values
+        }
+      }`
+    : ``;
   return gql`
     query {
       checkoutBundles(
@@ -41,6 +51,7 @@ export const getCheckoutBundleQuery = (
             bundle {
               id
               isOpenBundle
+              ${shopDetailsQuery}
               productVariants {
                 quantity
                 productVariant {

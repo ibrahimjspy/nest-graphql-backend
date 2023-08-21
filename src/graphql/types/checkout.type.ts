@@ -4,6 +4,7 @@ export interface CheckoutBundlesDto {
   throwException?: boolean;
   productDetails?: boolean;
   isSelected?: boolean;
+  shopDetails?: boolean;
   token: string;
 }
 
