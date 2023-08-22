@@ -22,6 +22,7 @@ import { ProductVariantStockUpdateDTO } from './dto/variant';
 import { GetMappingDto } from '../shop/dto/shop';
 import { CacheService } from 'src/app.cache.service';
 import { SuccessResponseType } from 'src/core/utils/response.type';
+import { CATEGORIES_CACHE } from 'src/constants';
 
 @ApiTags('product')
 @Controller()
@@ -54,9 +55,12 @@ export class ProductController {
       'list',
       JSON.stringify(filter),
     );
-    const cachedProducts = await this.cacheManager.get(productCacheKey);
+    const cachedProducts = await this.cacheManager.get(
+      productCacheKey,
+      CATEGORIES_CACHE,
+    );
 
-    if (cachedProducts) {
+    if (cachedProducts && filter?.first && filter?.first < 10) {
       this.logger.log('found cached products');
       return makeResponse(res, cachedProducts as object);
     }
@@ -78,7 +82,9 @@ export class ProductController {
 
       response = await typeMethod.call(this.appService, filter);
     }
-    this.addToCache(productCacheKey, response);
+    if (filter?.first && filter?.first < 10) {
+      this.addToCache(productCacheKey, response);
+    }
     return makeResponse(res, response);
   }
 
@@ -154,7 +160,7 @@ export class ProductController {
 
   addToCache(key: string, response: SuccessResponseType) {
     if (response.status === HttpStatus.OK) {
-      this.cacheManager.set(key, response);
+      this.cacheManager.set(key, response, CATEGORIES_CACHE, 6400);
     }
   }
 

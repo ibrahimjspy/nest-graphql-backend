@@ -18,6 +18,7 @@ import {
 } from './dto/categories';
 import { PaginationDto } from 'src/graphql/dto/pagination.dto';
 import { CacheService } from 'src/app.cache.service';
+import { CATEGORIES_CACHE } from 'src/constants';
 
 @ApiTags('categories')
 @Controller('')
@@ -72,7 +73,10 @@ export class CategoriesController {
       'categories',
       'menu',
     );
-    const cachedCategories = await this.cacheManager.get(categoriesCacheKey);
+    const cachedCategories = await this.cacheManager.get(
+      categoriesCacheKey,
+      CATEGORIES_CACHE,
+    );
 
     if (cachedCategories) {
       this.logger.verbose('found cached categories');
@@ -82,7 +86,12 @@ export class CategoriesController {
     const categoriesData = await this.appService.menuCategoriesDeprecated();
     const response = categoriesData['data'];
     if (categoriesData.status == HttpStatus.OK) {
-      this.cacheManager.set(categoriesCacheKey, response, 8400);
+      this.cacheManager.set(
+        categoriesCacheKey,
+        response,
+        CATEGORIES_CACHE,
+        8400,
+      );
     }
     return response;
   }
@@ -111,7 +120,10 @@ export class CategoriesController {
       'collections',
       JSON.stringify(filter),
     );
-    const cachedCollections = await this.cacheManager.get(collectionsCacheKey);
+    const cachedCollections = await this.cacheManager.get(
+      collectionsCacheKey,
+      CATEGORIES_CACHE,
+    );
     if (cachedCollections) {
       this.logger.verbose('found cached categories');
       this.revalidateCollectionsCache(collectionsCacheKey, filter);
@@ -121,7 +133,12 @@ export class CategoriesController {
     const collectionsData = await this.appService.getCollections(filter);
     const response = makeResponse(res, collectionsData);
     if (collectionsData.data) {
-      this.cacheManager.set(collectionsCacheKey, collectionsData);
+      this.cacheManager.set(
+        collectionsCacheKey,
+        collectionsData,
+        CATEGORIES_CACHE,
+        8400,
+      );
     }
     return response;
   }

@@ -8,8 +8,8 @@ export class CacheService {
   private readonly logger = new Logger(CacheService.name);
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
-  async get(key: string): Promise<any> {
-    if (!IS_CACHE_ENABLED) {
+  async get(key: string, enableCache = false): Promise<any> {
+    if (!IS_CACHE_ENABLED && !enableCache) {
       return null; // Return null or implement a different behavior when caching is disabled
     }
 
@@ -21,8 +21,13 @@ export class CacheService {
     }
   }
 
-  async set(key: string, value: any, ttl = 6400): Promise<void> {
-    if (!IS_CACHE_ENABLED) {
+  async set(
+    key: string,
+    value: any,
+    enableCache = false,
+    ttl = 6400,
+  ): Promise<void> {
+    if (!IS_CACHE_ENABLED && !enableCache) {
       return; // Don't perform caching when it's disabled
     }
 
