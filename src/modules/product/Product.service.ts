@@ -21,6 +21,7 @@ import {
   GetBundlesDto,
   GetMoreLikeThisDto,
   ProductDetailsDto,
+  ProductFilterTypeEnum,
 } from './dto/product.dto';
 import {
   BundleCreateResponseType,
@@ -37,6 +38,7 @@ import { GetMappingDto } from '../shop/dto/shop';
 import SearchService from 'src/external/services/search';
 import { getAttributeHandler } from 'src/graphql/handlers/attribute';
 import { getCollectionProductsHandler } from 'src/graphql/handlers/product';
+import { SuccessResponseType } from 'src/core/utils/response.type';
 @Injectable()
 export class ProductService {
   private readonly logger = new Logger(ProductService.name);
@@ -321,6 +323,38 @@ export class ProductService {
         );
       }
       return prepareSuccessResponse(collectionProducts);
+    } catch (error) {
+      this.logger.error(error);
+      return graphqlExceptionHandler(error);
+    }
+  }
+  public async getProductsTotalCount(
+    filter: ProductFilterDto,
+  ): Promise<SuccessResponseType> {
+    try {
+      console.log('fetching products total count');
+      if (filter.type == ProductFilterTypeEnum.POPULAR_ITEMS) {
+        const popularItems = await this.getPopularItems({
+          ...filter,
+          first: 1,
+          after: null,
+        });
+        const popularItemsCount = popularItems['totalCount'] || 0;
+        return prepareSuccessResponse(popularItemsCount);
+      }
+      if (filter.collections.length == 1) {
+        const collectionItems = await this.getProductByCollections({
+          ...filter,
+          first: 1,
+          after: null,
+        });
+        const collectionProductsCount = collectionItems['totalCount'] || 0;
+        return prepareSuccessResponse(collectionProductsCount);
+      }
+      const productTotalCount = await ProductsHandlers.getProductsCountHandler(
+        filter,
+      );
+      return prepareSuccessResponse(productTotalCount);
     } catch (error) {
       this.logger.error(error);
       return graphqlExceptionHandler(error);

@@ -185,4 +185,18 @@ export class ProductController {
       this.logger.error(error);
     }
   }
+
+  @Get('/api/v1/products/count')
+  @ApiOperation({
+    summary: 'return products more like given product id from elastic search',
+  })
+  async getProductsTotalCount(
+    @Res() res,
+    @Query() filter: ProductFilterDto,
+  ): Promise<any> {
+    return makeResponse(
+      res,
+      await this.appService.getProductsTotalCount(filter),
+    );
+  }
 }

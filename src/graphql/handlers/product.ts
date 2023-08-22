@@ -46,6 +46,7 @@ import { hasNextPage } from '../utils/orders';
 import { getProductIdsByVariants } from 'src/modules/product/Product.utils';
 import { Logger } from '@nestjs/common';
 import { productByCollectionsQuery } from '../queries/product/productByCollections';
+import { productsCountQuery } from '../queries/product/counts';
 
 export const productsHandler = async (
   filter: ProductFilterDto,
@@ -249,4 +250,16 @@ export const getCollectionProductsHandler = async (
     ), // We only need access token in b2c apis for now
   );
   return response?.collections;
+};
+
+export const getProductsCountHandler = async (
+  filter: ProductFilterDto,
+): Promise<number> => {
+  const response = await graphqlResultErrorHandler(
+    await graphqlCall(
+      productsCountQuery(filter),
+      getGraphqlAllAccessToken(true),
+    ),
+  );
+  return response?.products.totalCount || 0;
 };
