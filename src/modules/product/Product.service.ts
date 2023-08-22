@@ -332,7 +332,7 @@ export class ProductService {
     filter: ProductFilterDto,
   ): Promise<SuccessResponseType> {
     try {
-      console.log('fetching products total count');
+      this.logger.log('fetching products total count');
       if (filter.type == ProductFilterTypeEnum.POPULAR_ITEMS) {
         const popularItems = await this.getPopularItems({
           ...filter,
