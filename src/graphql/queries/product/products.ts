@@ -32,7 +32,6 @@ export const b2bQuery = (filter: ProductFilterDto): string => {
   /**
    * if products call is paginated then not return total count
    */
-  const totalCountQuery = filter.after ? ` ` : `totalCount`;
   return gql`
     query {
       products(
@@ -52,7 +51,6 @@ export const b2bQuery = (filter: ProductFilterDto): string => {
         pageInfo {
           ... PageInfo
         }
-        ${totalCountQuery}
         edges {
           node {
             ... Product
