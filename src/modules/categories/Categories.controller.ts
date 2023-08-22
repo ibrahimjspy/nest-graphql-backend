@@ -82,7 +82,7 @@ export class CategoriesController {
     const categoriesData = await this.appService.menuCategoriesDeprecated();
     const response = categoriesData['data'];
     if (categoriesData.status == HttpStatus.OK) {
-      this.cacheManager.set(categoriesCacheKey, response);
+      this.cacheManager.set(categoriesCacheKey, response, 8400);
     }
     return response;
   }

@@ -58,7 +58,6 @@ export class ProductController {
 
     if (cachedProducts) {
       this.logger.log('found cached products');
-      this.revalidateProductsCache(productCacheKey, filter);
       return makeResponse(res, cachedProducts as object);
     }
     this.logger.log('making expensive call to retrieve products');

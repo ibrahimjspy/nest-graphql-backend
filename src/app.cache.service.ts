@@ -21,13 +21,13 @@ export class CacheService {
     }
   }
 
-  async set(key: string, value: any): Promise<void> {
+  async set(key: string, value: any, ttl = 6400): Promise<void> {
     if (!IS_CACHE_ENABLED) {
       return; // Don't perform caching when it's disabled
     }
 
     try {
-      return await this.cacheManager.set(key, value);
+      return await this.cacheManager.set(key, value, ttl);
     } catch (error) {
       this.logger.error('Cache set error:', error);
     }
