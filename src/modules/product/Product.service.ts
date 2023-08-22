@@ -342,7 +342,7 @@ export class ProductService {
         const popularItemsCount = popularItems['totalCount'] || 0;
         return prepareSuccessResponse(popularItemsCount);
       }
-      if (filter.collections.length == 1) {
+      if (filter.collections && filter.collections.length == 1) {
         const collectionItems = await this.getProductByCollections({
           ...filter,
           first: 1,
